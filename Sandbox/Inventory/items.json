@@ -1,0 +1,12 @@
+{
+  "Coin": {
+	"Description": "An ordinary shiny coin.",
+	"Resource": "res://Sandbox/Inventory/CoinSpriteFrames.tres",
+	"Color": "Yellow"
+  },
+  "SnowyCoin": {
+	"Description": "A coin with snow infused into it.",
+	"Resource": "res://Sandbox/Inventory/CoinStatic.png",
+	"Color": "LightSkyBlue"
+  }
+}

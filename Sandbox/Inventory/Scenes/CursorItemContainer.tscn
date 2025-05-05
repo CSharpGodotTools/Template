@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3 uid="uid://bvhftv2shmjv8"]
+
+[ext_resource type="PackedScene" uid="uid://b0d0dvcv2awdp" path="res://Sandbox/Inventory/Scenes/ItemContainer.tscn" id="1_84c02"]
+[ext_resource type="Script" uid="uid://cgxlrr5lf2x6u" path="res://Sandbox/Inventory/Scenes/CursorItemContainer.cs" id="1_vdyrg"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_malv3"]
+
+[node name="CursorItemContainer" instance=ExtResource("1_84c02")]
+z_index = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_malv3")
+script = ExtResource("1_vdyrg")
+
+[node name="Count" parent="MarginContainer" index="0"]
+text = ""

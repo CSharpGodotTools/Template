@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "ms-dotnettools.vscode-dotnet-runtime",
+        "ericgomez.breakpoint-highlight",
+        "ms-dotnettools.csharp",
+        "Ironcutter24.cscurlyformatter",
+        "ms-dotnettools.csdevkit",
+        "kreativ-software.csharpextensions",
+        "neikeq.godot-csharp-vscode",
+        "ms-vscode.mono-debug"
+    ]
+}

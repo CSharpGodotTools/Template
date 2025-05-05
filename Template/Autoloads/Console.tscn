@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://k5xe87npeb84"]
+
+[ext_resource type="PackedScene" uid="uid://jrjqky6ag6gg" path="res://Scenes/MenuUI/Console/UIConsole.tscn" id="1_3n6ew"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+process_mode = 3
+
+[node name="UIConsole" parent="." instance=ExtResource("1_3n6ew")]
