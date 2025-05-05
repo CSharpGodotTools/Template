@@ -3,7 +3,7 @@
 	url = https://github.com/CSharpGodotTools/GodotUtils
 [submodule "addons/imgui-godot"]
 	path = addons/imgui-godot
-	url = https://github.com/CSharpGodotTools/imgui-godot-csharp/
+	url = https://github.com/CSharpGodotTools/imgui-godot-csharp
 [submodule "Genres/3D FPS"]
 	path = Genres/3D FPS
 	url = https://github.com/CSharpGodotTools/template-genre-3D-FPS
