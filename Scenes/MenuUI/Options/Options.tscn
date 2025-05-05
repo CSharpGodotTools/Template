@@ -2,12 +2,12 @@
 
 [ext_resource type="Script" uid="uid://b88ck7eam4e70" path="res://Scenes/MenuUI/Options/Options.cs" id="1_xjg3i"]
 [ext_resource type="Script" uid="uid://pdomcsu3uajx" path="res://Scenes/MenuUI/Options/OptionsNav.cs" id="2_w30yg"]
-[ext_resource type="Theme" uid="uid://8f4q252ns4xm" path="res://Template/Themes/NavBtns.tres" id="3_mvq8n"]
+[ext_resource type="Theme" uid="uid://8f4q252ns4xm" path="res://addons/Template/Themes/NavBtns.tres" id="3_mvq8n"]
 [ext_resource type="Script" uid="uid://byg8c8jdptylv" path="res://Scenes/MenuUI/Options/OptionsGeneral.cs" id="3_vefex"]
 [ext_resource type="Script" uid="uid://duywpdpydv488" path="res://Scenes/MenuUI/Options/OptionsDisplay.cs" id="4_o6e7i"]
 [ext_resource type="Script" uid="uid://bnb0qpdygtgve" path="res://Scenes/MenuUI/Options/OptionsGameplay.cs" id="5_eyimv"]
 [ext_resource type="Script" uid="uid://nots3syd4eur" path="res://Scenes/MenuUI/Options/OptionsAudio.cs" id="5_hbpj8"]
-[ext_resource type="Resource" uid="uid://bvgp3pcf0t0ky" path="res://Template/Resources/OptionsManager.tres" id="6_3x0fd"]
+[ext_resource type="Resource" uid="uid://bvgp3pcf0t0ky" path="res://addons/Template/Resources/OptionsManager.tres" id="6_3x0fd"]
 [ext_resource type="Script" uid="uid://bpcd5ahs73ga4" path="res://Scenes/MenuUI/Options/OptionsInput.cs" id="6_n2qcv"]
 [ext_resource type="Script" uid="uid://bkctgqs1uogu8" path="res://Scenes/MenuUI/Options/OptionsGraphics.cs" id="6_wctgl"]
 

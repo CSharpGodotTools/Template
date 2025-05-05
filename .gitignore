@@ -2,6 +2,7 @@
 .godot/*
 Exported/*
 .import/
+**/*.import
 export.cfg
 export_presets.cfg
 *.translation

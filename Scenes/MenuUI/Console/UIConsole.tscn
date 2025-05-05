@@ -1,6 +1,5 @@
-[gd_scene load_steps=8 format=3 uid="uid://jrjqky6ag6gg"]
+[gd_scene load_steps=7 format=3 uid="uid://jrjqky6ag6gg"]
 
-[ext_resource type="Texture2D" uid="uid://ptgl7pv2t8a2" path="res://Template/Sprites/UI/Gear.png" id="1_cep3b"]
 [ext_resource type="Script" uid="uid://blp5ybyxnppar" path="res://Scenes/MenuUI/Console/UIConsole.cs" id="1_gs4bw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4blkd"]
@@ -61,7 +60,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/focus = SubResource("StyleBoxEmpty_32acl")
 action_mode = 0
-icon = ExtResource("1_cep3b")
+text = "Settings"
 flat = true
 
 [node name="PopupPanel" type="PopupPanel" parent="."]
