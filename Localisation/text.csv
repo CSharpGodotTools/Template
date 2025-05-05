@@ -1,0 +1,59 @@
+keys,en,fr,ja
+PLAY,Play,Jouer,遊ぶ
+OPTIONS,Options,Choix,オプション
+QUIT,Quit,Arrêter,やめる
+RESUME,Resume,Continuer,履歴書
+MAIN MENU,Main Menu,Menu Principal,メインメニュー
+CREDITS,Credits,Crédits,クレジット
+GENERAL,General,Général,全般的
+DISPLAY,Display,Afficher,画面
+AUDIO,Audio,l'audio,オーディオ
+INPUT,Input,Saisir,入力
+RESET_TO_DEFAULTS,Reset to Defaults,Réinitialiser les paramètres par défaut,既定値にリセット
+LANGUAGE,Language,Langue,言語
+WINDOW_MODE,Window Mode,Fenêtre Mode,窓モード
+WINDOW_SIZE,Window Size,Fenêtre Taille,窓サイズ
+VSYNC_MODE,VSync Mode,VSync Mode,垂直同期モード
+MAX_FPS,Max FPS,Max FPS,マックス FPS
+UNLIMITED,Unlimited,Illimité,無制限
+ENABLED,Enabled,Activé,有効
+DISABLED,Disabled,Désactivé,無効
+ADAPTIVE,Adaptive,Adaptatif,アダプティブ
+WINDOWED,Windowed,Fenêtré,ウィンドウ付き
+BORDERLESS,Borderless,Sans bordure,ボーダレス
+FULLSCREEN,Fullscreen,Plein écran,全画面表示
+APPLY,Apply,Appliquer,申し込み
+MUSIC,Music,Musique,音楽
+SOUNDS,Sounds,Des sons,サウンド
+PAUSE,Pause,Pause,一時停止
+TEMPLATE,Template,Modèle,レンプレート
+LICENSED,licensed,autorisé,認可済み
+INTERACT,Interact,Interagir,相互作用
+SPRINT,Sprint,Sprint,スプリント
+JUMP,Jump,Saut,ジャンプ
+MOVE_LEFT,Move Left,Se déplacer à gauche,左に移動
+MOVE_RIGHT,Move Right,Déplacer vers la droite,右に動く
+MOVE_UP,Move Up,Déplacer vers le haut,上に移動
+MOVE_DOWN,Move Down,Descendre,下に移動
+GRAPHICS,Graphics,,グラフィック
+QUALITY_PRESET,Quality Preset,Graphique,品質プリセット
+VERY_LOW,Very Low,Très lent,とても低い
+LOW,Low,Faible,低い
+MEDIUM,Medium,Moyen,中くらい
+HIGH,High,Haut,高い
+VERY_HIGH,Very High,Très haut,すごく高い
+ULTRA,Ultra,Ultra,ウルトラ
+EASY,Easy,Facile,簡単
+NORMAL,Normal,Normale,普通
+HARD,Hard,Dure,難しい
+HARDCORE,Hardcore,Hardcore,ハードコア
+GAMEPLAY,Gameplay,Jouabilité,ゲームプレイ
+DIFFICULTY,Difficulty,Difficulté,困難
+ANTIALIASING,Antialiasing,Anchieiriashingu,アンチエイリアシング
+MODS,Mods,Mods,Mods
+RESOLUTION,Resolution,Resolution,Resolution
+MOUSE_SENSITIVITY,Mouse Sensitivity,Mouse Sensitivity,Mouse Sensitivity
+GLOW,Glow,Glow,Glow
+AMBIENT_OCCLUSION,Ambient Occlusion,Ambient Occlusion,Ambient Occlusion
+INDIRECT_LIGHTING,Indirect Lighting,Indirect Lighting,Indirect Lighting
+REFLECTIONS,Reflections,Reflections,Reflections

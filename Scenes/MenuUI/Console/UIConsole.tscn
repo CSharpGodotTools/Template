@@ -1,0 +1,95 @@
+[gd_scene load_steps=8 format=3 uid="uid://jrjqky6ag6gg"]
+
+[ext_resource type="Texture2D" uid="uid://ptgl7pv2t8a2" path="res://Template/Sprites/UI/Gear.png" id="1_cep3b"]
+[ext_resource type="Script" uid="uid://blp5ybyxnppar" path="res://Scenes/MenuUI/Console/UIConsole.cs" id="1_gs4bw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4blkd"]
+bg_color = Color(0, 0, 0, 0.196078)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_cq5rj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pd54f"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1b47e"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_32acl"]
+
+[node name="UIConsole" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_4blkd")
+script = ExtResource("1_gs4bw")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 15
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 15
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Output" type="TextEdit" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_readonly_color = Color(0.87451, 0.87451, 0.87451, 1)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_cq5rj")
+theme_override_styles/focus = SubResource("StyleBoxEmpty_pd54f")
+theme_override_styles/read_only = SubResource("StyleBoxEmpty_1b47e")
+editable = false
+
+[node name="Padding" type="Control" parent="Margin/VBox"]
+custom_minimum_size = Vector2(0, 5)
+layout_mode = 2
+
+[node name="HBox" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+
+[node name="CmdsInput" type="LineEdit" parent="Margin/VBox/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Settings" type="Button" parent="Margin/VBox/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/focus = SubResource("StyleBoxEmpty_32acl")
+action_mode = 0
+icon = ExtResource("1_cep3b")
+flat = true
+
+[node name="PopupPanel" type="PopupPanel" parent="."]
+title = "Settings"
+initial_position = 1
+size = Vector2i(300, 100)
+borderless = false
+
+[node name="Margin" type="MarginContainer" parent="PopupPanel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 296.0
+offset_bottom = 96.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="PopupVBox" type="VBoxContainer" parent="PopupPanel/Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="PopupAutoScroll" type="CheckBox" parent="PopupPanel/Margin/PopupVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Autoscroll"

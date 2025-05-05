@@ -1,0 +1,15 @@
+[h1]Big Header
+
+[h2]Smaller Header
+
+Anything here will show up in the credits in-game. Update this file with the appropriate credits!!!
+
+Click the "Retrieve Credits" checkbox in res://Scenes/UI/ToolScriptHelpers.tscn to 
+retrieve all credit.txt files in the project.
+
+If you use this Template for your game you do not have to mention the link to it in the credits although
+it is appreciated. https://github.com/CSharpGodotTools/Template
+
+[h2]Assets Used
+
+"Example Asset" by FirstName LastName LICENSED CC0: https://github.com/ (Replace text with your asset)

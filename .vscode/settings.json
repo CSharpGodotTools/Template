@@ -1,0 +1,25 @@
+{
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "files.insertFinalNewline": true,
+    "files.exclude": {
+        "**/.gitattributes": true,
+        "**/.gitmodules": true,
+        "**/.runsettings": true,
+        "**/project.godot": true,
+        "**/.vs": true,
+        "**/*.cfg": true,
+        "**/*.cmd": true,
+        "**/*.import": true,
+        "**/*.sln": true,
+        "**/*.txt": true,
+        "**/*.uid": true,
+        "**/bin": true,
+        "**/obj": true,
+        "**/LICENSE": true,
+        "**/README.md": true
+    },
+    "cscurlyformatter.autoTabIndentation": false,
+    "csharpextensions.useFileScopedNamespace": true,
+    "csharpextensions.privateMemberPrefix": "_",
+}
