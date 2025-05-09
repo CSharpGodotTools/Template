@@ -4,9 +4,7 @@ VisualStudioVersion = 17.5.2.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template", "Template.csproj", "{87041398-62C1-8D78-B512-37DE781C5205}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Template (1)", "Template (1)", "{80D041BE-301B-0A82-6A1E-847F4BF0CAB9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotUtils", "Template\GodotUtils\GodotUtils.csproj", "{0583244B-3DD7-A592-E52A-E77D085F48A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotUtils", "addons\GodotUtils\GodotUtils.csproj", "{70113130-16E0-470F-97B2-5711F5F21EBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,16 +16,15 @@ Global
 		{87041398-62C1-8D78-B512-37DE781C5205}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87041398-62C1-8D78-B512-37DE781C5205}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87041398-62C1-8D78-B512-37DE781C5205}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0583244B-3DD7-A592-E52A-E77D085F48A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0583244B-3DD7-A592-E52A-E77D085F48A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0583244B-3DD7-A592-E52A-E77D085F48A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0583244B-3DD7-A592-E52A-E77D085F48A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70113130-16E0-470F-97B2-5711F5F21EBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70113130-16E0-470F-97B2-5711F5F21EBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70113130-16E0-470F-97B2-5711F5F21EBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70113130-16E0-470F-97B2-5711F5F21EBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{0583244B-3DD7-A592-E52A-E77D085F48A8} = {80D041BE-301B-0A82-6A1E-847F4BF0CAB9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E6313EBD-3921-4BBD-82BF-B3AF80D6765E}
