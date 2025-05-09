@@ -13,3 +13,6 @@
 [submodule "Genres/2D Platformer"]
 	path = Genres/2D Platformer
 	url = https://github.com/CSharpGodotTools/template-genre-2D-Platformer
+[submodule "Template/Visualize"]
+	path = Template/Visualize
+	url = https://github.com/CSharpGodotTools/Visualize
