@@ -25,6 +25,9 @@ Properties/*
 # Visual Studio Code
 .vscode/*
 
+# Rider
+.idea/*
+
 # enet custom
 ENet-CSharp.dll
 
