@@ -1,6 +1,3 @@
-[submodule "Template/GodotUtils"]
-	path = Template/GodotUtils
-	url = https://github.com/CSharpGodotTools/GodotUtils
 [submodule "addons/imgui-godot"]
 	path = addons/imgui-godot
 	url = https://github.com/CSharpGodotTools/imgui-godot-csharp
@@ -13,6 +10,9 @@
 [submodule "Genres/2D Platformer"]
 	path = Genres/2D Platformer
 	url = https://github.com/CSharpGodotTools/template-genre-2D-Platformer
-[submodule "Template/Visualize"]
-	path = Template/Visualize
+[submodule "addons/GodotUtils"]
+	path = addons/GodotUtils
+	url = https://github.com/CSharpGodotTools/GodotUtils
+[submodule "addons/Visualize"]
+	path = addons/Visualize
 	url = https://github.com/CSharpGodotTools/Visualize
