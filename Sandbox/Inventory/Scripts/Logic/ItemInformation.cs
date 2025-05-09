@@ -53,7 +53,7 @@ public static partial class ItemInformation
             JsonElement itemData = property.Value;
 
             string description = GetPropertyValue(itemData, "Description", "");
-            string resourcePath = GetPropertyValue(itemData, "Resource", "res://Template/Sprites/UI/icon.svg");
+            string resourcePath = GetPropertyValue(itemData, "Resource", "res://addons/Template/Sprites/UI/Icon.svg");
             string colorName = GetPropertyValue(itemData, "Color", "White");
 
             // Convert color name to a Color object
