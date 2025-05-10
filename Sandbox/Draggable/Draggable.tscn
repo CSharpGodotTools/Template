@@ -1,0 +1,38 @@
+[gd_scene load_steps=4 format=3 uid="uid://c3yht8f3xxwu7"]
+
+[ext_resource type="Texture2D" uid="uid://1mo80ot86k2f" path="res://Sandbox/Inventory/CoinStatic.png" id="1_4aetj"]
+[ext_resource type="Script" uid="uid://cwmy5bsffl68u" path="res://Sandbox/Draggable/DraggableNode.cs" id="2_igt5j"]
+[ext_resource type="SpriteFrames" uid="uid://cocippvnna5w0" path="res://Sandbox/Inventory/CoinSpriteFrames.tres" id="3_oa5ui"]
+
+[node name="Draggable" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.972082, 0.89222, 1.54018e-06, 1)
+position = Vector2(280, 300)
+scale = Vector2(5, 5)
+texture = ExtResource("1_4aetj")
+
+[node name="DraggableNode" type="Node" parent="Sprite2D"]
+script = ExtResource("2_igt5j")
+metadata/_custom_type_script = "uid://cwmy5bsffl68u"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+modulate = Color(0.934792, 0.83228, 1, 1)
+position = Vector2(500, 300)
+scale = Vector2(5, 5)
+sprite_frames = ExtResource("3_oa5ui")
+
+[node name="DraggableNode" type="Node" parent="AnimatedSprite2D"]
+script = ExtResource("2_igt5j")
+metadata/_custom_type_script = "uid://cwmy5bsffl68u"
+
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = 680.0
+offset_top = 260.0
+offset_right = 760.0
+offset_bottom = 340.0
+color = Color(0.520239, 1, 0.618495, 1)
+
+[node name="DraggableNode" type="Node" parent="ColorRect"]
+script = ExtResource("2_igt5j")
+metadata/_custom_type_script = "uid://cwmy5bsffl68u"
