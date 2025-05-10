@@ -40,17 +40,20 @@ public partial class DraggableNode : Node
     {
         control.GuiInput += (inputEvent) =>
         {
+            GD.Print(inputEvent);
             if (inputEvent is not InputEventMouseButton btn)
                 return;
             
-            if (btn.IsLeftClickPressed())
+            if (btn.IsLeftClickJustPressed())
             {
                 _draggable.Reparent(GetViewport());
                 _dragging = true;
                 SetPhysicsProcess(true);
             }
             
-            if (btn.IsLeftClickReleased() && _dragging)
+            GD.Print("this is a btn event");
+            
+            if (btn.IsLeftClickJustReleased() && _dragging)
             {
                 _dragging = false;
                 SetPhysicsProcess(false);
@@ -68,17 +71,17 @@ public partial class DraggableNode : Node
         
         area.InputEvent += (viewport, inputEvent, id) =>
         {
-            if (@inputEvent is not InputEventMouseButton btn)
+            if (inputEvent is not InputEventMouseButton btn)
                 return;
             
-            if (btn.IsLeftClickPressed())
+            if (btn.IsLeftClickJustPressed())
             {
                 _draggable.Reparent(GetViewport());
                 _dragging = true;
                 SetPhysicsProcess(true);
             }
 
-            if (btn.IsLeftClickReleased() && _dragging)
+            if (btn.IsLeftClickJustReleased() && _dragging)
             {
                 _dragging = false;
                 SetPhysicsProcess(false);
@@ -137,7 +140,7 @@ public class DraggableControl(Control control) : IDraggable
 
     public void Follow()
     {
-        _control.Position = _control.GetGlobalMousePosition();
+        _control.Position = _control.GetGlobalMousePosition() - _control.Size * 0.5f;
     }
 
     public void Reparent(Node parent)
