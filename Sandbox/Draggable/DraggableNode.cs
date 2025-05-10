@@ -7,34 +7,24 @@ namespace Template;
 [GlobalClass]
 public partial class DraggableNode : Node
 {
-    private Node _parent;
-
-    private Node2D _parentNode2D;
-    private Control _parentControl;
-    
-    private Action _follow;
+    private IDraggable _draggable;
     
     public override void _Ready()
     {
         SetPhysicsProcess(false);
         
-        _parent = GetParent();
-        
-        switch (_parent)
+        switch (GetParent())
         {
             case Sprite2D sprite:
-                _parentNode2D = sprite;
-                _follow = FollowNode2D;
+                _draggable = new DraggableNode2D(sprite);
                 DetectSprite(sprite);
                 break;
             case AnimatedSprite2D sprite:
-                _parentNode2D = sprite;
-                _follow = FollowNode2D;
+                _draggable = new DraggableNode2D(sprite);
                 DetectSprite(sprite);
                 break;
             case Control control:
-                _parentControl = control;
-                _follow = FollowControl;
+                _draggable = new DraggableControl(control);
                 DetectControl(control);
                 break;
         }
@@ -42,17 +32,7 @@ public partial class DraggableNode : Node
 
     public override void _PhysicsProcess(double delta)
     {
-        _follow();
-    }
-
-    private void FollowNode2D()
-    {
-        _parentNode2D.Position = _parentNode2D.GetGlobalMousePosition();
-    }
-
-    private void FollowControl()
-    {
-        _parentControl.Position = _parentControl.GetGlobalMousePosition();
+        _draggable.Follow();
     }
 
     private void DetectControl(Control control)
@@ -61,7 +41,7 @@ public partial class DraggableNode : Node
         {
             if (IsLeftClick(inputEvent))
             {
-                _parent.Reparent(GetViewport());
+                _draggable.Reparent(GetViewport());
                 SetPhysicsProcess(true);
             }
         };
@@ -79,7 +59,7 @@ public partial class DraggableNode : Node
         {
             if (IsLeftClick(inputEvent))
             {
-                _parent.Reparent(GetViewport());
+                _draggable.Reparent(GetViewport());
                 SetPhysicsProcess(true);
             }
         };
@@ -114,5 +94,41 @@ public partial class DraggableNode : Node
             AnimatedSprite2D sprite => sprite.GetSize(),
             _ => Vector2.Zero
         };
+    }
+}
+
+public interface IDraggable
+{
+    void Follow();
+    void Reparent(Node parent);
+}
+
+public class DraggableNode2D(Node2D node) : IDraggable
+{
+    private readonly Node2D _node = node;
+
+    public void Follow()
+    {
+        _node.Position = _node.GetGlobalMousePosition();
+    }
+
+    public void Reparent(Node parent)
+    {
+        _node.Reparent(parent);
+    }
+}
+
+public class DraggableControl(Control control) : IDraggable
+{
+    private readonly Control _control = control;
+
+    public void Follow()
+    {
+        _control.Position = _control.GetGlobalMousePosition();
+    }
+
+    public void Reparent(Node parent)
+    {
+        _control.Reparent(parent);
     }
 }
