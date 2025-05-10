@@ -52,7 +52,7 @@ public partial class DraggableNode : Node
 
     private void FollowControl()
     {
-        _parentControl.GlobalPosition = Vector2.Zero;
+        _parentControl.Position = _parentControl.GetGlobalMousePosition();
     }
 
     private void DetectControl(Control control)
@@ -61,8 +61,8 @@ public partial class DraggableNode : Node
         {
             if (IsLeftClick(inputEvent))
             {
-                GD.Print("Pressed");
                 _parent.Reparent(GetViewport());
+                SetPhysicsProcess(true);
             }
         };
     }
@@ -70,14 +70,15 @@ public partial class DraggableNode : Node
     private void DetectSprite(Node2D node)
     {
         Area2D area = CreateSpriteArea(node);
+        
+        // InputEvent still works if monitoring is disabled
         area.Monitorable = false;
         area.Monitoring = false;
-
+        
         area.InputEvent += (viewport, inputEvent, id) =>
         {
             if (IsLeftClick(inputEvent))
             {
-                GD.Print("Pressed");
                 _parent.Reparent(GetViewport());
                 SetPhysicsProcess(true);
             }
