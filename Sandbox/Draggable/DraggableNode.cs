@@ -8,6 +8,7 @@ namespace Template;
 public partial class DraggableNode : Node
 {
     private IDraggable _draggable;
+    private bool _dragging;
     
     public override void _Ready()
     {
@@ -39,10 +40,20 @@ public partial class DraggableNode : Node
     {
         control.GuiInput += (inputEvent) =>
         {
-            if (IsLeftClick(inputEvent))
+            if (inputEvent is not InputEventMouseButton btn)
+                return;
+            
+            if (btn.IsLeftClickPressed())
             {
                 _draggable.Reparent(GetViewport());
+                _dragging = true;
                 SetPhysicsProcess(true);
+            }
+            
+            if (btn.IsLeftClickReleased() && _dragging)
+            {
+                _dragging = false;
+                SetPhysicsProcess(false);
             }
         };
     }
@@ -57,20 +68,22 @@ public partial class DraggableNode : Node
         
         area.InputEvent += (viewport, inputEvent, id) =>
         {
-            if (IsLeftClick(inputEvent))
+            if (@inputEvent is not InputEventMouseButton btn)
+                return;
+            
+            if (btn.IsLeftClickPressed())
             {
                 _draggable.Reparent(GetViewport());
+                _dragging = true;
                 SetPhysicsProcess(true);
             }
-        };
-    }
-    
-    private static bool IsLeftClick(InputEvent @event)
-    {
-        if (@event is not InputEventMouseButton btn)
-            return false;
 
-        return btn.ButtonIndex == MouseButton.Left && btn.Pressed;
+            if (btn.IsLeftClickReleased() && _dragging)
+            {
+                _dragging = false;
+                SetPhysicsProcess(false);
+            }
+        };
     }
     
     private static Area2D CreateSpriteArea(Node2D node)
