@@ -12,7 +12,7 @@ public abstract class Draggable<T, TNode>(T item, DraggableComponent component) 
     public readonly T Item = item;
     
     private readonly Vector2 _offset = component.KeepOffset ? 
-        item.GlobalPosition - item.GetGlobalMousePosition() : 
+        item.GlobalPosition - item.GetTarget() : 
         Vector2.Zero;
     
     private readonly float _smooth = component.LerpFactor;
@@ -44,7 +44,7 @@ public abstract class Draggable<T, TNode>(T item, DraggableComponent component) 
 
     public void FollowCursor()
     {
-        Vector2 target = Item.GetGlobalMousePosition() + _offset;
+        Vector2 target = Item.GetTarget() + _offset;
         float distance = GlobalPosition.DistanceTo(target);
         GlobalPosition = GlobalPosition.MoveToward(target, distance * _smooth);
     }

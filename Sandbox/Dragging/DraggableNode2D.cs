@@ -23,7 +23,7 @@ public class Node2DWrapper(Node2D node) : ICanvasItemWrapper<Node2D>
         set => Node.GlobalPosition = value; 
     }
 
-    public Vector2 GetGlobalMousePosition() => 
+    public Vector2 GetTarget() => 
         Node.GetGlobalMousePosition();
     
     public CollisionShape2D GetCollision() =>

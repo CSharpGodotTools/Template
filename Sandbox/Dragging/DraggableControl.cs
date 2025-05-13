@@ -30,8 +30,8 @@ public class ControlWrapper(Control control) : ICanvasItemWrapper<Control>
         set => Node.GlobalPosition = value; 
     }
 
-    public Vector2 GetGlobalMousePosition() => 
-        Node.GetGlobalMousePosition();
+    public Vector2 GetTarget() => 
+        Node.GetGlobalMousePosition() - Node.Size * 0.5f;
 
     public CollisionShape2D GetCollision() =>
         Node.GetNode<Area2D>(recursive: false).GetChild<CollisionShape2D>(0);
