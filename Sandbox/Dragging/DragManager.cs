@@ -53,7 +53,7 @@ public partial class DragManager : Node2D
             _ => null
         };
         
-        _currentDraggable.Reparent(GetViewport());
+        _currentDraggable?.Reparent(GetViewport());
             
         SetProcess(true);
     }
@@ -75,7 +75,7 @@ public partial class DragManager : Node2D
             // Drag Control onto Node2D
             case DraggableControl draggable when container is Node2D:
                 if (!component.Animate)
-                    _currentDraggable.Position = -draggable.Control.Size * 0.5f;
+                    _currentDraggable.Position = -draggable.Item.Node.Size * 0.5f;
                 break;
             
             // Drag Node2D onto Control
