@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace Template.Inventory;
 
-public static partial class ItemInformation
+public static class ItemInformation
 {
     private static readonly Dictionary<Material, Item> _items = [];
 

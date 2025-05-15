@@ -53,20 +53,18 @@ public partial class OptionsInput : Control
                 return;
             }
 
-            if (@event is InputEventMouseButton eventMouseBtn)
+            switch (@event)
             {
-                if (!eventMouseBtn.Pressed)
+                case InputEventMouseButton eventMouseBtn:
                 {
-                    HandleInput(eventMouseBtn);
+                    if (!eventMouseBtn.Pressed)
+                        HandleInput(eventMouseBtn);
+                    
+                    break;
                 }
-            }
-            else if (@event is InputEventKey eventKey && !eventKey.Echo)
-            {
-                // Only check when the last key was released from the keyboard
-                if (!eventKey.Pressed)
-                {
+                case InputEventKey { Echo: false, Pressed: false } eventKey: // Only check when the last key was released from the keyboard
                     HandleInput(eventKey);
-                }
+                    break;
             }   
         }
         else
@@ -91,10 +89,8 @@ public partial class OptionsInput : Control
         StringName action = _btnNewInput.Action;
 
         // Prevent something very evil from happening!
-        if (action == "fullscreen" && @event is InputEventMouseButton eventBtn)
-        {
+        if (action == "fullscreen" && @event is InputEventMouseButton)
             return;
-        }
 
         // Re-create the button
 
@@ -278,11 +274,11 @@ public partial class OptionsInput : Control
 
 public class BtnInfo
 {
-    public InputEvent InputEvent { get; set; }
-    public string OriginalText { get; set; }
-    public StringName Action { get; set; }
-    public HBoxContainer HBox { get; set; }
-    public Button Btn { get; set; }
-    public bool Plus { get; set; }
+    public InputEvent InputEvent { get; init; }
+    public string OriginalText { get; init; }
+    public StringName Action { get; init; }
+    public HBoxContainer HBox { get; init; }
+    public Button Btn { get; init; }
+    public bool Plus { get; init; }
 }
 

@@ -12,7 +12,7 @@ public partial class CursorItemContainer : ItemContainer
 
     public override void _Ready()
     {
-        Inventory = new(1);
+        Inventory = new Inventory(1);
         Inventory.OnItemChanged += (index, item) => SetItem(item);
 
         IgnoreInputEvents(this);

@@ -49,28 +49,29 @@ public partial class ToolScriptHelpers : Node
         string finalCredits = creditsBuilder.ToString();
 
         GD.Print(finalCredits);
+        return;
 
         void ProcessCreditFile(string fullFilePath)
         {
-            if (string.Equals(Path.GetFileName(fullFilePath), "Credit.txt", StringComparison.OrdinalIgnoreCase))
-            {
-                string folderParentName = new DirectoryInfo(Path.GetDirectoryName(fullFilePath)).Name;
+            if (!string.Equals(Path.GetFileName(fullFilePath), "Credit.txt", StringComparison.OrdinalIgnoreCase))
+                return;
+
+            string folderParentName = new DirectoryInfo(Path.GetDirectoryName(fullFilePath) ?? string.Empty).Name;
                 
-                Dictionary<string, string> creditInfo = [];
+            Dictionary<string, string> creditInfo = [];
 
-                foreach (string line in File.ReadAllLines(ProjectSettings.GlobalizePath(fullFilePath)))
-                {
-                    string[] parts = line.Split(':', 2);
+            foreach (string line in File.ReadAllLines(ProjectSettings.GlobalizePath(fullFilePath)))
+            {
+                string[] parts = line.Split(':', 2);
 
-                    creditInfo[parts[0].Trim().ToLower()] = parts[1].Trim();
-                }
-
-                string authorOrArtist = creditInfo.GetValueOrDefault("artist") ?? creditInfo.GetValueOrDefault("author") ?? "Unknown";
-                string source = creditInfo.GetValueOrDefault("source") ?? "Unknown";
-                string license = creditInfo.GetValueOrDefault("license") ?? "Unknown";
-
-                creditsBuilder.AppendLine($"{folderParentName} made by {authorOrArtist} LICENSED {license}: {source}");
+                creditInfo[parts[0].Trim().ToLower()] = parts[1].Trim();
             }
+
+            string authorOrArtist = creditInfo.GetValueOrDefault("artist") ?? creditInfo.GetValueOrDefault("author") ?? "Unknown";
+            string source = creditInfo.GetValueOrDefault("source") ?? "Unknown";
+            string license = creditInfo.GetValueOrDefault("license") ?? "Unknown";
+
+            creditsBuilder.AppendLine($"{folderParentName} made by {authorOrArtist} LICENSED {license}: {source}");
         }
     }
 }

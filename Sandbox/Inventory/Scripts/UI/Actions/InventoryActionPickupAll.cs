@@ -7,13 +7,13 @@ public class InventoryActionPickupAll : InventoryActionBase
 {
     public override void Execute()
     {
-        if (_mouseButton == MouseButton.Left)
+        if (MouseButton == MouseButton.Left)
         {
-            InventoryContainer container = _context.InventoryContainer;
-            Inventory cursorInventory = _context.CursorInventory;
-            Inventory inventory = _context.Inventory;
+            InventoryContainer container = Context.InventoryContainer;
+            Inventory cursorInventory = Context.CursorInventory;
+            Inventory inventory = Context.Inventory;
 
-            Material? material = cursorInventory.GetItem(0)?.Material ?? inventory.GetItem(_index)?.Material;
+            Material? material = cursorInventory.GetItem(0)?.Material ?? inventory.GetItem(Index)?.Material;
 
             if (material == null)
                 return;
@@ -45,15 +45,17 @@ public class InventoryActionPickupAll : InventoryActionBase
             if (sameItemCount == 0)
                 return;
 
-            foreach ((int i, ItemStack item) in items[container])
+            foreach ((int i, ItemStack _) in items[container])
             {
                 // Do not animate index under cursor
-                if (i == _index)
+                if (i == Index)
                     continue;
 
-                InventoryActionEventArgs args = new(InventoryAction.Pickup);
-                args.FromIndex = i;
-                args.TargetInventoryContainer = container;
+                InventoryActionEventArgs args = new(InventoryAction.Pickup)
+                {
+                    FromIndex = i,
+                    TargetInventoryContainer = container
+                };
 
                 InvokeOnPreAction(args);
                 cursorInventory.TakeItemFrom(inventory, i, 0);
