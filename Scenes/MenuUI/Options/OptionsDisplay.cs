@@ -14,33 +14,33 @@ public partial class OptionsDisplay : Control
     private ResourceOptions _options;
 
     // Max FPS
-    private HSlider _sliderMaxFPS;
-    private Label _labelMaxFPSFeedback;
+    private HSlider _sliderMaxFps;
+    private Label _labelMaxFpsFeedback;
 
     // Window Size
     private LineEdit _resX, _resY;
     private int _prevNumX, _prevNumY;
-    private int _min_resolution = 36;
+    private int _minResolution = 36;
 
     public override void _Ready()
     {
         _options = _optionsManager.Options;
-        SetupMaxFPS();
+        SetupMaxFps();
         SetupWindowSize();
         SetupWindowMode();
         SetupResolution();
         SetupVSyncMode();
     }
 
-    private void SetupMaxFPS()
+    private void SetupMaxFps()
     {
-        _labelMaxFPSFeedback = GetNode<Label>("%MaxFPSFeedback");
-        _labelMaxFPSFeedback.Text = _options.MaxFPS == 0 ?
+        _labelMaxFpsFeedback = GetNode<Label>("%MaxFPSFeedback");
+        _labelMaxFpsFeedback.Text = _options.MaxFPS == 0 ?
             "UNLIMITED" : _options.MaxFPS + "";
 
-        _sliderMaxFPS = GetNode<HSlider>("%MaxFPS");
-        _sliderMaxFPS.Value = _options.MaxFPS;
-        _sliderMaxFPS.Editable = _options.VSyncMode == VSyncMode.Disabled;
+        _sliderMaxFps = GetNode<HSlider>("%MaxFPS");
+        _sliderMaxFps.Value = _options.MaxFPS;
+        _sliderMaxFps.Editable = _options.VSyncMode == VSyncMode.Disabled;
     }
 
     private void SetupWindowSize()
@@ -64,7 +64,7 @@ public partial class OptionsDisplay : Control
 
         _optionsManager.WindowModeChanged += windowMode =>
         {
-            if (!GodotObject.IsInstanceValid(optionBtnWindowMode))
+            if (!IsInstanceValid(optionBtnWindowMode))
             {
                 return;
             }
@@ -72,13 +72,13 @@ public partial class OptionsDisplay : Control
             // Window mode select button could be null. If there was no null check
             // here then we would be assuming that the user can only change fullscreen
             // when in the options screen but this is not the case.
-            optionBtnWindowMode?.Select((int)windowMode);
+            optionBtnWindowMode.Select((int)windowMode);
         };
     }
 
     private void SetupResolution()
     {
-        GetNode<HSlider>("%Resolution").Value = 1 + _min_resolution - _options.Resolution;
+        GetNode<HSlider>("%Resolution").Value = 1 + _minResolution - _options.Resolution;
     }
 
     private void SetupVSyncMode()
@@ -153,7 +153,7 @@ public partial class OptionsDisplay : Control
 
     private void _on_resolution_value_changed(float value)
     {
-        _options.Resolution = _min_resolution - (int)value + 1;
+        _options.Resolution = _minResolution - (int)value + 1;
         OnResolutionChanged?.Invoke(_options.Resolution);
     }
 
@@ -162,12 +162,12 @@ public partial class OptionsDisplay : Control
         VSyncMode vsyncMode = (VSyncMode)index;
         WindowSetVsyncMode(vsyncMode);
         _options.VSyncMode = vsyncMode;
-        _sliderMaxFPS.Editable = _options.VSyncMode == VSyncMode.Disabled;
+        _sliderMaxFps.Editable = _options.VSyncMode == VSyncMode.Disabled;
     }
 
     private void _on_max_fps_value_changed(float value)
     {
-        _labelMaxFPSFeedback.Text = value == 0 ?
+        _labelMaxFpsFeedback.Text = value == 0 ?
             "UNLIMITED" : value + "";
 
         _options.MaxFPS = (int)value;

@@ -9,12 +9,10 @@ public class InventoryInputHandler
     public event Action<InventoryActionEventArgs> OnPreInventoryAction, OnPostInventoryAction;
 
     private Action<MouseButton, InventoryAction, int> _onInput;
-    private Action _hotbarInputs;
+    private readonly Action _hotbarInputs;
     
-    private InventoryActionFactory _actionFactory;
-    private InventoryContainer _invContainerPlayer;
-    private InventoryContext _context;
-    private Inventory _invPlayer;
+    private readonly InventoryActionFactory _actionFactory;
+    private readonly InventoryContext _context;
 
     private int _itemIndexUnderCursor;
 
@@ -24,8 +22,8 @@ public class InventoryInputHandler
 
         _context = context;
         _actionFactory = new InventoryActionFactory();
-        _invContainerPlayer = sandbox.GetPlayerInventory();
-        _invPlayer = _invContainerPlayer.Inventory;
+        InventoryContainer invContainerPlayer = sandbox.GetPlayerInventory();
+        Inventory invPlayer = invContainerPlayer.Inventory;
 
         for (int i = 0; i < columns; i++)
         {
@@ -48,13 +46,13 @@ public class InventoryInputHandler
                         return;
                     }
                     
-                    int hotbarSlotIndex = _invContainerPlayer.GetHotbarSlot(index);
+                    int hotbarSlotIndex = invContainerPlayer.GetHotbarSlot(index);
 
                     // I would like to replace the below line of code with
                     // _onInput?.Invoke(MouseButton.Left, InventoryAction.Swap, _itemIndexUnderCursor);
                     // but InventoryActionSwap.cs is specific to the cursor inventory meanwhile
                     // the below line of code is specific to the "world chest" and player inventories
-                    _context.Inventory.MoveItemTo(_invPlayer, _itemIndexUnderCursor, hotbarSlotIndex);
+                    _context.Inventory.MoveItemTo(invPlayer, _itemIndexUnderCursor, hotbarSlotIndex);
                 }
             };
         }
@@ -67,13 +65,8 @@ public class InventoryInputHandler
 
     public void RegisterInput()
     {
-        Inventory inventory = _context.Inventory;
-        Inventory cursorInventory = _context.CursorInventory;
-
         _onInput += (mouseBtn, action, index) =>
         {
-            InventoryActionEventArgs args = new(action);
-
             InventoryActionBase invAction = _actionFactory.GetAction(action);
             invAction.Initialize(_context, mouseBtn, index, OnPreInventoryAction, OnPostInventoryAction);
             invAction.Execute();
@@ -82,27 +75,28 @@ public class InventoryInputHandler
 
     public void HandleGuiInput(InputEvent @event, int index)
     {
-        if (@event is InputEventMouseButton mouseButton)
+        if (@event is not InputEventMouseButton mouseButton)
+            return;
+
+        if (mouseButton.DoubleClick)
         {
-            if (mouseButton.DoubleClick)
+            switch (mouseButton.ButtonIndex)
             {
-                if (mouseButton.ButtonIndex == MouseButton.Left)
-                {
+                case MouseButton.Left:
                     _onInput?.Invoke(MouseButton.Left, InventoryAction.DoubleClick, index);
-                }
-                else if (mouseButton.ButtonIndex == MouseButton.Right)
-                {
+                    break;
+                case MouseButton.Right:
                     _onInput?.Invoke(MouseButton.Right, InventoryAction.DoubleClick, index);
-                }
+                    break;
             }
-            else if (mouseButton.IsLeftClickJustPressed())
-            {
-                HandleClick(new InputContext(_context.Inventory, _context.CursorInventory, MouseButton.Left, index));
-            }
-            else if (mouseButton.IsRightClickJustPressed())
-            {
-                HandleClick(new InputContext(_context.Inventory, _context.CursorInventory, MouseButton.Right, index));
-            }
+        }
+        else if (mouseButton.IsLeftClickJustPressed())
+        {
+            HandleClick(new InputContext(_context.Inventory, _context.CursorInventory, MouseButton.Left, index));
+        }
+        else if (mouseButton.IsRightClickJustPressed())
+        {
+            HandleClick(new InputContext(_context.Inventory, _context.CursorInventory, MouseButton.Right, index));
         }
     }
 

@@ -61,26 +61,14 @@ public static partial class SetupUtils
 
     public static void SetGenreTipInfo(RichTextLabel label, Genre genre)
     {
-        string name = Highlight(FolderNames[genre]);
-
-        string text = "";
-
-        if (genre == Genre.None)
+        string text = genre switch
         {
-            text = "Contains an empty scene. Useful utility scripts are still provided.";
-        }
-        else if (genre == Genre.Platformer2D)
-        {
-            text = "Currently has nothing. Please use 'No Genre' instead for now.";
-        }
-        else if (genre == Genre.TopDown2D)
-        {
-            text = "Contains a dungeon environment, player controller, slime enemies, and multiplayer.";
-        }
-        else if (genre == Genre.FPS3D)
-        {
-            text = "Contains a simple FPS controller and a gun with an animated reload animation.";
-        }
+            Genre.None => "Contains an empty scene. Useful utility scripts are still provided.",
+            Genre.Platformer2D => "Currently has nothing. Please use 'No Genre' instead for now.",
+            Genre.TopDown2D => "Contains a dungeon environment, player controller, slime enemies, and multiplayer.",
+            Genre.FPS3D => "Contains a simple FPS controller and a gun with an animated reload animation.",
+            _ => ""
+        };
 
         label.Text = text;
     }

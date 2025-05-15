@@ -14,12 +14,12 @@ public partial class OptionsNav : Control
     {
         Node content = GetParent().GetNode("Content");
 
-        foreach (Control child in content.GetChildren())
+        foreach (Control child in content.GetChildren<Control>())
         {
             _tabs.Add(child.Name, child);
         }
 
-        foreach (Button button in GetChildren())
+        foreach (Button button in this.GetChildren<Button>())
         {
             button.FocusEntered += () => ShowTab(button.Name);
             button.Pressed += () => ShowTab(button.Name);

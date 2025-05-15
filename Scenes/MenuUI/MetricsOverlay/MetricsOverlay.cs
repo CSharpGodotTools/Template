@@ -77,7 +77,7 @@ public partial class MetricsOverlay : Node
     private void RenderPerformanceMetrics()
     {
         _cachedFPS = (float)Retrieve(Monitor.TimeFps);
-        UpdateFPSBuffer();
+        UpdateFpsBuffer();
 
         SetupImGuiWindow();
 
@@ -135,14 +135,14 @@ public partial class MetricsOverlay : Node
 
                     if (key == "FPS" && _enableFPSGraph)
                     {
-                        RenderFPSGraph(_cachedFPS);
+                        RenderFpsGraph();
                     }
                 }
             }
         }
     }
 
-    private void RenderFPSGraph(float fps)
+    private void RenderFpsGraph()
     {
         ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, Vector2.Zero);
 
@@ -155,7 +155,7 @@ public partial class MetricsOverlay : Node
         ImGui.PopStyleVar();
     }
 
-    private void UpdateFPSBuffer()
+    private void UpdateFpsBuffer()
     {
         _fpsBuffer[_fpsIndex] = _cachedFPS;
         _fpsIndex = (_fpsIndex + 1) % _fpsBuffer.Length;

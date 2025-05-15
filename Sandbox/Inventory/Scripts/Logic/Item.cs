@@ -5,7 +5,7 @@ namespace Template.Inventory;
 
 public class Item
 {
-    public string Name { get; private set; }
+    public string Name { get; }
     public string Description { get; private set; }
     public string Resource { get; private set; }
     public Color Color { get; private set; }

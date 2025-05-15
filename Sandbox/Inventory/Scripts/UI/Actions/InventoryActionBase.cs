@@ -3,33 +3,33 @@ using System;
 
 namespace Template.Inventory;
 
-public abstract class InventoryActionBase()
+public abstract class InventoryActionBase
 {
-    protected InventoryContext _context { get; private set; }
-    protected MouseButton _mouseButton { get; private set; }
-    protected int _index { get; private set; }
+    protected InventoryContext Context { get; private set; }
+    protected MouseButton MouseButton { get; private set; }
+    protected int Index { get; private set; }
     
-    private event Action<InventoryActionEventArgs> _onPreAction;
-    private event Action<InventoryActionEventArgs> _onPostAction;
+    private event Action<InventoryActionEventArgs> OnPreAction;
+    private event Action<InventoryActionEventArgs> OnPostAction;
 
     public void Initialize(InventoryContext context, MouseButton mouseBtn, int index, Action<InventoryActionEventArgs> onPreAction, Action<InventoryActionEventArgs> onPostAction)
     {
-        _context = context;
-        _mouseButton = mouseBtn;
-        _index = index;
-        _onPreAction = onPreAction;
-        _onPostAction = onPostAction;
+        Context = context;
+        MouseButton = mouseBtn;
+        Index = index;
+        OnPreAction = onPreAction;
+        OnPostAction = onPostAction;
     }
 
     public abstract void Execute();
 
     protected void InvokeOnPreAction(InventoryActionEventArgs args)
     {
-        _onPreAction?.Invoke(args);
+        OnPreAction?.Invoke(args);
     }
 
     protected void InvokeOnPostAction(InventoryActionEventArgs args)
     {
-        _onPostAction?.Invoke(args);
+        OnPostAction?.Invoke(args);
     }
 }

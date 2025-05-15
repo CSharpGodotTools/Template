@@ -1,5 +1,6 @@
 using Godot;
 using GodotUtils;
+using System;
 
 namespace Template.UI;
 
@@ -118,7 +119,7 @@ public partial class Credits : Node
 
     private void AddTextWithLink(string text)
     {
-        int indexOfHttp = text.IndexOf("http");
+        int indexOfHttp = text.IndexOf("http", StringComparison.Ordinal);
 
         string textDesc = text.Substring(0, indexOfHttp);
         string textLink = text.Substring(indexOfHttp);

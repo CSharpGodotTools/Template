@@ -34,8 +34,7 @@ public partial class UIConsole : PanelContainer
         _input         = CmdsInput;
         _settingsBtn   = Settings;
         _settingsPopup = _.PopupPanel;
-        
-        Node settingsVBox = PopupVBox;
+
         _settingsAutoScroll = PopupAutoScroll;
 
         _input.TextSubmitted += OnConsoleInputEntered;
@@ -201,9 +200,7 @@ public partial class UIConsole : PanelContainer
                 }
 
                 // Does text match an alias in this command?
-                bool aliasMatch = cmd.Aliases
-                    .Where(x => x == text)
-                    .FirstOrDefault() != null;
+                bool aliasMatch = cmd.Aliases.FirstOrDefault(x => x == text) != null;
 
                 return aliasMatch;
             });
@@ -268,8 +265,8 @@ public partial class UIConsole : PanelContainer
     #region Helper Functions
     private static void SetCaretColumn(int pos)
     {
-        _input.CallDeferred(LineEdit.MethodName.GrabFocus);
-        _input.CallDeferred(LineEdit.MethodName.Set, LineEdit.PropertyName.CaretColumn, pos);
+        _input.CallDeferred(Control.MethodName.GrabFocus);
+        _input.CallDeferred(GodotObject.MethodName.Set, LineEdit.PropertyName.CaretColumn, pos);
     }
 
     private static object[] ConvertMethodParams(MethodInfo method, string[] rawCmdSplit)

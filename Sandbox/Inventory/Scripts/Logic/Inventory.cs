@@ -228,21 +228,14 @@ public class Inventory
         OnItemChanged?.Invoke(index, item);
     }
 
-    private void PartOfItemTransfer(Inventory source, Inventory destination, int fromIndex, int toIndex, int count)
+    private static void PartOfItemTransfer(Inventory source, Inventory destination, int fromIndex, int toIndex, int count)
     {
         ItemStack sourceItem = source.GetItem(fromIndex);
         ItemStack destinationItem = destination.GetItem(toIndex);
 
         // Do nothing if trying to swap from and to the same slot
-        if (sourceItem == destinationItem)
-        {
+        if (sourceItem == destinationItem || sourceItem == null || count <= 0 || count > sourceItem.Count)
             return;
-        }
-
-        if (sourceItem == null || count <= 0 || count > sourceItem.Count)
-        {
-            return;
-        }
 
         if (destinationItem == null)
         {
@@ -294,9 +287,7 @@ public class Inventory
 
         // Do nothing if trying to swap from and to the same slot
         if (sourceItem == destinationItem)
-        {
             return;
-        }
 
         if (sourceItem != null && destinationItem != null)
         {
@@ -307,15 +298,15 @@ public class Inventory
                 destination.NotifyItemChanged(toIndex, destinationItem);
 
                 source.RemoveItem(fromIndex);
-                return;
             }
             else
             {
                 // Swap items
                 destination.SetItem(toIndex, sourceItem);
                 source.SetItem(fromIndex, destinationItem);
-                return;
             }
+
+            return;
         }
 
         // Place or Pickup items
@@ -335,12 +326,12 @@ public class Inventory
     {
         for (int i = 0; i < _itemStacks.Length; i++)
         {
-            if (_itemStacks[i] != null && _itemStacks[i].Material.Equals(item.Material))
-            {
-                _itemStacks[i].Add(item.Count);
-                NotifyItemChanged(i, _itemStacks[i]);
-                return true;
-            }
+            if (_itemStacks[i] == null || !_itemStacks[i].Material.Equals(item.Material))
+                continue;
+
+            _itemStacks[i].Add(item.Count);
+            NotifyItemChanged(i, _itemStacks[i]);
+            return true;
         }
 
         return false;
