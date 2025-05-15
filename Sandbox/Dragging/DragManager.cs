@@ -1,19 +1,30 @@
 using Godot;
 using GodotUtils;
+using System;
 using System.Collections.Generic;
 
 namespace Template;
 
-public partial class DragManager : Node2D
+public partial class DragManager : Node
 {
+    // Developers will hook into these delegates to define their logic
+    public Func<Node, bool> CanDropInContainer { get; set; }
+    public Func<bool> CanDrop { get; set; }
+    
+    // Members needed to keep track of current draggable and whether its being animated or not
     private IDraggable _currentDraggable;
     private bool _animating;
+
+    // Keep track of previous parent and position
+    private Node _prevParent;
+    private Vector2 _prevPosition;
     
     public override void _Ready()
     {
         SetProcess(false);
     }
 
+    // _Process is used because undesired teleportation effects can be noticed when using _PhysicsProcess (Tested using 180 Hz monitor)
     public override void _Process(double delta)
     {
         _currentDraggable.FollowCursor();
@@ -23,7 +34,7 @@ public partial class DragManager : Node2D
     {
         if (@event is not InputEventMouseButton btn)
             return;
-
+        
         if (btn.IsLeftClickJustPressed() && _currentDraggable == null)
         {
             if (TryGetDragInfo(out DraggableComponent component, out Node item, out Area2D _))
@@ -35,23 +46,42 @@ public partial class DragManager : Node2D
         {
             if (TryGetDragInfo(out DroppableComponent component, out Node container, out Area2D area))
             {
-                DropInContainer(component, container, area);
+                if (CanDropInContainer == null || CanDropInContainer(container))
+                {
+                    DropInContainer(component, container, area);
+                }
+                else
+                {
+                    ResetParentAndPosition();
+                    StopTracking();
+                }
             }
             else
             {
-                StopTracking();
+                if (CanDrop == null || CanDrop())
+                {
+                    StopTracking();
+                }
+                else
+                {
+                    ResetParentAndPosition();
+                    StopTracking();
+                }
             }
         }
     }
     
-    private void Pickup(DraggableComponent component, Node parent)
+    private void Pickup(DraggableComponent component, Node item)
     {
-        _currentDraggable = parent switch
+        _currentDraggable = item switch
         {
             Node2D node => new DraggableNode2D(node, component),
             Control control => new DraggableControl(control, component),
             _ => null
         };
+
+        _prevParent = item.GetParent();
+        _prevPosition = _currentDraggable.Position;
         
         _currentDraggable?.Reparent(GetViewport());
             
@@ -109,6 +139,12 @@ public partial class DragManager : Node2D
         }
     }
     
+    private void ResetParentAndPosition()
+    {
+        _currentDraggable.Reparent(_prevParent);
+        _currentDraggable.Position = _prevPosition;
+    }
+    
     private void StopTracking()
     {
         SetProcess(false);
@@ -122,7 +158,7 @@ public partial class DragManager : Node2D
         parent = null;
 
         const int maxAreasToCheck = 2;
-        List<Area2D> areas = CursorUtils2D.GetAreasUnderCursor(this, maxAreasToCheck);
+        List<Area2D> areas = CursorUtils2D.GetAreasUnderCursor(GetTree().Root.GetSceneNode<Node2D>(), maxAreasToCheck);
 
         foreach (Area2D area in areas)
         {

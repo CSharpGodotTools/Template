@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Template"
-run/main_scene="uid://dnmu3cujgayk2"
+run/main_scene="uid://c3yht8f3xxwu7"
 config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 boot_splash/show_image=false
 config/icon="uid://c82pk7d406yel"
