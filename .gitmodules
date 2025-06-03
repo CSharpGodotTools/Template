@@ -10,12 +10,6 @@
 [submodule "Genres/2D Platformer"]
 	path = Genres/2D Platformer
 	url = https://github.com/CSharpGodotTools/template-genre-2D-Platformer
-[submodule "addons/GodotUtils"]
-	path = addons/GodotUtils
-	url = https://github.com/CSharpGodotTools/GodotUtils
-[submodule "addons/Visualize"]
-	path = addons/Visualize
-	url = https://github.com/CSharpGodotTools/Visualize
 [submodule "addons/Framework"]
 	path = addons/Framework
 	url = https://github.com/CSharpGodotTools/TemplateFramework
