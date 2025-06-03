@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Template.UI;
+namespace __TEMPLATE__.UI;
 
 [SceneTree]
 public partial class Options : PanelContainer

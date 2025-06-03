@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace Template.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class OptionsGameplay : Control
 {

@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System;
 
-namespace Template.UI;
+namespace __TEMPLATE__.UI;
 
 [SceneTree]
 public partial class UIConsole : PanelContainer

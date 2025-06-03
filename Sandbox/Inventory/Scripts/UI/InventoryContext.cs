@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Template.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 public class InventoryContext(InventoryContainer inventoryContainer, InventoryInputDetector inputDetector, CanvasLayer ui, ItemContainer[] itemContainers, Inventory inventory)
 {

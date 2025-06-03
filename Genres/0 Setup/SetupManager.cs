@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Template.Setup;
+namespace __TEMPLATE__.Setup;
 
 public static class SetupManager
 {
@@ -182,10 +182,10 @@ public static class SetupManager
     }
 
     /// <summary>
-    /// Renames the default "Template" namespace to the new specified game
-    /// name in all scripts.
+    /// Renames the default "__TEMPLATE__" namespace to the new specified game name in all scripts.
+    /// Note that this assumes no one will use the namespace name "__TEMPLATE__".
     /// </summary>
-    public static void RenameAllNamespaces(string path, string name)
+    public static void RenameAllNamespaces(string path, string newNamespaceName)
     {
         DirectoryUtils.Traverse(path, RenameNamespaces);
 
@@ -206,10 +206,14 @@ public static class SetupManager
                 // Do not modify this script
                 if (!fullFilePath.EndsWith("Setup.cs"))
                 {
+                    const string oldNamespaceName = "__TEMPLATE__";
+
                     string text = File.ReadAllText(fullFilePath);
-                    text = text.Replace("namespace Template", $"namespace {name}");
-                    text = text.Replace("using Template", $"using {name}");
-                    text = text.Replace("Template.", $"{name}.");
+
+                    text = text.Replace($"namespace {oldNamespaceName}", $"namespace {newNamespaceName}");
+                    text = text.Replace($"using {oldNamespaceName}", $"using {newNamespaceName}");
+                    text = text.Replace($"{oldNamespaceName}.", $"{newNamespaceName}.");
+
                     File.WriteAllText(fullFilePath, text);
                 }
             }

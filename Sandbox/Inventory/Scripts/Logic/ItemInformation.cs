@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 
-namespace Template.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 public static class ItemInformation
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Godot;
 
-namespace Template.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 public class Inventory
 {

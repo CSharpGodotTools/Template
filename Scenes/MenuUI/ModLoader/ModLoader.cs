@@ -3,7 +3,7 @@ using GodotUtils;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Template.UI;
+namespace __TEMPLATE__.UI;
 
 [SceneTree]
 public partial class ModLoader : Node

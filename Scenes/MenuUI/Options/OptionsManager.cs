@@ -3,9 +3,9 @@ using Godot.Collections;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Template.UI;
+using __TEMPLATE__.UI;
 
-namespace Template;
+namespace __TEMPLATE__;
 
 [GlobalClass]
 public partial class OptionsManager : Resource

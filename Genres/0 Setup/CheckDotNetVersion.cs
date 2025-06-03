@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Diagnostics;
 
-namespace Template;
+namespace __TEMPLATE__;
 
 [Tool]
 public partial class CheckDotNetVersion : Node

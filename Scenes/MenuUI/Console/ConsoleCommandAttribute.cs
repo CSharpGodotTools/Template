@@ -1,6 +1,6 @@
 using System;
 
-namespace Template;
+namespace __TEMPLATE__;
 
 [AttributeUsage(AttributeTargets.Method)]
 public class ConsoleCommandAttribute(string name, params string[] aliases) : Attribute

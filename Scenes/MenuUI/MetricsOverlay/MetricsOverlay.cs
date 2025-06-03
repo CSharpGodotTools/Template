@@ -6,7 +6,7 @@ using System.Text.Json;
 using Monitor = Godot.Performance.Monitor;
 using Vector2 = System.Numerics.Vector2;
 
-namespace Template.UI;
+namespace __TEMPLATE__.UI;
 
 [SceneTree]
 public partial class MetricsOverlay : Node

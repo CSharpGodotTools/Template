@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace Template;
+namespace __TEMPLATE__.DragManager;
 
 public interface IDraggable
 {

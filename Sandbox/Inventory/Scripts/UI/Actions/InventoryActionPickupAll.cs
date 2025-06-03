@@ -1,7 +1,7 @@
 ﻿using Godot;
 using System.Collections.Generic;
 
-namespace Template.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 public class InventoryActionPickupAll : InventoryActionBase
 {

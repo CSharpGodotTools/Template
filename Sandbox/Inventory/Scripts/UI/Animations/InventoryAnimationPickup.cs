@@ -1,4 +1,4 @@
-﻿namespace Template.Inventory;
+﻿namespace __TEMPLATE__.Inventory;
 
 public class InventoryAnimationPickup : InventoryAnimationBase
 {

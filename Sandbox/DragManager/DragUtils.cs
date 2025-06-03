@@ -1,7 +1,7 @@
 using Godot;
 using GodotUtils;
 
-namespace Template;
+namespace __TEMPLATE__.DragManager;
 
 public static class DragUtils
 {

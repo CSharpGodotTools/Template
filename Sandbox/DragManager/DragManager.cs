@@ -3,7 +3,7 @@ using GodotUtils;
 using System;
 using System.Collections.Generic;
 
-namespace Template;
+namespace __TEMPLATE__.DragManager;
 
 public partial class DragManager : Node
 {

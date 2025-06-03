@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Template.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 public class InventoryActionPlace : InventoryActionBase
 {
