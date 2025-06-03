@@ -1,9 +1,9 @@
 using Godot;
-using QualityP = Template.UI.QualityPreset;
+using QualityP = __TEMPLATE__.UI.QualityPreset;
 using VSyncMode = Godot.DisplayServer.VSyncMode;
-using Template.UI;
+using __TEMPLATE__.UI;
 
-namespace Template;
+namespace __TEMPLATE__;
 
 /* 
  * If the ResourceOptions.cs script is moved then the file path will not updated

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Template.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 public class InventoryAnimationFactory
 {

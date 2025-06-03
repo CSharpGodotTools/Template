@@ -2,7 +2,7 @@ using Godot;
 using System;
 using Environment = Godot.Environment;
 
-namespace Template.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class OptionsGraphics : Control
 {

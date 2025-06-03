@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using Godot.Collections;
 
-namespace Template.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class OptionsInput : Control
 {

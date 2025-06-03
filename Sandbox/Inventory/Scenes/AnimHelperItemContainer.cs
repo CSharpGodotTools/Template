@@ -2,7 +2,7 @@ using Godot;
 using GodotUtils;
 using System;
 
-namespace Template.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 [SceneTree]
 public partial class AnimHelperItemContainer : ItemContainer

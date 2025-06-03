@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Template.Setup;
+namespace __TEMPLATE__.Setup;
 
 public static class SetupManager
 {

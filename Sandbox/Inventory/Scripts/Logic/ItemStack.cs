@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Template.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 public class ItemStack(Material material, int count)
 {

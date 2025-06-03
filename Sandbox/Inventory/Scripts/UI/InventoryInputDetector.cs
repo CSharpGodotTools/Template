@@ -1,7 +1,7 @@
 ﻿using Godot;
 using GodotUtils;
 
-namespace Template.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 public class InventoryInputDetector
 {

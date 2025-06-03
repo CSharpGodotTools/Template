@@ -2,7 +2,7 @@ using Godot;
 using GodotUtils;
 using System.IO;
 
-namespace Template.Setup;
+namespace __TEMPLATE__.Setup;
 
 [SceneTree]
 public partial class SetupUI : Node

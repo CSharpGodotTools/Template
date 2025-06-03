@@ -2,7 +2,7 @@ using Godot;
 using GodotUtils;
 using System;
 
-namespace Template.UI;
+namespace __TEMPLATE__.UI;
 
 [SceneTree]
 public partial class Credits : Node

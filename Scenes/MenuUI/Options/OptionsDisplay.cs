@@ -4,7 +4,7 @@ using System;
 
 using static Godot.DisplayServer;
 
-namespace Template.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class OptionsDisplay : Control
 {

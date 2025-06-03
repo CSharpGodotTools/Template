@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Template.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 [SceneTree]
 public partial class InventoryContainer : PanelContainer

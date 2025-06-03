@@ -2,7 +2,7 @@ using GodotUtils;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Template.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class UIConsole
 {

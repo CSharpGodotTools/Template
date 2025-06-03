@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Template.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 public class InventoryActionEventArgs(InventoryAction action) : EventArgs
 {

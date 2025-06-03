@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Diagnostics;
 
-namespace Template.Setup;
+namespace __TEMPLATE__.Setup;
 
 public class SetupEditor
 {

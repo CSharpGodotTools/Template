@@ -1,7 +1,7 @@
 using Godot;
 using GodotUtils;
 
-namespace Template;
+namespace __TEMPLATE__;
 
 public class DraggableControl(Control control, DraggableComponent component)
     : Draggable<ControlWrapper, Control>(new ControlWrapper(control), component)

@@ -2,7 +2,7 @@ using Godot;
 using GodotUtils;
 using System.Collections.Generic;
 
-namespace Template.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class OptionsNav : Control
 {

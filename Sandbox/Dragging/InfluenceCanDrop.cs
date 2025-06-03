@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Template;
+namespace __TEMPLATE__;
 
 public partial class InfluenceCanDrop : Node
 {

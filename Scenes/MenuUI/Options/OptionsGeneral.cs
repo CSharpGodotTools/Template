@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Template.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class OptionsGeneral : Control
 {

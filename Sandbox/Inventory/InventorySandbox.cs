@@ -2,7 +2,7 @@ using Godot;
 using GodotUtils;
 using Layout = Godot.Control.LayoutPreset;
 
-namespace Template.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 [Service]
 public partial class InventorySandbox : Node
