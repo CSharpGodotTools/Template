@@ -16,7 +16,7 @@
 ## Setup
 Clone Template with required submodules.
 ```bash
-git clone https://github.com/CSharpGodotTools/Template && cd Template && git submodule update --init addons/Template addons/GodotUtils addons/Visualize addons/imgui-godot
+git clone https://github.com/CSharpGodotTools/Template && cd Template && git submodule update --init addons/Framework addons/imgui-godot
 ```
 
 Optionally download genres.
