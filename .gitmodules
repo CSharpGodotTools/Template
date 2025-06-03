@@ -16,3 +16,6 @@
 [submodule "addons/Visualize"]
 	path = addons/Visualize
 	url = https://github.com/CSharpGodotTools/Visualize
+[submodule "addons/Framework"]
+	path = addons/Framework
+	url = https://github.com/CSharpGodotTools/TemplateFramework
