@@ -18,14 +18,14 @@ config/icon="uid://d2jcuguiv4wal"
 
 [autoload]
 
-Check="*res://addons/Template/Scripts/Autoloads/Exports.cs"
-ServiceProvider="*res://addons/Template/Scripts/Autoloads/Services.cs"
-Console="*res://addons/Template/Autoloads/Console.tscn"
-Global="*res://addons/Template/Autoloads/GlobalX.tscn"
-AudioManager="*res://addons/Template/Autoloads/AudioManager.tscn"
-SceneManager="*res://addons/Template/Scripts/Autoloads/SceneManager.cs"
-VisualizeAutoload="*res://addons/Visualize/Scripts/VisualizeAutoload.cs"
-CommandLineArgs="*res://addons/Template/Scripts/Autoloads/CommandLineArgs.cs"
+Check="*res://addons/Framework/Scripts/Autoloads/Exports.cs"
+ServiceProvider="*res://addons/Framework/Scripts/Autoloads/Services.cs"
+Console="*res://addons/Framework/Autoloads/Console.tscn"
+Global="*res://addons/Framework/Autoloads/GlobalX.tscn"
+AudioManager="*res://addons/Framework/Autoloads/AudioManager.tscn"
+SceneManager="*res://addons/Framework/Scripts/Autoloads/SceneManager.cs"
+VisualizeAutoload="*res://addons/Framework/Visualize/Scripts/VisualizeAutoload.cs"
+CommandLineArgs="*res://addons/Framework/Scripts/Autoloads/CommandLineArgs.cs"
 ImGuiRoot="*res://addons/imgui-godot/data/ImGuiRoot.tscn"
 
 [dotnet]
