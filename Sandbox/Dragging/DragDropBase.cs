@@ -1,6 +1,6 @@
 using Godot;
 
-namespace __TEMPLATE__;
+namespace __TEMPLATE__.DragManager;
 
 public partial class DragDropBase : Node
 {

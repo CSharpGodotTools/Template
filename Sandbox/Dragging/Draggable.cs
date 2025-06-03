@@ -2,7 +2,7 @@ using Godot;
 using GodotUtils;
 using System;
 
-namespace __TEMPLATE__;
+namespace __TEMPLATE__.DragManager;
 
 // A unified draggable implementation that works with any CanvasItem
 public abstract class Draggable<T, TNode>(T item, DraggableComponent component) : IDraggable

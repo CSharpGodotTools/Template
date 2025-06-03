@@ -1,7 +1,7 @@
 using Godot;
 using GodotUtils;
 
-namespace __TEMPLATE__;
+namespace __TEMPLATE__.DragManager;
 
 public class DraggableNode2D(Node2D node, DraggableComponent component) 
     : Draggable<Node2DWrapper, Node2D>(new Node2DWrapper(node), component);
