@@ -55,4 +55,7 @@ Run the main scene and fill in the fields.
 
 Want to contribute? Start by looking [here](https://github.com/CSharpGodotTools/Template/wiki/Contributing)!
 
-Thank you [Brian Shao](https://github.com/cydq) for helping with cross-platform compatibility.
+**Thank you to the following contributors.**
+
+[Brian Shao](https://github.com/cydq) for helping with cross-platform compatibility.  
+[Piep Matz](https://github.com/riffy) for helping with the drag drop system.  
