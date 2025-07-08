@@ -5,7 +5,7 @@ namespace __TEMPLATE__.Inventory;
 
 public class InventoryAnimationFactory
 {
-    private Dictionary<InventoryAction, InventoryAnimationBase> _animations = new()
+    private readonly Dictionary<InventoryAction, InventoryAnimationBase> _animations = new()
     {
         { InventoryAction.Pickup, new InventoryAnimationPickup() },
         { InventoryAction.Place, new InventoryAnimationPlace() },

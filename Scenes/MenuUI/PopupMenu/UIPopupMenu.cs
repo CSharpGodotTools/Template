@@ -92,7 +92,9 @@ public partial class UIPopupMenu : Control
         Game.SwitchScene(Scene.MainMenu);
     }
 
+#pragma warning disable CA1822 // Mark members as static
     private async void _on_quit_pressed()
+#pragma warning restore CA1822 // Mark members as static
     {
         await Global.QuitAndCleanup();
     }

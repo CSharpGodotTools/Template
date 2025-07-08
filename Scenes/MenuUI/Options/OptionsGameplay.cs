@@ -29,8 +29,6 @@ public partial class OptionsGameplay : Control
 
     private void _on_difficulty_item_selected(int index)
     {
-        // todo: update the difficulty in realtime
-
         _options.Difficulty = (Difficulty)index;
     }
 

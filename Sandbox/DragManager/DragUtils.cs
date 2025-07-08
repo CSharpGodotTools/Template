@@ -8,13 +8,18 @@ public static class DragUtils
     public static void AddChildArea(Node node)
     {
         Vector2 size = GetSize(node);
-        
-        CollisionShape2D shape = new();
-        shape.Shape = new RectangleShape2D { Size = size };
-        
-        Area2D area = new();
-        area.Monitorable = false;
-        area.Monitoring = false;
+
+        CollisionShape2D shape = new()
+        {
+            Shape = new RectangleShape2D { Size = size }
+        };
+
+        Area2D area = new()
+        {
+            Monitorable = false,
+            Monitoring = false
+        };
+
         area.AddChild(shape);
 
         if (node is Control)

@@ -6,7 +6,7 @@ public class InventoryAnimationPlace : InventoryAnimationBase
     {
         itemFrame = _context.CursorItemContainer.GetCurrentSpriteFrame();
 
-        vfxContainer = _context.VFX.AnimatePlace(_context, args.FromIndex, itemFrame, _container.GetGlobalMousePosition());
+        vfxContainer = InventoryVFX.AnimatePlace(_context, args.FromIndex, itemFrame, _container.GetGlobalMousePosition());
     }
 
     public override void OnPostAnimate(InventoryActionEventArgs args)

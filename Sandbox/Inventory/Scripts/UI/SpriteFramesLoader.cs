@@ -5,7 +5,7 @@ namespace __TEMPLATE__.Inventory;
 
 public class SpriteFramesLoader
 {
-    private static Dictionary<string, SpriteFrames> _spriteFramesCache = [];
+    private static readonly Dictionary<string, SpriteFrames> _spriteFramesCache = [];
 
     public static SpriteFrames Load(string resourcePath)
     {
