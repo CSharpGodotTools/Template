@@ -144,7 +144,7 @@ public partial class Credits : Node
         _vbox.AddChild(hbox);
     }
 
-    private void _on_pause_pressed()
+    private void _OnPausePressed()
     {
         _paused = !_paused;
 
@@ -160,7 +160,7 @@ public partial class Credits : Node
         }
     }
 
-    private void _on_speed_pressed()
+    private void _OnSpeedPressed()
     {
         if (_curSpeedSetting < 3)
         {

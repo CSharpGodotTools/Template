@@ -20,7 +20,7 @@ public partial class SetupUI : Node
         SetupUtils.SetGenreTipInfo(GenreInfo, Genre.None);
     }
 
-    private void _on_yes_pressed()
+    private void _OnYesPressed()
     {
         string gameName = SetupUtils.FormatGameName(GameName.Text);
         string path = ProjectSettings.GlobalizePath("res://");
@@ -69,14 +69,14 @@ public partial class SetupUI : Node
         SetupEditor.Restart();
     }
 
-    private void _on_genre_item_selected(int index)
+    private void _OnGenreItemSelected(int index)
     {
         _genre = (Genre)index;
         SetupUtils.SetGenreSelectedInfo(GenrePreview, _genre);
         SetupUtils.SetGenreTipInfo(GenreInfo, _genre);
     }
 
-    private void _on_game_name_text_changed(string newText)
+    private void _OnGameNameTextChanged(string newText)
     {
         if (string.IsNullOrWhiteSpace(newText))
         {
@@ -97,12 +97,12 @@ public partial class SetupUI : Node
         _prevGameName = newText;
     }
 
-    private void _on_no_pressed()
+    private void _OnNoPressed()
     {
         NodePopupPanel.Hide();
     }
 
-    private void _on_apply_changes_pressed() 
+    private void _OnApplyChangesPressed() 
     {
         string gameName = SetupUtils.FormatGameName(GameName.Text);
 

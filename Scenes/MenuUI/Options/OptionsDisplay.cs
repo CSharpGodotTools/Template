@@ -97,7 +97,7 @@ public partial class OptionsDisplay : Control
         _options.WindowSize = winSize;
     }
 
-    private void _on_window_mode_item_selected(int index)
+    private void _OnWindowModeItemSelected(int index)
     {
         switch ((WindowMode)index)
         {
@@ -126,38 +126,38 @@ public partial class OptionsDisplay : Control
         _options.WindowSize = winSize;
     }
 
-    private void _on_window_width_text_changed(string text)
+    private void _OnWindowWidthTextChanged(string text)
     {
         text.ValidateNumber(_resX, 0, ScreenGetSize().X, ref _prevNumX);
     }
 
-    private void _on_window_height_text_changed(string text)
+    private void _OnWindowHeightTextChanged(string text)
     {
         text.ValidateNumber(_resY, 0, ScreenGetSize().Y, ref _prevNumY);
     }
 
-    private void _on_window_width_text_submitted(string text)
+    private void _OnWindowWidthTextSubmitted(string text)
     {
         ApplyWindowSize();
     }
 
-    private void _on_window_height_text_submitted(string text)
+    private void _OnWindowHeightTextSubmitted(string text)
     {
         ApplyWindowSize();
     }
 
-    private void _on_window_size_apply_pressed()
+    private void _OnWindowSizeApplyPressed()
     {
         ApplyWindowSize();
     }
 
-    private void _on_resolution_value_changed(float value)
+    private void _OnResolutionValueChanged(float value)
     {
         _options.Resolution = _minResolution - (int)value + 1;
         OnResolutionChanged?.Invoke(_options.Resolution);
     }
 
-    private void _on_v_sync_mode_item_selected(int index)
+    private void _OnVSyncModeItemSelected(int index)
     {
         VSyncMode vsyncMode = (VSyncMode)index;
         WindowSetVsyncMode(vsyncMode);
@@ -165,7 +165,7 @@ public partial class OptionsDisplay : Control
         _sliderMaxFps.Editable = _options.VSyncMode == VSyncMode.Disabled;
     }
 
-    private void _on_max_fps_value_changed(float value)
+    private void _OnMaxFpsValueChanged(float value)
     {
         _labelMaxFpsFeedback.Text = value == 0 ?
             "UNLIMITED" : value + "";
@@ -173,7 +173,7 @@ public partial class OptionsDisplay : Control
         _options.MaxFPS = (int)value;
     }
 
-    private void _on_max_fps_drag_ended(bool valueChanged)
+    private void _OnMaxFpsDragEnded(bool valueChanged)
     {
         if (!valueChanged)
         {

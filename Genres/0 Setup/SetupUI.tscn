@@ -251,8 +251,8 @@ text = "Yes"
 [node name="CheckDotNetVersion" type="Node" parent="."]
 script = ExtResource("2_ut11q")
 
-[connection signal="text_changed" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Name/GameName" to="." method="_on_game_name_text_changed"]
-[connection signal="item_selected" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Genre/GenreBtn" to="." method="_on_genre_item_selected"]
-[connection signal="pressed" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/ApplyChanges" to="." method="_on_apply_changes_pressed"]
-[connection signal="pressed" from="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/No" to="." method="_on_no_pressed"]
-[connection signal="pressed" from="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Yes" to="." method="_on_yes_pressed"]
+[connection signal="text_changed" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Name/GameName" to="." method="_OnGameNameTextChanged"]
+[connection signal="item_selected" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Genre/GenreBtn" to="." method="_OnGenreItemSelected"]
+[connection signal="pressed" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/ApplyChanges" to="." method="_OnApplyChangesPressed"]
+[connection signal="pressed" from="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/No" to="." method="_OnNoPressed"]
+[connection signal="pressed" from="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Yes" to="." method="_OnYesPressed"]

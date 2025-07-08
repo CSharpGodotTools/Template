@@ -27,12 +27,12 @@ public partial class OptionsGameplay : Control
         GetNode<HSlider>("%Sensitivity").Value = _options.MouseSensitivity;
     }
 
-    private void _on_difficulty_item_selected(int index)
+    private void _OnDifficultyItemSelected(int index)
     {
         _options.Difficulty = (Difficulty)index;
     }
 
-    private void _on_sensitivity_value_changed(float value)
+    private void _OnSensitivityValueChanged(float value)
     {
         _options.MouseSensitivity = value;
         OnMouseSensitivityChanged?.Invoke(value);

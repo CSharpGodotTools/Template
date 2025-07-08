@@ -73,19 +73,19 @@ public partial class UIPopupMenu : Control
         }
     }
 
-    private void _on_resume_pressed()
+    private void _OnResumePressed()
     {
         Hide();
         GetTree().Paused = false;
     }
 
-    private void _on_options_pressed()
+    private void _OnOptionsPressed()
     {
         Options.Show();
         _menu.Hide();
     }
 
-    private void _on_main_menu_pressed()
+    private void _OnMainMenuPressed()
     {
         OnMainMenuBtnPressed?.Invoke();
         GetTree().Paused = false;
@@ -93,7 +93,7 @@ public partial class UIPopupMenu : Control
     }
 
 #pragma warning disable CA1822 // Mark members as static
-    private async void _on_quit_pressed()
+    private async void _OnQuitPressed()
 #pragma warning restore CA1822 // Mark members as static
     {
         await Global.QuitAndCleanup();

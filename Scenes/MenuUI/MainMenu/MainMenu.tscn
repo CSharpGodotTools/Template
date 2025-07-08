@@ -119,10 +119,10 @@ text = "Discord"
 layout_mode = 2
 text = "GitHub"
 
-[connection signal="pressed" from="PanelContainer/CenterContainer/Nav/Play" to="PanelContainer/CenterContainer/Nav" method="_on_play_pressed"]
-[connection signal="pressed" from="PanelContainer/CenterContainer/Nav/Mods" to="PanelContainer/CenterContainer/Nav" method="_on_mods_pressed"]
-[connection signal="pressed" from="PanelContainer/CenterContainer/Nav/Options" to="PanelContainer/CenterContainer/Nav" method="_on_options_pressed"]
-[connection signal="pressed" from="PanelContainer/CenterContainer/Nav/Credits" to="PanelContainer/CenterContainer/Nav" method="_on_credits_pressed"]
-[connection signal="pressed" from="PanelContainer/CenterContainer/Nav/Quit" to="PanelContainer/CenterContainer/Nav" method="_on_quit_pressed"]
-[connection signal="pressed" from="PanelContainer/Margin/Socials/Discord" to="PanelContainer/CenterContainer/Nav" method="_on_discord_pressed"]
-[connection signal="pressed" from="PanelContainer/Margin/Socials/Github" to="PanelContainer/CenterContainer/Nav" method="_on_github_pressed"]
+[connection signal="pressed" from="PanelContainer/CenterContainer/Nav/Play" to="PanelContainer/CenterContainer/Nav" method="_OnPlayPressed"]
+[connection signal="pressed" from="PanelContainer/CenterContainer/Nav/Mods" to="PanelContainer/CenterContainer/Nav" method="_OnModsPressed"]
+[connection signal="pressed" from="PanelContainer/CenterContainer/Nav/Options" to="PanelContainer/CenterContainer/Nav" method="_OnOptionsPressed"]
+[connection signal="pressed" from="PanelContainer/CenterContainer/Nav/Credits" to="PanelContainer/CenterContainer/Nav" method="_OnCreditsPressed"]
+[connection signal="pressed" from="PanelContainer/CenterContainer/Nav/Quit" to="PanelContainer/CenterContainer/Nav" method="_OnQuitPressed"]
+[connection signal="pressed" from="PanelContainer/Margin/Socials/Discord" to="PanelContainer/CenterContainer/Nav" method="_OnDiscordPressed"]
+[connection signal="pressed" from="PanelContainer/Margin/Socials/Github" to="PanelContainer/CenterContainer/Nav" method="_OnGitHubPressed"]

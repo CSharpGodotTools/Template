@@ -106,12 +106,12 @@ public partial class OptionsGraphics : Control
         _antialiasing.Select(_options.Antialiasing);
     }
 
-    private void _on_quality_mode_item_selected(int index)
+    private void _OnQualityModeItemSelected(int index)
     {
         _options.QualityPreset = (QualityPreset)index;
     }
 
-    private void _on_antialiasing_item_selected(int index)
+    private void _OnAntialiasingItemSelected(int index)
     {
         _options.Antialiasing = index;
         OnAntialiasingChanged?.Invoke(index);

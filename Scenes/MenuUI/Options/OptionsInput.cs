@@ -255,7 +255,7 @@ public partial class OptionsInput : Control
         }
     }
 
-    private void _on_reset_to_defaults_pressed()
+    private void _OnResetToDefaultsPressed()
     {
         for (int i = 0; i < _content.GetChildren().Count; i++)
         {
