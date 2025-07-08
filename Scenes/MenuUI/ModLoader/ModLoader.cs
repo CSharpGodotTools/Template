@@ -82,14 +82,14 @@ public partial class ModLoader : Node
         _uiAuthors.Text = modInfo.Author;
     }
 
-    private async void _on_restart_game_pressed()
+    private async void _OnRestartGamePressed()
     {
         //OS.CreateProcess(OS.GetExecutablePath(), null);
         OS.CreateInstance(null);
         await Global.QuitAndCleanup();
     }
 
-    private static void _on_open_mods_folder_pressed()
+    private static void _OnOpenModsFolderPressed()
     {
         Process.Start(new ProcessStartInfo(@$"{ProjectSettings.GlobalizePath("res://Mods")}") { UseShellExecute = true });
     }

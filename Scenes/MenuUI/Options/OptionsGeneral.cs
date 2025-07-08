@@ -19,7 +19,7 @@ public partial class OptionsGeneral : Control
         optionButtonLanguage.Select((int)_options.Language);
     }
 
-    private void _on_language_item_selected(int index)
+    private void _OnLanguageItemSelected(int index)
     {
         string locale = ((Language)index).ToString().Substring(0, 2).ToLower();
 

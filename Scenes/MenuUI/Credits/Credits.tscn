@@ -60,5 +60,5 @@ custom_minimum_size = Vector2(75, 0)
 layout_mode = 2
 text = "1.0x"
 
-[connection signal="pressed" from="HBox/Pause" to="." method="_on_pause_pressed"]
-[connection signal="pressed" from="HBox/Speed" to="." method="_on_speed_pressed"]
+[connection signal="pressed" from="HBox/Pause" to="." method="_OnPausePressed"]
+[connection signal="pressed" from="HBox/Speed" to="." method="_OnSpeedPressed"]

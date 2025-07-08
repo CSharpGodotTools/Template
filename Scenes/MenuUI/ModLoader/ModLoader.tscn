@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://d1jo48n2hdkih"]
 
-[ext_resource type="Theme" uid="uid://0lugooukjqem" path="res://addons/Template/Themes/ModLoader.tres" id="1_22r32"]
+[ext_resource type="Theme" uid="uid://0lugooukjqem" path="res://addons/Framework/Themes/ModLoader.tres" id="1_22r32"]
 [ext_resource type="Script" uid="uid://bsp7uk58xytxa" path="res://Scenes/MenuUI/ModLoader/ModLoader.cs" id="1_xqxxn"]
 
 [node name="ModLoader" type="PanelContainer"]
@@ -150,5 +150,5 @@ text = "Restart Game"
 layout_mode = 2
 text = "Open Mods Folder"
 
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Buttons Nav/MarginContainer/HBoxContainer2/Restart Game" to="." method="_on_restart_game_pressed"]
-[connection signal="pressed" from="MarginContainer/VBoxContainer/Buttons Nav/MarginContainer/HBoxContainer2/Open Mods Folder" to="." method="_on_open_mods_folder_pressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Buttons Nav/MarginContainer/HBoxContainer2/Restart Game" to="." method="_OnRestartGamePressed"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/Buttons Nav/MarginContainer/HBoxContainer2/Open Mods Folder" to="." method="_OnOpenModsFolderPressed"]

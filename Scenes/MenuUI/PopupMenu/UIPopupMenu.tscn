@@ -89,7 +89,7 @@ custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 text = "QUIT"
 
-[connection signal="pressed" from="Center/Menu/Margin/Navigation/Resume" to="." method="_on_resume_pressed"]
-[connection signal="pressed" from="Center/Menu/Margin/Navigation/Options" to="." method="_on_options_pressed"]
-[connection signal="pressed" from="Center/Menu/Margin/Navigation/Main Menu" to="." method="_on_main_menu_pressed"]
-[connection signal="pressed" from="Center/Menu/Margin/Navigation/Quit" to="." method="_on_quit_pressed"]
+[connection signal="pressed" from="Center/Menu/Margin/Navigation/Resume" to="." method="_OnResumePressed"]
+[connection signal="pressed" from="Center/Menu/Margin/Navigation/Options" to="." method="_OnOptionsPressed"]
+[connection signal="pressed" from="Center/Menu/Margin/Navigation/Main Menu" to="." method="_OnMainMenuPressed"]
+[connection signal="pressed" from="Center/Menu/Margin/Navigation/Quit" to="." method="_OnQuitPressed"]
