@@ -18,15 +18,18 @@ public partial class CheckDotNetVersion : Node
 
         if (dotnetVersion != null && CompareVersions(dotnetVersion, "8.0.400") < 0)
         {
-            AcceptDialog dialog = new();
-            dialog.DialogText = "Your .NET version is lower than 8.0.400. Please update your .NET SDK from https://dotnet.microsoft.com/en-us/download";
+            AcceptDialog dialog = new()
+            {
+                DialogText = "Your .NET version is lower than 8.0.400. Please update your .NET SDK from https://dotnet.microsoft.com/en-us/download"
+            };
+
             dialog.Connect("confirmed", new Callable(this, nameof(OnDialogConfirmed)));
             AddChild(dialog);
             dialog.PopupCentered();
         }
     }
 
-    private string GetDotNetVersion()
+    private static string GetDotNetVersion()
     {
         try
         {
@@ -49,7 +52,7 @@ public partial class CheckDotNetVersion : Node
         }
     }
 
-    private int CompareVersions(string version1, string version2)
+    private static int CompareVersions(string version1, string version2)
     {
         string[] v1Parts = version1.Split('.');
         string[] v2Parts = version2.Split('.');
@@ -70,7 +73,7 @@ public partial class CheckDotNetVersion : Node
         return 0;
     }
 
-    private void OnDialogConfirmed()
+    private static void OnDialogConfirmed()
     {
         OS.ShellOpen("https://dotnet.microsoft.com/en-us/download");
     }

@@ -67,7 +67,7 @@ public class InventoryInputHandler
     {
         _onInput += (mouseBtn, action, index) =>
         {
-            InventoryActionBase invAction = _actionFactory.GetAction(action);
+            InventoryActionBase invAction = InventoryActionFactory.GetAction(action);
             invAction.Initialize(_context, mouseBtn, index, OnPreInventoryAction, OnPostInventoryAction);
             invAction.Execute();
         };
@@ -100,7 +100,7 @@ public class InventoryInputHandler
         }
     }
 
-    public void HandleMouseEntered(InventoryVFXManager vfxManager, int index, Vector2 mousePos)
+    public void HandleMouseEntered(int index, Vector2 mousePos)
     {
         _itemIndexUnderCursor = index;
 
@@ -116,14 +116,14 @@ public class InventoryInputHandler
                 }
                 else
                 {
-                    vfxManager.AnimateDragPickup(_context, index);
+                    InventoryVFXManager.AnimateDragPickup(_context, index);
                     _context.CursorInventory.TakePartOfItemFrom(_context.Inventory, index, 0, itemUnderCursor.Count);
                 }
             }
         }
         else if (_context.InputDetector.HoldingRightClick)
         {
-            vfxManager.AnimateDragPlace(_context, index, mousePos);
+            InventoryVFXManager.AnimateDragPlace(_context, index, mousePos);
             _context.CursorInventory.MovePartOfItemTo(_context.Inventory, 0, index, 1);
         }
     }

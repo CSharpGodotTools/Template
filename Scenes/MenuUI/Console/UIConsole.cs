@@ -14,7 +14,8 @@ public partial class UIConsole : PanelContainer
     public static event Action<bool> OnToggleVisibility;
 
     public static UIConsole Instance { get; private set; }
-    
+
+    private const int MaxTextFeed = 1000;
     private static TextEdit _feed;
     private static LineEdit _input;
     private Button _settingsBtn;
@@ -61,12 +62,12 @@ public partial class UIConsole : PanelContainer
         double prevScroll = _feed.ScrollVertical;
         
         // Prevent text feed from becoming too large
-        if (_feed.Text.Length > 1000)
+        if (_feed.Text.Length > MaxTextFeed)
         {
             // If there are say 2353 characters then 2353 - 1000 = 1353 characters
             // which is how many characters we need to remove to get back down to
             // 1000 characters
-            _feed.Text = _feed.Text.Remove(0, _feed.Text.Length - 1000);
+            _feed.Text = _feed.Text.Remove(0, _feed.Text.Length - MaxTextFeed);
         }
 
         _feed.Text += $"\n{message}";
@@ -108,7 +109,7 @@ public partial class UIConsole : PanelContainer
         }
     }
 
-    private void LoadCommands()
+    private static void LoadCommands()
     {
         Type[] types = Assembly.GetExecutingAssembly().GetTypes();
 
@@ -141,7 +142,7 @@ public partial class UIConsole : PanelContainer
         }
     }
 
-    private void TryLoadCommand(ConsoleCommandAttribute cmd, MethodInfo method)
+    private static void TryLoadCommand(ConsoleCommandAttribute cmd, MethodInfo method)
     {
         if (Commands.FirstOrDefault(x => x.Name == cmd.Name) != null)
         {

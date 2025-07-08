@@ -45,7 +45,7 @@ public class InventoryActionPickupAll : InventoryActionBase
             if (sameItemCount == 0)
                 return;
 
-            foreach ((int i, ItemStack _) in items[container])
+            foreach ((int i, _) in items[container])
             {
                 // Do not animate index under cursor
                 if (i == Index)
@@ -62,11 +62,13 @@ public class InventoryActionPickupAll : InventoryActionBase
                 InvokeOnPostAction(args);
             }
 
-            foreach ((int i, ItemStack item) in items[otherInvContainer])
+            foreach ((int i, _) in items[otherInvContainer])
             {
-                InventoryActionEventArgs args = new(InventoryAction.Pickup);
-                args.FromIndex = i;
-                args.TargetInventoryContainer = otherInvContainer;
+                InventoryActionEventArgs args = new(InventoryAction.Pickup)
+                {
+                    FromIndex = i,
+                    TargetInventoryContainer = otherInvContainer
+                };
 
                 InvokeOnPreAction(args);
                 cursorInventory.TakeItemFrom(otherInvContainer.Inventory, i, 0);

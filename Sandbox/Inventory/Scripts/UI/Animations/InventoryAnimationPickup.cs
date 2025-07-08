@@ -6,7 +6,7 @@ public class InventoryAnimationPickup : InventoryAnimationBase
     {
         itemFrame = args.TargetInventoryContainer.ItemContainers[args.FromIndex].GetCurrentSpriteFrame();
 
-        vfxContainer = _context.VFX.AnimatePickup(args.TargetInventoryContainer, _context, args.FromIndex, itemFrame);
+        vfxContainer = InventoryVFX.AnimatePickup(args.TargetInventoryContainer, _context, args.FromIndex, itemFrame);
     }
 
     public override void OnPostAnimate(InventoryActionEventArgs args)

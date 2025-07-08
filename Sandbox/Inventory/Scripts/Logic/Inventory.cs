@@ -9,7 +9,7 @@ public class Inventory
 {
     public event Action<int, ItemStack> OnItemChanged;
     
-    private ItemStack[] _itemStacks;
+    private readonly ItemStack[] _itemStacks;
 
     public Inventory(int size)
     {
@@ -280,7 +280,7 @@ public class Inventory
         }
     }
 
-    private void ItemTransfer(Inventory source, Inventory destination, int fromIndex, int toIndex)
+    private static void ItemTransfer(Inventory source, Inventory destination, int fromIndex, int toIndex)
     {
         ItemStack sourceItem = source.GetItem(fromIndex);
         ItemStack destinationItem = destination.GetItem(toIndex);

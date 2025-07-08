@@ -4,7 +4,7 @@ namespace __TEMPLATE__.Inventory;
 
 public class InventoryActionFactory
 {
-    public InventoryActionBase GetAction(InventoryAction actionType)
+    public static InventoryActionBase GetAction(InventoryAction actionType)
     {
         return actionType switch
         {

@@ -34,9 +34,12 @@ public partial class ModLoader : Node
 
         foreach (ModInfo modInfo in mods.Values)
         {
-            Button btn = new();
-            btn.ToggleMode = true;
-            btn.Text = modInfo.Name;
+            Button btn = new()
+            {
+                ToggleMode = true,
+                Text = modInfo.Name
+            };
+
             btn.Pressed += () =>
             {
                 DisplayModInfo(modInfo);

@@ -108,8 +108,6 @@ public partial class OptionsGraphics : Control
 
     private void _on_quality_mode_item_selected(int index)
     {
-        // todo: setup quality preset and change other settings
-
         _options.QualityPreset = (QualityPreset)index;
     }
 

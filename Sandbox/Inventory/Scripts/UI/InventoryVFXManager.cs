@@ -4,7 +4,7 @@ namespace __TEMPLATE__.Inventory;
 
 public class InventoryVFXManager
 {
-    public void RegisterEvents(InventoryInputHandler input, InventoryContext context, InventoryContainer container)
+    public static void RegisterEvents(InventoryInputHandler input, InventoryContext context, InventoryContainer container)
     {
         InventoryAnimationFactory animationFactory = new(context, container);
 
@@ -19,7 +19,7 @@ public class InventoryVFXManager
         };
     }
 
-    public void AnimateDragPickup(InventoryContext context, int index)
+    public static void AnimateDragPickup(InventoryContext context, int index)
     {
         Inventory cursorInventory = context.CursorInventory;
         Inventory inventory = context.Inventory;
@@ -30,11 +30,11 @@ public class InventoryVFXManager
         }
         else
         {
-            context.VFX.AnimateDragPickup(context, index);
+            InventoryVFX.AnimateDragPickup(context, index);
         }
     }
 
-    public void AnimateDragPlace(InventoryContext context, int index, Vector2 mousePos)
+    public static void AnimateDragPlace(InventoryContext context, int index, Vector2 mousePos)
     {
         Inventory cursorInventory = context.CursorInventory;
         Inventory inventory = context.Inventory;
@@ -44,7 +44,7 @@ public class InventoryVFXManager
         // chaotic.
         if (cursorInventory.HasItem(0) && !inventory.HasItem(index))
         {
-            context.VFX.AnimateDragPlace(context, index, mousePos);
+            InventoryVFX.AnimateDragPlace(context, index, mousePos);
         }
     }
 }

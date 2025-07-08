@@ -4,7 +4,7 @@ public class InventoryAnimationTransfer : InventoryAnimationBase
 {
     public override void OnPreAnimate(InventoryActionEventArgs args)
     {
-        _context.VFX.AnimateTransfer(_context, args.TargetInventoryContainer.ItemContainers[args.ToIndex], args.FromIndex);
+        InventoryVFX.AnimateTransfer(_context, args.TargetInventoryContainer.ItemContainers[args.ToIndex], args.FromIndex);
     }
 
     public override void OnPostAnimate(InventoryActionEventArgs args)

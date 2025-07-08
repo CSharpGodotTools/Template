@@ -8,7 +8,7 @@ public partial class InventoryContainer : PanelContainer
     public Inventory Inventory { get; private set; }
     public ItemContainer[] ItemContainers { get; private set; }
 
-    private InventoryInputDetector _inputDetector = new();
+    private readonly InventoryInputDetector _inputDetector = new();
     private InventoryInputHandler _inputHandler;
     private CanvasLayer _ui;
     private int _columns;
@@ -51,10 +51,10 @@ public partial class InventoryContainer : PanelContainer
         ItemContainers = new ItemContainer[inventory.GetItemSlotCount()];
 
         InventoryContext invContext = new(this, _inputDetector, _ui, ItemContainers, inventory);
-        InventoryVFXManager vfxManager = new();
+
         _inputHandler = new(_columns, invContext);
 
-        vfxManager.RegisterEvents(_inputHandler, invContext, this);
+        InventoryVFXManager.RegisterEvents(_inputHandler, invContext, this);
         _inputHandler.RegisterInput();
 
         for (int i = 0; i < ItemContainers.Length; i++)
@@ -72,7 +72,7 @@ public partial class InventoryContainer : PanelContainer
 
             itemContainer.MouseEntered += () =>
             {
-                _inputHandler.HandleMouseEntered(vfxManager, index, GetGlobalMousePosition());
+                _inputHandler.HandleMouseEntered(index, GetGlobalMousePosition());
             };
 
             itemContainer.MouseExited += () =>

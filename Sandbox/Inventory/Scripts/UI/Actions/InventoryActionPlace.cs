@@ -6,8 +6,10 @@ public class InventoryActionPlace : InventoryActionBase
 {
     public override void Execute()
     {
-        InventoryActionEventArgs args = new(InventoryAction.Place);
-        args.FromIndex = Index;
+        InventoryActionEventArgs args = new(InventoryAction.Place)
+        {
+            FromIndex = Index
+        };
 
         InvokeOnPreAction(args);
 

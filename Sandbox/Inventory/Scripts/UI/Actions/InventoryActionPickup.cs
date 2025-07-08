@@ -6,9 +6,11 @@ public class InventoryActionPickup : InventoryActionBase
 {
     public override void Execute()
     {
-        InventoryActionEventArgs args = new(InventoryAction.Pickup);
-        args.FromIndex = Index;
-        args.TargetInventoryContainer = Context.InventoryContainer;
+        InventoryActionEventArgs args = new(InventoryAction.Pickup)
+        {
+            FromIndex = Index,
+            TargetInventoryContainer = Context.InventoryContainer
+        };
 
         InvokeOnPreAction(args);
 

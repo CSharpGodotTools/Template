@@ -6,8 +6,10 @@ public class InventoryActionStack : InventoryActionBase
 {
     public override void Execute()
     {
-        InventoryActionEventArgs args = new(InventoryAction.Stack);
-        args.FromIndex = Index;
+        InventoryActionEventArgs args = new(InventoryAction.Stack)
+        {
+            FromIndex = Index
+        };
 
         InvokeOnPreAction(args);
 

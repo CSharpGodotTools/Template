@@ -62,14 +62,20 @@ public partial class Credits : Node
             {
                 if (string.IsNullOrWhiteSpace(translatedLine))
                 {
-                    Control control = new GPadding(0, 10);
-                    control.MouseFilter = Control.MouseFilterEnum.Ignore;
+                    Control control = new GPadding(0, 10)
+                    {
+                        MouseFilter = Control.MouseFilterEnum.Ignore
+                    };
+
                     _vbox.AddChild(control);
                 }
                 else
                 {
-                    Control control = new GLabel(translatedLine, size);
-                    control.MouseFilter = Control.MouseFilterEnum.Ignore;
+                    Control control = new GLabel(translatedLine, size)
+                    {
+                        MouseFilter = Control.MouseFilterEnum.Ignore
+                    };
+
                     _vbox.AddChild(control);
                 }
             }   

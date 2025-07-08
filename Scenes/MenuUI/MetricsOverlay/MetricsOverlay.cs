@@ -87,7 +87,7 @@ public partial class MetricsOverlay : Node
         ImGui.End();
     }
 
-    private void SetupImGuiWindow()
+    private static void SetupImGuiWindow()
     {
         // Print the window scale
         Godot.Vector2 size = DisplayServer.WindowGetSize();
