@@ -53,8 +53,9 @@ git submodule update --init "Genres/<genre>" # Replace "<genre>" with "2D Top Do
 
 Run the main scene, fill in the fields, click apply changes and you are done. [Link to FAQ](https://github.com/CSharpGodotTools/Template/wiki/FAQ)  
 
-![Setup](https://github.com/user-attachments/assets/c924041f-b4d9-48bc-89ae-f7be01305f3e)
-![Preview](https://github.com/user-attachments/assets/1d3eb4ee-eb60-49d2-96e8-fb132e02fb6b)
+<img width="1541" height="953" alt="Setup" src="https://github.com/user-attachments/assets/79627179-7619-4e70-adf7-2983a8bfbea3" />
+<img width="1553" height="966" alt="TopDown" src="https://github.com/user-attachments/assets/b3143d7a-8df7-4a38-b1ff-36a41360cab9" />
+<img width="1564" height="880" alt="FPS" src="https://github.com/user-attachments/assets/37bd5c18-cbfb-4dda-824b-e69112343c04" />
 
 <div align="center">
     <h2>Thank You</h2>
