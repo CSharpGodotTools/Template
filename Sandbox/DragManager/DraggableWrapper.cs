@@ -2,7 +2,7 @@ using Godot;
 
 namespace __TEMPLATE__.DragManager;
 
-// Abstract wrapper interface to handle property/method differences between Control and Node2D
+// Abstract wrapper interface to handle property/method differences between Internal and Node2D
 public interface ICanvasItemWrapper<T> where T : Node
 {
     T Node { get; init; }

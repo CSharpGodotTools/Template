@@ -94,7 +94,7 @@ public partial class DragManager : Node
 
         switch (_currentDraggable)
         {
-            // Drag Control onto Control
+            // Drag Internal onto Internal
             case DraggableControl draggable when container is Control:
                 ResizeAreaToContainer(draggable, area);
                 
@@ -102,19 +102,19 @@ public partial class DragManager : Node
                     _currentDraggable.Position = Vector2.Zero;
                 break;
             
-            // Drag Control onto Node2D
+            // Drag Internal onto Node2D
             case DraggableControl draggable when container is Node2D:
                 if (!component.Animate)
                     _currentDraggable.Position = -draggable.Item.Node.Size * 0.5f;
                 break;
             
-            // Drag Node2D onto Control
+            // Drag Node2D onto Internal
             case DraggableNode2D _ when container is Control control:
                 if (!component.Animate)
                     _currentDraggable.Position = control.Size * 0.5f;
                 break;
 
-            // Drag Control or Node2D onto nothing
+            // Drag Internal or Node2D onto nothing
             default:
                 if (!component.Animate)
                     _currentDraggable.Position = Vector2.Zero;
