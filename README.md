@@ -9,7 +9,8 @@
     <a href="https://discord.gg/j8HQZZ76r8"><img src="https://img.shields.io/discord/955956101554266132?label=discord&style=flat&color=3399FF&labelColor=1a1a1a" alt="Discord" /></a>
 </div>
 
-## Features
+----
+
 **Highlights**
 - **[Multiplayer](https://github.com/CSharpGodotTools/Template/wiki/Multiplayer)** - Send minimal packet data with ENet.
 - **[In-Game Debugging Tools](https://github.com/CSharpGodotTools/Template/wiki/In%E2%80%90Game-Debugging)**
@@ -27,7 +28,10 @@
 - **[State Manager](https://github.com/CSharpGodotTools/Template/wiki/State-Manager)** - Implement states using delegates.
 - **[Mod Loader](https://github.com/CSharpGodotTools/Template/wiki/Mod-Loader)** - Half-working mod loader.
 
-## Download
+<div align="center">
+    <h2>Download</h2>
+</div>
+
 First make sure you have the following.
 - [.NET SDK](https://dotnet.microsoft.com/download) is at least `8.0.400`. Check with `dotnet --version`.
 - [Latest Godot C# Release](https://godotengine.org/)
@@ -38,24 +42,25 @@ Clone this repository with the required submodules.
 git clone https://github.com/CSharpGodotTools/Template && cd Template && git submodule update --init addons/Framework addons/imgui-godot
 ```
 
-The following is optional, if you choose not to download any genre specific template, you will only be able to use the "No Genre" genre which is what I'm assuming 90% of people will end up using.
+The following is optional, if you choose not to download any genre specific template, you will only be able to use the `No Genre` genre.
 ```bash
 git submodule update --init "Genres/<genre>" # Replace "<genre>" with "2D Top Down" or "3D FPS" without the ""
 ```
 
-## Setup
-Run the main scene, fill in the fields, click apply changes and you are done.
+<div align="center">
+    <h2>Setup</h2>
+</div>
+
+Run the main scene, fill in the fields, click apply changes and you are done. [Link to FAQ](https://github.com/CSharpGodotTools/Template/wiki/FAQ)  
 
 ![Setup](https://github.com/user-attachments/assets/c924041f-b4d9-48bc-89ae-f7be01305f3e)
 ![Preview](https://github.com/user-attachments/assets/1d3eb4ee-eb60-49d2-96e8-fb132e02fb6b)
 
-[Link to FAQ](https://github.com/CSharpGodotTools/Template/wiki/FAQ)  
-
-## Contributing
-
-Want to contribute? Start by looking [here](https://github.com/CSharpGodotTools/Template/wiki/Contributing)!
-
-**Thank you to the following contributors.**
+<div align="center">
+    <h2>Thank You</h2>
+</div>
 
 [Brian Shao](https://github.com/cydq) for helping with cross-platform compatibility.  
 [Piep Matz](https://github.com/riffy) for helping with the drag drop system.  
+
+New contributors please read [this guide](https://github.com/CSharpGodotTools/Template/wiki/Contributing).
