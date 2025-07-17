@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://rxy1v5r7r07d"]
+
+[ext_resource type="Script" uid="uid://df3n33g8mtpbg" path="res://Genres/2D Top Down/Scenes/Prefabs/Player/PlayerDashGhost.cs" id="1_3y4o5"]
+
+[node name="Dash Ghost" type="Node2D"]
+modulate = Color(1, 1, 1, 0.4)
+z_index = -1
+script = ExtResource("1_3y4o5")

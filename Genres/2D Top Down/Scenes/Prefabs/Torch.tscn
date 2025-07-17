@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://n48bmp15w2qt"]
+
+[ext_resource type="Script" uid="uid://denyjrbed2bp4" path="res://Genres/2D Top Down/Scenes/Prefabs/Torch.cs" id="1_x4452"]
+[ext_resource type="Texture2D" uid="uid://b27527wgwjs8p" path="res://Genres/2D Top Down/Sprites/light.png" id="2_kdhpf"]
+[ext_resource type="Texture2D" uid="uid://d2jcuguiv4wal" path="res://addons/Framework/Sprites/UI/Icon.svg" id="3_l862g"]
+
+[node name="Torch" type="Node2D"]
+script = ExtResource("1_x4452")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+color = Color(0.666667, 0.729412, 1, 1)
+energy = 1.08366
+shadow_enabled = true
+texture = ExtResource("2_kdhpf")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_l862g")

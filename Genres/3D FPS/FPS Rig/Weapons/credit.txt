@@ -1,0 +1,4 @@
+Source: https://opengameart.org/content/low-poly-guns-pack
+License: CC0
+Author: quaternius
+Notes: Weapons animated by valkyrienyanko. Eve model by J.Gonzales retrieved from Mixamo.

@@ -1,0 +1,3 @@
+Artist: GrafxKid
+Source: https://opengameart.org/content/platformer-baddies
+License: CC0
