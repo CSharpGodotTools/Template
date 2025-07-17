@@ -29,17 +29,13 @@
 - **[Mod Loader](https://github.com/CSharpGodotTools/Template/wiki/Mod-Loader)** - Half-working mod loader.
 
 <div align="center">
-    <h2>Download</h2>
+    <h2>Setup</h2>
 </div>
 
 First make sure you have the following.
 - [.NET SDK](https://dotnet.microsoft.com/download) is at least `8.0.400`. Check with `dotnet --version`.
 - [Latest Godot C# Release](https://godotengine.org/)
 - [Custom ENet build](https://github.com/CSharpGodotTools/Template/wiki/Custom-ENet-Builds) may be required if using Mac or Linux
-
-<div align="center">
-    <h2>Setup</h2>
-</div>
 
 Clone with all submodules.
 ```bash
