@@ -4,7 +4,7 @@
 
 Anything here will show up in the credits in-game. Update this file with the appropriate credits!!!
 
-Click the "Retrieve Credits" checkbox in res://Scenes/UI/ToolScriptHelpers.tscn to 
+Click the "Retrieve Credits" checkbox in res://Scenes/MenuUI/ToolScriptHelpers/ToolScriptHelpers.cs to 
 retrieve all credit.txt files in the project.
 
 If you use this Template for your game you do not have to mention the link to it in the credits although
