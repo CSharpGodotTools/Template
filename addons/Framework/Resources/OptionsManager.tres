@@ -1,0 +1,6 @@
+[gd_resource type="Resource" script_class="OptionsManager" load_steps=2 format=3 uid="uid://bvgp3pcf0t0ky"]
+
+[ext_resource type="Script" uid="uid://bji01posut5cy" path="res://Scenes/MenuUI/Options/OptionsManager.cs" id="1_ua27y"]
+
+[resource]
+script = ExtResource("1_ua27y")

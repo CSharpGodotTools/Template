@@ -37,21 +37,16 @@ First make sure you have the following.
 - [Latest Godot C# Release](https://godotengine.org/)
 - [Custom ENet build](https://github.com/CSharpGodotTools/Template/wiki/Custom-ENet-Builds) may be required if using Mac or Linux
 
-Clone this repository with the required submodules.
-```bash
-git clone https://github.com/CSharpGodotTools/Template && cd Template && git submodule update --init addons/Framework addons/imgui-godot
-```
-
-The following is optional, if you choose not to download any genre specific template, you will only be able to use the `No Genre` genre.
-```bash
-git submodule update --init "Genres/<genre>" # Replace "<genre>" with "2D Top Down" or "3D FPS" without the ""
-```
-
 <div align="center">
     <h2>Setup</h2>
 </div>
 
-Run the main scene, fill in the fields, click apply changes and you are done. [Link to FAQ](https://github.com/CSharpGodotTools/Template/wiki/FAQ)  
+Clone with all submodules.
+```bash
+git clone --recurse-submodules https://github.com/CSharpGodotTools/Template
+```
+
+Run the main scene, fill in the fields, click apply changes and you are done.
 
 <img width="1541" height="953" alt="Setup" src="https://github.com/user-attachments/assets/79627179-7619-4e70-adf7-2983a8bfbea3" />
 <img width="1553" height="966" alt="TopDown" src="https://github.com/user-attachments/assets/b3143d7a-8df7-4a38-b1ff-36a41360cab9" />

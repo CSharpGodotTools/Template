@@ -1,0 +1,65 @@
+[gd_scene load_steps=2 format=3 uid="uid://ca2xb7tvce5xj"]
+
+[ext_resource type="Script" uid="uid://cj2q8dav2t7ic" path="res://Genres/2D Top Down/Scenes/Prefabs/UI/NetControlPanel.cs" id="1_gtrss"]
+
+[node name="MultiplayerControlPanel" type="PanelContainer"]
+offset_right = 347.0
+offset_bottom = 121.0
+script = ExtResource("1_gtrss")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+
+[node name="Server" type="HBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+
+[node name="Start Server" type="Button" parent="Margin/VBox/Server"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Start Server"
+
+[node name="Stop Server" type="Button" parent="Margin/VBox/Server"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Stop Server"
+
+[node name="VBox" type="VBoxContainer" parent="Margin/VBox"]
+layout_mode = 2
+
+[node name="Client" type="HBoxContainer" parent="Margin/VBox/VBox"]
+layout_mode = 2
+
+[node name="Start Client" type="Button" parent="Margin/VBox/VBox/Client"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Join Server"
+
+[node name="Stop Client" type="Button" parent="Margin/VBox/VBox/Client"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Leave Server"
+
+[node name="IP" type="LineEdit" parent="Margin/VBox/VBox/Client"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 2.0
+text = "127.0.0.1"
+placeholder_text = "IP"
+
+[node name="Username" type="LineEdit" parent="Margin/VBox/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Username"
+max_length = 20
