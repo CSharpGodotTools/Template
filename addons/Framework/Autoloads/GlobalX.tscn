@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cdt2k6s3xm13g" path="res://addons/Framework/Scripts/Autoloads/Global.cs" id="1_ueahs"]
 [ext_resource type="Resource" uid="uid://bvgp3pcf0t0ky" path="res://addons/Framework/Resources/OptionsManager.tres" id="2_rot82"]
-[ext_resource type="PackedScene" uid="uid://b1augjui20eux" path="res://Scenes/MenuUI/MetricsOverlay/MetricsOverlay.tscn" id="3_gpsxw"]
+[ext_resource type="PackedScene" uid="uid://b1augjui20eux" path="res://addons/Framework/Scenes/MenuUI/MetricsOverlay/MetricsOverlay.tscn" id="3_gpsxw"]
 
 [node name="Global" type="Node2D"]
 process_mode = 3

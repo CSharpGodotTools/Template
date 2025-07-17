@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://i2s0r6qgs7wm"]
 
-[ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://Scenes/MenuUI/PopupMenu/UIPopupMenu.tscn" id="1_e7m6x"]
+[ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://addons/Framework/Scenes/MenuUI/PopupMenu/UIPopupMenu.tscn" id="1_e7m6x"]
 [ext_resource type="Script" uid="uid://biqogk8m3ifl3" path="res://Genres/2D Platformer/Scripts/Player/Player.cs" id="1_rnhe6"]
 [ext_resource type="SpriteFrames" uid="uid://bmhx2d608ifbc" path="res://Genres/2D Platformer/Sprites/player.tres" id="2_1qvjg"]
 
