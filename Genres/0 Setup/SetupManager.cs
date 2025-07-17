@@ -41,7 +41,10 @@ public static class SetupManager
             {
                 if (folder.Key != genre)
                 {
-                    Directory.Delete(Path.Combine(pathFrom, folder.Value), true);
+                    string path = Path.Combine(pathFrom, folder.Value);
+
+                    if (Directory.Exists(path))
+                        Directory.Delete(path, true);
                 }
             }
         }
