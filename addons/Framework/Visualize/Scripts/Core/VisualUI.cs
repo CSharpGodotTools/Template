@@ -19,9 +19,9 @@ public static class VisualUI
 
     private const int MIN_SCROLL_VIEW_SIZE = 250;
 
-    private static Texture2D _eyeOpen = GD.Load<Texture2D>("res://addons/Visualize/Icons/EyeOpen.png");
-    private static Texture2D _eyeClosed = GD.Load<Texture2D>("res://addons/Visualize/Icons/EyeClosed.png");
-    private static Texture2D _wrench = GD.Load<Texture2D>("res://addons/Visualize/Icons/Wrench.png");
+    private static Texture2D _eyeOpen = GD.Load<Texture2D>("res://addons/Framework/Visualize/Icons/EyeOpen.png");
+    private static Texture2D _eyeClosed = GD.Load<Texture2D>("res://addons/Framework/Visualize/Icons/EyeClosed.png");
+    private static Texture2D _wrench = GD.Load<Texture2D>("res://addons/Framework/Visualize/Icons/Wrench.png");
 
     /// <summary>
     /// Creates the visual panel for a specified visual node.
