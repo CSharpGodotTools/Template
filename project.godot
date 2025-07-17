@@ -46,7 +46,7 @@ enabled=PackedStringArray("res://addons/imgui-godot/plugin.cfg")
 folder_colors={
 "res://Genres/3D FPS/Scripts/": "teal",
 "res://Sandbox/": "pink",
-"res://Scenes/": "purple"
+"res://Scenes/": "blue"
 }
 
 [filesystem]
