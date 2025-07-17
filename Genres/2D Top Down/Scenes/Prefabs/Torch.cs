@@ -1,4 +1,5 @@
 using Godot;
+using GodotUtils.Visualize;
 
 namespace __TEMPLATE__.TopDown2D;
 
