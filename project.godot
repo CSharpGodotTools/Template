@@ -24,7 +24,7 @@ Console="*res://addons/Framework/Autoloads/Console.tscn"
 Global="*res://addons/Framework/Autoloads/GlobalX.tscn"
 AudioManager="*res://addons/Framework/Autoloads/AudioManager.tscn"
 SceneManager="*res://addons/Framework/Scripts/Autoloads/SceneManager.cs"
-VisualizeAutoload="*res://addons/Framework/Visualize/Scripts/VisualizeAutoload.cs"
+VisualizeAutoload="*res://addons/Framework/GodotUtils/Visualize/Scripts/VisualizeAutoload.cs"
 CommandLineArgs="*res://addons/Framework/Scripts/Autoloads/CommandLineArgs.cs"
 ImGuiRoot="*res://addons/imgui-godot/data/ImGuiRoot.tscn"
 
