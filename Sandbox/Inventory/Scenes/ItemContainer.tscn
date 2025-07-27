@@ -10,6 +10,7 @@ outline_color = Color(0, 0, 0, 1)
 [node name="ItemContainer" type="PanelContainer"]
 custom_minimum_size = Vector2(50, 50)
 script = ExtResource("1_6ktsa")
+metadata/_edit_lock_ = true
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 2

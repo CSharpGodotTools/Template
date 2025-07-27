@@ -48,6 +48,7 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxEmpty_j3vts")
 script = ExtResource("2_g08n2")
+metadata/_edit_lock_ = true
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 2

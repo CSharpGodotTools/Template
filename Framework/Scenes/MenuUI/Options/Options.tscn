@@ -24,6 +24,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_v8h3e")
 script = ExtResource("1_xjg3i")
+metadata/_edit_lock_ = true
 
 [node name="Margin" type="MarginContainer" parent="."]
 layout_mode = 2

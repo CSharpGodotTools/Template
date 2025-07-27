@@ -6,6 +6,7 @@
 [node name="AnimHelperItemContainer" instance=ExtResource("1_gui7k")]
 mouse_filter = 2
 script = ExtResource("2_oxtqa")
+metadata/_edit_lock_ = true
 
 [node name="CenterContainer" parent="." index="0"]
 mouse_filter = 2

@@ -34,6 +34,7 @@ animations = [{
 
 [node name="Other Player" type="Node2D" groups=["Player"]]
 script = ExtResource("1_cvgms")
+metadata/_edit_lock_ = true
 
 [node name="PlayerComponent" type="Node2D" parent="." node_paths=PackedStringArray("AnimatedSprite")]
 script = ExtResource("2_ipg8l")

@@ -8,6 +8,7 @@ offset_bottom = 40.0
 size_flags_horizontal = 0
 size_flags_vertical = 0
 script = ExtResource("1_nn4xr")
+metadata/_edit_lock_ = true
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
 layout_mode = 2

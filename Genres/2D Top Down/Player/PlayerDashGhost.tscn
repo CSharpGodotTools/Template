@@ -6,3 +6,4 @@
 modulate = Color(1, 1, 1, 0.4)
 z_index = -1
 script = ExtResource("1_3y4o5")
+metadata/_edit_lock_ = true

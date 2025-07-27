@@ -6,10 +6,11 @@
 
 [node name="Torch" type="Node2D"]
 script = ExtResource("1_x4452")
+metadata/_edit_lock_ = true
 
 [node name="PointLight2D" type="PointLight2D" parent="."]
 color = Color(0.666667, 0.729412, 1, 1)
-energy = 1.08366
+energy = 1.12837
 shadow_enabled = true
 texture = ExtResource("2_kdhpf")
 

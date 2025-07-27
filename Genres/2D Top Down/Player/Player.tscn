@@ -280,6 +280,7 @@ animations = [{
 motion_mode = 1
 script = ExtResource("1_p86na")
 _config = SubResource("Resource_yn7yi")
+metadata/_edit_lock_ = true
 
 [node name="PlayerComponent" type="Node2D" parent="." node_paths=PackedStringArray("AnimatedSprite")]
 script = ExtResource("3_xmnsw")

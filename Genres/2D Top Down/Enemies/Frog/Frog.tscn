@@ -92,6 +92,7 @@ gravity_scale = 0.0
 lock_rotation = true
 linear_damp = 1.5
 script = ExtResource("1_exagu")
+metadata/_edit_lock_ = true
 
 [node name="EnemyComponent" type="Node2D" parent="." node_paths=PackedStringArray("StateMachine", "_hitbox", "AnimatedSprite")]
 script = ExtResource("2_78og4")

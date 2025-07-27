@@ -34,6 +34,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_qx1q1")
 script = ExtResource("1_2ybu5")
+metadata/_edit_lock_ = true
 
 [node name="HBox" type="HBoxContainer" parent="."]
 layout_mode = 1

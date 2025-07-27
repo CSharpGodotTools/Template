@@ -9,6 +9,7 @@
 z_index = 1
 theme_override_styles/panel = SubResource("StyleBoxEmpty_malv3")
 script = ExtResource("1_vdyrg")
+metadata/_edit_lock_ = true
 
 [node name="Count" parent="MarginContainer" index="0"]
 text = ""
