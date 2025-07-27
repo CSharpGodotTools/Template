@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://cd6lxvee3yoce" path="res://Genres/2D Top Down/Scripts/Components/PlayerComponent.cs" id="2_ipg8l"]
 [ext_resource type="Script" uid="uid://cfv0oaf1ir4xu" path="res://Genres/2D Top Down/Scripts/Enemies/EntityConfig.cs" id="3_3i678"]
 [ext_resource type="Shader" uid="uid://b3bionxy2q1cc" path="res://Genres/2D Top Down/Shaders/color.gdshader" id="4_5jmw7"]
-[ext_resource type="Texture2D" uid="uid://d2jcuguiv4wal" path="res://addons/Framework/Sprites/UI/Icon.svg" id="5_alush"]
+[ext_resource type="Texture2D" uid="uid://bfqm84khcxp85" path="res://Framework/Sprites/UI/Icon.svg" id="5_alush"]
 
 [sub_resource type="Resource" id="Resource_sgi3p"]
 script = ExtResource("3_3i678")
