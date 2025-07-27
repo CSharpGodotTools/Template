@@ -170,7 +170,10 @@ public partial class MetricsOverlay : Node
             settings[key] = _metrics[key].enabled;
         }
 
-        string json = JsonSerializer.Serialize(settings);
+        string json = JsonSerializer.Serialize(settings, new JsonSerializerOptions
+        {
+            WriteIndented = true
+        });
 
         FileAccess file = FileAccess.Open(SETTINGS_FILE, FileAccess.ModeFlags.Write);
 
