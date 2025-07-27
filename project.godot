@@ -18,7 +18,6 @@ config/icon="uid://bfqm84khcxp85"
 
 [autoload]
 
-Check="*res://Framework/Scripts/Autoloads/Exports.cs"
 ServiceProvider="*res://Framework/Scripts/Autoloads/Services.cs"
 Console="*res://Framework/Autoloads/Console.tscn"
 Global="*res://Framework/Autoloads/GlobalX.tscn"
