@@ -1,0 +1,149 @@
+[gd_scene load_steps=21 format=3 uid="uid://tgxu81l5ee34"]
+
+[ext_resource type="Script" uid="uid://c24hdmeh25dug" path="res://Genres/2D Top Down/Enemies/Frog/Frog.cs" id="1_exagu"]
+[ext_resource type="Script" uid="uid://cfv0oaf1ir4xu" path="res://Genres/2D Top Down/Enemies/EntityConfig.cs" id="2_6qqsm"]
+[ext_resource type="Script" uid="uid://bl2hbh5bk6mcp" path="res://Genres/2D Top Down/Enemies/EnemyComponent.cs" id="2_78og4"]
+[ext_resource type="Script" uid="uid://cb3cfxbhl77s7" path="res://Genres/2D Top Down/Enemies/IdleState.cs" id="3_eyjfj"]
+[ext_resource type="Script" uid="uid://cavavfp2c2p3a" path="res://Genres/2D Top Down/Enemies/ShakeState.cs" id="3_svtqd"]
+[ext_resource type="Script" uid="uid://cb7kjoml3rb5g" path="res://Genres/2D Top Down/Enemies/JumpState.cs" id="5_c8xv3"]
+[ext_resource type="Script" uid="uid://bbmuuq2vft75b" path="res://Genres/2D Top Down/Enemies/SlideState.cs" id="6_2fr83"]
+[ext_resource type="Script" uid="uid://bjupf6fy3887a" path="res://Genres/2D Top Down/StateMachineComponent.cs" id="7_mfhc3"]
+[ext_resource type="Texture2D" uid="uid://br2vucr305kx6" path="res://Genres/2D Top Down/Enemies/Frog/frog.png" id="9_srcws"]
+
+[sub_resource type="Resource" id="Resource_sj26y"]
+script = ExtResource("2_6qqsm")
+Color = Color(1, 1, 1, 1)
+BlendMode = 0
+LightMode = 0
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_8hory"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wmrw4"]
+atlas = ExtResource("9_srcws")
+region = Rect2(0, 0, 16, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_semwc"]
+atlas = ExtResource("9_srcws")
+region = Rect2(16, 0, 16, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q2byv"]
+atlas = ExtResource("9_srcws")
+region = Rect2(48, 0, 16, 22)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sl0xs"]
+atlas = ExtResource("9_srcws")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hldx5"]
+atlas = ExtResource("9_srcws")
+region = Rect2(32, 0, 16, 22)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_er05e"]
+animations = [{
+"frames": [{
+"duration": 10.0,
+"texture": SubResource("AtlasTexture_wmrw4")
+}, {
+"duration": 0.75,
+"texture": SubResource("AtlasTexture_semwc")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q2byv")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sl0xs")
+}],
+"loop": true,
+"name": &"land",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hldx5")
+}],
+"loop": true,
+"name": &"pre_jump",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_un0oi"]
+size = Vector2(72, 54)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5v5ul"]
+radius = 400.125
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_66sh0"]
+size = Vector2(72, 54)
+
+[node name="Frog" type="RigidBody2D"]
+collision_layer = 2
+collision_mask = 2
+gravity_scale = 0.0
+lock_rotation = true
+linear_damp = 1.5
+script = ExtResource("1_exagu")
+
+[node name="EnemyComponent" type="Node2D" parent="." node_paths=PackedStringArray("StateMachine", "_hitbox", "AnimatedSprite")]
+script = ExtResource("2_78og4")
+StateMachine = NodePath("../StateMachineComponent")
+_hitbox = NodePath("../Hitbox")
+_config = SubResource("Resource_sj26y")
+AnimatedSprite = NodePath("../AnimatedSprite2D")
+
+[node name="IdleState" type="Node2D" parent="EnemyComponent" node_paths=PackedStringArray("_detectPlayerState", "_idleActionState", "_playerDetectArea")]
+script = ExtResource("3_eyjfj")
+_detectPlayerState = NodePath("../ShakeState")
+_idleActionState = NodePath("../SlideState")
+_playerDetectArea = NodePath("../../Detect")
+
+[node name="JumpState" type="Node2D" parent="EnemyComponent" node_paths=PackedStringArray("_hitbox", "NextState")]
+script = ExtResource("5_c8xv3")
+_hitbox = NodePath("../../Hitbox")
+NextState = NodePath("../IdleState")
+
+[node name="ShakeState" type="Node2D" parent="EnemyComponent" node_paths=PackedStringArray("NextState")]
+script = ExtResource("3_svtqd")
+NextState = NodePath("../JumpState")
+
+[node name="SlideState" type="Node2D" parent="EnemyComponent" node_paths=PackedStringArray("NextState")]
+script = ExtResource("6_2fr83")
+NextState = NodePath("../IdleState")
+
+[node name="StateMachineComponent" type="Node2D" parent="." node_paths=PackedStringArray("IdleState")]
+script = ExtResource("7_mfhc3")
+IdleState = NodePath("../EnemyComponent/IdleState")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 1
+material = SubResource("CanvasItemMaterial_8hory")
+position = Vector2(0, 15)
+scale = Vector2(6, 6)
+sprite_frames = SubResource("SpriteFrames_er05e")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 15)
+shape = SubResource("RectangleShape2D_un0oi")
+
+[node name="Detect" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Detect"]
+shape = SubResource("CircleShape2D_5v5ul")
+debug_color = Color(0, 0.6, 0.7, 0)
+
+[node name="Hitbox" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(0, 12)
+shape = SubResource("RectangleShape2D_66sh0")
+debug_color = Color(0.701961, 0, 0.697618, 0)
