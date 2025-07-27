@@ -3,12 +3,12 @@
 [ext_resource type="Script" uid="uid://c24hdmeh25dug" path="res://Genres/2D Top Down/Scenes/Prefabs/Frog.cs" id="1_exagu"]
 [ext_resource type="Script" uid="uid://cfv0oaf1ir4xu" path="res://Genres/2D Top Down/Scripts/Enemies/EntityConfig.cs" id="2_6qqsm"]
 [ext_resource type="Script" uid="uid://bl2hbh5bk6mcp" path="res://Genres/2D Top Down/Scripts/Components/EnemyComponent.cs" id="2_78og4"]
-[ext_resource type="Texture2D" uid="uid://dy15hb3vswfxc" path="res://Genres/2D Top Down/Sprites/Frog/frog.png" id="2_ffw43"]
 [ext_resource type="Script" uid="uid://cb3cfxbhl77s7" path="res://Genres/2D Top Down/Scripts/Enemies/IdleState.cs" id="3_eyjfj"]
 [ext_resource type="Script" uid="uid://cavavfp2c2p3a" path="res://Genres/2D Top Down/Scripts/Enemies/ShakeState.cs" id="3_svtqd"]
 [ext_resource type="Script" uid="uid://cb7kjoml3rb5g" path="res://Genres/2D Top Down/Scripts/Enemies/JumpState.cs" id="5_c8xv3"]
 [ext_resource type="Script" uid="uid://bbmuuq2vft75b" path="res://Genres/2D Top Down/Scripts/Enemies/SlideState.cs" id="6_2fr83"]
 [ext_resource type="Script" uid="uid://bjupf6fy3887a" path="res://Genres/2D Top Down/Scripts/Components/StateMachineComponent.cs" id="7_mfhc3"]
+[ext_resource type="Texture2D" uid="uid://br2vucr305kx6" path="res://Genres/2D Top Down/Scenes/Prefabs/frog.png" id="9_srcws"]
 
 [sub_resource type="Resource" id="Resource_sj26y"]
 script = ExtResource("2_6qqsm")
@@ -19,23 +19,23 @@ LightMode = 0
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_8hory"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wmrw4"]
-atlas = ExtResource("2_ffw43")
+atlas = ExtResource("9_srcws")
 region = Rect2(0, 0, 16, 22)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_semwc"]
-atlas = ExtResource("2_ffw43")
+atlas = ExtResource("9_srcws")
 region = Rect2(16, 0, 16, 22)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_q2byv"]
-atlas = ExtResource("2_ffw43")
+atlas = ExtResource("9_srcws")
 region = Rect2(48, 0, 16, 22)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_sl0xs"]
-atlas = ExtResource("2_ffw43")
+atlas = ExtResource("9_srcws")
 region = Rect2(64, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hldx5"]
-atlas = ExtResource("2_ffw43")
+atlas = ExtResource("9_srcws")
 region = Rect2(32, 0, 16, 22)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_er05e"]
