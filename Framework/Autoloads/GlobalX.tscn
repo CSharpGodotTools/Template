@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://cj4fbh1a1lpq4"]
+
+[ext_resource type="Script" uid="uid://cdt2k6s3xm13g" path="res://Framework/Scripts/Autoloads/Global.cs" id="1_ueahs"]
+[ext_resource type="Resource" uid="uid://bvgp3pcf0t0ky" path="res://Framework/Resources/OptionsManager.tres" id="2_rot82"]
+[ext_resource type="PackedScene" uid="uid://b1augjui20eux" path="res://Framework/Scenes/MenuUI/MetricsOverlay/MetricsOverlay.tscn" id="3_gpsxw"]
+
+[node name="Global" type="Node2D"]
+process_mode = 3
+script = ExtResource("1_ueahs")
+_optionsManager = ExtResource("2_rot82")
+
+[node name="Debug Layer" type="CanvasLayer" parent="."]
+layer = 128
+
+[node name="Debug Overlay" parent="Debug Layer" instance=ExtResource("3_gpsxw")]

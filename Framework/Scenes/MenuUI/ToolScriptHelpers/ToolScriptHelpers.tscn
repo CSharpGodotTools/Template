@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b1eh13622530o"]
 
-[ext_resource type="Script" uid="uid://xc5a86a6nvp0" path="res://addons/Framework/Scenes/MenuUI/ToolScriptHelpers/ToolScriptHelpers.cs" id="1_876oj"]
+[ext_resource type="Script" uid="uid://xc5a86a6nvp0" path="res://Framework/Scenes/MenuUI/ToolScriptHelpers/ToolScriptHelpers.cs" id="1_876oj"]
 
 [node name="Tool Scripts" type="Node2D"]
 script = ExtResource("1_876oj")

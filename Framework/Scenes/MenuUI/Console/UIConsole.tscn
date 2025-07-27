@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://jrjqky6ag6gg"]
 
-[ext_resource type="Script" uid="uid://blp5ybyxnppar" path="res://addons/Framework/Scenes/MenuUI/Console/UIConsole.cs" id="1_gs4bw"]
+[ext_resource type="Script" uid="uid://blp5ybyxnppar" path="res://Framework/Scenes/MenuUI/Console/UIConsole.cs" id="1_gs4bw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4blkd"]
 bg_color = Color(0, 0, 0, 0.196078)
