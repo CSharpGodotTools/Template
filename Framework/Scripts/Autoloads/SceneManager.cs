@@ -4,23 +4,15 @@ using System;
 
 namespace __TEMPLATE__;
 
-public static class Scene 
-{
-    public const string MainMenu  = "res://Scenes/MenuUI/MainMenu.tscn";
-    public const string ModLoader = "res://Scenes/MenuUI/ModLoader.tscn";
-    public const string Options   = "res://Scenes/MenuUI/Options.tscn";
-    public const string Credits   = "res://Scenes/MenuUI/Credits.tscn";
-    public const string Game      = "res://Genres/2D Top Down/Level.tscn";
-}
-
-public static class Prefab 
-{
-    
-}
-
 // About Scene Switching: https://docs.godotengine.org/en/latest/tutorials/scripting/singletons_autoload.html
 public partial class SceneManager : Node
 {
+    [Export] private PackedScene _sceneMainMenu;
+    [Export] private PackedScene _sceneModLoader;
+    [Export] private PackedScene _sceneOptions;
+    [Export] private PackedScene _sceneCredits;
+    [Export] private PackedScene _sceneGame;
+
     /// <summary>
     /// The event is invoked right before the scene is changed
     /// </summary>
@@ -42,8 +34,18 @@ public partial class SceneManager : Node
         PreSceneChanged += _ => AudioManager.FadeOutSFX();
     }
 
-    public static void SwitchScene(string scenePath, TransType transType = TransType.None)
+    public static void SwitchScene(Scene scene, TransType transType = TransType.None)
     {
+        string scenePath = scene switch
+        {
+            Scene.MainMenu => _instance._sceneMainMenu.ResourcePath,
+            Scene.ModLoader => _instance._sceneModLoader.ResourcePath,
+            Scene.Options => _instance._sceneOptions.ResourcePath,
+            Scene.Credits => _instance._sceneCredits.ResourcePath,
+            Scene.Game => _instance._sceneGame.ResourcePath,
+            _ => throw new ArgumentOutOfRangeException(nameof(scene), scene, "Tried to switch to unknown scene")
+        };
+
         PreSceneChanged?.Invoke(scenePath);
 
         switch (transType)
@@ -153,3 +155,11 @@ public partial class SceneManager : Node
     }
 }
 
+public enum Scene
+{
+    MainMenu,
+    ModLoader,
+    Options,
+    Credits,
+    Game
+}

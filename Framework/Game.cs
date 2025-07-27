@@ -5,7 +5,7 @@ namespace __TEMPLATE__;
 
 public static class Game
 {
-    public static void SwitchScene(string scene, TransType transType = TransType.None)
+    public static void SwitchScene(Scene scene, TransType transType = TransType.None)
     {
         SceneManager.SwitchScene(scene, transType);
     }
