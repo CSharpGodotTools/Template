@@ -4,7 +4,7 @@
 [ext_resource type="Resource" uid="uid://bvgp3pcf0t0ky" path="res://Framework/Scenes/MenuUI/Options/OptionsManager.tres" id="2_rot82"]
 [ext_resource type="PackedScene" uid="uid://b1augjui20eux" path="res://Framework/Scenes/MenuUI/MetricsOverlay/MetricsOverlay.tscn" id="3_gpsxw"]
 
-[node name="Global" type="Node2D"]
+[node name="Global" type="Node"]
 process_mode = 3
 script = ExtResource("1_ueahs")
 _optionsManager = ExtResource("2_rot82")
