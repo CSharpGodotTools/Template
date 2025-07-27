@@ -2,10 +2,10 @@
 
 [ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://Framework/Scenes/MenuUI/PopupMenu/UIPopupMenu.tscn" id="1_e7m6x"]
 [ext_resource type="Script" uid="uid://biqogk8m3ifl3" path="res://Genres/2D Platformer/Player/Player.cs" id="1_rnhe6"]
-[ext_resource type="SpriteFrames" uid="uid://bmhx2d608ifbc" path="res://Genres/2D Platformer/Player/player.tres" id="2_1qvjg"]
+[ext_resource type="Texture2D" uid="uid://bfqm84khcxp85" path="res://Icon.svg" id="2_erx28"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fgf1b"]
-size = Vector2(24, 37)
+size = Vector2(125, 125)
 
 [node name="Level" type="Node2D"]
 
@@ -13,17 +13,15 @@ size = Vector2(24, 37)
 floor_snap_length = 10.0
 script = ExtResource("1_rnhe6")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player"]
-scale = Vector2(2.5, 2.5)
-sprite_frames = ExtResource("2_1qvjg")
-animation = &"blink"
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
 position = Vector2(0, 1.5)
 shape = SubResource("RectangleShape2D_fgf1b")
 debug_color = Color(0, 0.6, 0.701961, 0.419608)
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
+
+[node name="Sprite2D" type="Sprite2D" parent="Player"]
+texture = ExtResource("2_erx28")
 
 [node name="Tilesets" type="Node2D" parent="."]
 
