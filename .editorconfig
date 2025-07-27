@@ -1,8 +1,8 @@
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
-# Exclude the addons folder from IntelliSense
-[addons/**/*.cs]
+# Exclude the Framework folder from IntelliSense as game devs should focus on their code, not the framework code
+[Framework/**/*.cs]
 generated_code = true
 dotnet_analyzer_diagnostic.severity = none
 
