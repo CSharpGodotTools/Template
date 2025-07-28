@@ -105,6 +105,8 @@ public class ModLoaderUI
         Next:
             filename = dir.GetNext();
         }
+
+        dir.ListDirEnd();
     }
 }
 
