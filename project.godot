@@ -19,6 +19,7 @@ config/icon="uid://bfqm84khcxp85"
 [autoload]
 
 ServiceProvider="*res://Framework/Autoloads/Services/Services.cs"
+OptionsManager="*res://Framework/Autoloads/OptionsManager.cs"
 Console="*res://Framework/Autoloads/Console.tscn"
 Global="*res://Framework/Autoloads/Global/Global.tscn"
 AudioManager="*res://Framework/Autoloads/AudioManager/AudioManager.tscn"

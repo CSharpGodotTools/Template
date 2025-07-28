@@ -4,12 +4,11 @@ namespace __TEMPLATE__.UI;
 
 public partial class OptionsGeneral : Control
 {
-    [Export] private OptionsManager _optionsManager;
     private ResourceOptions _options;
 
     public override void _Ready()
     {
-        _options = _optionsManager.Options;
+        _options = OptionsManager.Options;
         SetupLanguage();
     }
 
@@ -35,4 +34,3 @@ public enum Language
     French,
     Japanese
 }
-

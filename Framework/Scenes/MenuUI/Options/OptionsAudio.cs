@@ -4,12 +4,11 @@ namespace __TEMPLATE__.UI;
 
 public partial class OptionsAudio : Control
 {
-    [Export] private OptionsManager _optionsManager;
     private ResourceOptions _options;
 
     public override void _Ready()
     {
-        _options = _optionsManager.Options;
+        _options = OptionsManager.Options;
         SetupMusic();
         SetupSounds();
     }

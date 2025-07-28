@@ -10,7 +10,6 @@ public partial class OptionsDisplay : Control
 {
     public event Action<int> OnResolutionChanged;
 
-    [Export] private OptionsManager _optionsManager;
     private ResourceOptions _options;
 
     // Max FPS
@@ -24,7 +23,7 @@ public partial class OptionsDisplay : Control
 
     public override void _Ready()
     {
-        _options = _optionsManager.Options;
+        _options = OptionsManager.Options;
         SetupMaxFps();
         SetupWindowSize();
         SetupWindowMode();
@@ -62,7 +61,7 @@ public partial class OptionsDisplay : Control
         OptionButton optionBtnWindowMode = GetNode<OptionButton>("%WindowMode");
         optionBtnWindowMode.Select((int)_options.WindowMode);
 
-        _optionsManager.WindowModeChanged += windowMode =>
+        OptionsManager.WindowModeChanged += windowMode =>
         {
             if (!IsInstanceValid(optionBtnWindowMode))
             {
@@ -94,7 +93,8 @@ public partial class OptionsDisplay : Control
         Vector2I winSize = DisplayServer.WindowGetSize();
         DisplayServer.WindowSetPosition(DisplayServer.ScreenGetSize() / 2 - winSize / 2);
 
-        _options.WindowSize = winSize;
+        _options.WindowWidth = winSize.X;
+        _options.WindowHeight = winSize.Y;
     }
 
     private void _OnWindowModeItemSelected(int index)
@@ -123,7 +123,8 @@ public partial class OptionsDisplay : Control
         _prevNumX = winSize.X;
         _prevNumY = winSize.Y;
 
-        _options.WindowSize = winSize;
+        _options.WindowWidth = winSize.X;
+        _options.WindowHeight = winSize.Y;
     }
 
     private void _OnWindowWidthTextChanged(string text)

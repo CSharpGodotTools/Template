@@ -114,8 +114,6 @@ public partial class RoomTransitions : Node
     // Handles the room transition when a trigger is entered
     private void HandleRoomTransition(Vector2I normal)
     {
-        GD.Print("Entered the trigger " + normal);
-
         if (IsValidTransitionNormal(normal))
         {
             TransitionToNextRoom(normal);

@@ -8,7 +8,6 @@ namespace __TEMPLATE__.UI;
 
 public partial class OptionsInput : Control
 {
-    [Export] private OptionsManager _optionsManager;
     private static BtnInfo _btnNewInput; // the btn waiting for new input
     private Dictionary<StringName, Array<InputEvent>> _defaultActions;
     private VBoxContainer _content;
@@ -31,7 +30,7 @@ public partial class OptionsInput : Control
                 InputMap.ActionEraseEvent(action, _btnNewInput.InputEvent);
 
                 // Update options
-                _optionsManager.Hotkeys.Actions[action].Remove(_btnNewInput.InputEvent);
+                OptionsManager.Hotkeys.Actions[action].Remove(_btnNewInput.InputEvent);
 
                 // Update UI
                 _btnNewInput.Btn.QueueFree();
@@ -107,7 +106,7 @@ public partial class OptionsInput : Control
         // Move the button to where it was originally at
         _btnNewInput.HBox.MoveChild(btn.Internal, index);
 
-        Dictionary<StringName, Array<InputEvent>> actions = _optionsManager.Hotkeys.Actions;
+        Dictionary<StringName, Array<InputEvent>> actions = OptionsManager.Hotkeys.Actions;
 
         // Clear the specific action event
         actions[action].Remove(_btnNewInput.InputEvent);
@@ -201,7 +200,7 @@ public partial class OptionsInput : Control
     private void CreateHotkeys()
     {
         // Loop through the actions in alphabetical order
-        foreach (StringName action in _optionsManager.Hotkeys.Actions.Keys.OrderBy(x => x.ToString()))
+        foreach (StringName action in OptionsManager.Hotkeys.Actions.Keys.OrderBy(x => x.ToString()))
         {
             string actionStr = action.ToString();
 
@@ -225,7 +224,7 @@ public partial class OptionsInput : Control
             // Add all the events after the action label
             HBoxContainer hboxEvents = new();
 
-            Array<InputEvent> events = _optionsManager.Hotkeys.Actions[action];
+            Array<InputEvent> events = OptionsManager.Hotkeys.Actions[action];
 
             foreach (InputEvent @event in events)
             {
@@ -260,7 +259,7 @@ public partial class OptionsInput : Control
         }
 
         _btnNewInput = null;
-        _optionsManager.ResetHotkeys();
+        OptionsManager.ResetHotkeys();
         CreateHotkeys();
         GC.Collect(); // Object count was increasing a lot when this function was executed
     }

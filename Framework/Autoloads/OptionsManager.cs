@@ -1,23 +1,28 @@
+using __TEMPLATE__.UI;
 using Godot;
 using Godot.Collections;
 using System;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
-using __TEMPLATE__.UI;
+using System.Xml.Linq;
 
 namespace __TEMPLATE__;
 
-[GlobalClass]
-public partial class OptionsManager : Resource
+// Autoload
+public partial class OptionsManager : Node
 {
-    public event Action<WindowMode> WindowModeChanged;
+    public static event Action<WindowMode> WindowModeChanged;
 
-    public Dictionary<StringName, Array<InputEvent>> DefaultHotkeys { get; set; }
-    public ResourceHotkeys Hotkeys { get; private set; }
-    public ResourceOptions Options { get; private set; }
-    public string CurrentOptionsTab { get; set; } = "General";
+    public static Dictionary<StringName, Array<InputEvent>> DefaultHotkeys { get; set; }
+    public static ResourceHotkeys Hotkeys { get; private set; }
+    public static ResourceOptions Options { get; private set; }
+    public static string CurrentOptionsTab { get; set; } = "General";
 
-    public OptionsManager()
+    private const string PathOptions = "user://options.json";
+    private const string PathHotkeys = "user://hotkeys.tres";
+
+    public override void _Ready()
     {
         LoadOptions();
 
@@ -32,7 +37,7 @@ public partial class OptionsManager : Resource
         SetAntialiasing();
     }
 
-    public void ToggleFullscreen()
+    public static void ToggleFullscreen()
     {
         if (DisplayServer.WindowGetMode() == DisplayServer.WindowMode.Windowed)
         {
@@ -44,29 +49,30 @@ public partial class OptionsManager : Resource
         }
     }
 
-    public void SaveOptions()
+    public static void SaveOptions()
     {
-        SaveResource(Options, nameof(Options));
+        string json = JsonSerializer.Serialize(Options, new JsonSerializerOptions
+        {
+            WriteIndented = true
+        });
+
+        FileAccess file = FileAccess.Open(PathOptions, FileAccess.ModeFlags.Write);
+
+        file.StoreString(json);
+        file.Close();
     }
 
-    public void SaveHotkeys()
+    public static void SaveHotkeys()
     {
-        SaveResource(Hotkeys, nameof(Hotkeys));
-    }
-
-    private static void SaveResource(Resource resource, string name)
-    {
-        Error error = ResourceSaver.Save(
-            resource: resource,
-            path: $"user://{name.ToLower()}.tres");
+        Error error = ResourceSaver.Save(Hotkeys, PathHotkeys);
 
         if (error != Error.Ok)
         {
-            GD.Print(error);
+            GD.Print($"Failed to save hotkeys: {error}");
         }
     }
 
-    public void ResetHotkeys()
+    public static void ResetHotkeys()
     {
         // Deep clone default hotkeys over
         Hotkeys.Actions = [];
@@ -89,34 +95,18 @@ public partial class OptionsManager : Resource
 
     private void LoadOptions()
     {
-        bool fileExists = FileAccess.FileExists("user://options.tres");
+        if (FileAccess.FileExists(PathOptions))
+        {
+            FileAccess file = FileAccess.Open(PathOptions, FileAccess.ModeFlags.Read);
 
-        if (!fileExists)
+            Options = JsonSerializer.Deserialize<ResourceOptions>(file.GetAsText());
+
+            file.Close();
+        }
+        else
         {
             Options = new();
-            return;
         }
-
-        // The options.tres file will have a line that looks like this.
-        // [ext_resource type="Script" path="res://Scripts/Resources/ResourceOptions.cs" id="1_xn0b0"]
-        // If the script is the wrong spot then the options.tres will fail to load.
-        // Lets verify that the file is not corrupt by checking the path to the script is valid.
-        string text = System.IO.File.ReadAllText(ProjectSettings.GlobalizePath("user://options.tres"));
-
-        Regex regex = GetResourcePathRegex();
-        Match match = regex.Match(text);
-        string path = match.Groups["path"].Value;
-
-        // Options file is corrupt
-        if (!FileAccess.FileExists(path))
-        {
-            GD.Print("Options file is corrupt. Deleting and creating a new one!");
-            System.IO.File.Delete(ProjectSettings.GlobalizePath("user://options.tres"));
-            Options = new();
-            return;
-        }
-
-        Options = GD.Load<ResourceOptions>("user://options.tres");
     }
 
     private static void LoadInputMap(Dictionary<StringName, Array<InputEvent>> hotkeys)
@@ -159,11 +149,9 @@ public partial class OptionsManager : Resource
 
     private void LoadHotkeys()
     {
-        bool fileExists = FileAccess.FileExists("user://hotkeys.tres");
-
-        if (fileExists)
+        if (FileAccess.FileExists(PathHotkeys))
         {
-            Hotkeys = GD.Load<ResourceHotkeys>("user://hotkeys.tres");
+            Hotkeys = GD.Load<ResourceHotkeys>(PathHotkeys);
 
             // InputMap in project settings has changed so reset all saved hotkeys
             if (!ActionsAreEqual(DefaultHotkeys, Hotkeys.Actions))
@@ -181,11 +169,9 @@ public partial class OptionsManager : Resource
         }
     }
 
-    private static bool ActionsAreEqual(Dictionary<StringName, Array<InputEvent>> dict1,
-                         Dictionary<StringName, Array<InputEvent>> dict2)
+    private static bool ActionsAreEqual(Dictionary<StringName, Array<InputEvent>> dict1, Dictionary<StringName, Array<InputEvent>> dict2)
     {
-        return dict1.Count == dict2.Count &&
-        dict1.All(pair => dict2.ContainsKey(pair.Key));
+        return dict1.Count == dict2.Count && dict1.All(pair => dict2.ContainsKey(pair.Key));
     }
 
     private void SetWindowMode()
@@ -204,14 +190,14 @@ public partial class OptionsManager : Resource
         }
     }
 
-    private void SwitchToFullscreen()
+    private static void SwitchToFullscreen()
     {
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
         Options.WindowMode = WindowMode.Fullscreen;
         WindowModeChanged?.Invoke(WindowMode.Fullscreen);
     }
 
-    private void SwitchToWindow()
+    private static void SwitchToWindow()
     {
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
         Options.WindowMode = WindowMode.Windowed;
@@ -225,9 +211,11 @@ public partial class OptionsManager : Resource
 
     private void SetWinSize()
     {
-        if (Options.WindowSize != Vector2I.Zero)
+        Vector2I windowSize = new(Options.WindowWidth, Options.WindowHeight);
+
+        if (windowSize != Vector2I.Zero)
         {
-            DisplayServer.WindowSetSize(Options.WindowSize);
+            DisplayServer.WindowSetSize(windowSize);
 
             // center window
             Vector2I screenSize = DisplayServer.ScreenGetSize();
@@ -253,16 +241,7 @@ public partial class OptionsManager : Resource
     private void SetAntialiasing()
     {
         // Set both 2D and 3D settings to the same value
-        ProjectSettings.SetSetting(
-            name: "rendering/anti_aliasing/quality/msaa_2d", 
-            value: Options.Antialiasing);
-
-        ProjectSettings.SetSetting(
-            name: "rendering/anti_aliasing/quality/msaa_3d",
-            value: Options.Antialiasing);
+        ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_2d", Options.Antialiasing);
+        ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_3d", Options.Antialiasing);
     }
-
-    [GeneratedRegex("path=\"(?<path>.*?)\"")]
-    private static partial Regex GetResourcePathRegex();
 }
-

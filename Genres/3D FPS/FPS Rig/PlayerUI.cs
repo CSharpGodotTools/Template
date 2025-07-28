@@ -6,14 +6,13 @@ namespace __TEMPLATE__.FPS3D;
 
 public partial class Player
 {
-    [Export] private OptionsManager _options;
     private Vector3 _cameraTarget;
     private Vector2 _mouseInput;
     private float _mouseSensitivity;
 
     private void OnReadyUI()
     {
-        _mouseSensitivity = _options.Options.MouseSensitivity * 0.0001f;
+        _mouseSensitivity = OptionsManager.Options.MouseSensitivity * 0.0001f;
 
         OptionsGameplay gameplay = GetNode<UIPopupMenu>("%PopupMenu")
             .Options.GetNode<OptionsGameplay>("%Gameplay");

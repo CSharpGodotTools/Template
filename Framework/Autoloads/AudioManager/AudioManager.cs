@@ -5,8 +5,6 @@ namespace __TEMPLATE__;
 
 public partial class AudioManager : Node
 {
-    [Export] 
-    private OptionsManager         _optionsManager;
     private static GAudioPlayer    _musicPlayer;
     private static Node            _sfxPlayersParent;
     private static float           _lastPitch;
@@ -14,7 +12,7 @@ public partial class AudioManager : Node
 
     public override void _Ready()
     {
-        _options = _optionsManager.Options;
+        _options = OptionsManager.Options;
         _musicPlayer = new GAudioPlayer(this);
 
         _sfxPlayersParent = new Node();
