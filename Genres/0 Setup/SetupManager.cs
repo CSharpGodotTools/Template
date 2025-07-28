@@ -29,7 +29,7 @@ public static class SetupManager
         // Moves the main scene file from its original location to a new location
         File.Move(
             Path.Combine(pathFrom, folderNames[genre], mainSceneName),
-            Path.Combine(pathTo, "Scenes", mainSceneName));
+            Path.Combine(pathTo, mainSceneName));
 
         // Move all files relevant to this genre
         MoveFilesAndPreserveFolderStructure(Path.Combine(pathFrom, folderNames[genre]), Path.Combine("Genres", folderNames[genre]));
