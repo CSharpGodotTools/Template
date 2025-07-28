@@ -23,7 +23,7 @@ public partial class CheckDotNetVersion : Node
                 DialogText = "Your .NET version is lower than 8.0.400. Please update your .NET SDK from https://dotnet.microsoft.com/en-us/download"
             };
 
-            dialog.Connect("confirmed", new Callable(this, nameof(OnDialogConfirmed)));
+            dialog.Confirmed += OnDialogConfirmed;
             AddChild(dialog);
             dialog.PopupCentered();
         }
