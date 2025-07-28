@@ -24,6 +24,7 @@ public partial class MetricsOverlay : Node
     private bool _visible;
 
     private Dictionary<string, (bool enabled, Func<string> valueProvider)> _metrics;
+    private static Dictionary<string, Func<object>> _trackingVariables = [];
 
     private static double Retrieve(Monitor monitor) => Performance.GetMonitor(monitor);
 
@@ -83,6 +84,7 @@ public partial class MetricsOverlay : Node
 
         RenderSettings();
         RenderMetrics();
+        RenderUserDefinedVariables();
 
         ImGui.End();
     }
@@ -100,45 +102,69 @@ public partial class MetricsOverlay : Node
         ImGui.Begin("Metrics Overlay", ImGuiWindowFlags.NoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
     }
 
+    public static void StartTracking(string key, Func<object> function)
+    {
+        _trackingVariables.Add(key, function);
+    }
+
+    public static void StopTracking(string key)
+    {
+        _trackingVariables.Remove(key);
+    }
+
     private void RenderSettings()
     {
-        if (ImGui.CollapsingHeader("Settings"))
+        if (!ImGui.CollapsingHeader("Settings"))
+            return;
+
+        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, Vector2.One * 2);
+        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.One * 2);
+
+        ImGui.Checkbox("Enable FPS Graph", ref _enableFPSGraph);
+
+        foreach (string key in _metrics.Keys)
         {
-            ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, Vector2.One * 2);
-            ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, Vector2.One * 2);
+            bool enabled = _metrics[key].enabled;
 
-            ImGui.Checkbox("Enable FPS Graph", ref _enableFPSGraph);
-
-            foreach (string key in _metrics.Keys)
+            if (ImGui.Checkbox($"Log {key}", ref enabled))
             {
-                bool enabled = _metrics[key].enabled;
-
-                if (ImGui.Checkbox($"Log {key}", ref enabled))
-                {
-                    _metrics[key] = (enabled, _metrics[key].valueProvider);
-                }
+                _metrics[key] = (enabled, _metrics[key].valueProvider);
             }
-
-            ImGui.PopStyleVar(2);
         }
+
+        ImGui.PopStyleVar(2);
     }
 
     private void RenderMetrics()
     {
-        if (ImGui.CollapsingHeader("Metrics", ImGuiTreeNodeFlags.DefaultOpen))
-        {
-            foreach ((string key, (bool enabled, Func<string> valueProvider)) in _metrics)
-            {
-                if (enabled)
-                {
-                    ImGui.Text($"{key}: {valueProvider()}");
+        if (!ImGui.CollapsingHeader("Metrics", ImGuiTreeNodeFlags.DefaultOpen))
+            return;
 
-                    if (key == "FPS" && _enableFPSGraph)
-                    {
-                        RenderFpsGraph();
-                    }
+        foreach ((string key, (bool enabled, Func<string> valueProvider)) in _metrics)
+        {
+            if (enabled)
+            {
+                ImGui.Text($"{key}: {valueProvider()}");
+
+                if (key == "FPS" && _enableFPSGraph)
+                {
+                    RenderFpsGraph();
                 }
             }
+        }
+    }
+
+    private void RenderUserDefinedVariables()
+    {
+        if (_trackingVariables.Count == 0 || !ImGui.CollapsingHeader("User Defined"))
+            return;
+
+        foreach (var kvp in _trackingVariables)
+        {
+            string name = kvp.Key;
+            string value = kvp.Value().ToString();
+
+            ImGui.Text($"{name}: {value}");
         }
     }
 
