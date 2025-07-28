@@ -9,8 +9,8 @@ namespace __TEMPLATE__.Netcode;
 
 public class Net
 {
-    public event Action<ENetServer> OnServerCreated;
-    public event Action<ENetClient> OnClientCreated;
+    public event Action<ENetServer> ServerCreated;
+    public event Action<ENetClient> ClientCreated;
 
     public static int HeartbeatPosition { get; } = 20;
 
@@ -50,7 +50,7 @@ public class Net
         }
 
         Server = _serverFactory.CreateServer();
-        OnServerCreated?.Invoke(Server);
+        ServerCreated?.Invoke(Server);
         Server.Start(25565, 100, new ENetOptions
         {
             PrintPacketByteSize = false,
@@ -75,7 +75,7 @@ public class Net
 
         Client = _clientFactory.CreateClient();
 
-        OnClientCreated?.Invoke(Client);
+        ClientCreated?.Invoke(Client);
 
         Client.Connect(ip, port, new ENetOptions
         {
@@ -132,4 +132,3 @@ public class Net
         }
     }
 }
-

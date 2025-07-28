@@ -114,23 +114,3 @@ public abstract class ENetLow
 
     protected long _running;
 }
-
-public class ENetOptions
-{
-    public bool PrintPacketData { get; set; } = false;
-    public bool PrintPacketByteSize { get; set; } = false;
-    public bool PrintPacketReceived { get; set; } = true;
-    public bool PrintPacketSent { get; set; } = true;
-}
-
-public enum DisconnectOpcode
-{
-    Disconnected,
-    Maintenance,
-    Restarting,
-    Stopping,
-    Timeout,
-    Kicked,
-    Banned
-}
-

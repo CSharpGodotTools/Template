@@ -56,9 +56,9 @@ public abstract partial class NetControlPanelLow : Control
 
     private void SetupClientEvents()
     {
-        Net.OnClientCreated += client =>
+        Net.ClientCreated += client =>
         {
-            client.OnConnected += () =>
+            client.Connected += () =>
             {
                 if (!Net.Server.IsRunning)
                 {
@@ -69,7 +69,7 @@ public abstract partial class NetControlPanelLow : Control
                 GetTree().UnfocusCurrentControl();
             };
 
-            client.OnDisconnected += _ =>
+            client.Disconnected += _ =>
             {
                 GetNode<Button>("%Start Server").Disabled = false;
                 GetNode<Button>("%Stop Server").Disabled = false;

@@ -14,17 +14,17 @@ public abstract class ENetClient : ENetLow
     /// <summary>
     /// Fires when the client connects to the server. Thread safe.
     /// </summary>
-    public event Action OnConnected;
+    public event Action Connected;
 
     /// <summary>
     /// Fires when the client disconnects or times out from the server. Thread safe.
     /// </summary>
-    public event Action<DisconnectOpcode> OnDisconnected;
+    public event Action<DisconnectOpcode> Disconnected;
 
     /// <summary>
     /// Fires when the client times out from the server. Thread safe.
     /// </summary>
-    public event Action OnTimeout;
+    public event Action Timedout;
 
     /// <summary>
     /// Is the client connected to the server? Thread safe.
@@ -45,6 +45,7 @@ public abstract class ENetClient : ENetLow
     public async void Connect(string ip, ushort port, ENetOptions options = default, params Type[] ignoredPackets)
     {
         Options = options;
+
         Log("Client is starting");
         Starting();
         InitIgnoredPackets(ignoredPackets);
@@ -123,16 +124,16 @@ public abstract class ENetClient : ENetLow
 
             if (opcode == GodotOpcode.Connected)
             {
-                OnConnected?.Invoke();
+                Connected?.Invoke();
             }
             else if (opcode == GodotOpcode.Disconnected)
             {
                 DisconnectOpcode disconnectOpcode = (DisconnectOpcode)cmd.Data[0];
-                OnDisconnected?.Invoke(disconnectOpcode);
+                Disconnected?.Invoke(disconnectOpcode);
             }
             else if (opcode == GodotOpcode.Timeout)
             {
-                OnTimeout?.Invoke();
+                Timedout?.Invoke();
             }
         }
     }
@@ -297,23 +298,3 @@ public abstract class ENetClient : ENetLow
     }
     #endregion
 }
-
-public enum ENetClientOpcode
-{
-    Disconnect
-}
-
-public enum GodotOpcode
-{
-    Connected,
-    Timeout,
-    Disconnected
-}
-
-public class PacketData
-{
-    public Type Type { get; set; }
-    public PacketReader PacketReader { get; set; }
-    public ServerPacket HandlePacket { get; set; }
-}
-

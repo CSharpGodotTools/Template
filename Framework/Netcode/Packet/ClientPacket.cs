@@ -36,4 +36,3 @@ public abstract class ClientPacket : GamePacket
     /// </summary>
     public abstract void Handle(ENetServer server, ENet.Peer client);
 }
-

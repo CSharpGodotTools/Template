@@ -74,19 +74,19 @@ public class PacketWriter : IDisposable
     {
         switch (v)
         {
-            case byte k: _writer.Write(k); break;
-            case sbyte k: _writer.Write(k); break;
-            case char k: _writer.Write(k); break;
+            case byte   k: _writer.Write(k); break;
+            case sbyte  k: _writer.Write(k); break;
+            case char   k: _writer.Write(k); break;
             case string k: _writer.Write(k); break;
-            case bool k: _writer.Write(k); break;
-            case short k: _writer.Write(k); break;
+            case bool   k: _writer.Write(k); break;
+            case short  k: _writer.Write(k); break;
             case ushort k: _writer.Write(k); break;
-            case int k: _writer.Write(k); break;
-            case uint k: _writer.Write(k); break;
-            case float k: _writer.Write(k); break;
+            case int    k: _writer.Write(k); break;
+            case uint   k: _writer.Write(k); break;
+            case float  k: _writer.Write(k); break;
             case double k: _writer.Write(k); break;
-            case long k: _writer.Write(k); break;
-            case ulong k: _writer.Write(k); break;
+            case long   k: _writer.Write(k); break;
+            case ulong  k: _writer.Write(k); break;
             default:
                 throw new NotImplementedException("PacketWriter: " + v.GetType() + " is not a supported primitive type.");
         }

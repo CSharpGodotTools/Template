@@ -7,4 +7,3 @@ public class NetExcludeAttribute : Attribute
 {
 
 }
-

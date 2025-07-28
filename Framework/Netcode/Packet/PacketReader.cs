@@ -22,23 +22,23 @@ public class PacketReader : IDisposable
         packet.Dispose();
     }
 
-    public byte ReadByte() => _reader.ReadByte();
-    public sbyte ReadSByte() => _reader.ReadSByte();
-    public char ReadChar() => _reader.ReadChar();
-    public string ReadString() => _reader.ReadString();
-    public bool ReadBool() => _reader.ReadBoolean();
-    public short ReadShort() => _reader.ReadInt16();
-    public ushort ReadUShort() => _reader.ReadUInt16();
-    public int ReadInt() => _reader.ReadInt32();
-    public uint ReadUInt() => _reader.ReadUInt32();
-    public float ReadFloat() => _reader.ReadSingle();
-    public double ReadDouble() => _reader.ReadDouble();
-    public long ReadLong() => _reader.ReadInt64();
-    public ulong ReadULong() => _reader.ReadUInt64();
-    public byte[] ReadBytes(int count) => _reader.ReadBytes(count);
-    public byte[] ReadBytes() => ReadBytes(ReadInt());
-    public Vector2 ReadVector2() => new(ReadFloat(), ReadFloat());
-    public Vector3 ReadVector3() => new(ReadFloat(), ReadFloat(), ReadFloat());
+    public byte    ReadByte()           => _reader.ReadByte();
+    public sbyte   ReadSByte()          => _reader.ReadSByte();
+    public char    ReadChar()           => _reader.ReadChar();
+    public string  ReadString()         => _reader.ReadString();
+    public bool    ReadBool()           => _reader.ReadBoolean();
+    public short   ReadShort()          => _reader.ReadInt16();
+    public ushort  ReadUShort()         => _reader.ReadUInt16();
+    public int     ReadInt()            => _reader.ReadInt32();
+    public uint    ReadUInt()           => _reader.ReadUInt32();
+    public float   ReadFloat()          => _reader.ReadSingle();
+    public double  ReadDouble()         => _reader.ReadDouble();
+    public long    ReadLong()           => _reader.ReadInt64();
+    public ulong   ReadULong()          => _reader.ReadUInt64();
+    public byte[]  ReadBytes(int count) => _reader.ReadBytes(count);
+    public byte[]  ReadBytes()          => ReadBytes(ReadInt());
+    public Vector2 ReadVector2()        => new(ReadFloat(), ReadFloat());
+    public Vector3 ReadVector3()        => new(ReadFloat(), ReadFloat(), ReadFloat());
 
     public T Read<T>()
     {
@@ -79,19 +79,19 @@ public class PacketReader : IDisposable
 
     private T ReadPrimitive<T>(Type t)
     {
-        if (t == typeof(byte)) return (T)(object)ReadByte();
-        if (t == typeof(sbyte)) return (T)(object)ReadSByte();
-        if (t == typeof(char)) return (T)(object)ReadChar();
+        if (t == typeof(byte))   return (T)(object)ReadByte();
+        if (t == typeof(sbyte))  return (T)(object)ReadSByte();
+        if (t == typeof(char))   return (T)(object)ReadChar();
         if (t == typeof(string)) return (T)(object)ReadString();
-        if (t == typeof(bool)) return (T)(object)ReadBool();
-        if (t == typeof(short)) return (T)(object)ReadShort();
+        if (t == typeof(bool))   return (T)(object)ReadBool();
+        if (t == typeof(short))  return (T)(object)ReadShort();
         if (t == typeof(ushort)) return (T)(object)ReadUShort();
-        if (t == typeof(int)) return (T)(object)ReadInt();
-        if (t == typeof(uint)) return (T)(object)ReadUInt();
-        if (t == typeof(float)) return (T)(object)ReadFloat();
+        if (t == typeof(int))    return (T)(object)ReadInt();
+        if (t == typeof(uint))   return (T)(object)ReadUInt();
+        if (t == typeof(float))  return (T)(object)ReadFloat();
         if (t == typeof(double)) return (T)(object)ReadDouble();
-        if (t == typeof(long)) return (T)(object)ReadLong();
-        if (t == typeof(ulong)) return (T)(object)ReadULong();
+        if (t == typeof(long))   return (T)(object)ReadLong();
+        if (t == typeof(ulong))  return (T)(object)ReadULong();
 
         throw new NotImplementedException("PacketReader: " + t + " is not a supported primitive type.");
     }

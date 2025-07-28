@@ -371,11 +371,3 @@ public abstract class ENetServer : ENetLow
     }
     #endregion
 }
-
-public enum ENetServerOpcode
-{
-    Stop,
-    Kick,
-    KickAll
-}
-
