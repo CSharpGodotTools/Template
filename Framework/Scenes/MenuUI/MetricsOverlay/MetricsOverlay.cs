@@ -156,7 +156,7 @@ public partial class MetricsOverlay : Node
 
     private void RenderUserDefinedVariables()
     {
-        if (_trackingVariables.Count == 0 || !ImGui.CollapsingHeader("User Defined"))
+        if (_trackingVariables.Count == 0 || !ImGui.CollapsingHeader("User Defined", ImGuiTreeNodeFlags.DefaultOpen))
             return;
 
         foreach (var kvp in _trackingVariables)
