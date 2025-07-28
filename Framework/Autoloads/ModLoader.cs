@@ -18,7 +18,7 @@ public class ModLoaderUI
         // Ensure "Mods" directory always exists
         Directory.CreateDirectory(modsPath);
 
-        using DirAccess dir = DirAccess.Open(modsPath);
+        DirAccess dir = DirAccess.Open(modsPath);
 
         if (dir == null)
         {
@@ -105,6 +105,9 @@ public class ModLoaderUI
         Next:
             filename = dir.GetNext();
         }
+
+        dir.ListDirEnd();
+        dir.Dispose();
     }
 }
 

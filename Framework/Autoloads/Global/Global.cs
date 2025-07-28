@@ -22,7 +22,7 @@ public partial class Global : Node
         
         Logger.MessageLogged += UIConsole.AddMessage;
 
-        ModLoaderUI.LoadMods(this);
+        //ModLoaderUI.LoadMods(this);
     }
 
     public override void _PhysicsProcess(double delta)

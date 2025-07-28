@@ -48,7 +48,6 @@ public partial class OptionsInput : Control
                 }
 
                 _btnNewInput = null;
-                @event.Dispose(); // Object count was increasing a lot when this function was executed
                 return;
             }
 
@@ -79,8 +78,6 @@ public partial class OptionsInput : Control
                 }
             }
         }
-
-        @event.Dispose(); // Object count was increasing a lot when this function was executed
     }
 
     private void HandleInput(InputEvent @event)
@@ -261,7 +258,6 @@ public partial class OptionsInput : Control
         _btnNewInput = null;
         OptionsManager.ResetHotkeys();
         CreateHotkeys();
-        GC.Collect(); // Object count was increasing a lot when this function was executed
     }
 }
 
