@@ -1,8 +1,8 @@
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
-# Exclude the addons folder from IntelliSense
-[addons/**/*.cs]
+# Exclude the Framework folder from IntelliSense as game devs should focus on their code, not the framework code
+[Framework/**/*.cs]
 generated_code = true
 dotnet_analyzer_diagnostic.severity = none
 
@@ -36,6 +36,9 @@ dotnet_diagnostic.IDE0130.severity = none
 
 # Stop suggesting to make everything static due to Godot export members not being allowed to be static
 dotnet_diagnostic.CA1822.severity = none
+
+# IDE is suggesting to use readonly modifier on [Export] fields but you can't do this
+dotnet_diagnostic.IDE0044.severity = none
 
 # Stop warning about user defined suppressions
 dotnet_diagnostic.IDE0079.severity = none

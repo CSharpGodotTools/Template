@@ -5,6 +5,7 @@
 
 [node name="InventorySandbox" type="Node2D"]
 script = ExtResource("1_fmlrj")
+metadata/_edit_lock_ = true
 
 [node name="UI" type="CanvasLayer" parent="."]
 unique_name_in_owner = true
@@ -12,7 +13,6 @@ unique_name_in_owner = true
 [node name="CursorItemContainer" parent="UI" instance=ExtResource("2_bqf6y")]
 offset_right = 50.0
 offset_bottom = 50.0
-metadata/_edit_lock_ = true
 
 [node name="CenterContainer" type="CenterContainer" parent="UI"]
 anchors_preset = 15

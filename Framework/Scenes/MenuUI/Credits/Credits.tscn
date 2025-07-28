@@ -1,0 +1,65 @@
+[gd_scene load_steps=8 format=3 uid="uid://rbcqvr4snrvn"]
+
+[ext_resource type="Script" uid="uid://cg3so70gfansf" path="res://Framework/Scenes/MenuUI/Credits/Credits.cs" id="1_2ybu5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qx1q1"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d2kuo"]
+bg_color = Color(0, 0, 0, 0.470588)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a4sfd"]
+bg_color = Color(0, 0, 0, 0.219608)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_o20y7"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0, 0, 0, 0.219608)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qob1d"]
+
+[sub_resource type="Theme" id="Theme_bxyca"]
+Button/styles/focus = SubResource("StyleBoxFlat_d2kuo")
+Button/styles/hover = SubResource("StyleBoxFlat_a4sfd")
+Button/styles/normal = SubResource("StyleBoxFlat_o20y7")
+Button/styles/pressed = SubResource("StyleBoxEmpty_qob1d")
+
+[node name="Credits" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_qx1q1")
+script = ExtResource("1_2ybu5")
+metadata/_edit_lock_ = true
+
+[node name="HBox" type="HBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+theme = SubResource("Theme_bxyca")
+
+[node name="Pause" type="Button" parent="HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(75, 0)
+layout_mode = 2
+text = "PAUSE"
+
+[node name="Speed" type="Button" parent="HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(75, 0)
+layout_mode = 2
+text = "1.0x"
+
+[connection signal="pressed" from="HBox/Pause" to="." method="_OnPausePressed"]
+[connection signal="pressed" from="HBox/Speed" to="." method="_OnSpeedPressed"]

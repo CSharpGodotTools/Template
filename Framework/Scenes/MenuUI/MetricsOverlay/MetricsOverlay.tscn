@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://b1augjui20eux"]
+
+[ext_resource type="Script" uid="uid://bamosxalm8lxs" path="res://Framework/Scenes/MenuUI/MetricsOverlay/MetricsOverlay.cs" id="1_bhocc"]
+
+[node name="Debug Overlay" type="Node"]
+script = ExtResource("1_bhocc")

@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://b1eh13622530o"]
+
+[ext_resource type="Script" uid="uid://xc5a86a6nvp0" path="res://Framework/Scenes/MenuUI/ToolScriptHelpers/ToolScriptHelpers.cs" id="1_876oj"]
+
+[node name="Tool Scripts" type="Node2D"]
+script = ExtResource("1_876oj")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="PanelContainer"]
+layout_mode = 2
+text = "Click on the root node and look at the inspector to see interative bools created by the tool script."

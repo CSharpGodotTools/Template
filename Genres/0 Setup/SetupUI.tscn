@@ -35,6 +35,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = SubResource("Theme_rop0o")
 script = ExtResource("1_m5u8t")
+metadata/_edit_lock_ = true
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="."]
 layout_mode = 2

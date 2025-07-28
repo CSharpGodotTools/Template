@@ -1,12 +1,11 @@
 [gd_scene load_steps=78 format=4 uid="uid://b5cjboi5sgqg4"]
 
-[ext_resource type="Script" uid="uid://bntqintclag2f" path="res://Genres/3D FPS/Scripts/Player.cs" id="1_3aas6"]
-[ext_resource type="Script" uid="uid://bhhfyeewdksp2" path="res://Genres/3D FPS/Scripts/Env.cs" id="1_7hkd7"]
-[ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://addons/Framework/Scenes/MenuUI/PopupMenu/UIPopupMenu.tscn" id="1_bhqx1"]
-[ext_resource type="Material" uid="uid://dihglq1xyljur" path="res://Genres/3D FPS/Materials/material.tres" id="1_wx8rx"]
-[ext_resource type="Script" uid="uid://cnrhkxeocc2bn" path="res://Genres/3D FPS/Scripts/SubView.cs" id="3_k7q3h"]
-[ext_resource type="Script" uid="uid://2ql30j2jwpeq" path="res://Genres/3D FPS/Scripts/LevelUI.cs" id="3_u6p7k"]
-[ext_resource type="Resource" uid="uid://bvgp3pcf0t0ky" path="res://addons/Framework/Resources/OptionsManager.tres" id="4_ayq1j"]
+[ext_resource type="Script" uid="uid://bntqintclag2f" path="res://Genres/3D FPS/FPS Rig/Player.cs" id="1_3aas6"]
+[ext_resource type="Script" uid="uid://bhhfyeewdksp2" path="res://Genres/3D FPS/Env.cs" id="1_7hkd7"]
+[ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://Framework/Scenes/MenuUI/PopupMenu/UIPopupMenu.tscn" id="1_bhqx1"]
+[ext_resource type="Material" uid="uid://dihglq1xyljur" path="res://Genres/3D FPS/material.tres" id="1_wx8rx"]
+[ext_resource type="Script" uid="uid://cnrhkxeocc2bn" path="res://Genres/3D FPS/FPS Rig/SubView.cs" id="3_k7q3h"]
+[ext_resource type="Script" uid="uid://2ql30j2jwpeq" path="res://Genres/3D FPS/LevelUI.cs" id="3_u6p7k"]
 [ext_resource type="Animation" uid="uid://d0wqid335slv6" path="res://Genres/3D FPS/FPS Rig/Weapons/Assault Rifle/Animations/Holster.res" id="8_v4j0c"]
 [ext_resource type="Texture2D" uid="uid://bpj3db73vulrf" path="res://Genres/3D FPS/FPS Rig/Materials/ArmsDiffuse.png" id="9_avj5r"]
 [ext_resource type="Texture2D" uid="uid://bye22cojt887s" path="res://Genres/3D FPS/FPS Rig/Materials/ArmsSpecular.png" id="10_iev0t"]
@@ -711,7 +710,6 @@ visible = false
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_fx7rt")
 script = ExtResource("1_7hkd7")
-_options = ExtResource("4_ayq1j")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.873772, 0.238744, -0.423702, 0, 0.871214, 0.490904, 0.486335, -0.428938, 0.761242, 0, 0, 0)
@@ -783,7 +781,6 @@ _cameraBone = NodePath("SubViewportContainer/SubViewport/Camera3D/BoneAttachment
 _animTree = NodePath("SubViewportContainer/SubViewport/FPS Rig/AnimationTree")
 _fpsRig = NodePath("SubViewportContainer/SubViewport/FPS Rig")
 _nodeItems = NodePath("SubViewportContainer/SubViewport/FPS Rig/Items")
-_options = ExtResource("4_ayq1j")
 
 [node name="SubViewportContainer" type="SubViewportContainer" parent="Player"]
 anchors_preset = 15
@@ -793,7 +790,6 @@ grow_horizontal = 2
 grow_vertical = 2
 stretch = true
 script = ExtResource("3_k7q3h")
-_options = ExtResource("4_ayq1j")
 
 [node name="SubViewport" type="SubViewport" parent="Player/SubViewportContainer"]
 handle_input_locally = false
