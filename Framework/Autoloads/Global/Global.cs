@@ -7,9 +7,6 @@ namespace __TEMPLATE__;
 
 public partial class Global : Node
 {
-    /// <summary>
-    /// If no await calls are needed, add "return await Task.FromResult(1);"
-    /// </summary>
     public event Func<Task> OnQuit;
 
     public static Global Instance { get; private set; }
