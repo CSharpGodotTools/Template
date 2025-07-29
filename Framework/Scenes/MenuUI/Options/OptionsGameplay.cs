@@ -11,7 +11,7 @@ public partial class OptionsGameplay : Control
 
     public override void _Ready()
     {
-        _options = OptionsManager.Options;
+        _options = GetNode<OptionsManager>(Autoloads.OptionsManager).Options;
         SetupDifficulty();
         SetupMouseSensitivity();
     }

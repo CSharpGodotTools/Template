@@ -9,45 +9,42 @@ public partial class MainMenuNav : Node
         GetNode<Button>("Play").GrabFocus();
     }
 
-    private static void _OnPlayPressed()
+    private void _OnPlayPressed()
     {
         //AudioManager.PlayMusic(Music.Level1, false);
-        Game.SwitchScene(Scene.Game);
+        Game.SwitchScene(this, Scene.Game);
     }
 
-    private static void _OnModsPressed()
+    private void _OnModsPressed()
     {
         //AudioManager.PlayMusic(Music.Level4);
-        Game.SwitchScene(Scene.ModLoader);
+        Game.SwitchScene(this, Scene.ModLoader);
     }
 
-    private static void _OnOptionsPressed()
+    private void _OnOptionsPressed()
     {
         //AudioManager.PlayMusic(Music.Level4);
-        Game.SwitchScene(Scene.Options);
+        Game.SwitchScene(this, Scene.Options);
     }
 
-    private static void _OnCreditsPressed()
+    private void _OnCreditsPressed()
     {
         //AudioManager.PlayMusic(Music.Level4);
-        Game.SwitchScene(Scene.Credits);
+        Game.SwitchScene(this, Scene.Credits);
     }
 
-#pragma warning disable CA1822 // Mark members as static
     private async void _OnQuitPressed()
-#pragma warning restore CA1822 // Mark members as static
     {
-        await Global.QuitAndCleanup();
+        await GetNode<Global>(Autoloads.Global).QuitAndCleanup();
     }
 
-    private static void _OnDiscordPressed()
+    private void _OnDiscordPressed()
     {
         OS.ShellOpen("https://discord.gg/j8HQZZ76r8");
     }
 
-    private static void _OnGitHubPressed()
+    private void _OnGitHubPressed()
     {
         OS.ShellOpen("https://github.com/ValksGodotTools/Template");
     }
 }
-

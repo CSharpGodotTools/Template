@@ -17,7 +17,7 @@ public abstract partial class NetControlPanelLow : Control
 
     public override void _Ready()
     {
-        Net.Initialize(GameServerFactory(), GameClientFactory());
+        Net.Initialize(this, GameServerFactory(), GameClientFactory());
 
         SetupButtons();
         SetupInputFields();

@@ -20,9 +20,9 @@ public class Net
     private IGameServerFactory _serverFactory;
     private IGameClientFactory _clientFactory;
 
-    public void Initialize(IGameServerFactory serverFactory, IGameClientFactory clientFactory)
+    public void Initialize(Node node, IGameServerFactory serverFactory, IGameClientFactory clientFactory)
     {
-        Global.OnQuit += StopThreads;
+        node.GetNode<Global>(Autoloads.Global).OnQuit += StopThreads;
 
         _serverFactory = serverFactory;
         _clientFactory = clientFactory;
@@ -126,7 +126,7 @@ public class Net
         }
 
         // Wait for the logger to finish enqueing the remaining logs
-        while (Global.Logger.StillWorking())
+        while (Global.Instance.Logger.StillWorking())
         {
             await Task.Delay(1);
         }

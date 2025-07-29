@@ -12,15 +12,17 @@ namespace __TEMPLATE__;
 // Autoload
 public partial class OptionsManager : Node
 {
-    public static event Action<WindowMode> WindowModeChanged;
+    public event Action<WindowMode> WindowModeChanged;
 
-    public static Dictionary<StringName, Array<InputEvent>> DefaultHotkeys { get; set; }
-    public static ResourceHotkeys Hotkeys { get; private set; }
-    public static ResourceOptions Options { get; private set; }
-    public static string CurrentOptionsTab { get; set; } = "General";
+    public Dictionary<StringName, Array<InputEvent>> DefaultHotkeys { get; set; }
+    public ResourceHotkeys Hotkeys { get; private set; }
+    public ResourceOptions Options { get; private set; }
+    public string CurrentOptionsTab { get; set; } = "General";
 
     private const string PathOptions = "user://options.json";
     private const string PathHotkeys = "user://hotkeys.tres";
+
+    private JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
 
     public override void _Ready()
     {
@@ -37,7 +39,7 @@ public partial class OptionsManager : Node
         SetAntialiasing();
     }
 
-    public static void ToggleFullscreen()
+    public void ToggleFullscreen()
     {
         if (DisplayServer.WindowGetMode() == DisplayServer.WindowMode.Windowed)
         {
@@ -49,12 +51,9 @@ public partial class OptionsManager : Node
         }
     }
 
-    public static void SaveOptions()
+    public void SaveOptions()
     {
-        string json = JsonSerializer.Serialize(Options, new JsonSerializerOptions
-        {
-            WriteIndented = true
-        });
+        string json = JsonSerializer.Serialize(Options, _jsonOptions);
 
         FileAccess file = FileAccess.Open(PathOptions, FileAccess.ModeFlags.Write);
 
@@ -62,7 +61,7 @@ public partial class OptionsManager : Node
         file.Close();
     }
 
-    public static void SaveHotkeys()
+    public void SaveHotkeys()
     {
         Error error = ResourceSaver.Save(Hotkeys, PathHotkeys);
 
@@ -72,7 +71,7 @@ public partial class OptionsManager : Node
         }
     }
 
-    public static void ResetHotkeys()
+    public void ResetHotkeys()
     {
         // Deep clone default hotkeys over
         Hotkeys.Actions = [];
@@ -190,14 +189,14 @@ public partial class OptionsManager : Node
         }
     }
 
-    private static void SwitchToFullscreen()
+    private void SwitchToFullscreen()
     {
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
         Options.WindowMode = WindowMode.Fullscreen;
         WindowModeChanged?.Invoke(WindowMode.Fullscreen);
     }
 
-    private static void SwitchToWindow()
+    private void SwitchToWindow()
     {
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
         Options.WindowMode = WindowMode.Windowed;

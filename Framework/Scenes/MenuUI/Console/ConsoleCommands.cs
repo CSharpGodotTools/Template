@@ -17,7 +17,7 @@ public partial class UIConsole
     [ConsoleCommand("quit", "exit")]
     private async void Quit()
     {
-        await Global.QuitAndCleanup();
+        await GetNode<Global>(Autoloads.Global).QuitAndCleanup();
     }
 
     [ConsoleCommand("debug")]

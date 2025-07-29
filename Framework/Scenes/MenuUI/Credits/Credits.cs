@@ -103,7 +103,7 @@ public partial class Credits : Node
         // Go back to the main menu when the credits are finished
         if (pos.Y <= -_vbox.Size.Y)
         {
-            Game.SwitchScene(Scene.MainMenu);
+            Game.SwitchScene(this, Scene.MainMenu);
         }
     }
 
@@ -111,7 +111,7 @@ public partial class Credits : Node
     {
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
-            Game.SwitchScene(Scene.MainMenu);
+            Game.SwitchScene(this, Scene.MainMenu);
         }
     }
 

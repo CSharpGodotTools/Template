@@ -11,7 +11,7 @@ public class ModLoaderUI
 {
     public static Dictionary<string, ModInfo> Mods { get; } = [];
 
-    public static void LoadMods(Node node)
+    public void LoadMods(Node node)
     {
         string modsPath = ProjectSettings.GlobalizePath("res://Mods");
 
@@ -113,13 +113,13 @@ public class ModLoaderUI
 
 public class ModInfo
 {
-    public string Name { get; set; }
-    public string Id { get; set; }
-    public string ModVersion { get; set; }
+    public string Name        { get; set; }
+    public string Id          { get; set; }
+    public string ModVersion  { get; set; }
     public string GameVersion { get; set; }
     public string Description { get; set; }
-    public string Author { get; set; }
-    public Dictionary<string, string> Dependencies { get; set; }
+    public string Author      { get; set; }
+
+    public Dictionary<string, string> Dependencies      { get; set; }
     public Dictionary<string, string> Incompatibilities { get; set; }
 }
-

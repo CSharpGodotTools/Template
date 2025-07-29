@@ -8,12 +8,14 @@ namespace __TEMPLATE__.UI;
 
 public partial class OptionsInput : Control
 {
-    private static BtnInfo _btnNewInput; // the btn waiting for new input
     private Dictionary<StringName, Array<InputEvent>> _defaultActions;
+    private BtnInfo _btnNewInput; // the btn waiting for new input
     private VBoxContainer _content;
+    private OptionsManager _optionsManager;
 
     public override void _Ready()
     {
+        _optionsManager = GetNode<OptionsManager>(Autoloads.OptionsManager);
         _content = GetNode<VBoxContainer>("Scroll/VBox");
         CreateHotkeys();
     }
@@ -30,7 +32,7 @@ public partial class OptionsInput : Control
                 InputMap.ActionEraseEvent(action, _btnNewInput.InputEvent);
 
                 // Update options
-                OptionsManager.Hotkeys.Actions[action].Remove(_btnNewInput.InputEvent);
+                _optionsManager.Hotkeys.Actions[action].Remove(_btnNewInput.InputEvent);
 
                 // Update UI
                 _btnNewInput.Btn.QueueFree();
@@ -69,11 +71,11 @@ public partial class OptionsInput : Control
         {
             if (Input.IsActionJustPressed(InputActions.UICancel))
             {
-                if (SceneManager.CurrentScene.Name == "Options")
+                if (GetNode<SceneManager>(Autoloads.SceneManager).CurrentScene.Name == "Options")
                 {
                     if (_btnNewInput == null)
                     {
-                        Game.SwitchScene(Scene.MainMenu);
+                        Game.SwitchScene(this, Scene.MainMenu);
                     }
                 }
             }
@@ -103,7 +105,7 @@ public partial class OptionsInput : Control
         // Move the button to where it was originally at
         _btnNewInput.HBox.MoveChild(btn.Internal, index);
 
-        Dictionary<StringName, Array<InputEvent>> actions = OptionsManager.Hotkeys.Actions;
+        Dictionary<StringName, Array<InputEvent>> actions = _optionsManager.Hotkeys.Actions;
 
         // Clear the specific action event
         actions[action].Remove(_btnNewInput.InputEvent);
@@ -123,7 +125,7 @@ public partial class OptionsInput : Control
         _btnNewInput = null;
     }
 
-    private static GButton CreateButton(string action, InputEvent inputEvent, HBoxContainer hbox)
+    private GButton CreateButton(string action, InputEvent inputEvent, HBoxContainer hbox)
     {
         string readable = "";
 
@@ -164,7 +166,7 @@ public partial class OptionsInput : Control
         return btn;
     }
 
-    private static void CreateButtonPlus(string action, HBoxContainer hbox)
+    private void CreateButtonPlus(string action, HBoxContainer hbox)
     {
         // Create the button
         GButton btn = new(hbox, "+");
@@ -197,7 +199,7 @@ public partial class OptionsInput : Control
     private void CreateHotkeys()
     {
         // Loop through the actions in alphabetical order
-        foreach (StringName action in OptionsManager.Hotkeys.Actions.Keys.OrderBy(x => x.ToString()))
+        foreach (StringName action in _optionsManager.Hotkeys.Actions.Keys.OrderBy(x => x.ToString()))
         {
             string actionStr = action.ToString();
 
@@ -221,7 +223,7 @@ public partial class OptionsInput : Control
             // Add all the events after the action label
             HBoxContainer hboxEvents = new();
 
-            Array<InputEvent> events = OptionsManager.Hotkeys.Actions[action];
+            Array<InputEvent> events = _optionsManager.Hotkeys.Actions[action];
 
             foreach (InputEvent @event in events)
             {
@@ -256,18 +258,17 @@ public partial class OptionsInput : Control
         }
 
         _btnNewInput = null;
-        OptionsManager.ResetHotkeys();
+        _optionsManager.ResetHotkeys();
         CreateHotkeys();
     }
 }
 
 public class BtnInfo
 {
-    public InputEvent InputEvent { get; init; }
-    public string OriginalText { get; init; }
-    public StringName Action { get; init; }
-    public HBoxContainer HBox { get; init; }
-    public Button Btn { get; init; }
-    public bool Plus { get; init; }
+    public InputEvent    InputEvent   { get; init; }
+    public string        OriginalText { get; init; }
+    public StringName    Action       { get; init; }
+    public HBoxContainer HBox         { get; init; }
+    public Button        Btn          { get; init; }
+    public bool          Plus         { get; init; }
 }
-

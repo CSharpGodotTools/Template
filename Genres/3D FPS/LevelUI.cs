@@ -21,12 +21,14 @@ public partial class LevelUI : Node
 
         Input.MouseMode = Input.MouseModeEnum.Captured;
 
-        UIConsole.OnToggleVisibility += HandleConsoleToggled;
+        UIConsole console = GetNode<UIConsole>(Autoloads.Console);
+
+        console.VisibilityToggled += HandleConsoleToggled;
 
         _popupMenu.OnMainMenuBtnPressed += () =>
         {
             // No longer need to listen for this
-            UIConsole.OnToggleVisibility -= HandleConsoleToggled;
+            console.VisibilityToggled -= HandleConsoleToggled;
         };
     }
 

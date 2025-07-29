@@ -10,8 +10,12 @@ public partial class OptionsNav : Control
     private readonly Dictionary<string, Control> _tabs = [];
     private readonly Dictionary<string, Button> _buttons = [];
 
+    private OptionsManager _optionsManager;
+
     public override void _Ready()
     {
+        _optionsManager = GetNode<OptionsManager>(Autoloads.OptionsManager);
+
         Node content = GetParent().GetNode("Content");
 
         foreach (Control child in content.GetChildren())
@@ -27,15 +31,15 @@ public partial class OptionsNav : Control
             _buttons.Add(button.Name, button);
         }
 
-        _buttons[OptionsManager.CurrentOptionsTab].GrabFocus();
+        _buttons[_optionsManager.CurrentOptionsTab].GrabFocus();
 
         HideAllTabs();
-        ShowTab(OptionsManager.CurrentOptionsTab);
+        ShowTab(_optionsManager.CurrentOptionsTab);
     }
 
     private void ShowTab(string tabName)
     {
-        OptionsManager.CurrentOptionsTab = tabName;
+        _optionsManager.CurrentOptionsTab = tabName;
         HideAllTabs();
         _tabs[tabName].Show();
     }

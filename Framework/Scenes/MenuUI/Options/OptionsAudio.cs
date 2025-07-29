@@ -5,10 +5,13 @@ namespace __TEMPLATE__.UI;
 public partial class OptionsAudio : Control
 {
     private ResourceOptions _options;
+    private AudioManager _audioManager;
 
     public override void _Ready()
     {
-        _options = OptionsManager.Options;
+        _options = GetNode<OptionsManager>(Autoloads.OptionsManager).Options;
+        _audioManager = GetNode<AudioManager>(Autoloads.AudioManager);
+
         SetupMusic();
         SetupSounds();
     }
@@ -25,14 +28,13 @@ public partial class OptionsAudio : Control
         slider.Value = _options.SFXVolume;
     }
 
-    private static void _OnMusicValueChanged(float v)
+    private void _OnMusicValueChanged(float v)
     {
-        AudioManager.SetMusicVolume(v);
+        _audioManager.SetMusicVolume(v);
     }
 
-    private static void _OnSoundsValueChanged(float v)
+    private void _OnSoundsValueChanged(float v)
     {
-        AudioManager.SetSFXVolume(v);
+        _audioManager.SetSFXVolume(v);
     }
 }
-
