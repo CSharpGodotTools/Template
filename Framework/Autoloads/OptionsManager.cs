@@ -37,6 +37,14 @@ public partial class OptionsManager : Node
         SetAntialiasing();
     }
 
+    public override void _PhysicsProcess(double delta)
+    {
+        if (Input.IsActionJustPressed(InputActions.Fullscreen))
+        {
+            ToggleFullscreen();
+        }
+    }
+
     public void ToggleFullscreen()
     {
         if (DisplayServer.WindowGetMode() == DisplayServer.WindowMode.Windowed)

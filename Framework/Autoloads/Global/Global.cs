@@ -13,13 +13,9 @@ public partial class Global : Node
 
     public Logger Logger { get; private set; } = new();
 
-    private OptionsManager _optionsManager;
-
     public override void _Ready()
     {
         Instance = this;
-
-        _optionsManager = GetNode<OptionsManager>(Autoloads.OptionsManager);
         
         Logger.MessageLogged += GetNode<UIConsole>(Autoloads.Console).AddMessage;
 
@@ -28,11 +24,6 @@ public partial class Global : Node
 
     public override void _PhysicsProcess(double delta)
     {
-        if (Input.IsActionJustPressed(InputActions.Fullscreen))
-        {
-            _optionsManager.ToggleFullscreen();
-        }
-
         Logger.Update();
     }
 
