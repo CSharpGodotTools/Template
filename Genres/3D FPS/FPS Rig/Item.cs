@@ -14,4 +14,3 @@ public class Item(Node3D parent) // An item the player can hold
         _parent.Visible = v;
     }
 }
-

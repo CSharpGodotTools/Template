@@ -26,4 +26,3 @@ public partial class PlayerDashGhost : Node2D
             .Callback(QueueFree);
     }
 }
-

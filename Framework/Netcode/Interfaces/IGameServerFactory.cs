@@ -1,4 +1,4 @@
-﻿using __TEMPLATE__.Netcode.Server;
+using __TEMPLATE__.Netcode.Server;
 
 namespace __TEMPLATE__.Netcode;
 

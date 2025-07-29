@@ -193,4 +193,3 @@ public enum WindowMode
     Borderless,
     Fullscreen
 }
-

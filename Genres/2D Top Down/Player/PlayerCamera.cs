@@ -31,4 +31,3 @@ public partial class PlayerCamera : Camera2D
         SetPhysicsProcess(false);
     }
 }
-

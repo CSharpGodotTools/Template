@@ -123,4 +123,3 @@ public enum QualityPreset
     Medium,
     High
 }
-

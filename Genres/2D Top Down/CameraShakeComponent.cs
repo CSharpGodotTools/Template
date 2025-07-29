@@ -63,4 +63,3 @@ public class CameraShakeConfig
     public double Duration { get; set; } = 1.0;
     public double Frequency { get; set; }
 }
-

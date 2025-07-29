@@ -92,4 +92,3 @@ public class PlayerData
     [NetExclude] 
     public Vector2 PrevPosition { get; set; }
 }
-

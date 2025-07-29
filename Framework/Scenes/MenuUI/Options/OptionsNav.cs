@@ -49,4 +49,3 @@ public partial class OptionsNav : Control
         _tabs.Values.ForEach(x => x.Hide());
     }
 }
-

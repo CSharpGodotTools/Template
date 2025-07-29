@@ -54,4 +54,3 @@ public abstract partial class Entity : CharacterBody2D
         _stateLabel.Position -= new Vector2(0, _stateLabel.Size.Y / 2);
     }
 }
-

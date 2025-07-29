@@ -150,4 +150,3 @@ public partial class Player
         _cameraBone.SetUseExternalSkeleton(true);
     }
 }
-

@@ -43,4 +43,3 @@ public partial class Player
         Velocity += _gravityVec;
     }
 }
-

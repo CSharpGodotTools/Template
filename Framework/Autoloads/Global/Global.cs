@@ -65,4 +65,3 @@ public partial class Global : Node
         Instance.GetTree().Quit();
     }
 }
-

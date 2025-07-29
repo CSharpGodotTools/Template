@@ -47,4 +47,3 @@ public class CPacketJoin : ClientPacket
         }
     }
 }
-
