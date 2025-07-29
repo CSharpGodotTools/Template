@@ -13,6 +13,7 @@ public partial class LoggerManager : Node
     {
         Instance = this;
         Logger.MessageLogged += GetNode<UIConsole>(Autoloads.Console).AddMessage;
+        SetPhysicsProcess(false);
     }
 
     public override void _PhysicsProcess(double delta)
