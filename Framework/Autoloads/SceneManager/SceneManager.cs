@@ -18,10 +18,10 @@ public partial class SceneManager : Node
     /// </summary>
     public event Action<string> PreSceneChanged;
 
-    public static Node CurrentScene { get; private set; }
+    public Node CurrentScene { get; private set; }
 
-    private static SceneTree _tree;
-    private static SceneManager _instance;
+    private SceneTree _tree;
+    private SceneManager _instance;
 
     public override void _Ready()
     {
@@ -31,7 +31,7 @@ public partial class SceneManager : Node
         CurrentScene = root.GetChild(root.GetChildCount() - 1);
 
         // Gradually fade out all SFX whenever the scene is changed
-        PreSceneChanged += _ => AudioManager.FadeOutSFX();
+        PreSceneChanged += _ => GetNode<AudioManager>(Autoloads.AudioManager).FadeOutSFX();
     }
 
     public void SwitchScene(Scene scene, TransType transType = TransType.None)
@@ -75,14 +75,13 @@ public partial class SceneManager : Node
         _instance.CallDeferred(nameof(DeferredSwitchScene), sceneFilePath, Variant.From(TransType.None));
     }
 
-    private static void ChangeScene(string scenePath, TransType transType)
+    private void ChangeScene(string scenePath, TransType transType)
     {
         // Wait for engine to be ready before switching scenes
-        _instance.CallDeferred(nameof(DeferredSwitchScene), scenePath,
-            Variant.From(transType));
+        _instance.CallDeferred(nameof(DeferredSwitchScene), scenePath, Variant.From(transType));
     }
 
-    private static void DeferredSwitchScene(string rawName, Variant transTypeVariant)
+    private void DeferredSwitchScene(string rawName, Variant transTypeVariant)
     {
         // Safe to remove scene now
         CurrentScene.Free();
@@ -111,7 +110,7 @@ public partial class SceneManager : Node
         }
     }
 
-    private static void FadeTo(TransColor transColor, double duration, Action finished = null)
+    private void FadeTo(TransColor transColor, double duration, Action finished = null)
     {
         // Add canvas layer to scene
         CanvasLayer canvasLayer = new()

@@ -6,7 +6,7 @@ public partial class Env : WorldEnvironment
 {
     public override void _Ready()
     {
-        ResourceOptions options = OptionsManager.Options;
+        ResourceOptions options = GetNode<OptionsManager>(Autoloads.OptionsManager).Options;
         
         Environment.GlowEnabled = options.Glow;
         Environment.SsrEnabled = options.Reflections;

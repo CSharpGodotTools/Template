@@ -5,14 +5,14 @@ namespace __TEMPLATE__;
 
 public partial class AudioManager : Node
 {
-    private static GAudioPlayer    _musicPlayer;
-    private static Node            _sfxPlayersParent;
-    private static float           _lastPitch;
-    private static ResourceOptions _options;
+    private GAudioPlayer    _musicPlayer;
+    private Node            _sfxPlayersParent;
+    private float           _lastPitch;
+    private ResourceOptions _options;
 
     public override void _Ready()
     {
-        _options = OptionsManager.Options;
+        _options = GetNode<OptionsManager>(Autoloads.OptionsManager).Options;
         _musicPlayer = new GAudioPlayer(this);
 
         _sfxPlayersParent = new Node();
@@ -21,7 +21,7 @@ public partial class AudioManager : Node
         //PlayMusic(Music.Menu);
     }
 
-    public static void PlayMusic(AudioStream song, bool instant = true, double fadeOut = 1.5, double fadeIn = 0.5)
+    public void PlayMusic(AudioStream song, bool instant = true, double fadeOut = 1.5, double fadeIn = 0.5)
     {
         if (!instant && _musicPlayer.Playing)
         {
@@ -52,7 +52,7 @@ public partial class AudioManager : Node
         }
     }
 
-    public static void PlaySFX(AudioStream sound)
+    public void PlaySFX(AudioStream sound)
     {
         // Setup the SFX stream player
         GAudioPlayer sfxPlayer = new(_sfxPlayersParent, true)
@@ -83,7 +83,7 @@ public partial class AudioManager : Node
     /// <summary>
     /// Gradually fade out all sounds
     /// </summary>
-    public static void FadeOutSFX(double fadeTime = 1)
+    public void FadeOutSFX(double fadeTime = 1)
     {
         foreach (AudioStreamPlayer audioPlayer in _sfxPlayersParent.GetChildren<AudioStreamPlayer>())
         {
@@ -92,13 +92,13 @@ public partial class AudioManager : Node
         }
     }
 
-    public static void SetMusicVolume(float v)
+    public void SetMusicVolume(float v)
     {
         _musicPlayer.Volume = v;
         _options.MusicVolume = _musicPlayer.Volume;
     }
 
-    public static void SetSFXVolume(float v)
+    public void SetSFXVolume(float v)
     {
         // Set volume for future SFX players
         _options.SFXVolume = v;
@@ -113,4 +113,3 @@ public partial class AudioManager : Node
         }
     }
 }
-

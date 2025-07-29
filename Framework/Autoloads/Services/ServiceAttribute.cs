@@ -3,7 +3,4 @@
 namespace __TEMPLATE__;
 
 [AttributeUsage(AttributeTargets.Class)]
-public class ServiceAttribute : Attribute
-{
-    
-}
+public class ServiceAttribute : Attribute { }

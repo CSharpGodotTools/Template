@@ -126,7 +126,7 @@ public class Net
         }
 
         // Wait for the logger to finish enqueing the remaining logs
-        while (Global.Logger.StillWorking())
+        while (Global.Instance.Logger.StillWorking())
         {
             await Task.Delay(1);
         }

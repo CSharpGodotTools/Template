@@ -12,17 +12,19 @@ public partial class Global : Node
     /// </summary>
     public event Func<Task> OnQuit;
 
-    public static Logger Logger { get; private set; } = new();
+    public static Global Instance { get; private set; }
 
-    private static Global _instance;
+    public Logger Logger { get; private set; } = new();
+
     private OptionsManager _optionsManager;
 
     public override void _Ready()
     {
-        _instance = this;
+        Instance = this;
+
         _optionsManager = GetNode<OptionsManager>(Autoloads.OptionsManager);
         
-        Logger.MessageLogged += UIConsole.AddMessage;
+        Logger.MessageLogged += GetNode<UIConsole>(Autoloads.Console).AddMessage;
 
         //ModLoaderUI.LoadMods(this);
     }
@@ -47,11 +49,12 @@ public partial class Global : Node
 
     public async Task QuitAndCleanup()
     {
-        _instance.GetTree().AutoAcceptQuit = false;
+        Instance.GetTree().AutoAcceptQuit = false;
 
         // Handle cleanup here
-        OptionsManager.SaveOptions();
-        OptionsManager.SaveHotkeys();
+        OptionsManager optionsManager = GetNode<OptionsManager>(Autoloads.OptionsManager);
+        optionsManager.SaveOptions();
+        optionsManager.SaveHotkeys();
 
         if (OnQuit != null)
         {
@@ -59,7 +62,7 @@ public partial class Global : Node
         }
 
         // This must be here because buttons call Global::Quit()
-        _instance.GetTree().Quit();
+        Instance.GetTree().Quit();
     }
 }
 

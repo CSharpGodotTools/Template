@@ -7,10 +7,11 @@ public partial class SubView : SubViewportContainer
 {
     public override void _Ready()
     {
-        StretchShrink = OptionsManager.Options.Resolution;
+        OptionsManager optionsManager = GetNode<OptionsManager>(Autoloads.OptionsManager);
+        StretchShrink = optionsManager.Options.Resolution;
 
         SubViewport subViewport = GetNode<SubViewport>("SubViewport");
-        subViewport.Msaa3D = (Viewport.Msaa)OptionsManager.Options.Antialiasing;
+        subViewport.Msaa3D = (Viewport.Msaa)optionsManager.Options.Antialiasing;
 
         UIPopupMenu popupMenu = GetNode<UIPopupMenu>("%PopupMenu");
 
@@ -19,7 +20,7 @@ public partial class SubView : SubViewportContainer
 
         display.OnResolutionChanged += _ =>
         {
-            StretchShrink = OptionsManager.Options.Resolution;
+            StretchShrink = optionsManager.Options.Resolution;
         };
 
         OptionsGraphics graphics = popupMenu.Options.GetNode<OptionsGraphics>("%Graphics");
@@ -30,4 +31,3 @@ public partial class SubView : SubViewportContainer
         };
     }
 }
-

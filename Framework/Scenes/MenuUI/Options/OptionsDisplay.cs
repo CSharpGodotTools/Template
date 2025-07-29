@@ -25,7 +25,7 @@ public partial class OptionsDisplay : Control
     public override void _Ready()
     {
         _optionsManager = GetNode<OptionsManager>(Autoloads.OptionsManager);
-        _options = OptionsManager.Options;
+        _options = _optionsManager.Options;
         SetupMaxFps();
         SetupWindowSize();
         SetupWindowMode();

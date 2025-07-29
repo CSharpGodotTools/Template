@@ -13,21 +13,21 @@ public static class Game
 
     public static void Log(object message, BBColor color = BBColor.Gray)
     {
-        Global.Logger.Log(message, color);
+        Global.Instance.Logger.Log(message, color);
     }
 
     public static void Log(params object[] objects)
     {
-        Global.Logger.Log(objects);
+        Global.Instance.Logger.Log(objects);
     }
 
     public static void LogWarning(object message, BBColor color = BBColor.Orange)
     {
-        Global.Logger.LogWarning(message, color);
+        Global.Instance.Logger.LogWarning(message, color);
     }
 
     public static void LogErr(Exception e, string hint = null)
     {
-        Global.Logger.LogErr(e, hint);
+        Global.Instance.Logger.LogErr(e, hint);
     }
 }

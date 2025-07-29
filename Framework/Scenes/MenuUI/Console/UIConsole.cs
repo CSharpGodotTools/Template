@@ -17,13 +17,13 @@ public partial class UIConsole : PanelContainer
 
     private const int MaxTextFeed = 1000;
 
-    private static TextEdit                _feed;
-    private static LineEdit                _input;
-    private static readonly ConsoleHistory _history = new();
-    private static bool                    _autoScroll = true;
-    private Button                         _settingsBtn;
-    private PopupPanel                     _settingsPopup;
-    private CheckBox                       _settingsAutoScroll;
+    private TextEdit                _feed;
+    private LineEdit                _input;
+    private readonly ConsoleHistory _history = new();
+    private bool                    _autoScroll = true;
+    private Button                  _settingsBtn;
+    private PopupPanel              _settingsPopup;
+    private CheckBox                _settingsAutoScroll;
 
     public static List<ConsoleCommandInfo> Commands { get; } = [];
 
@@ -58,7 +58,7 @@ public partial class UIConsole : PanelContainer
         InputNavigateHistory();
     }
 
-    public static void AddMessage(object message)
+    public void AddMessage(object message)
     {
         double prevScroll = _feed.ScrollVertical;
         
@@ -94,7 +94,7 @@ public partial class UIConsole : PanelContainer
         }
     }
 
-    private static void ScrollDown()
+    private void ScrollDown()
     {
         if (_autoScroll)
         {
@@ -210,7 +210,7 @@ public partial class UIConsole : PanelContainer
         return cmd;
     }
 
-    private static void OnConsoleInputEntered(string text)
+    private void OnConsoleInputEntered(string text)
     {
         // case sensitivity and trailing spaces should not factor in here
         string inputToLowerTrimmed = text.Trim().ToLower();
@@ -235,7 +235,7 @@ public partial class UIConsole : PanelContainer
         _input.Clear();
     }
 
-    private static void InputNavigateHistory()
+    private void InputNavigateHistory()
     {
         // If console is not visible or there is no history to navigate do nothing
         if (!Instance.Visible || _history.NoHistory())
@@ -265,7 +265,7 @@ public partial class UIConsole : PanelContainer
     }
 
     #region Helper Functions
-    private static void SetCaretColumn(int pos)
+    private void SetCaretColumn(int pos)
     {
         _input.CallDeferred(Control.MethodName.GrabFocus);
         _input.CallDeferred(GodotObject.MethodName.Set, LineEdit.PropertyName.CaretColumn, pos);
@@ -352,8 +352,7 @@ public partial class UIConsole : PanelContainer
         throw new ArgumentException($"Unsupported type: {targetType}");
     }
 
-    // Valk: I have not tested this code to see if it works with 100%
-    // no errors.
+    // Valk: I have not tested this code to see if it works with 100% no errors.
     private static Node FindNodeByType(Node root, Type targetType)
     {
         if (root.GetType() == targetType)

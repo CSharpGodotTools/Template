@@ -13,13 +13,13 @@ public partial class MetricsOverlay : Node
 {
     private const int BYTES_IN_MEGABYTE = 1048576;
     private const int BYTES_IN_KILOBYTE = 1024;
-    private const int MAX_FPS_BUFFER = 100;
-    private const int WINDOW_WIDTH = 220;
+    private const int MAX_FPS_BUFFER    = 100;
+    private const int WINDOW_WIDTH      = 220;
 
     private float[] _fpsBuffer = new float[MAX_FPS_BUFFER];
-    private float _cachedFPS;
-    private int _fpsIndex;
-    private bool _enableFPSGraph;
+    private float   _cachedFPS;
+    private int     _fpsIndex;
+    private bool    _enableFPSGraph;
 
     private bool _visible;
 

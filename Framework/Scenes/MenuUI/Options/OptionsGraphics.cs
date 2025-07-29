@@ -13,7 +13,7 @@ public partial class OptionsGraphics : Control
 
     public override void _Ready()
     {
-        _options = OptionsManager.Options;
+        _options = GetNode<OptionsManager>(Autoloads.OptionsManager).Options;
         SetupQualityPreset();
         SetupAntialiasing();
         SetupWorldEnvironmentSettings();
