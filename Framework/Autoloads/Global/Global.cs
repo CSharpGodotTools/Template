@@ -7,7 +7,7 @@ namespace __TEMPLATE__;
 
 public partial class Global : Node
 {
-    public event Func<Task> OnQuit;
+    public event Func<Task> PreQuit;
 
     public static Global Instance { get; private set; }
 
@@ -37,19 +37,15 @@ public partial class Global : Node
 
     public async Task QuitAndCleanup()
     {
-        Instance.GetTree().AutoAcceptQuit = false;
+        GetTree().AutoAcceptQuit = false;
 
-        // Handle cleanup here
-        OptionsManager optionsManager = GetNode<OptionsManager>(Autoloads.OptionsManager);
-        optionsManager.SaveOptions();
-        optionsManager.SaveHotkeys();
-
-        if (OnQuit != null)
+        // Wait for cleanup
+        if (PreQuit != null)
         {
-            await OnQuit?.Invoke();
+            await PreQuit?.Invoke();
         }
 
         // This must be here because buttons call Global::Quit()
-        Instance.GetTree().Quit();
+        GetTree().Quit();
     }
 }

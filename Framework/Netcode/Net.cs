@@ -22,7 +22,7 @@ public class Net
 
     public void Initialize(Node node, IGameServerFactory serverFactory, IGameClientFactory clientFactory)
     {
-        node.GetNode<Global>(Autoloads.Global).OnQuit += StopThreads;
+        node.GetNode<Global>(Autoloads.Global).PreQuit += StopThreads;
 
         _serverFactory = serverFactory;
         _clientFactory = clientFactory;
