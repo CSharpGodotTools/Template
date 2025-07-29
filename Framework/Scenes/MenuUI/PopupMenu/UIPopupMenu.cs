@@ -26,9 +26,6 @@ public partial class UIPopupMenu : Control
         _menu = Menu;
         _vbox = Navigation;
 
-        Options = Options.Instantiate();
-        AddChild(Options);
-        Options.Hide();
         Hide();
     }
 
@@ -42,9 +39,10 @@ public partial class UIPopupMenu : Control
                 return;
             }
 
-            if (Options.Visible)
+            if (Options != null)
             {
-                Options.Hide();
+                Options.QueueFree();
+                Options = null;
                 _menu.Show();
             }
             else
@@ -66,8 +64,7 @@ public partial class UIPopupMenu : Control
 
     private void TryFindWorldEnvironmentNode()
     {
-        Node node = GetTree().Root.FindChild("WorldEnvironment", 
-            recursive: true, owned: false);
+        Node node = GetTree().Root.FindChild("WorldEnvironment", recursive: true, owned: false);
 
         if (node is not null and WorldEnvironment worldEnvironment)
         {
@@ -83,7 +80,8 @@ public partial class UIPopupMenu : Control
 
     private void _OnOptionsPressed()
     {
-        Options.Show();
+        Options = Options.Instantiate();
+        AddChild(Options);
         _menu.Hide();
     }
 
