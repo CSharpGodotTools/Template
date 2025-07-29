@@ -4,8 +4,6 @@ using Godot.Collections;
 using System;
 using System.Linq;
 using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 namespace __TEMPLATE__;
 
