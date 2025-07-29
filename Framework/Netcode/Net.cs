@@ -17,12 +17,14 @@ public class Net
     public ENetServer Server { get; private set; }
     public ENetClient Client { get; private set; }
 
+    private const int ShutdownPollIntervalMs = 1;
+
     private IGameServerFactory _serverFactory;
     private IGameClientFactory _clientFactory;
 
     public void Initialize(Node node, IGameServerFactory serverFactory, IGameClientFactory clientFactory)
     {
-        node.GetNode<Global>(Autoloads.Global).OnQuit += StopThreads;
+        node.GetNode<Global>(Autoloads.Global).PreQuit += StopThreads;
 
         _serverFactory = serverFactory;
         _clientFactory = clientFactory;
@@ -108,7 +110,7 @@ public class Net
 
                 while (Server.IsRunning)
                 {
-                    await Task.Delay(1);
+                    await Task.Delay(ShutdownPollIntervalMs);
                 }
             }
 
@@ -118,7 +120,7 @@ public class Net
 
                 while (Client.IsRunning)
                 {
-                    await Task.Delay(1);
+                    await Task.Delay(ShutdownPollIntervalMs);
                 }
             }
 
@@ -126,9 +128,9 @@ public class Net
         }
 
         // Wait for the logger to finish enqueing the remaining logs
-        while (Global.Instance.Logger.StillWorking())
+        while (LoggerManager.Instance.Logger.StillWorking())
         {
-            await Task.Delay(1);
+            await Task.Delay(ShutdownPollIntervalMs);
         }
     }
 }

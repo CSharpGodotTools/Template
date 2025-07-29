@@ -4,8 +4,7 @@ using Godot.Collections;
 using System;
 using System.Linq;
 using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
+using System.Threading.Tasks;
 
 namespace __TEMPLATE__;
 
@@ -26,6 +25,8 @@ public partial class OptionsManager : Node
 
     public override void _Ready()
     {
+        GetNode<Global>(Autoloads.Global).PreQuit += SaveSettingsOnQuit;
+
         LoadOptions();
 
         GetDefaultHotkeys();
@@ -37,6 +38,14 @@ public partial class OptionsManager : Node
         SetMaxFPS();
         SetLanguage();
         SetAntialiasing();
+    }
+
+    public override void _PhysicsProcess(double delta)
+    {
+        if (Input.IsActionJustPressed(InputActions.Fullscreen))
+        {
+            ToggleFullscreen();
+        }
     }
 
     public void ToggleFullscreen()
@@ -242,5 +251,13 @@ public partial class OptionsManager : Node
         // Set both 2D and 3D settings to the same value
         ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_2d", Options.Antialiasing);
         ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_3d", Options.Antialiasing);
+    }
+
+    private Task SaveSettingsOnQuit()
+    {
+        SaveOptions();
+        SaveHotkeys();
+
+        return Task.CompletedTask;
     }
 }

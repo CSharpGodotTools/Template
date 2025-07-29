@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://cb7kjoml3rb5g" path="res://Genres/2D Top Down/Enemies/JumpState.cs" id="5_c8xv3"]
 [ext_resource type="Script" uid="uid://bbmuuq2vft75b" path="res://Genres/2D Top Down/Enemies/SlideState.cs" id="6_2fr83"]
 [ext_resource type="Script" uid="uid://bjupf6fy3887a" path="res://Genres/2D Top Down/StateMachineComponent.cs" id="7_mfhc3"]
-[ext_resource type="Texture2D" uid="uid://br2vucr305kx6" path="res://Genres/2D Top Down/Enemies/Frog/frog.png" id="9_srcws"]
+[ext_resource type="Texture2D" uid="uid://2svp3o4bgwgw" path="res://Genres/2D Top Down/Enemies/Frog/frog.png" id="9_srcws"]
 
 [sub_resource type="Resource" id="Resource_sj26y"]
 script = ExtResource("2_6qqsm")

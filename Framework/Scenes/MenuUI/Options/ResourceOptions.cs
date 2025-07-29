@@ -1,4 +1,3 @@
-using Godot;
 using QualityP = __TEMPLATE__.UI.QualityPreset;
 using VSyncMode = Godot.DisplayServer.VSyncMode;
 using __TEMPLATE__.UI;

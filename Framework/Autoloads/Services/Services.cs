@@ -20,12 +20,8 @@ public partial class Services : Node
 
     public override void _EnterTree()
     {
-        GetTree().NodeAdded += AttemptToRegisterService;
-    }
-
-    public override void _Ready()
-    {
         _sceneManager = GetNode<SceneManager>(Autoloads.SceneManager);
+        GetTree().NodeAdded += AttemptToRegisterService;
     }
 
     /// <summary>

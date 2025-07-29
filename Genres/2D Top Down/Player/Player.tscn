@@ -5,9 +5,9 @@
 [ext_resource type="Script" uid="uid://cd6lxvee3yoce" path="res://Genres/2D Top Down/Player/PlayerComponent.cs" id="3_xmnsw"]
 [ext_resource type="Script" uid="uid://cfv0oaf1ir4xu" path="res://Genres/2D Top Down/Enemies/EntityConfig.cs" id="4_8dnua"]
 [ext_resource type="Shader" uid="uid://b3bionxy2q1cc" path="res://Genres/2D Top Down/Environment/Color.gdshader" id="5_fp4qj"]
-[ext_resource type="Texture2D" uid="uid://dx6jdkm1lkxlh" path="res://Genres/2D Top Down/Player/Hero.png" id="6_lcmj6"]
-[ext_resource type="Texture2D" uid="uid://bfqm84khcxp85" path="res://Icon.svg" id="6_txatc"]
-[ext_resource type="Texture2D" uid="uid://bb7l4viccc0fg" path="res://Genres/2D Top Down/Environment/Torch/Light.png" id="7_6hb2u"]
+[ext_resource type="Texture2D" uid="uid://cyupdu6ddfc7b" path="res://Genres/2D Top Down/Player/Hero.png" id="6_lcmj6"]
+[ext_resource type="Texture2D" uid="uid://b23bhiuc3hpkp" path="res://Icon.svg" id="6_txatc"]
+[ext_resource type="Texture2D" uid="uid://b2kbmugnrvto6" path="res://Genres/2D Top Down/Environment/Torch/Light.png" id="7_6hb2u"]
 [ext_resource type="Script" uid="uid://c0xh18afdljnc" path="res://Genres/2D Top Down/Player/PlayerAnimation.cs" id="7_yvakb"]
 [ext_resource type="Script" uid="uid://dlyhaq8mw0rmh" path="res://Genres/2D Top Down/Player/PlayerInputs.cs" id="10_ns4ju"]
 
