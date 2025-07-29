@@ -9,4 +9,3 @@ public partial class MainMenu : Node
         //ServiceProvider.Get<AudioManager>().PlayMusic(Music.Menu);
     }
 }
-

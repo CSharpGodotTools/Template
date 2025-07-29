@@ -1,4 +1,4 @@
-﻿using Godot;
+using Godot;
 using GodotUtils;
 
 namespace __TEMPLATE__.Inventory;

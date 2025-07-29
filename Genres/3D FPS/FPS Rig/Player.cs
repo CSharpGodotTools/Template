@@ -25,4 +25,3 @@ public partial class Player : CharacterBody3D
         OnInputUI(@event);
     }
 }
-

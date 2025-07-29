@@ -50,4 +50,3 @@ public partial class Player
         public bool HoldingKey { get; set; } // the jump key
     }
 }
-

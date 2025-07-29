@@ -9,4 +9,3 @@ public static class PlayerUtils
         return Input.GetVector(InputActions.MoveLeft, InputActions.MoveRight, InputActions.MoveUp, InputActions.MoveDown);
     }
 }
-

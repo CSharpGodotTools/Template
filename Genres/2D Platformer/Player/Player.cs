@@ -30,4 +30,3 @@ public partial class Player : Entity
         return Idle();
     }
 }
-

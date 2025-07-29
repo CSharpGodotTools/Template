@@ -12,4 +12,3 @@ public static class Utils
                 Mathf.Max(horzVelocity + dampening, -maxSpeedGround);
     }
 }
-

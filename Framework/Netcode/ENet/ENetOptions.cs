@@ -1,4 +1,4 @@
-﻿namespace __TEMPLATE__.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 public class ENetOptions
 {

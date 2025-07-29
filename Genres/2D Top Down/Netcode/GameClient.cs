@@ -9,4 +9,3 @@ public class GameClient : ENetClient
         
     }
 }
-

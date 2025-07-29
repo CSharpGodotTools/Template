@@ -57,4 +57,3 @@ public class ConsoleHistory
         return _inputHistory[nav];
     }
 }
-

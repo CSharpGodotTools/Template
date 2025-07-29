@@ -1,4 +1,4 @@
-﻿namespace __TEMPLATE__.Inventory;
+namespace __TEMPLATE__.Inventory;
 
 public abstract class InventoryAnimationBase
 {

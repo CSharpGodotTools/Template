@@ -8,4 +8,3 @@ public class ConsoleCommandInfo
     public string[] Aliases { get; set; }
     public MethodInfo Method { get; set; }
 }
-

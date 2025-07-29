@@ -9,4 +9,3 @@ public class ConsoleCommandAttribute(string name, params string[] aliases) : Att
     public string Description { get; set; }
     public string[] Aliases { get; set; } = aliases;
 }
-

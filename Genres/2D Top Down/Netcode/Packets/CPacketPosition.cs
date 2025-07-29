@@ -16,4 +16,3 @@ public class CPacketPosition : ClientPacket
         server.Players[client.ID].Position = Position;
     }
 }
-

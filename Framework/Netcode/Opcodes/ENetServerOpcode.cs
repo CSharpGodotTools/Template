@@ -1,4 +1,4 @@
-﻿namespace __TEMPLATE__.Netcode.Server;
+namespace __TEMPLATE__.Netcode.Server;
 
 public enum ENetServerOpcode
 {
