@@ -1,4 +1,4 @@
-[gd_scene load_steps=78 format=4 uid="uid://b5cjboi5sgqg4"]
+[gd_scene load_steps=74 format=4 uid="uid://b5cjboi5sgqg4"]
 
 [ext_resource type="Script" uid="uid://bntqintclag2f" path="res://Genres/3D FPS/FPS Rig/Player.cs" id="1_3aas6"]
 [ext_resource type="Script" uid="uid://bhhfyeewdksp2" path="res://Genres/3D FPS/Env.cs" id="1_7hkd7"]
@@ -7,9 +7,6 @@
 [ext_resource type="Script" uid="uid://cnrhkxeocc2bn" path="res://Genres/3D FPS/FPS Rig/SubView.cs" id="3_k7q3h"]
 [ext_resource type="Script" uid="uid://2ql30j2jwpeq" path="res://Genres/3D FPS/LevelUI.cs" id="3_u6p7k"]
 [ext_resource type="Animation" uid="uid://d0wqid335slv6" path="res://Genres/3D FPS/FPS Rig/Weapons/Assault Rifle/Animations/Holster.res" id="8_v4j0c"]
-[ext_resource type="Texture2D" uid="uid://bpj3db73vulrf" path="res://Genres/3D FPS/FPS Rig/Materials/ArmsDiffuse.png" id="9_avj5r"]
-[ext_resource type="Texture2D" uid="uid://bye22cojt887s" path="res://Genres/3D FPS/FPS Rig/Materials/ArmsSpecular.png" id="10_iev0t"]
-[ext_resource type="Texture2D" uid="uid://ci4msrsdmvlkm" path="res://Genres/3D FPS/FPS Rig/Materials/ArmsNormal.png" id="11_0y2s2"]
 [ext_resource type="Animation" uid="uid://ft0oeqkimyyk" path="res://Genres/3D FPS/FPS Rig/Weapons/Assault Rifle/Animations/Inspect.res" id="11_l1d44"]
 [ext_resource type="Animation" uid="uid://b1dfli2seio2y" path="res://Genres/3D FPS/FPS Rig/Weapons/Assault Rifle/Animations/Reload.res" id="12_nfy3t"]
 [ext_resource type="Animation" uid="uid://y16nh2k40joy" path="res://Genres/3D FPS/FPS Rig/Weapons/Assault Rifle/Animations/Rest to ADS.res" id="14_4x5vf"]
@@ -352,11 +349,8 @@ bind/39/bone = -1
 bind/39/pose = Transform3D(1, -6.53855e-08, 2.29277e-07, -1.42109e-14, -0.961659, -0.274247, 2.38419e-07, 0.274247, -0.961659, 3.18845e-08, -0.0648492, -0.133733)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7crpw"]
-albedo_texture = ExtResource("9_avj5r")
 metallic = 1.0
-metallic_texture = ExtResource("10_iev0t")
 normal_enabled = true
-normal_texture = ExtResource("11_0y2s2")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nf8g0"]
 resource_name = "Main"

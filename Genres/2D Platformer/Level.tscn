@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://Framework/Scenes/MenuUI/PopupMenu/UIPopupMenu.tscn" id="1_e7m6x"]
 [ext_resource type="Script" uid="uid://biqogk8m3ifl3" path="res://Genres/2D Platformer/Player/Player.cs" id="1_rnhe6"]
-[ext_resource type="Texture2D" uid="uid://bfqm84khcxp85" path="res://Icon.svg" id="2_erx28"]
+[ext_resource type="Texture2D" uid="uid://b23bhiuc3hpkp" path="res://Icon.svg" id="2_erx28"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_fgf1b"]
 size = Vector2(125, 125)
