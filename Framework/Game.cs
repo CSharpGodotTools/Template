@@ -1,3 +1,4 @@
+using Godot;
 using System;
 using static __TEMPLATE__.SceneManager;
 
@@ -5,9 +6,9 @@ namespace __TEMPLATE__;
 
 public static class Game
 {
-    public static void SwitchScene(Scene scene, TransType transType = TransType.None)
+    public static void SwitchScene(Node node, Scene scene, TransType transType = TransType.None)
     {
-        SceneManager.SwitchScene(scene, transType);
+        node.GetNode<SceneManager>(Autoloads.SceneManager).SwitchScene(scene, transType);
     }
 
     public static void Log(object message, BBColor color = BBColor.Gray)

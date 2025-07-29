@@ -16,7 +16,7 @@ public partial class SceneManager : Node
     /// <summary>
     /// The event is invoked right before the scene is changed
     /// </summary>
-    public static event Action<string> PreSceneChanged;
+    public event Action<string> PreSceneChanged;
 
     public static Node CurrentScene { get; private set; }
 
@@ -34,7 +34,7 @@ public partial class SceneManager : Node
         PreSceneChanged += _ => AudioManager.FadeOutSFX();
     }
 
-    public static void SwitchScene(Scene scene, TransType transType = TransType.None)
+    public void SwitchScene(Scene scene, TransType transType = TransType.None)
     {
         string scenePath = scene switch
         {
@@ -62,7 +62,7 @@ public partial class SceneManager : Node
     /// <summary>
     /// Resets the currently active scene.
     /// </summary>
-    public static void ResetCurrentScene()
+    public void ResetCurrentScene()
     {
         string sceneFilePath = _tree.CurrentScene.SceneFilePath;
 

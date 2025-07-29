@@ -12,7 +12,7 @@ namespace __TEMPLATE__;
 // Autoload
 public partial class OptionsManager : Node
 {
-    public static event Action<WindowMode> WindowModeChanged;
+    public event Action<WindowMode> WindowModeChanged;
 
     public static Dictionary<StringName, Array<InputEvent>> DefaultHotkeys { get; set; }
     public static ResourceHotkeys Hotkeys { get; private set; }
@@ -37,7 +37,7 @@ public partial class OptionsManager : Node
         SetAntialiasing();
     }
 
-    public static void ToggleFullscreen()
+    public void ToggleFullscreen()
     {
         if (DisplayServer.WindowGetMode() == DisplayServer.WindowMode.Windowed)
         {
@@ -190,14 +190,14 @@ public partial class OptionsManager : Node
         }
     }
 
-    private static void SwitchToFullscreen()
+    private void SwitchToFullscreen()
     {
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
         Options.WindowMode = WindowMode.Fullscreen;
         WindowModeChanged?.Invoke(WindowMode.Fullscreen);
     }
 
-    private static void SwitchToWindow()
+    private void SwitchToWindow()
     {
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
         Options.WindowMode = WindowMode.Windowed;

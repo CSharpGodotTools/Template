@@ -73,7 +73,7 @@ public partial class OptionsInput : Control
                 {
                     if (_btnNewInput == null)
                     {
-                        Game.SwitchScene(Scene.MainMenu);
+                        Game.SwitchScene(this, Scene.MainMenu);
                     }
                 }
             }

@@ -16,10 +16,16 @@ public partial class Services : Node
     /// Dictionary to store registered services, keyed by their type.
     /// </summary>
     private static Dictionary<Type, Service> _services = [];
+    private SceneManager _sceneManager;
 
     public override void _EnterTree()
     {
         GetTree().NodeAdded += AttemptToRegisterService;
+    }
+
+    public override void _Ready()
+    {
+        _sceneManager = GetNode<SceneManager>(Autoloads.SceneManager);
     }
 
     /// <summary>
@@ -74,12 +80,12 @@ public partial class Services : Node
     private void RemoveServiceOnSceneChanged(Service service)
     {
         // The scene has changed, remove all services
-        SceneManager.PreSceneChanged += Cleanup;
+        _sceneManager.PreSceneChanged += Cleanup;
 
         void Cleanup(string scene)
         {
             // Stop listening to PreSceneChanged
-            SceneManager.PreSceneChanged -= Cleanup;
+            _sceneManager.PreSceneChanged -= Cleanup;
 
             // Remove the service
             bool success = _services.Remove(service.Instance.GetType());

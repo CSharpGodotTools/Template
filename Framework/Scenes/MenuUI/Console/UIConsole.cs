@@ -11,18 +11,19 @@ namespace __TEMPLATE__.UI;
 [SceneTree]
 public partial class UIConsole : PanelContainer
 {
-    public static event Action<bool> OnToggleVisibility;
+    public event Action<bool> VisibilityToggled;
 
     public static UIConsole Instance { get; private set; }
 
     private const int MaxTextFeed = 1000;
-    private static TextEdit _feed;
-    private static LineEdit _input;
-    private Button _settingsBtn;
-    private PopupPanel _settingsPopup;
-    private CheckBox _settingsAutoScroll;
+
+    private static TextEdit                _feed;
+    private static LineEdit                _input;
     private static readonly ConsoleHistory _history = new();
-    private static bool _autoScroll = true;
+    private static bool                    _autoScroll = true;
+    private Button                         _settingsBtn;
+    private PopupPanel                     _settingsPopup;
+    private CheckBox                       _settingsAutoScroll;
 
     public static List<ConsoleCommandInfo> Commands { get; } = [];
 
@@ -81,10 +82,10 @@ public partial class UIConsole : PanelContainer
         ScrollDown();
     }
 
-    public static void ToggleVisibility()
+    public void ToggleVisibility()
     {
         Instance.Visible = !Instance.Visible;
-        OnToggleVisibility?.Invoke(Instance.Visible);
+        VisibilityToggled?.Invoke(Instance.Visible);
 
         if (Instance.Visible)
         {

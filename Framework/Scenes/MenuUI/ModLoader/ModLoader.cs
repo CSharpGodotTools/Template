@@ -60,7 +60,7 @@ public partial class ModLoader : Node
     {
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
-            Game.SwitchScene(Scene.MainMenu);
+            Game.SwitchScene(this, Scene.MainMenu);
         }
     }
 
@@ -86,7 +86,7 @@ public partial class ModLoader : Node
     {
         //OS.CreateProcess(OS.GetExecutablePath(), null);
         OS.CreateInstance(null);
-        await Global.QuitAndCleanup();
+        await GetNode<Global>(Autoloads.Global).QuitAndCleanup();
     }
 
     private static void _OnOpenModsFolderPressed()
@@ -94,4 +94,3 @@ public partial class ModLoader : Node
         Process.Start(new ProcessStartInfo(@$"{ProjectSettings.GlobalizePath("res://Mods")}") { UseShellExecute = true });
     }
 }
-
