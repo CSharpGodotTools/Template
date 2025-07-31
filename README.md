@@ -36,8 +36,6 @@ git clone --recurse-submodules https://github.com/CSharpGodotTools/Template
 
 Run the main scene, fill in the fields, click apply changes and you are done.
 
-<img width="1541" height="953" alt="Setup" src="https://github.com/user-attachments/assets/79627179-7619-4e70-adf7-2983a8bfbea3" />
-
 <div align="center">
     <h2>Thank You</h2>
 </div>
