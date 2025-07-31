@@ -1,4 +1,5 @@
 using Godot;
+using GodotUtils;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using Vector2 = System.Numerics.Vector2;
 namespace __TEMPLATE__.UI;
 
 [SceneTree]
-public partial class MetricsOverlay : Node
+public partial class MetricsOverlay : Component
 {
     private const int BYTES_IN_MEGABYTE = 1048576;
     private const int BYTES_IN_KILOBYTE = 1024;
@@ -30,8 +31,10 @@ public partial class MetricsOverlay : Node
 
     private const string SETTINGS_FILE = "user://metrics_settings.json";
 
-    public override void _Ready()
+    public override void Ready()
     {
+        ComponentManager.RegisterProcess(this);
+
         _metrics = new()
         {
             { "FPS",                    (true,  () => $"{_cachedFPS}") },
@@ -56,7 +59,7 @@ public partial class MetricsOverlay : Node
         LoadSettings();
     }
 
-    public override void _Process(double delta)
+    public override void Process(double delta)
     {
         if (Input.IsActionJustPressed(InputActions.DebugOverlay))
         {

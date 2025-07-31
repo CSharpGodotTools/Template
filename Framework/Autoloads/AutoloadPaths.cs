@@ -10,5 +10,5 @@ public static class AutoloadPaths
     public const string SceneManager   = BasePath + "SceneManager";
     public const string Services       = BasePath + "Services";
 
-    private const string BasePath = "/root/Autoloads/";
+    private const string BasePath = "/root/Autoloads/ComponentManager/";
 }

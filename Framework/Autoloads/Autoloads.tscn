@@ -1,6 +1,7 @@
-[gd_scene load_steps=12 format=3 uid="uid://cj4fbh1a1lpq4"]
+[gd_scene load_steps=13 format=3 uid="uid://cj4fbh1a1lpq4"]
 
 [ext_resource type="Script" uid="uid://cdt2k6s3xm13g" path="res://Framework/Autoloads/Global.cs" id="1_byaaa"]
+[ext_resource type="Script" uid="uid://dg10eoueb54qm" path="res://Framework/GodotUtils/ComponentManager.cs" id="2_6wcni"]
 [ext_resource type="Script" uid="uid://d102rl17730xk" path="res://Framework/Autoloads/AudioManager.cs" id="2_7c3qn"]
 [ext_resource type="Script" uid="uid://di53rvtypdwb0" path="res://Framework/Autoloads/SceneManager.cs" id="3_31ojt"]
 [ext_resource type="PackedScene" uid="uid://b1augjui20eux" path="res://Framework/Scenes/MenuUI/MetricsOverlay/MetricsOverlay.tscn" id="3_g8bqj"]
@@ -16,33 +17,37 @@
 process_mode = 3
 script = ExtResource("1_byaaa")
 
-[node name="AudioManager" type="Node" parent="."]
+[node name="ComponentManager" type="Node" parent="."]
+script = ExtResource("2_6wcni")
+metadata/_custom_type_script = "uid://dg10eoueb54qm"
+
+[node name="AudioManager" type="Node" parent="ComponentManager"]
 script = ExtResource("2_7c3qn")
 
-[node name="CommandLineArgs" type="Node" parent="."]
+[node name="CommandLineArgs" type="Node" parent="ComponentManager"]
 script = ExtResource("3_ocdib")
 
-[node name="LoggerManager" type="Node" parent="."]
+[node name="LoggerManager" type="Node" parent="ComponentManager"]
 script = ExtResource("4_3cpyl")
 
-[node name="OptionsManager" type="Node" parent="."]
+[node name="OptionsManager" type="Node" parent="ComponentManager"]
 script = ExtResource("4_nskj3")
 
-[node name="SceneManager" type="Node" parent="."]
+[node name="SceneManager" type="Node" parent="ComponentManager"]
 script = ExtResource("3_31ojt")
 
-[node name="Services" type="Node" parent="."]
+[node name="Services" type="Node" parent="ComponentManager"]
 script = ExtResource("4_jxhl7")
 
-[node name="VisualizeAutoload" type="Node" parent="."]
+[node name="VisualizeAutoload" type="Node" parent="ComponentManager"]
 script = ExtResource("8_supaa")
 
-[node name="Debug" type="CanvasLayer" parent="."]
+[node name="Debug" type="CanvasLayer" parent="ComponentManager"]
 layer = 128
 
-[node name="MetricsOverlay" parent="Debug" instance=ExtResource("3_g8bqj")]
+[node name="MetricsOverlay" parent="ComponentManager/Debug" instance=ExtResource("3_g8bqj")]
 
-[node name="Console" parent="Debug" instance=ExtResource("8_i1ct5")]
+[node name="Console" parent="ComponentManager/Debug" instance=ExtResource("8_i1ct5")]
 visible = false
 
-[node name="ImGuiRoot" parent="." instance=ExtResource("11_4uyu8")]
+[node name="ImGuiRoot" parent="ComponentManager" instance=ExtResource("11_4uyu8")]
