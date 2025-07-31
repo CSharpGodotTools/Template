@@ -17,13 +17,13 @@ public partial class UIConsole : PanelContainer
 
     private const int MaxTextFeed = 1000;
 
-    private TextEdit                _feed;
-    private LineEdit                _input;
     private readonly ConsoleHistory _history = new();
-    private bool                    _autoScroll = true;
-    private Button                  _settingsBtn;
     private PopupPanel              _settingsPopup;
     private CheckBox                _settingsAutoScroll;
+    private TextEdit                _feed;
+    private LineEdit                _input;
+    private Button                  _settingsBtn;
+    private bool                    _autoScroll = true;
 
     public static List<ConsoleCommandInfo> Commands { get; } = [];
 

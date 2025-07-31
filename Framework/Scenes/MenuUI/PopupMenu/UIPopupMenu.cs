@@ -22,7 +22,7 @@ public partial class UIPopupMenu : Control
     {
         TryFindWorldEnvironmentNode();
 
-        _console = GetNode<UIConsole>(Autoloads.Console);
+        _console = GetNode<UIConsole>(AutoloadPaths.Console);
         _menu = Menu;
         _vbox = Navigation;
 
@@ -94,6 +94,6 @@ public partial class UIPopupMenu : Control
 
     private async void _OnQuitPressed()
     {
-        await GetNode<Global>(Autoloads.Global).QuitAndCleanup();
+        await GetNode<Global>(AutoloadPaths.Global).QuitAndCleanup();
     }
 }

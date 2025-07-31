@@ -1,4 +1,5 @@
 using Godot;
+using GodotUtils;
 using System.Collections.Generic;
 
 namespace __TEMPLATE__.UI;
@@ -6,9 +7,9 @@ namespace __TEMPLATE__.UI;
 /// <summary>
 /// Handles custom command line arguments set for each instance.
 /// </summary>
-public partial class CommandLineArgs : Node
+public partial class CommandLineArgs : Component
 {
-    public override void _Ready()
+    public override void Ready()
     {
         // Get command-line arguments
         string[] args = OS.GetCmdlineArgs();

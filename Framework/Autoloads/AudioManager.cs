@@ -3,7 +3,7 @@ using GodotUtils;
 
 namespace __TEMPLATE__;
 
-public partial class AudioManager : Node
+public partial class AudioManager : Component
 {
     private const float MinRandomPitch        = 0.8f;
     private const float MaxRandomPitch        = 1.2f;
@@ -16,9 +16,9 @@ public partial class AudioManager : Node
     private Node            _sfxPlayersParent;
     private float           _lastPitch;
 
-    public override void _Ready()
+    public override void Ready()
     {
-        _options = GetNode<OptionsManager>(Autoloads.OptionsManager).Options;
+        _options = GetNode<OptionsManager>(AutoloadPaths.OptionsManager).Options;
         _musicPlayer = new GAudioPlayer(this);
 
         _sfxPlayersParent = new Node();

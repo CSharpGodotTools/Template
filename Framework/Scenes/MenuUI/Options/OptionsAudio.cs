@@ -9,8 +9,8 @@ public partial class OptionsAudio : Control
 
     public override void _Ready()
     {
-        _options = GetNode<OptionsManager>(Autoloads.OptionsManager).Options;
-        _audioManager = GetNode<AudioManager>(Autoloads.AudioManager);
+        _options = GetNode<OptionsManager>(AutoloadPaths.OptionsManager).Options;
+        _audioManager = GetNode<AudioManager>(AutoloadPaths.AudioManager);
 
         SetupMusic();
         SetupSounds();

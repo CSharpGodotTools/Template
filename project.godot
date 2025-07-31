@@ -18,16 +18,7 @@ config/icon="uid://b23bhiuc3hpkp"
 
 [autoload]
 
-ServiceProvider="*res://Framework/Autoloads/Services/Services.cs"
-OptionsManager="*res://Framework/Autoloads/OptionsManager.cs"
-Console="*res://Framework/Autoloads/Console.tscn"
-Global="*res://Framework/Autoloads/Global/Global.tscn"
-LoggerManager="*res://Framework/Autoloads/LoggerManager.cs"
-AudioManager="*res://Framework/Autoloads/AudioManager/AudioManager.tscn"
-SceneManager="*res://Framework/Autoloads/SceneManager/SceneManager.tscn"
-VisualizeAutoload="*res://Framework/GodotUtils/Visualize/Scripts/VisualizeAutoload.cs"
-CommandLineArgs="*res://Framework/Scenes/MenuUI/Console/CommandLineArgs.cs"
-ImGuiRoot="*res://addons/imgui-godot/data/ImGuiRoot.tscn"
+Autoloads="*res://Framework/Autoloads/Autoloads.tscn"
 
 [dotnet]
 

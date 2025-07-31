@@ -10,7 +10,7 @@ namespace __TEMPLATE__;
 /// Services have a scene lifetime meaning they will be destroyed when the scene changes. Services
 /// aid as an alternative to using the static keyword everywhere.
 /// </summary>
-public partial class Services : Node
+public partial class Services : Component
 {
     /// <summary>
     /// Dictionary to store registered services, keyed by their type.
@@ -20,7 +20,7 @@ public partial class Services : Node
 
     public override void _EnterTree()
     {
-        _sceneManager = GetNode<SceneManager>(Autoloads.SceneManager);
+        _sceneManager = GetNode<SceneManager>(AutoloadPaths.SceneManager);
         GetTree().NodeAdded += AttemptToRegisterService;
     }
 

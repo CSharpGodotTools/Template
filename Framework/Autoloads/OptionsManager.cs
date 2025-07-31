@@ -1,6 +1,7 @@
 using __TEMPLATE__.UI;
 using Godot;
 using Godot.Collections;
+using GodotUtils;
 using System;
 using System.Linq;
 using System.Text.Json;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace __TEMPLATE__;
 
 // Autoload
-public partial class OptionsManager : Node
+public partial class OptionsManager : Component
 {
     public event Action<WindowMode> WindowModeChanged;
 
@@ -23,9 +24,10 @@ public partial class OptionsManager : Node
 
     private JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
 
-    public override void _Ready()
+    public override void Ready()
     {
-        GetNode<Global>(Autoloads.Global).PreQuit += SaveSettingsOnQuit;
+        ComponentManager.RegisterPhysicsProcess(this);
+        GetNode<Global>(AutoloadPaths.Global).PreQuit += SaveSettingsOnQuit;
 
         LoadOptions();
 
@@ -40,7 +42,7 @@ public partial class OptionsManager : Node
         SetAntialiasing();
     }
 
-    public override void _PhysicsProcess(double delta)
+    public override void PhysicsProcess(double delta)
     {
         if (Input.IsActionJustPressed(InputActions.Fullscreen))
         {

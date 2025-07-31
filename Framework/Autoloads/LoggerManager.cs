@@ -1,22 +1,24 @@
 using __TEMPLATE__.UI;
 using Godot;
+using GodotUtils;
 
 namespace __TEMPLATE__;
 
-public partial class LoggerManager : Node
+public partial class LoggerManager : Component
 {
     public static LoggerManager Instance { get; private set; }
 
     public Logger Logger { get; } = new();
 
-    public override void _Ready()
+    public override void Ready()
     {
+        ComponentManager.RegisterPhysicsProcess(this);
         Instance = this;
-        Logger.MessageLogged += GetNode<UIConsole>(Autoloads.Console).AddMessage;
+        Logger.MessageLogged += GetNode<UIConsole>(AutoloadPaths.Console).AddMessage;
         SetPhysicsProcess(false);
     }
 
-    public override void _PhysicsProcess(double delta)
+    public override void PhysicsProcess(double delta)
     {
         Logger.Update();
     }

@@ -5,7 +5,7 @@ using System;
 namespace __TEMPLATE__;
 
 // About Scene Switching: https://docs.godotengine.org/en/latest/tutorials/scripting/singletons_autoload.html
-public partial class SceneManager : Node
+public partial class SceneManager : Component
 {
     [Export] private PackedScene _sceneMainMenu;
     [Export] private PackedScene _sceneModLoader;
@@ -23,7 +23,7 @@ public partial class SceneManager : Node
     private SceneTree _tree;
     private SceneManager _instance;
 
-    public override void _Ready()
+    public override void Ready()
     {
         _instance = this;
         _tree = GetTree();
@@ -31,7 +31,7 @@ public partial class SceneManager : Node
         CurrentScene = root.GetChild(root.GetChildCount() - 1);
 
         // Gradually fade out all SFX whenever the scene is changed
-        PreSceneChanged += _ => GetNode<AudioManager>(Autoloads.AudioManager).FadeOutSFX();
+        PreSceneChanged += _ => GetNode<AudioManager>(AutoloadPaths.AudioManager).FadeOutSFX();
     }
 
     public void SwitchScene(Scene scene, TransType transType = TransType.None)

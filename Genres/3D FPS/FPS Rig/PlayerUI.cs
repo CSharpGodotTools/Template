@@ -12,7 +12,7 @@ public partial class Player
 
     private void OnReadyUI()
     {
-        _mouseSensitivity = GetNode<OptionsManager>(Autoloads.OptionsManager).Options.MouseSensitivity * 0.0001f;
+        _mouseSensitivity = GetNode<OptionsManager>(AutoloadPaths.OptionsManager).Options.MouseSensitivity * 0.0001f;
 
         OptionsGameplay gameplay = GetNode<UIPopupMenu>("%PopupMenu")
             .Options.GetNode<OptionsGameplay>("%Gameplay");
