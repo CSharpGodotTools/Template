@@ -44,7 +44,7 @@ stretch = true
 [node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
 transparent_bg = true
 handle_input_locally = false
-size = Vector2i(2, 2)
+size = Vector2i(1152, 648)
 size_2d_override = Vector2i(1152, 648)
 size_2d_override_stretch = true
 render_target_update_mode = 4
@@ -71,28 +71,6 @@ text = "The name you select for your game will be used for all C# script namespa
 fit_content = true
 scroll_active = false
 
-[node name="GenrePreview" type="RichTextLabel" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(700, 0)
-layout_mode = 2
-theme_override_colors/default_color = Color(0.664063, 0.664063, 0.664063, 1)
-theme_override_fonts/normal_font = SubResource("SystemFont_gx0is")
-bbcode_enabled = true
-text = "This text talks about the genre being selected and should be modified from script."
-fit_content = true
-scroll_active = false
-
-[node name="GenreInfo" type="RichTextLabel" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(700, 0)
-layout_mode = 2
-theme_override_colors/default_color = Color(0.664063, 0.664063, 0.664063, 1)
-theme_override_fonts/normal_font = SubResource("SystemFont_gx0is")
-bbcode_enabled = true
-text = "Info text talking about the genre. For example 2D Platformer genre is empty so tell the user this."
-fit_content = true
-scroll_active = false
-
 [node name="HBoxContainer" type="HBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
@@ -113,31 +91,6 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 max_length = 40
 
-[node name="Genre" type="VBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer"]
-custom_minimum_size = Vector2(200, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-
-[node name="Label" type="Label" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Genre"]
-layout_mode = 2
-text = "What is the genre?"
-horizontal_alignment = 1
-
-[node name="GenreBtn" type="OptionButton" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Genre"]
-unique_name_in_owner = true
-layout_mode = 2
-alignment = 1
-selected = 0
-item_count = 4
-popup/item_0/text = "No Genre"
-popup/item_0/id = 0
-popup/item_1/text = "2D Platformer"
-popup/item_1/id = 1
-popup/item_2/text = "2D Top Down"
-popup/item_2/id = 2
-popup/item_3/text = "3D FPS"
-popup/item_3/id = 3
-
 [node name="Options" type="HBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
 layout_mode = 2
 alignment = 1
@@ -150,33 +103,6 @@ theme_override_colors/font_color = Color(0.623529, 0.623529, 0.623529, 1)
 theme_override_colors/font_pressed_color = Color(0.625, 0.625, 0.625, 1)
 button_pressed = true
 text = "Delete Setup Scene"
-
-[node name="DeleteOtherGenres" type="CheckButton" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/Options"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0.623529, 0.623529, 0.623529, 1)
-theme_override_colors/font_pressed_color = Color(0.625, 0.625, 0.625, 1)
-button_pressed = true
-text = "Delete Other Genres"
-
-[node name="DeleteSandboxFolder" type="CheckButton" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/Options"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0.623529, 0.623529, 0.623529, 1)
-theme_override_colors/font_pressed_color = Color(0.625, 0.625, 0.625, 1)
-button_pressed = true
-text = "Delete Sandbox Folder"
-
-[node name="MoveProjectFiles" type="CheckButton" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/Options"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0.623529, 0.623529, 0.623529, 1)
-theme_override_colors/font_pressed_color = Color(0.625, 0.625, 0.625, 1)
-button_pressed = true
-text = "Move Project Files"
 
 [node name="VSCode" type="VBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
 layout_mode = 2
@@ -208,12 +134,12 @@ horizontal_alignment = 1
 
 [node name="NodePopupPanel" type="PopupPanel" parent="SubViewportContainer/SubViewport"]
 unique_name_in_owner = true
-size = Vector2i(498, 130)
+size = Vector2i(732, 130)
 
 [node name="PanelContainer" type="PanelContainer" parent="SubViewportContainer/SubViewport/NodePopupPanel"]
 offset_left = 4.0
 offset_top = 4.0
-offset_right = 494.0
+offset_right = 728.0
 offset_bottom = 126.0
 
 [node name="MarginContainer" type="MarginContainer" parent="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer"]
@@ -228,7 +154,8 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
-text = "Godot will restart and delete files. Are you sure?"
+text = "Are you sure?"
+horizontal_alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
@@ -253,7 +180,6 @@ text = "Yes"
 script = ExtResource("2_ut11q")
 
 [connection signal="text_changed" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Name/GameName" to="." method="_OnGameNameTextChanged"]
-[connection signal="item_selected" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Genre/GenreBtn" to="." method="_OnGenreItemSelected"]
 [connection signal="pressed" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/ApplyChanges" to="." method="_OnApplyChangesPressed"]
 [connection signal="pressed" from="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/No" to="." method="_OnNoPressed"]
 [connection signal="pressed" from="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Yes" to="." method="_OnYesPressed"]
