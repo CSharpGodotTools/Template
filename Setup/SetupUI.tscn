@@ -91,30 +91,6 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 max_length = 40
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
-layout_mode = 2
-alignment = 1
-
-[node name="AdvancedSettings" type="CheckButton" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer2"]
-layout_mode = 2
-text = "Advanced Settings"
-
-[node name="VSCode" type="VBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-
-[node name="Label" type="Label" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/VSCode"]
-layout_mode = 2
-text = "Setup VSCode Config?"
-horizontal_alignment = 1
-
-[node name="GodotExe" type="LineEdit" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/VSCode"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-placeholder_text = "\"C:/Path/To/Godot.exe\""
-
 [node name="ApplyChanges" type="Button" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(250, 75)
 layout_mode = 2
@@ -177,7 +153,6 @@ text = "Yes"
 script = ExtResource("2_ut11q")
 
 [connection signal="text_changed" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Name/GameName" to="." method="_OnGameNameTextChanged"]
-[connection signal="toggled" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer2/AdvancedSettings" to="." method="_OnAdvancedSettingsToggled"]
 [connection signal="pressed" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/ApplyChanges" to="." method="_OnApplyChangesPressed"]
 [connection signal="pressed" from="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/No" to="." method="_OnNoPressed"]
 [connection signal="pressed" from="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Yes" to="." method="_OnYesPressed"]

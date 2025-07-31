@@ -29,28 +29,6 @@ public static partial class SetupUtils
         RenameProjectGodotFile(path, name);
     }
 
-    public static void SetupVSCodeTemplates(string godotExe, string gameName)
-    {
-        // Normalize the godot.exe path and remove quotes
-        godotExe = godotExe.Trim().Replace("\\", "/").Replace("\"", "");
-
-        string path = ProjectSettings.GlobalizePath("res://");
-        string fullPath = Path.Combine(path, "Setup", "VSCode Templates");
-        string launchFilePath = Path.Combine(fullPath, "launch.json");
-        string tasksFilePath = Path.Combine(fullPath, "tasks.json");
-
-        string launchText = File.ReadAllText(launchFilePath);
-        launchText = launchText.Replace("ENGINE_EXE", godotExe);
-        string launchVSCodePath = Path.Combine(path, ".vscode", "launch.json");
-        File.WriteAllText(launchVSCodePath, launchText);
-
-        string tasksText = File.ReadAllText(tasksFilePath);
-        tasksText = tasksText.Replace("ENGINE_EXE", godotExe);
-        tasksText = tasksText.Replace("Template", gameName);
-        string tasksVSCodePath = Path.Combine(path, ".vscode", "tasks.json");
-        File.WriteAllText(tasksVSCodePath, tasksText);
-    }
-
     private static void RenameProjectGodotFile(string path, string name)
     {
         string fullPath = Path.Combine(path, "project.godot");

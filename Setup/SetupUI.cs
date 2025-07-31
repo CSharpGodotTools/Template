@@ -8,11 +8,9 @@ namespace __TEMPLATE__.Setup;
 public partial class SetupUI : Node
 {
     private string _prevGameName = string.Empty;
-    private Control _vscode;
 
     public override void _Ready()
     {
-        _vscode = GetNode<Control>("%VSCode");
         SetupUtils.DisplayGameNamePreview("Undefined", NamePreview);
     }
 
@@ -27,7 +25,6 @@ public partial class SetupUI : Node
         SetupUtils.SetMainScene(path, "Level");
         SetupUtils.RenameProjectFiles(path, gameName);
         SetupUtils.RenameAllNamespaces(path, gameName);
-        SetupUtils.SetupVSCodeTemplates(GodotExe.Text, gameName);
 
         // Delete the "res://Setup" directory
         Directory.Delete(Path.Combine(path, "Setup"), recursive: true);
@@ -61,11 +58,6 @@ public partial class SetupUI : Node
     private void _OnNoPressed()
     {
         NodePopupPanel.Hide();
-    }
-
-    private void _OnAdvancedSettingsToggled(bool toggled)
-    {
-        _vscode.Visible = toggled;
     }
 
     private void _OnApplyChangesPressed() 
