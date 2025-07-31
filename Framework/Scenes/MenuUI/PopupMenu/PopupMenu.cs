@@ -5,7 +5,7 @@ namespace __TEMPLATE__.UI;
 
 [Service]
 [SceneTree]
-public partial class UIPopupMenu : Control
+public partial class PopupMenu : Control
 {
     public event Action OnOpened;
     public event Action OnClosed;
