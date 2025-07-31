@@ -20,14 +20,6 @@
 - **[Cat Lips Source Generators](https://github.com/CSharpGodotTools/Template/wiki/Source-Generators)**
 - **[Useful Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)**
 
-**WIP**
-- **[3D FPS Scene](https://github.com/CSharpGodotTools/Template/wiki/3D-FPS)** - Minimal first-person shooter scene with character controller and pre-made weapon animations.
-- **[2D Top Down Scene](https://github.com/CSharpGodotTools/Template/wiki/2D-Top-Down)** - A dungeon scene with enemies, room transitions and working multiplayer.
-- **[Inventory](https://github.com/CSharpGodotTools/Template/wiki/Inventory)** - A WIP re-creation of my old inventory system.
-- **[Draggable Nodes](https://github.com/CSharpGodotTools/Template/wiki/Draggable-Nodes)** - Make any node draggable.
-- **[State Manager](https://github.com/CSharpGodotTools/Template/wiki/State-Manager)** - Implement states using delegates.
-- **[Mod Loader](https://github.com/CSharpGodotTools/Template/wiki/Mod-Loader)** - Half-working mod loader.
-
 <div align="center">
     <h2>Setup</h2>
 </div>
