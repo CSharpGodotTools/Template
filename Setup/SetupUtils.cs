@@ -35,7 +35,7 @@ public static partial class SetupUtils
         godotExe = godotExe.Trim().Replace("\\", "/").Replace("\"", "");
 
         string path = ProjectSettings.GlobalizePath("res://");
-        string fullPath = Path.Combine(path, "Genres", "0 Setup", "VSCode Templates");
+        string fullPath = Path.Combine(path, "Setup", "VSCode Templates");
         string launchFilePath = Path.Combine(fullPath, "launch.json");
         string tasksFilePath = Path.Combine(fullPath, "tasks.json");
 
