@@ -71,7 +71,7 @@ public partial class OptionsGraphics : Control
         {
             saveOption(checkBox.ButtonPressed);
 
-            UIPopupMenu popupMenu = Services.Get<UIPopupMenu>();
+            PopupMenu popupMenu = Services.Get<PopupMenu>();
 
             if (popupMenu == null)
             {

@@ -1,0 +1,158 @@
+[gd_scene load_steps=9 format=3 uid="uid://dnmu3cujgayk2"]
+
+[ext_resource type="Script" uid="uid://dosqetacy3knn" path="res://Setup/SetupUI.cs" id="1_m5u8t"]
+[ext_resource type="Script" uid="uid://blxj0cebqkjo2" path="res://Setup/CheckDotNetVersion.cs" id="2_ut11q"]
+
+[sub_resource type="SystemFont" id="SystemFont_ax7t0"]
+font_names = PackedStringArray("Segoe UI")
+subpixel_positioning = 0
+multichannel_signed_distance_field = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v5lq2"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Theme" id="Theme_rop0o"]
+Label/colors/font_color = Color(0.99, 1, 0.7, 1)
+Label/fonts/font = SubResource("SystemFont_ax7t0")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_v5lq2")
+
+[sub_resource type="SystemFont" id="SystemFont_gx0is"]
+font_names = PackedStringArray("Segoe UI")
+subpixel_positioning = 0
+multichannel_signed_distance_field = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mv57m"]
+bg_color = Color(0.6, 0, 0.0470588, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1payf"]
+bg_color = Color(0, 0.6, 0.0784314, 1)
+
+[node name="SetupUI" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_rop0o")
+script = ExtResource("1_m5u8t")
+metadata/_edit_lock_ = true
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+layout_mode = 2
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(1152, 648)
+size_2d_override = Vector2i(1152, 648)
+size_2d_override_stretch = true
+render_target_update_mode = 4
+
+[node name="CenterContainer" type="CenterContainer" parent="SubViewportContainer/SubViewport"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer"]
+layout_mode = 2
+theme_override_constants/separation = 25
+
+[node name="NamePreview" type="RichTextLabel" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(700, 0)
+layout_mode = 2
+theme_override_colors/default_color = Color(0.664063, 0.664063, 0.664063, 1)
+theme_override_fonts/normal_font = SubResource("SystemFont_gx0is")
+bbcode_enabled = true
+text = "The name you select for your game will be used for all C# script namespaces. A name that follows PascalCase formatting is recommended, for example BananaBlasters3."
+fit_content = true
+scroll_active = false
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 50
+
+[node name="Name" type="VBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="Label2" type="Label" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Name"]
+layout_mode = 2
+text = "What is the name?"
+horizontal_alignment = 1
+
+[node name="GameName" type="LineEdit" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Name"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+max_length = 40
+
+[node name="ApplyChanges" type="Button" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(250, 75)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.79, 0.9615, 1)
+theme_override_font_sizes/font_size = 28
+text = "Apply Changes"
+
+[node name="Label2" type="Label" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.114897, 0.114897, 0.114897, 1)
+text = "Hang in there. You got this. You can make a game. ^>.<^"
+horizontal_alignment = 1
+
+[node name="NodePopupPanel" type="PopupPanel" parent="SubViewportContainer/SubViewport"]
+unique_name_in_owner = true
+size = Vector2i(732, 130)
+
+[node name="PanelContainer" type="PanelContainer" parent="SubViewportContainer/SubViewport/NodePopupPanel"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 728.0
+offset_bottom = 126.0
+
+[node name="MarginContainer" type="MarginContainer" parent="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 30
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Are you sure?"
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+alignment = 1
+
+[node name="No" type="Button" parent="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(75, 0)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_mv57m")
+text = "No
+"
+
+[node name="Yes" type="Button" parent="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(75, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_styles/normal = SubResource("StyleBoxFlat_1payf")
+text = "Yes"
+
+[node name="CheckDotNetVersion" type="Node" parent="."]
+script = ExtResource("2_ut11q")
+
+[connection signal="text_changed" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Name/GameName" to="." method="_OnGameNameTextChanged"]
+[connection signal="pressed" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/ApplyChanges" to="." method="_OnApplyChangesPressed"]
+[connection signal="pressed" from="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/No" to="." method="_OnNoPressed"]
+[connection signal="pressed" from="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Yes" to="." method="_OnYesPressed"]

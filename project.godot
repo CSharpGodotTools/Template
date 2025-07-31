@@ -19,6 +19,7 @@ config/icon="uid://b23bhiuc3hpkp"
 [autoload]
 
 Autoloads="*res://Framework/Autoloads/Autoloads.tscn"
+ImGuiRoot="*res://addons/imgui-godot/data/ImGuiRoot.tscn"
 
 [dotnet]
 
@@ -36,7 +37,6 @@ enabled=PackedStringArray("res://addons/imgui-godot/plugin.cfg")
 [file_customization]
 
 folder_colors={
-"res://Sandbox/": "pink",
 "res://Scenes/": "blue"
 }
 

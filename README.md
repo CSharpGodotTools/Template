@@ -20,14 +20,6 @@
 - **[Cat Lips Source Generators](https://github.com/CSharpGodotTools/Template/wiki/Source-Generators)**
 - **[Useful Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)**
 
-**WIP**
-- **[3D FPS Scene](https://github.com/CSharpGodotTools/Template/wiki/3D-FPS)** - Minimal first-person shooter scene with character controller and pre-made weapon animations.
-- **[2D Top Down Scene](https://github.com/CSharpGodotTools/Template/wiki/2D-Top-Down)** - A dungeon scene with enemies, room transitions and working multiplayer.
-- **[Inventory](https://github.com/CSharpGodotTools/Template/wiki/Inventory)** - A WIP re-creation of my old inventory system.
-- **[Draggable Nodes](https://github.com/CSharpGodotTools/Template/wiki/Draggable-Nodes)** - Make any node draggable.
-- **[State Manager](https://github.com/CSharpGodotTools/Template/wiki/State-Manager)** - Implement states using delegates.
-- **[Mod Loader](https://github.com/CSharpGodotTools/Template/wiki/Mod-Loader)** - Half-working mod loader.
-
 <div align="center">
     <h2>Setup</h2>
 </div>
@@ -42,11 +34,9 @@ Clone with all submodules.
 git clone --recurse-submodules https://github.com/CSharpGodotTools/Template
 ```
 
-Run the main scene, fill in the fields, click apply changes and you are done.
+Run the setup scene, click apply changes and you're done.
 
-<img width="1541" height="953" alt="Setup" src="https://github.com/user-attachments/assets/79627179-7619-4e70-adf7-2983a8bfbea3" />
-<img width="1553" height="966" alt="TopDown" src="https://github.com/user-attachments/assets/b3143d7a-8df7-4a38-b1ff-36a41360cab9" />
-<img width="1564" height="880" alt="FPS" src="https://github.com/user-attachments/assets/37bd5c18-cbfb-4dda-824b-e69112343c04" />
+<img width="1589" height="875" alt="image" src="https://github.com/user-attachments/assets/50d0b1ef-4d63-48e9-bb9a-84fe3c1e3391" />
 
 <div align="center">
     <h2>Thank You</h2>
