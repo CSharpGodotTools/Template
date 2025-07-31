@@ -7,17 +7,13 @@ namespace __TEMPLATE__.Setup;
 [SceneTree]
 public partial class SetupUI : Node
 {
-    private Genre _genre;
     private string _prevGameName = string.Empty;
+    private Control _vscode;
 
     public override void _Ready()
     {
-        GenreInfo.Text = "Genre info";
-
-        _genre = (Genre)GenreBtn.Selected;
-        SetupUtils.SetGenreSelectedInfo(GenrePreview, _genre);
+        _vscode = GetNode<Control>("%VSCode");
         SetupUtils.DisplayGameNamePreview("Undefined", NamePreview);
-        SetupUtils.SetGenreTipInfo(GenreInfo, Genre.None);
     }
 
     private void _OnYesPressed()
@@ -28,39 +24,13 @@ public partial class SetupUI : Node
         // The IO functions ran below will break if empty folders exist
         DirectoryUtils.DeleteEmptyDirectories(path);
 
-        string genreFolder = Path.Combine(path, "Genres", SetupUtils.FolderNames[_genre]);
-        
-        if (!Directory.Exists(genreFolder))
-        {
-            GD.PrintErr($"Genre folder '{genreFolder}' does not exist.");
-            return;
-        }
+        SetupUtils.SetMainScene(path, "Level");
+        SetupUtils.RenameProjectFiles(path, gameName);
+        SetupUtils.RenameAllNamespaces(path, gameName);
+        SetupUtils.SetupVSCodeTemplates(GodotExe.Text, gameName);
 
-        SetupManager.RenameProjectFiles(path, gameName);
-        SetupManager.RenameAllNamespaces(path, gameName);
-        SetupManager.SetupVSCodeTemplates(GodotExe.Text, gameName);
-
-        if (MoveProjectFiles.ButtonPressed)
-        {
-            SetupManager.MoveProjectFiles(_genre,
-                pathFrom: Path.Combine(path, "Genres"), 
-                pathTo: path, 
-                deleteOtherGenres: DeleteOtherGenres.ButtonPressed);
-
-            SceneFileUtils.FixBrokenDependencies();
-        }
-
-        if (DeleteSetupScene.ButtonPressed)
-        {
-            // Delete the "0 Setup" directory
-            Directory.Delete(Path.Combine(path, "Genres", "0 Setup"), true);
-        }
-
-        if (DeleteSandboxFolder.ButtonPressed)
-        {
-            // Delete the "Sandbox" directory
-            Directory.Delete(Path.Combine(path, "Sandbox"), true);
-        }
+        // Delete the "res://Setup" directory
+        Directory.Delete(Path.Combine(path, "Setup"), recursive: true);
 
         // Ensure all empty folders are deleted when finished
         DirectoryUtils.DeleteEmptyDirectories(path);
@@ -69,19 +39,10 @@ public partial class SetupUI : Node
         SetupEditor.Restart();
     }
 
-    private void _OnGenreItemSelected(int index)
-    {
-        _genre = (Genre)index;
-        SetupUtils.SetGenreSelectedInfo(GenrePreview, _genre);
-        SetupUtils.SetGenreTipInfo(GenreInfo, _genre);
-    }
-
     private void _OnGameNameTextChanged(string newText)
     {
         if (string.IsNullOrWhiteSpace(newText))
-        {
             return;
-        }
 
         // Since this name is being used for the namespace its first character must not be
         // a number and every other character must be alphanumeric
@@ -100,6 +61,11 @@ public partial class SetupUI : Node
     private void _OnNoPressed()
     {
         NodePopupPanel.Hide();
+    }
+
+    private void _OnAdvancedSettingsToggled(bool toggled)
+    {
+        _vscode.Visible = toggled;
     }
 
     private void _OnApplyChangesPressed() 

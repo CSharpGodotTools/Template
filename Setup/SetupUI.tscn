@@ -91,20 +91,17 @@ custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 max_length = 40
 
-[node name="Options" type="HBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
 layout_mode = 2
 alignment = 1
 
-[node name="DeleteSetupScene" type="CheckButton" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/Options"]
-unique_name_in_owner = true
+[node name="AdvancedSettings" type="CheckButton" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_colors/font_color = Color(0.623529, 0.623529, 0.623529, 1)
-theme_override_colors/font_pressed_color = Color(0.625, 0.625, 0.625, 1)
-button_pressed = true
-text = "Delete Setup Scene"
+text = "Advanced Settings"
 
 [node name="VSCode" type="VBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
+unique_name_in_owner = true
+visible = false
 layout_mode = 2
 
 [node name="Label" type="Label" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/VSCode"]
@@ -180,6 +177,7 @@ text = "Yes"
 script = ExtResource("2_ut11q")
 
 [connection signal="text_changed" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Name/GameName" to="." method="_OnGameNameTextChanged"]
+[connection signal="toggled" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer2/AdvancedSettings" to="." method="_OnAdvancedSettingsToggled"]
 [connection signal="pressed" from="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/ApplyChanges" to="." method="_OnApplyChangesPressed"]
 [connection signal="pressed" from="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/No" to="." method="_OnNoPressed"]
 [connection signal="pressed" from="SubViewportContainer/SubViewport/NodePopupPanel/PanelContainer/MarginContainer/VBoxContainer/HBoxContainer/Yes" to="." method="_OnYesPressed"]

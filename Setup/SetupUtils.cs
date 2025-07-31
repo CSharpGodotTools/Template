@@ -1,6 +1,5 @@
 using Godot;
 using GodotUtils;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -8,13 +7,123 @@ namespace __TEMPLATE__.Setup;
 
 public static partial class SetupUtils
 {
-    public static Dictionary<Genre, string> FolderNames { get; } = new()
+    public static void SetMainScene(string path, string sceneName)
     {
-        { Genre.None, "No Genre" },
-        { Genre.Platformer2D, "2D Platformer" },
-        { Genre.TopDown2D, "2D Top Down" },
-        { Genre.FPS3D, "3D FPS" }
-    };
+        string text = File.ReadAllText(Path.Combine(path, "project.godot"));
+
+        text = text.Replace(
+            "run/main_scene=\"uid://dnmu3cujgayk2\"",
+           $"run/main_scene=\"{SetupUtils.GetUIdFromSceneFile(Path.Combine(path, $"{sceneName}.tscn"))}\"");
+
+        File.WriteAllText(Path.Combine(path, "project.godot"), text);
+    }
+
+    /// <summary>
+    /// Replaces all instances of the keyword "Template" with the new
+    /// specified game name in several project files.
+    /// </summary>
+    public static void RenameProjectFiles(string path, string name)
+    {
+        RenameCSProjFile(path, name);
+        RenameSolutionFile(path, name);
+        RenameProjectGodotFile(path, name);
+    }
+
+    public static void SetupVSCodeTemplates(string godotExe, string gameName)
+    {
+        // Normalize the godot.exe path and remove quotes
+        godotExe = godotExe.Trim().Replace("\\", "/").Replace("\"", "");
+
+        string path = ProjectSettings.GlobalizePath("res://");
+        string fullPath = Path.Combine(path, "Genres", "0 Setup", "VSCode Templates");
+        string launchFilePath = Path.Combine(fullPath, "launch.json");
+        string tasksFilePath = Path.Combine(fullPath, "tasks.json");
+
+        string launchText = File.ReadAllText(launchFilePath);
+        launchText = launchText.Replace("ENGINE_EXE", godotExe);
+        string launchVSCodePath = Path.Combine(path, ".vscode", "launch.json");
+        File.WriteAllText(launchVSCodePath, launchText);
+
+        string tasksText = File.ReadAllText(tasksFilePath);
+        tasksText = tasksText.Replace("ENGINE_EXE", godotExe);
+        tasksText = tasksText.Replace("Template", gameName);
+        string tasksVSCodePath = Path.Combine(path, ".vscode", "tasks.json");
+        File.WriteAllText(tasksVSCodePath, tasksText);
+    }
+
+    private static void RenameProjectGodotFile(string path, string name)
+    {
+        string fullPath = Path.Combine(path, "project.godot");
+        string text = File.ReadAllText(fullPath);
+
+        text = text.Replace(
+            "project/assembly_name=\"Template\"",
+            $"project/assembly_name=\"{name}\"");
+
+        text = text.Replace(
+            "config/name=\"Template\"",
+            $"config/name=\"{name}\""
+            );
+
+        File.WriteAllText(fullPath, text);
+    }
+
+    private static void RenameSolutionFile(string path, string name)
+    {
+        string fullPath = Path.Combine(path, "Template.sln");
+        string text = File.ReadAllText(fullPath);
+        text = text.Replace("Template", name);
+        File.Delete(fullPath);
+        File.WriteAllText(Path.Combine(path, name + ".sln"), text);
+    }
+
+    private static void RenameCSProjFile(string path, string name)
+    {
+        string fullPath = Path.Combine(path, "Template.csproj");
+        string text = File.ReadAllText(fullPath);
+        text = text.Replace("<RootNamespace>Template</RootNamespace>", $"<RootNamespace>{name}</RootNamespace>");
+        File.Delete(fullPath);
+        File.WriteAllText(Path.Combine(path, name + ".csproj"), text);
+    }
+
+    /// <summary>
+    /// Renames the default "__TEMPLATE__" namespace to the new specified game name in all scripts.
+    /// Note that this assumes no one will use the namespace name "__TEMPLATE__".
+    /// </summary>
+    public static void RenameAllNamespaces(string path, string newNamespaceName)
+    {
+        DirectoryUtils.Traverse(path, RenameNamespaces);
+
+        void RenameNamespaces(string fullFilePath)
+        {
+            // Ignore these directories
+            switch (Path.GetDirectoryName(fullFilePath))
+            {
+                case ".godot":
+                case "GodotUtils":
+                case "addons":
+                    return;
+            }
+
+            // Modify all scripts
+            if (fullFilePath.EndsWith(".cs"))
+            {
+                // Do not modify this script
+                if (!fullFilePath.EndsWith("Setup.cs"))
+                {
+                    const string oldNamespaceName = "__TEMPLATE__";
+
+                    string text = File.ReadAllText(fullFilePath);
+
+                    text = text.Replace($"namespace {oldNamespaceName}", $"namespace {newNamespaceName}");
+                    text = text.Replace($"using {oldNamespaceName}", $"using {newNamespaceName}");
+                    text = text.Replace($"{oldNamespaceName}.", $"{newNamespaceName}.");
+
+                    File.WriteAllText(fullFilePath, text);
+                }
+            }
+        }
+    }
 
     public static string GetUIdFromSceneFile(string path)
     {
@@ -48,29 +157,6 @@ public static partial class SetupUtils
     public static bool IsAlphaNumericAndAllowSpaces(string str)
     {
         return AlphaNumericAndSpacesRegex().IsMatch(str);
-    }
-
-    public static void SetGenreSelectedInfo(RichTextLabel genreSelectedInfo, Genre genre)
-    {
-        string text = $"The {Highlight(FolderNames[genre])} genre has been selected. " +
-              $"All other assets not specific to {Highlight(FolderNames[genre])} " +
-              $"will be deleted.";
-
-        genreSelectedInfo.Text = text;
-    }
-
-    public static void SetGenreTipInfo(RichTextLabel label, Genre genre)
-    {
-        string text = genre switch
-        {
-            Genre.None => "Contains an empty scene. Useful utility scripts are still provided.",
-            Genre.Platformer2D => "Currently has nothing. Please use 'No Genre' instead for now.",
-            Genre.TopDown2D => "Contains a dungeon environment, player controller, slime enemies, and multiplayer.",
-            Genre.FPS3D => "Contains a simple FPS controller and a gun with an animated reload animation.",
-            _ => ""
-        };
-
-        label.Text = text;
     }
 
     public static void DisplayGameNamePreview(string inputName, RichTextLabel gameNamePreview)
