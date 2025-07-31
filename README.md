@@ -34,7 +34,9 @@ Clone with all submodules.
 git clone --recurse-submodules https://github.com/CSharpGodotTools/Template
 ```
 
-Run the main scene, fill in the fields, click apply changes and you are done.
+Run the setup scene, click apply changes and you're done.
+
+<img width="1589" height="875" alt="image" src="https://github.com/user-attachments/assets/50d0b1ef-4d63-48e9-bb9a-84fe3c1e3391" />
 
 <div align="center">
     <h2>Thank You</h2>
