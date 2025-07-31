@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://dnmu3cujgayk2"]
 
-[ext_resource type="Script" uid="uid://dosqetacy3knn" path="res://Genres/0 Setup/SetupUI.cs" id="1_m5u8t"]
-[ext_resource type="Script" uid="uid://blxj0cebqkjo2" path="res://Genres/0 Setup/CheckDotNetVersion.cs" id="2_ut11q"]
+[ext_resource type="Script" uid="uid://dosqetacy3knn" path="res://Setup/SetupUI.cs" id="1_m5u8t"]
+[ext_resource type="Script" uid="uid://blxj0cebqkjo2" path="res://Setup/CheckDotNetVersion.cs" id="2_ut11q"]
 
 [sub_resource type="SystemFont" id="SystemFont_ax7t0"]
 font_names = PackedStringArray("Segoe UI")
