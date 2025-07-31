@@ -21,7 +21,7 @@ public partial class LevelUI : Node
 
         Input.MouseMode = Input.MouseModeEnum.Captured;
 
-        UIConsole console = GetNode<UIConsole>(Autoloads.Console);
+        UIConsole console = GetNode<UIConsole>(AutoloadPaths.Console);
 
         console.VisibilityToggled += HandleConsoleToggled;
 

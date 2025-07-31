@@ -12,7 +12,7 @@ public partial class LoggerManager : Node
     public override void _Ready()
     {
         Instance = this;
-        Logger.MessageLogged += GetNode<UIConsole>(Autoloads.Console).AddMessage;
+        Logger.MessageLogged += GetNode<UIConsole>(AutoloadPaths.Console).AddMessage;
         SetPhysicsProcess(false);
     }
 

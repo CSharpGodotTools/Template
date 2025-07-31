@@ -1,0 +1,48 @@
+[gd_scene load_steps=12 format=3 uid="uid://cj4fbh1a1lpq4"]
+
+[ext_resource type="Script" uid="uid://cdt2k6s3xm13g" path="res://Framework/Autoloads/Global.cs" id="1_byaaa"]
+[ext_resource type="Script" uid="uid://d102rl17730xk" path="res://Framework/Autoloads/AudioManager.cs" id="2_7c3qn"]
+[ext_resource type="Script" uid="uid://di53rvtypdwb0" path="res://Framework/Autoloads/SceneManager.cs" id="3_31ojt"]
+[ext_resource type="PackedScene" uid="uid://b1augjui20eux" path="res://Framework/Scenes/MenuUI/MetricsOverlay/MetricsOverlay.tscn" id="3_g8bqj"]
+[ext_resource type="Script" uid="uid://cwtgwqgmuuihe" path="res://Framework/Autoloads/CommandLineArgs.cs" id="3_ocdib"]
+[ext_resource type="Script" uid="uid://br42xukyu1bkq" path="res://Framework/Autoloads/LoggerManager.cs" id="4_3cpyl"]
+[ext_resource type="Script" uid="uid://bhx5ou1uiwfkj" path="res://Framework/Autoloads/Services/Services.cs" id="4_jxhl7"]
+[ext_resource type="Script" uid="uid://bji01posut5cy" path="res://Framework/Autoloads/OptionsManager.cs" id="4_nskj3"]
+[ext_resource type="PackedScene" uid="uid://jrjqky6ag6gg" path="res://Framework/Scenes/MenuUI/Console/UIConsole.tscn" id="8_i1ct5"]
+[ext_resource type="Script" uid="uid://2a2podwr0kur" path="res://Framework/GodotUtils/Visualize/Scripts/VisualizeAutoload.cs" id="8_supaa"]
+[ext_resource type="PackedScene" uid="uid://dugmpnsxaagba" path="res://addons/imgui-godot/data/ImGuiRoot.tscn" id="11_4uyu8"]
+
+[node name="Autoloads" type="Node"]
+process_mode = 3
+script = ExtResource("1_byaaa")
+
+[node name="AudioManager" type="Node" parent="."]
+script = ExtResource("2_7c3qn")
+
+[node name="CommandLineArgs" type="Node" parent="."]
+script = ExtResource("3_ocdib")
+
+[node name="LoggerManager" type="Node" parent="."]
+script = ExtResource("4_3cpyl")
+
+[node name="OptionsManager" type="Node" parent="."]
+script = ExtResource("4_nskj3")
+
+[node name="SceneManager" type="Node" parent="."]
+script = ExtResource("3_31ojt")
+
+[node name="Services" type="Node" parent="."]
+script = ExtResource("4_jxhl7")
+
+[node name="VisualizeAutoload" type="Node" parent="."]
+script = ExtResource("8_supaa")
+
+[node name="Debug" type="CanvasLayer" parent="."]
+layer = 128
+
+[node name="MetricsOverlay" parent="Debug" instance=ExtResource("3_g8bqj")]
+
+[node name="Console" parent="Debug" instance=ExtResource("8_i1ct5")]
+visible = false
+
+[node name="ImGuiRoot" parent="." instance=ExtResource("11_4uyu8")]

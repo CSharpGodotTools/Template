@@ -31,7 +31,7 @@ public partial class SceneManager : Node
         CurrentScene = root.GetChild(root.GetChildCount() - 1);
 
         // Gradually fade out all SFX whenever the scene is changed
-        PreSceneChanged += _ => GetNode<AudioManager>(Autoloads.AudioManager).FadeOutSFX();
+        PreSceneChanged += _ => GetNode<AudioManager>(AutoloadPaths.AudioManager).FadeOutSFX();
     }
 
     public void SwitchScene(Scene scene, TransType transType = TransType.None)

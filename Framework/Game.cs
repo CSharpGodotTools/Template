@@ -8,7 +8,7 @@ public static class Game
 {
     public static void SwitchScene(Node node, Scene scene, TransType transType = TransType.None)
     {
-        node.GetNode<SceneManager>(Autoloads.SceneManager).SwitchScene(scene, transType);
+        node.GetNode<SceneManager>(AutoloadPaths.SceneManager).SwitchScene(scene, transType);
     }
 
     public static void Log(object message, BBColor color = BBColor.Gray)

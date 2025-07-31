@@ -13,7 +13,7 @@ public partial class OptionsNav : Control
 
     public override void _Ready()
     {
-        _optionsManager = GetNode<OptionsManager>(Autoloads.OptionsManager);
+        _optionsManager = GetNode<OptionsManager>(AutoloadPaths.OptionsManager);
 
         Node content = GetParent().GetNode("Content");
 

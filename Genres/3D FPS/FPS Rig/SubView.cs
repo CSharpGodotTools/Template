@@ -7,7 +7,7 @@ public partial class SubView : SubViewportContainer
 {
     public override void _Ready()
     {
-        OptionsManager optionsManager = GetNode<OptionsManager>(Autoloads.OptionsManager);
+        OptionsManager optionsManager = GetNode<OptionsManager>(AutoloadPaths.OptionsManager);
         StretchShrink = optionsManager.Options.Resolution;
 
         SubViewport subViewport = GetNode<SubViewport>("SubViewport");

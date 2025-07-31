@@ -25,7 +25,7 @@ public partial class OptionsManager : Node
 
     public override void _Ready()
     {
-        GetNode<Global>(Autoloads.Global).PreQuit += SaveSettingsOnQuit;
+        GetNode<Global>(AutoloadPaths.Global).PreQuit += SaveSettingsOnQuit;
 
         LoadOptions();
 

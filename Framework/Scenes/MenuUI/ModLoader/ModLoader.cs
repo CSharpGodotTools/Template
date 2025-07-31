@@ -86,7 +86,7 @@ public partial class ModLoader : Node
     {
         //OS.CreateProcess(OS.GetExecutablePath(), null);
         OS.CreateInstance(null);
-        await GetNode<Global>(Autoloads.Global).QuitAndCleanup();
+        await GetNode<Global>(AutoloadPaths.Global).QuitAndCleanup();
     }
 
     private static void _OnOpenModsFolderPressed()

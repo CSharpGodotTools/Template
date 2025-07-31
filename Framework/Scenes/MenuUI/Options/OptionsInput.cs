@@ -14,7 +14,7 @@ public partial class OptionsInput : Control
 
     public override void _Ready()
     {
-        _optionsManager = GetNode<OptionsManager>(Autoloads.OptionsManager);
+        _optionsManager = GetNode<OptionsManager>(AutoloadPaths.OptionsManager);
         _content = GetNode<VBoxContainer>("Scroll/VBox");
         CreateHotkeys();
     }
@@ -70,7 +70,7 @@ public partial class OptionsInput : Control
         {
             if (Input.IsActionJustPressed(InputActions.UICancel))
             {
-                if (GetNode<SceneManager>(Autoloads.SceneManager).CurrentScene.Name == "Options")
+                if (GetNode<SceneManager>(AutoloadPaths.SceneManager).CurrentScene.Name == "Options")
                 {
                     if (_btnNewInput == null)
                     {

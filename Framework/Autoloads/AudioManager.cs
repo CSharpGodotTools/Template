@@ -18,7 +18,7 @@ public partial class AudioManager : Node
 
     public override void _Ready()
     {
-        _options = GetNode<OptionsManager>(Autoloads.OptionsManager).Options;
+        _options = GetNode<OptionsManager>(AutoloadPaths.OptionsManager).Options;
         _musicPlayer = new GAudioPlayer(this);
 
         _sfxPlayersParent = new Node();
