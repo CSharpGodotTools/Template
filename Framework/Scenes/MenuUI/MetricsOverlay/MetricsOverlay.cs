@@ -33,7 +33,7 @@ public partial class MetricsOverlay : Component
 
     public override void Ready()
     {
-        ComponentManager.RegisterProcess(this);
+        RegisterProcess();
 
         _metrics = new()
         {

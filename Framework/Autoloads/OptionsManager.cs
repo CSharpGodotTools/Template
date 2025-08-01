@@ -26,7 +26,7 @@ public partial class OptionsManager : Component
 
     public override void Ready()
     {
-        ComponentManager.RegisterPhysicsProcess(this);
+        RegisterPhysicsProcess();
         GetNode<Global>(AutoloadPaths.Global).PreQuit += SaveSettingsOnQuit;
 
         LoadOptions();

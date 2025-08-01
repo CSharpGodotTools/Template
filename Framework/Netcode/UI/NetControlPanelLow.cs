@@ -17,7 +17,7 @@ public abstract partial class NetControlPanelLow : Control
 
     public override void _Ready()
     {
-        LoggerManager.Instance.ComponentManager.RegisterPhysicsProcess(LoggerManager.Instance);
+        LoggerManager.Instance.RegisterPhysicsProcess();
         Net.Initialize(this, GameServerFactory(), GameClientFactory());
 
         SetupButtons();
