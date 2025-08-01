@@ -11,10 +11,8 @@ public partial class LoggerManager : Component
 
     public override void Ready()
     {
-        ComponentManager.RegisterPhysicsProcess(this);
         Instance = this;
         Logger.MessageLogged += GetNode<UIConsole>(AutoloadPaths.Console).AddMessage;
-        SetPhysicsProcess(false);
     }
 
     public override void PhysicsProcess(double delta)
