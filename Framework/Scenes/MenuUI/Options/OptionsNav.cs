@@ -1,5 +1,6 @@
 using Godot;
 using GodotUtils;
+using GodotUtils.UI;
 using System.Collections.Generic;
 
 namespace __TEMPLATE__.UI;

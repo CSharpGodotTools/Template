@@ -1,5 +1,6 @@
 using Godot;
 using GodotUtils;
+using GodotUtils.Netcode;
 
 namespace __TEMPLATE__.Netcode;
 
@@ -17,7 +18,7 @@ public abstract partial class NetControlPanelLow : Control
 
     public override void _Ready()
     {
-        LoggerManager.Instance.RegisterPhysicsProcess();
+        Logger.Instance.RegisterPhysicsProcess();
         Net.Initialize(this, GameServerFactory(), GameClientFactory());
 
         SetupButtons();

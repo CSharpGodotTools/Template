@@ -1,8 +1,10 @@
 using Godot;
 using GodotUtils;
+using GodotUtils.UI;
 using System;
 
 using static Godot.DisplayServer;
+using WindowMode = GodotUtils.WindowMode;
 
 namespace __TEMPLATE__.UI;
 
@@ -185,11 +187,4 @@ public partial class OptionsDisplay : Control
 
         Engine.MaxFps = _options.MaxFPS;
     }
-}
-
-public enum WindowMode
-{
-    Windowed,
-    Borderless,
-    Fullscreen
 }
