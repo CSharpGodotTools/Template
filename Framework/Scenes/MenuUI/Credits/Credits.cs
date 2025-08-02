@@ -62,13 +62,20 @@ public partial class Credits : Node
             {
                 if (string.IsNullOrWhiteSpace(translatedLine))
                 {
-                    GPadding padding = new(_vbox, 0, 10);
-                    padding.Internal.MouseFilter = Control.MouseFilterEnum.Ignore;
+                    Control padding = new()
+                    {
+                        CustomMinimumSize = new Vector2(0, 10),
+                        MouseFilter = Control.MouseFilterEnum.Ignore
+                    };
+
+                    _vbox.AddChild(padding);
                 }
                 else
                 {
-                    GLabel label = new(_vbox, translatedLine, size);
-                    label.Internal.MouseFilter = Control.MouseFilterEnum.Ignore;
+                    Label label = LabelFactory.Create(translatedLine, size);
+                    label.MouseFilter = Control.MouseFilterEnum.Ignore;
+
+                    _vbox.AddChild(label);
                 }
             }   
         } 
@@ -127,8 +134,11 @@ public partial class Credits : Node
             SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter
         };
 
-        new GLabel(hbox, textDesc);
-        new GLinkButton(hbox, textLink);
+        Label label = LabelFactory.Create(textDesc);
+        LinkButton linkButton = LinkButtonFactory.Create(textLink);
+
+        hbox.AddChild(linkButton);
+        hbox.AddChild(label);
 
         _vbox.AddChild(hbox);
     }

@@ -1,9 +1,10 @@
 using Godot;
 using System;
 using System.Threading.Tasks;
-using __TEMPLATE__.Netcode.Client;
-using __TEMPLATE__.Netcode.Server;
-using __TEMPLATE__.UI;
+using GodotUtils;
+using GodotUtils.Netcode;
+using GodotUtils.Netcode.Client;
+using GodotUtils.Netcode.Server;
 
 namespace __TEMPLATE__.Netcode;
 
@@ -128,7 +129,7 @@ public class Net
         }
 
         // Wait for the logger to finish enqueing the remaining logs
-        while (LoggerManager.Instance.Logger.StillWorking())
+        while (Logger.Instance.StillWorking())
         {
             await Task.Delay(ShutdownPollIntervalMs);
         }

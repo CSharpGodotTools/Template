@@ -1,4 +1,6 @@
 using Godot;
+using GodotUtils;
+using GodotUtils.UI;
 
 namespace __TEMPLATE__.UI;
 

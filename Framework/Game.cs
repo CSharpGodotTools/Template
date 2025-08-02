@@ -1,6 +1,7 @@
 using Godot;
+using GodotUtils;
 using System;
-using static __TEMPLATE__.SceneManager;
+using static GodotUtils.SceneManager;
 
 namespace __TEMPLATE__;
 
@@ -13,21 +14,21 @@ public static class Game
 
     public static void Log(object message, BBColor color = BBColor.Gray)
     {
-        LoggerManager.Instance.Logger.Log(message, color);
+        Logger.Instance.Log(message, color);
     }
 
     public static void Log(params object[] objects)
     {
-        LoggerManager.Instance.Logger.Log(objects);
+        Logger.Instance.Log(objects);
     }
 
     public static void LogWarning(object message, BBColor color = BBColor.Orange)
     {
-        LoggerManager.Instance.Logger.LogWarning(message, color);
+        Logger.Instance.LogWarning(message, color);
     }
 
     public static void LogErr(Exception e, string hint = null)
     {
-        LoggerManager.Instance.Logger.LogErr(e, hint);
+        Logger.Instance.LogErr(e, hint);
     }
 }

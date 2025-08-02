@@ -2,6 +2,7 @@ using Godot;
 using GodotUtils;
 using System.Linq;
 using Godot.Collections;
+using GodotUtils.UI;
 
 namespace __TEMPLATE__.UI;
 
@@ -98,11 +99,11 @@ public partial class OptionsInput : Control
         _btnNewInput.Btn.QueueFree();
 
         // Create the button
-        GButton btn = CreateButton(action, @event, _btnNewInput.HBox);
-        btn.Internal.Disabled = false;
+        Button btn = CreateButton(action, @event, _btnNewInput.HBox);
+        btn.Disabled = false;
 
         // Move the button to where it was originally at
-        _btnNewInput.HBox.MoveChild(btn.Internal, index);
+        _btnNewInput.HBox.MoveChild(btn, index);
 
         Dictionary<StringName, Array<InputEvent>> actions = _optionsManager.Hotkeys.Actions;
 
@@ -124,7 +125,7 @@ public partial class OptionsInput : Control
         _btnNewInput = null;
     }
 
-    private GButton CreateButton(string action, InputEvent inputEvent, HBoxContainer hbox)
+    private Button CreateButton(string action, InputEvent inputEvent, HBoxContainer hbox)
     {
         string readable = "";
 
@@ -138,8 +139,14 @@ public partial class OptionsInput : Control
         }
 
         // Create the button
-        GButton btn = new(hbox, readable);
-        btn.Internal.Pressed += () =>
+        Button btn = new()
+        {
+            Text = readable
+        };
+
+        hbox.AddChild(btn);
+
+        btn.Pressed += () =>
         {
             // Do not do anything if listening for new input
             if (_btnNewInput != null)
@@ -151,15 +158,15 @@ public partial class OptionsInput : Control
             _btnNewInput = new BtnInfo
             {
                 Action = action,
-                Btn = btn.Internal,
+                Btn = btn,
                 HBox = hbox,
                 InputEvent = inputEvent,
-                OriginalText = btn.Internal.Text
+                OriginalText = btn.Text
             };
 
             // Give feedback to the user saying we are waiting for new input
-            btn.Internal.Disabled = true;
-            btn.Internal.Text = "...";
+            btn.Disabled = true;
+            btn.Text = "...";
         };
 
         return btn;
@@ -168,8 +175,14 @@ public partial class OptionsInput : Control
     private void CreateButtonPlus(string action, HBoxContainer hbox)
     {
         // Create the button
-        GButton btn = new(hbox, "+");
-        btn.Internal.Pressed += () =>
+        Button btn = new()
+        {
+            Text = "+"
+        };
+
+        hbox.AddChild(btn);
+
+        btn.Pressed += () =>
         {
             // Do not do anything if listening for new input
             if (_btnNewInput != null)
@@ -181,15 +194,15 @@ public partial class OptionsInput : Control
             _btnNewInput = new BtnInfo
             {
                 Action = action,
-                Btn = btn.Internal,
+                Btn = btn,
                 HBox = hbox,
-                OriginalText = btn.Internal.Text,
+                OriginalText = btn.Text,
                 Plus = true
             };
 
             // Give feedback to the user saying we are waiting for new input
-            btn.Internal.Disabled = true;
-            btn.Internal.Text = "...";
+            btn.Disabled = true;
+            btn.Text = "...";
 
             CreateButtonPlus(action, hbox);
         };
@@ -214,10 +227,11 @@ public partial class OptionsInput : Control
             string name = action.ToString().Replace('_', ' ').ToTitleCase();
 
             // Add the action label
-            GLabel label = new(hbox, name);
+            Label label = LabelFactory.Create(name);
+            hbox.AddChild(label);
 
-            label.Internal.HorizontalAlignment = HorizontalAlignment.Left;
-            label.Internal.CustomMinimumSize = new Vector2(200, 0);
+            label.HorizontalAlignment = HorizontalAlignment.Left;
+            label.CustomMinimumSize = new Vector2(200, 0);
 
             // Add all the events after the action label
             HBoxContainer hboxEvents = new();

@@ -1,4 +1,6 @@
 using Godot;
+using GodotUtils;
+using GodotUtils.UI.Console;
 using System;
 
 namespace __TEMPLATE__.UI;
@@ -16,13 +18,13 @@ public partial class PopupMenu : Control
 
     private VBoxContainer _vbox;
     private PanelContainer _menu;
-    private UIConsole _console;
+    private GameConsole _console;
 
     public override void _Ready()
     {
         TryFindWorldEnvironmentNode();
 
-        _console = GetNode<UIConsole>(AutoloadPaths.Console);
+        _console = GetNode<GameConsole>(AutoloadPaths.Console);
         _menu = Menu;
         _vbox = Navigation;
 
@@ -33,7 +35,7 @@ public partial class PopupMenu : Control
     {
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
-            if (UIConsole.Instance.Visible)
+            if (GameConsole.Instance.Visible)
             {
                 _console.ToggleVisibility();
                 return;

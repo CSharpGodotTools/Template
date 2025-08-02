@@ -72,7 +72,7 @@ public static partial class SetupUtils
     {
         DirectoryUtils.Traverse(path, RenameNamespaces);
 
-        void RenameNamespaces(string fullFilePath)
+        bool RenameNamespaces(string fullFilePath)
         {
             // Ignore these directories
             switch (Path.GetDirectoryName(fullFilePath))
@@ -80,7 +80,7 @@ public static partial class SetupUtils
                 case ".godot":
                 case "GodotUtils":
                 case "addons":
-                    return;
+                    return false;
             }
 
             // Modify all scripts
@@ -100,6 +100,8 @@ public static partial class SetupUtils
                     File.WriteAllText(fullFilePath, text);
                 }
             }
+
+            return true;
         }
     }
 
