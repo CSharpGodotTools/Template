@@ -19,6 +19,26 @@ public partial class SetupUI : Node
         string gameName = SetupUtils.FormatGameName(GameName.Text);
         string path = ProjectSettings.GlobalizePath("res://");
 
+        // Prevent namespace being the same name as a class name in the project
+        bool namespaceSameAsClassName = false;
+
+        DirectoryUtils.Traverse("res://", fullFilePath =>
+        {
+            if (Path.GetFileName(fullFilePath).Equals(GameName.Text + ".cs"))
+            {
+                namespaceSameAsClassName = true;
+                return true;
+            }
+
+            return false;
+        });
+
+        if (namespaceSameAsClassName)
+        {
+            GD.PrintErr($"Namespace {GameName.Text} is the same name as {GameName.Text}.cs");
+            return;
+        }
+
         // The IO functions ran below will break if empty folders exist
         DirectoryUtils.DeleteEmptyDirectories(path);
 
