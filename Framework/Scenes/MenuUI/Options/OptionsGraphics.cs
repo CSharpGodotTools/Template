@@ -15,7 +15,7 @@ public partial class OptionsGraphics : Control
 
     public override void _Ready()
     {
-        _options = GetNode<OptionsManager>(AutoloadPaths.OptionsManager).Options;
+        _options = OptionsManager.GetOptions();
         SetupQualityPreset();
         SetupAntialiasing();
         SetupWorldEnvironmentSettings();

@@ -7,12 +7,10 @@ namespace __TEMPLATE__.UI;
 public partial class OptionsAudio : Control
 {
     private ResourceOptions _options;
-    private AudioManager _audioManager;
 
     public override void _Ready()
     {
-        _options = GetNode<OptionsManager>(AutoloadPaths.OptionsManager).Options;
-        _audioManager = GetNode<AudioManager>(AutoloadPaths.AudioManager);
+        _options = OptionsManager.GetOptions();
 
         SetupMusic();
         SetupSounds();
@@ -32,11 +30,11 @@ public partial class OptionsAudio : Control
 
     private void _OnMusicValueChanged(float v)
     {
-        _audioManager.SetMusicVolume(v);
+        AudioManager.SetMusicVolume(v);
     }
 
     private void _OnSoundsValueChanged(float v)
     {
-        _audioManager.SetSFXVolume(v);
+        AudioManager.SetSFXVolume(v);
     }
 }
