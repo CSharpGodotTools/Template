@@ -11,11 +11,9 @@ public partial class OptionsInput : Control
     private Dictionary<StringName, Array<InputEvent>> _defaultActions;
     private BtnInfo _btnNewInput; // the btn waiting for new input
     private VBoxContainer _content;
-    private OptionsManager _optionsManager;
 
     public override void _Ready()
     {
-        _optionsManager = GetNode<OptionsManager>(AutoloadPaths.OptionsManager);
         _content = GetNode<VBoxContainer>("Scroll/VBox");
         CreateHotkeys();
     }
@@ -32,7 +30,7 @@ public partial class OptionsInput : Control
                 InputMap.ActionEraseEvent(action, _btnNewInput.InputEvent);
 
                 // Update options
-                _optionsManager.Hotkeys.Actions[action].Remove(_btnNewInput.InputEvent);
+                OptionsManager.GetHotkeys().Actions[action].Remove(_btnNewInput.InputEvent);
 
                 // Update UI
                 _btnNewInput.Btn.QueueFree();
@@ -71,11 +69,11 @@ public partial class OptionsInput : Control
         {
             if (Input.IsActionJustPressed(InputActions.UICancel))
             {
-                if (GetNode<SceneManager>(AutoloadPaths.SceneManager).CurrentScene.Name == "Options")
+                if (SceneManager.GetCurrentScene().Name == "Options")
                 {
                     if (_btnNewInput == null)
                     {
-                        Game.SwitchScene(this, Scene.MainMenu);
+                        SceneManager.SwitchScene(Scene.MainMenu);
                     }
                 }
             }
@@ -105,7 +103,7 @@ public partial class OptionsInput : Control
         // Move the button to where it was originally at
         _btnNewInput.HBox.MoveChild(btn, index);
 
-        Dictionary<StringName, Array<InputEvent>> actions = _optionsManager.Hotkeys.Actions;
+        Dictionary<StringName, Array<InputEvent>> actions = OptionsManager.GetHotkeys().Actions;
 
         // Clear the specific action event
         actions[action].Remove(_btnNewInput.InputEvent);
@@ -211,7 +209,7 @@ public partial class OptionsInput : Control
     private void CreateHotkeys()
     {
         // Loop through the actions in alphabetical order
-        foreach (StringName action in _optionsManager.Hotkeys.Actions.Keys.OrderBy(x => x.ToString()))
+        foreach (StringName action in OptionsManager.GetHotkeys().Actions.Keys.OrderBy(x => x.ToString()))
         {
             string actionStr = action.ToString();
 
@@ -236,7 +234,7 @@ public partial class OptionsInput : Control
             // Add all the events after the action label
             HBoxContainer hboxEvents = new();
 
-            Array<InputEvent> events = _optionsManager.Hotkeys.Actions[action];
+            Array<InputEvent> events = OptionsManager.GetHotkeys().Actions[action];
 
             foreach (InputEvent @event in events)
             {
@@ -271,7 +269,7 @@ public partial class OptionsInput : Control
         }
 
         _btnNewInput = null;
-        _optionsManager.ResetHotkeys();
+        OptionsManager.ResetHotkeys();
         CreateHotkeys();
     }
 }

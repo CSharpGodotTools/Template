@@ -13,30 +13,30 @@ public partial class MainMenuNav : Node
     private void _OnPlayPressed()
     {
         //AudioManager.PlayMusic(Music.Level1, false);
-        Game.SwitchScene(this, Scene.Game);
+        SceneManager.SwitchScene(Scene.Game);
     }
 
     private void _OnModsPressed()
     {
         //AudioManager.PlayMusic(Music.Level4);
-        Game.SwitchScene(this, Scene.ModLoader);
+        SceneManager.SwitchScene(Scene.ModLoader);
     }
 
     private void _OnOptionsPressed()
     {
         //AudioManager.PlayMusic(Music.Level4);
-        Game.SwitchScene(this, Scene.Options);
+        SceneManager.SwitchScene(Scene.Options);
     }
 
     private void _OnCreditsPressed()
     {
         //AudioManager.PlayMusic(Music.Level4);
-        Game.SwitchScene(this, Scene.Credits);
+        SceneManager.SwitchScene(Scene.Credits);
     }
 
     private async void _OnQuitPressed()
     {
-        await GetNode<Global>(AutoloadPaths.Global).QuitAndCleanup();
+        await Global.Instance.QuitAndCleanup();
     }
 
     private void _OnDiscordPressed()

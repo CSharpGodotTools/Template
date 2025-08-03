@@ -1,7 +1,7 @@
 using Godot;
 using GodotUtils;
+using GodotUtils.RegEx;
 using System.IO;
-using System.Text.RegularExpressions;
 
 namespace __TEMPLATE__.Setup;
 
@@ -136,7 +136,7 @@ public static partial class SetupUtils
 
     public static bool IsAlphaNumericAndAllowSpaces(string str)
     {
-        return AlphaNumericAndSpacesRegex().IsMatch(str);
+        return RegexUtils.AlphaNumericAndSpaces().IsMatch(str);
     }
 
     public static void DisplayGameNamePreview(string inputName, RichTextLabel gameNamePreview)
@@ -149,7 +149,4 @@ public static partial class SetupUtils
 
         gameNamePreview.Text = text;
     }
-
-    [GeneratedRegex(@"^[a-zA-Z0-9\s,]*$")]
-    private static partial Regex AlphaNumericAndSpacesRegex();
 }

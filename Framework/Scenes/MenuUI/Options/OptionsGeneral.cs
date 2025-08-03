@@ -10,7 +10,7 @@ public partial class OptionsGeneral : Control
 
     public override void _Ready()
     {
-        _options = GetNode<OptionsManager>(AutoloadPaths.OptionsManager).Options;
+        _options = OptionsManager.GetOptions();
         SetupLanguage();
     }
 

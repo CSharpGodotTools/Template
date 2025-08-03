@@ -13,7 +13,7 @@ public partial class OptionsGameplay : Control
 
     public override void _Ready()
     {
-        _options = GetNode<OptionsManager>(AutoloadPaths.OptionsManager).Options;
+        _options = OptionsManager.GetOptions();
         SetupDifficulty();
         SetupMouseSensitivity();
     }

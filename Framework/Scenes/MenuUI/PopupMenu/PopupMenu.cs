@@ -18,13 +18,11 @@ public partial class PopupMenu : Control
 
     private VBoxContainer _vbox;
     private PanelContainer _menu;
-    private GameConsole _console;
 
     public override void _Ready()
     {
         TryFindWorldEnvironmentNode();
 
-        _console = GetNode<GameConsole>(AutoloadPaths.Console);
         _menu = Menu;
         _vbox = Navigation;
 
@@ -35,9 +33,9 @@ public partial class PopupMenu : Control
     {
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
-            if (GameConsole.Instance.Visible)
+            if (GameConsole.Visible)
             {
-                _console.ToggleVisibility();
+                GameConsole.ToggleVisibility();
                 return;
             }
 
@@ -91,11 +89,11 @@ public partial class PopupMenu : Control
     {
         OnMainMenuBtnPressed?.Invoke();
         GetTree().Paused = false;
-        Game.SwitchScene(this, Scene.MainMenu);
+        SceneManager.SwitchScene(Scene.MainMenu);
     }
 
     private async void _OnQuitPressed()
     {
-        await GetNode<Global>(AutoloadPaths.Global).QuitAndCleanup();
+        await Global.Instance.QuitAndCleanup();
     }
 }

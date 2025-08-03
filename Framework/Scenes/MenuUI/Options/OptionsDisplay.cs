@@ -13,7 +13,6 @@ public partial class OptionsDisplay : Control
     public event Action<int> OnResolutionChanged;
 
     private ResourceOptions _options;
-    private OptionsManager _optionsManager;
 
     // Max FPS
     private HSlider _sliderMaxFps;
@@ -26,8 +25,7 @@ public partial class OptionsDisplay : Control
 
     public override void _Ready()
     {
-        _optionsManager = GetNode<OptionsManager>(AutoloadPaths.OptionsManager);
-        _options = _optionsManager.Options;
+        _options = OptionsManager.GetOptions();
         SetupMaxFps();
         SetupWindowSize();
         SetupWindowMode();
@@ -65,7 +63,7 @@ public partial class OptionsDisplay : Control
         OptionButton optionBtnWindowMode = GetNode<OptionButton>("%WindowMode");
         optionBtnWindowMode.Select((int)_options.WindowMode);
 
-        _optionsManager.WindowModeChanged += windowMode =>
+        OptionsManager.Instance.WindowModeChanged += windowMode =>
         {
             if (!IsInstanceValid(optionBtnWindowMode))
             {
