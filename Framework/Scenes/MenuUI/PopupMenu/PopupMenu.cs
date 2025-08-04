@@ -5,7 +5,6 @@ using System;
 
 namespace __TEMPLATE__.UI;
 
-[Service]
 [SceneTree]
 public partial class PopupMenu : Control
 {
@@ -21,6 +20,7 @@ public partial class PopupMenu : Control
 
     public override void _Ready()
     {
+        Services.Register(this);
         TryFindWorldEnvironmentNode();
 
         _menu = Menu;
