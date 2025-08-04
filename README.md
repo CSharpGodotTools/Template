@@ -16,7 +16,7 @@
 - **[In-Game Debugging Tools](https://github.com/CSharpGodotTools/Template/wiki/In%E2%80%90Game-Debugging)**
 - **[Menu UI](https://github.com/CSharpGodotTools/Template/wiki/Menu-UI)** - Main menu, options and credits.
 - **[Simplified Tweens](https://github.com/CSharpGodotTools/Template/wiki/Simplified-Tweens)**
-- **[Service Attribute](https://github.com/CSharpGodotTools/Template/wiki/Services)** - Alternative way of managing static members.
+- **[Services](https://github.com/CSharpGodotTools/Template/wiki/Services)** - Alternative to using static members.
 - **[Cat Lips Source Generators](https://github.com/CSharpGodotTools/Template/wiki/Source-Generators)**
 - **[Useful Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)**
 
@@ -45,4 +45,4 @@ Press play to run the setup, click apply changes and you're done.
 [Brian Shao](https://github.com/cydq) for helping with cross-platform compatibility.  
 [Piep Matz](https://github.com/riffy) for helping with the drag drop system.  
 
-New contributors please read [this guide](https://github.com/CSharpGodotTools/Template/wiki/Contributing).
+New contributors please read [this](https://github.com/CSharpGodotTools/Template/wiki/Contributing).
