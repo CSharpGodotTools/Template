@@ -8,9 +8,9 @@ namespace __TEMPLATE__.UI;
 [SceneTree]
 public partial class PopupMenu : Control
 {
-    public event Action OnOpened;
-    public event Action OnClosed;
-    public event Action OnMainMenuBtnPressed;
+    public event Action Opened;
+    public event Action Closed;
+    public event Action MainMenuBtnPressed;
 
     public WorldEnvironment WorldEnvironment { get; private set; }
     public Options Options { get; private set; }
@@ -52,11 +52,11 @@ public partial class PopupMenu : Control
 
                 if (Visible)
                 {
-                    OnOpened?.Invoke();
+                    Opened?.Invoke();
                 }
                 else
                 {
-                    OnClosed?.Invoke();
+                    Closed?.Invoke();
                 }
             }
         }
@@ -87,7 +87,7 @@ public partial class PopupMenu : Control
 
     private void _OnMainMenuPressed()
     {
-        OnMainMenuBtnPressed?.Invoke();
+        MainMenuBtnPressed?.Invoke();
         GetTree().Paused = false;
         SceneManager.SwitchScene(Scene.MainMenu);
     }
