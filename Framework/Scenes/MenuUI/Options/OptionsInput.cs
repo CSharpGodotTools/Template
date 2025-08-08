@@ -1,5 +1,6 @@
 using Godot;
 using GodotUtils;
+using System;
 using System.Linq;
 using Godot.Collections;
 using GodotUtils.UI;
@@ -8,278 +9,360 @@ namespace __TEMPLATE__.UI;
 
 public partial class OptionsInput : Control
 {
+    private const string RemoveHotkeyAction = "remove_hotkey";
+    private const string FullscreenAction = "fullscreen";
+    private const string OptionsSceneName = "Options";
+    private const string UiPrefix = "ui";
+    private const string Ellipsis = "...";
+
     private Dictionary<StringName, Array<InputEvent>> _defaultActions;
-    private BtnInfo _btnNewInput; // the btn waiting for new input
     private VBoxContainer _content;
+    private BtnInfo _btnNewInput; // The button currently waiting for new input
 
     public override void _Ready()
     {
+        // Cache the content container used for dynamically adding rows.
         _content = GetNode<VBoxContainer>("Scroll/VBox");
+
+        // Build the UI for all hotkeys from saved options.
         CreateHotkeys();
     }
 
     public override void _Input(InputEvent @event)
     {
+        // If we are currently listening for a replacement binding, handle those inputs first.
         if (_btnNewInput != null)
         {
-            if (Input.IsActionJustPressed(InputActions.RemoveHotkey))
-            {
-                StringName action = _btnNewInput.Action;
-
-                // Update input map
-                InputMap.ActionEraseEvent(action, _btnNewInput.InputEvent);
-
-                // Update options
-                OptionsManager.GetHotkeys().Actions[action].Remove(_btnNewInput.InputEvent);
-
-                // Update UI
-                _btnNewInput.Btn.QueueFree();
-                _btnNewInput = null;
-            }
-
-            if (Input.IsActionJustPressed(InputActions.UICancel))
-            {
-                _btnNewInput.Btn.Text = _btnNewInput.OriginalText;
-                _btnNewInput.Btn.Disabled = false;
-
-                if (_btnNewInput.Plus)
-                {
-                    _btnNewInput.Btn.QueueFree();
-                }
-
-                _btnNewInput = null;
-                return;
-            }
-
-            switch (@event)
-            {
-                case InputEventMouseButton eventMouseBtn:
-                {
-                    if (!eventMouseBtn.Pressed)
-                        HandleInput(eventMouseBtn);
-                    
-                    break;
-                }
-                case InputEventKey { Echo: false, Pressed: false } eventKey: // Only check when the last key was released from the keyboard
-                    HandleInput(eventKey);
-                    break;
-            }   
+            HandleListeningInput(@event);
+            return;
         }
-        else
-        {
-            if (Input.IsActionJustPressed(InputActions.UICancel))
-            {
-                if (SceneManager.GetCurrentScene().Name == "Options")
-                {
-                    if (_btnNewInput == null)
-                    {
-                        SceneManager.SwitchScene(Scene.MainMenu);
-                    }
-                }
-            }
-        }
+
+        // Otherwise, handle global non-listening input (e.g. escape to go back).
+        HandleNonListeningInput();
     }
 
-    private void HandleInput(InputEvent @event)
+    private void HandleListeningInput(InputEvent @event)
     {
-        StringName action = _btnNewInput.Action;
-
-        // Prevent something very evil from happening!
-        if (action == "fullscreen" && @event is InputEventMouseButton)
-            return;
-
-        // Re-create the button
-
-        // Preserve the index the button was originally at
-        int index = _btnNewInput.Btn.GetIndex();
-
-        // Destroy the button
-        _btnNewInput.Btn.QueueFree();
-
-        // Create the button
-        Button btn = CreateButton(action, @event, _btnNewInput.HBox);
-        btn.Disabled = false;
-
-        // Move the button to where it was originally at
-        _btnNewInput.HBox.MoveChild(btn, index);
-
-        Dictionary<StringName, Array<InputEvent>> actions = OptionsManager.GetHotkeys().Actions;
-
-        // Clear the specific action event
-        actions[action].Remove(_btnNewInput.InputEvent);
-
-        // Update the specific action event
-        actions[action].Add(@event);
-
-        // Update input map
-        if (_btnNewInput.InputEvent != null)
+        // If the user pressed the dedicated remove-hotkey action, remove the binding.
+        if (Input.IsActionJustPressed(RemoveHotkeyAction))
         {
-            InputMap.ActionEraseEvent(action, _btnNewInput.InputEvent);
+            HandleRemoveHotkey();
+            return;
         }
 
-        InputMap.ActionAddEvent(action, @event);
+        // If the user pressed UI cancel while listening, cancel listening mode.
+        if (Input.IsActionJustPressed(InputActions.UICancel))
+        {
+            CancelListeningForInput();
+            return;
+        }
 
-        // No longer waiting for new input
+        // Only process input when a key is released or mouse button is released.
+        if (@event is InputEventMouseButton mb && !mb.Pressed)
+            ProcessCapturedInput(mb);
+        else if (@event is InputEventKey { Echo: false, Pressed: false } key)
+            ProcessCapturedInput(key);
+    }
+
+    private void HandleRemoveHotkey()
+    {
+        // Remove the currently selected input event from input map and options storage.
+        StringName action = _btnNewInput.Action;
+
+        InputMap.ActionEraseEvent(action, _btnNewInput.InputEvent);
+        OptionsManager.GetHotkeys().Actions[action].Remove(_btnNewInput.InputEvent);
+
+        // Remove the UI button representing that binding and stop listening.
+        _btnNewInput.Btn.QueueFree();
         _btnNewInput = null;
     }
 
-    private Button CreateButton(string action, InputEvent inputEvent, HBoxContainer hbox)
+    private void CancelListeningForInput()
     {
-        string readable = "";
+        // Restore the original button text and enabled state.
+        _btnNewInput.Btn.Text = _btnNewInput.OriginalText;
+        _btnNewInput.Btn.Disabled = false;
 
-        if (inputEvent is InputEventKey key)
-        {
-            readable = key.Readable();
-        }
-        else if (inputEvent is InputEventMouseButton button)
-        {
-            readable = $"Mouse {button.ButtonIndex}";
-        }
+        // If the listening was started from a plus-button, remove that placeholder.
+        if (_btnNewInput.Plus)
+            _btnNewInput.Btn.QueueFree();
 
-        // Create the button
-        Button btn = new()
+        // Stop listening for input.
+        _btnNewInput = null;
+    }
+
+    private void HandleNonListeningInput()
+    {
+        // Only act if the user pressed the UI cancel action.
+        if (!Input.IsActionJustPressed(InputActions.UICancel))
+            return;
+
+        // If we are in the Options scene, going back should return to the main menu.
+        if (SceneManager.GetCurrentScene().Name != OptionsSceneName)
+            return;
+
+        SceneManager.SwitchScene(Scene.MainMenu);
+    }
+
+    private void ProcessCapturedInput(InputEvent @event)
+    {
+        // Identify the action we are editing.
+        StringName action = _btnNewInput.Action;
+
+        // Prevent binding mouse buttons to the fullscreen toggle (intentional safeguard).
+        if (action == FullscreenAction && @event is InputEventMouseButton)
+            return;
+
+        // Remember where the button was in the HBox so we can recreate it in the same spot.
+        int index = _btnNewInput.Btn.GetIndex();
+
+        // Recreate the UI button and position it back where the old one was.
+        RecreateButtonAtIndex(action, @event, index);
+
+        // Update both the options storage and the input map to reflect the new binding.
+        UpdateOptionStorageAndInputMap(action, @event);
+
+        // Done listening.
+        _btnNewInput = null;
+    }
+
+    private void RecreateButtonAtIndex(StringName action, InputEvent @event, int index)
+    {
+        // Remove the old button from the UI (we recreate a fresh instance).
+        _btnNewInput.Btn.QueueFree();
+
+        // Create the new button representing this binding and enable it.
+        Button btn = CreateButton(action, @event, _btnNewInput.HBox);
+        btn.Disabled = false;
+
+        // Move the new button to the original index so ordering remains unchanged.
+        _btnNewInput.HBox.MoveChild(btn, index);
+    }
+
+    private void UpdateOptionStorageAndInputMap(StringName action, InputEvent @event)
+    {
+        // Load the dictionary of actions from the saved hotkeys options.
+        Dictionary<StringName, Array<InputEvent>> actions = OptionsManager.GetHotkeys().Actions;
+
+        // Remove the previous InputEvent entry for this action in the saved options.
+        actions[action].Remove(_btnNewInput.InputEvent);
+
+        // Add the new InputEvent to the saved options for this action.
+        actions[action].Add(@event);
+
+        // If the previous InputEvent existed, remove it from the engine input map.
+        if (_btnNewInput.InputEvent != null)
+            InputMap.ActionEraseEvent(action, _btnNewInput.InputEvent);
+
+        // Add the new InputEvent to the input map.
+        InputMap.ActionAddEvent(action, @event);
+    }
+
+    private HotkeyButton CreateButton(StringName action, InputEvent inputEvent, HBoxContainer hbox)
+    {
+        // Create a readable label for the input (e.g. "A" or "Mouse 1").
+        string readable = GetReadableForInput(inputEvent);
+
+        var btn = new HotkeyButton()
         {
             Text = readable
         };
 
+        // Add the created button to the row's events container.
         hbox.AddChild(btn);
 
-        btn.Pressed += () =>
+        // Build BtnInfo to describe this button and its associated metadata.
+        BtnInfo info = new()
         {
-            // Do not do anything if listening for new input
-            if (_btnNewInput != null)
-            {
-                return;
-            }
-
-            // Listening for new hotkey to replace old with...
-            _btnNewInput = new BtnInfo
-            {
-                Action = action,
-                Btn = btn,
-                HBox = hbox,
-                InputEvent = inputEvent,
-                OriginalText = btn.Text
-            };
-
-            // Give feedback to the user saying we are waiting for new input
-            btn.Disabled = true;
-            btn.Text = "...";
+            OriginalText = btn.Text,
+            Action = action,
+            HBox = hbox,
+            Btn = btn,
+            InputEvent = inputEvent,
+            Plus = false
         };
+
+        // Handle hotkey pressed events
+        btn.Info = info;
+        btn.HotkeyPressed += OnHotkeyButtonPressed;
 
         return btn;
     }
 
-    private void CreateButtonPlus(string action, HBoxContainer hbox)
+    private void CreateButtonPlus(StringName action, HBoxContainer hbox)
     {
-        // Create the button
-        Button btn = new()
-        {
-            Text = "+"
-        };
+        // Create a plus button used to add another binding for the same action.
+        HotkeyButton btn = new() { Text = "+" };
 
         hbox.AddChild(btn);
 
-        btn.Pressed += () =>
+        BtnInfo info = new()
         {
-            // Do not do anything if listening for new input
-            if (_btnNewInput != null)
-            {
-                return;
-            }
-
-            // Listening for new hotkey to replace old with...
-            _btnNewInput = new BtnInfo
-            {
-                Action = action,
-                Btn = btn,
-                HBox = hbox,
-                OriginalText = btn.Text,
-                Plus = true
-            };
-
-            // Give feedback to the user saying we are waiting for new input
-            btn.Disabled = true;
-            btn.Text = "...";
-
-            CreateButtonPlus(action, hbox);
+            OriginalText = btn.Text,
+            Action = action,
+            HBox = hbox,
+            Btn = btn,
+            Plus = true
         };
+
+        btn.Info = info;
+        btn.HotkeyPressed += OnPlusButtonPressed;
+    }
+
+    private void OnHotkeyButtonPressed(BtnInfo info)
+    {
+        // Ignore presses while already listening for another replacement.
+        if (_btnNewInput != null)
+            return;
+
+        // Start listening for a new input to replace this binding.
+        StartListening(info);
+    }
+
+    private void OnPlusButtonPressed(BtnInfo info)
+    {
+        // Ignore presses while already listening for another replacement.
+        if (_btnNewInput != null)
+            return;
+
+        // Start listening and immediately create a new plus button for chaining.
+        StartListening(info);
+        CreateButtonPlus(info.Action, info.HBox);
+    }
+
+    private void StartListening(BtnInfo info)
+    {
+        // Store which button we are waiting input for and give visual feedback.
+        _btnNewInput = info;
+        _btnNewInput.Btn.Disabled = true;
+        _btnNewInput.Btn.Text = Ellipsis;
+    }
+
+    private string GetReadableForInput(InputEvent inputEvent)
+    {
+        // Convert keyboard events to their human readable representation.
+        if (inputEvent is InputEventKey key)
+            return key.Readable();
+
+        // Convert mouse button events to a simple "Mouse N" label.
+        if (inputEvent is InputEventMouseButton mb)
+            return $"Mouse {mb.ButtonIndex}";
+
+        return string.Empty;
     }
 
     private void CreateHotkeys()
     {
-        // Loop through the actions in alphabetical order
+        // Iterate actions sorted alphabetically so the UI is deterministic.
         foreach (StringName action in OptionsManager.GetHotkeys().Actions.Keys.OrderBy(x => x.ToString()))
         {
             string actionStr = action.ToString();
 
-            // Exclude "remove_hotkey" action and all built-in actions
-            if (actionStr == "remove_hotkey" || actionStr.StartsWith("ui"))
-            {
+            // Skip the internal remove-hotkey action and engine UI actions.
+            if (actionStr == RemoveHotkeyAction || actionStr.StartsWith(UiPrefix))
                 continue;
-            }
 
-            HBoxContainer hbox = new();
+            // Create the full row (label + event buttons + plus button) and add it to the content.
+            HBoxContainer row = CreateActionRowFor(action);
+            _content.AddChild(row);
+        }
+    }
 
-            // For example convert move_left to Move Left
-            string name = action.ToString().Replace('_', ' ').ToTitleCase();
+    // Create an HBox row for a single action, populate its label and event buttons, and return it.
+    private HBoxContainer CreateActionRowFor(StringName action)
+    {
+        HBoxContainer row = new();
 
-            // Add the action label
-            Label label = LabelFactory.Create(name);
-            hbox.AddChild(label);
+        // Convert snake_case action name to human readable Title Case (e.g. move_left -> Move Left).
+        string name = action.ToString().Replace('_', ' ').ToTitleCase();
 
-            label.HorizontalAlignment = HorizontalAlignment.Left;
-            label.CustomMinimumSize = new Vector2(200, 0);
+        Label label = LabelFactory.Create(name);
+        row.AddChild(label);
 
-            // Add all the events after the action label
-            HBoxContainer hboxEvents = new();
+        // Align and size the label so layout matches other options screens.
+        label.HorizontalAlignment = HorizontalAlignment.Left;
+        label.CustomMinimumSize = new Vector2(200, 0);
 
-            Array<InputEvent> events = OptionsManager.GetHotkeys().Actions[action];
+        // Container for event buttons (the actual key/mouse bindings).
+        HBoxContainer hboxEvents = new();
 
-            foreach (InputEvent @event in events)
+        // Populate hboxEvents with existing bindings for this action.
+        AddEventButtonsForAction(action, hboxEvents);
+
+        // Add the plus button used to add more bindings.
+        CreateButtonPlus(action, hboxEvents);
+
+        // Attach the events container to the row and return the fully constructed row.
+        row.AddChild(hboxEvents);
+        return row;
+    }
+
+    private void AddEventButtonsForAction(StringName action, HBoxContainer hboxEvents)
+    {
+        // Fetch the saved events for this action from the options.
+        Array<InputEvent> events = OptionsManager.GetHotkeys().Actions[action];
+
+        // Create a button for each keyboard and mouse binding.
+        foreach (InputEvent @event in events)
+        {
+            if (@event is InputEventKey eventKey)
             {
-                // Handle keys
-                if (@event is InputEventKey eventKey)
-                {
-                    CreateButton(action, eventKey, hboxEvents);
-                }
-
-                // Handle mouse buttons
-                if (@event is InputEventMouseButton eventMouseBtn)
-                {
-                    CreateButton(action, eventMouseBtn, hboxEvents);
-                }
+                CreateButton(action, eventKey, hboxEvents);
             }
 
-            CreateButtonPlus(action, hboxEvents);
-
-            hbox.AddChild(hboxEvents);
-            _content.AddChild(hbox);
+            if (@event is InputEventMouseButton eventMouseBtn)
+            {
+                CreateButton(action, eventMouseBtn, hboxEvents);
+            }
         }
     }
 
     private void _OnResetToDefaultsPressed()
     {
-        for (int i = 0; i < _content.GetChildren().Count; i++)
-        {
-            if (_content.GetChild(i) != this)
-            {
-                _content.GetChild(i).QueueFree();
-            }
-        }
+        // Clear the currently generated UI rows.
+        ClearContentChildren();
 
         _btnNewInput = null;
+
+        // Reset saved hotkeys to defaults and rebuild the UI.
         OptionsManager.ResetHotkeys();
         CreateHotkeys();
     }
-}
 
-public class BtnInfo
-{
-    public InputEvent    InputEvent   { get; init; }
-    public string        OriginalText { get; init; }
-    public StringName    Action       { get; init; }
-    public HBoxContainer HBox         { get; init; }
-    public Button        Btn          { get; init; }
-    public bool          Plus         { get; init; }
+    private void ClearContentChildren()
+    {
+        for (int i = 0; i < _content.GetChildren().Count; i++)
+        {
+            _content.GetChild(i).QueueFree();
+        }
+    }
+
+    private partial class HotkeyButton : Button
+    {
+        public event Action<BtnInfo> HotkeyPressed;
+
+        public BtnInfo Info { get; set; }
+
+        public HotkeyButton()
+        {
+            // Use Godot's Pressed event internally to raise a C# event for external code.
+            Pressed += OnPressedLocal;
+        }
+
+        private void OnPressedLocal()
+        {
+            // Invoke the C# event with the stored BtnInfo payload.
+            HotkeyPressed?.Invoke(Info);
+        }
+    }
+
+    private class BtnInfo
+    {
+        public required string        OriginalText { get; init; }
+        public required StringName    Action       { get; init; }
+        public required HBoxContainer HBox         { get; init; }
+        public required Button        Btn          { get; init; }
+        public InputEvent             InputEvent   { get; init; }
+        public bool                   Plus         { get; init; }
+    }
 }

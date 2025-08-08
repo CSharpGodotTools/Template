@@ -14,12 +14,6 @@ public partial class OptionsGeneral : Control
         SetupLanguage();
     }
 
-    private void SetupLanguage()
-    {
-        OptionButton optionButtonLanguage = GetNode<OptionButton>("%LanguageButton");
-        optionButtonLanguage.Select((int)_options.Language);
-    }
-
     private void _OnLanguageItemSelected(int index)
     {
         string locale = ((Language)index).ToString().Substring(0, 2).ToLower();
@@ -27,6 +21,12 @@ public partial class OptionsGeneral : Control
         TranslationServer.SetLocale(locale);
 
         _options.Language = (Language)index;
+    }
+
+    private void SetupLanguage()
+    {
+        OptionButton optionButtonLanguage = GetNode<OptionButton>("%LanguageButton");
+        optionButtonLanguage.Select((int)_options.Language);
     }
 }
 

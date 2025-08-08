@@ -8,24 +8,26 @@ namespace __TEMPLATE__.UI;
 [SceneTree]
 public partial class PopupMenu : Control
 {
-    public event Action OnOpened;
-    public event Action OnClosed;
-    public event Action OnMainMenuBtnPressed;
+    public event Action Opened;
+    public event Action Closed;
+    public event Action MainMenuBtnPressed;
 
     public WorldEnvironment WorldEnvironment { get; private set; }
-    public Options Options { get; private set; }
 
-    private VBoxContainer _vbox;
     private PanelContainer _menu;
+    private VBoxContainer _vbox;
+    private Options _options;
 
     public override void _Ready()
     {
-        Services.Register(this);
-        TryFindWorldEnvironmentNode();
-
         _menu = Menu;
         _vbox = Navigation;
 
+        WorldEnvironment = TryFindWorldEnvironment(GetTree().Root);
+
+        Services.Register(this);
+        CreateOptions();
+        HideOptions();
         Hide();
     }
 
@@ -39,36 +41,15 @@ public partial class PopupMenu : Control
                 return;
             }
 
-            if (Options != null)
+            if (_options.Visible)
             {
-                Options.QueueFree();
-                Options = null;
-                _menu.Show();
+                HideOptions();
+                ShowPopupMenu();
             }
             else
             {
-                Visible = !Visible;
-                GetTree().Paused = Visible;
-
-                if (Visible)
-                {
-                    OnOpened?.Invoke();
-                }
-                else
-                {
-                    OnClosed?.Invoke();
-                }
+                ToggleGamePause();
             }
-        }
-    }
-
-    private void TryFindWorldEnvironmentNode()
-    {
-        Node node = GetTree().Root.FindChild("WorldEnvironment", recursive: true, owned: false);
-
-        if (node is not null and WorldEnvironment worldEnvironment)
-        {
-            WorldEnvironment = worldEnvironment;
         }
     }
 
@@ -80,14 +61,13 @@ public partial class PopupMenu : Control
 
     private void _OnOptionsPressed()
     {
-        Options = Options.Instantiate();
-        AddChild(Options);
-        _menu.Hide();
+        ShowOptions();
+        HidePopupMenu();
     }
 
     private void _OnMainMenuPressed()
     {
-        OnMainMenuBtnPressed?.Invoke();
+        MainMenuBtnPressed?.Invoke();
         GetTree().Paused = false;
         SceneManager.SwitchScene(Scene.MainMenu);
     }
@@ -95,5 +75,61 @@ public partial class PopupMenu : Control
     private async void _OnQuitPressed()
     {
         await Global.Instance.QuitAndCleanup();
+    }
+
+    private void CreateOptions()
+    {
+        _options = Options.Instantiate();
+        AddChild(_options);
+    }
+
+    private void ShowOptions()
+    {
+        _options.ProcessMode = ProcessModeEnum.Always;
+        _options.Show();
+    }
+
+    private void HideOptions()
+    {
+        _options.ProcessMode = ProcessModeEnum.Disabled;
+        _options.Hide();
+    }
+
+    private void ShowPopupMenu()
+    {
+        _menu.Show();
+    }
+
+    private void HidePopupMenu()
+    {
+        _menu.Hide();
+    }
+
+    private void ToggleGamePause()
+    {
+        if (Visible)
+            ResumeGame();
+        else
+            PauseGame();
+    }
+
+    private void PauseGame()
+    {
+        Visible = true;
+        GetTree().Paused = true;
+        Opened?.Invoke();
+    }
+
+    private void ResumeGame()
+    {
+        Visible = false;
+        GetTree().Paused = false;
+        Closed?.Invoke();
+    }
+
+    private static WorldEnvironment TryFindWorldEnvironment(Window root)
+    {
+        Node node = root.FindChild("WorldEnvironment", recursive: true, owned: false);
+        return node as WorldEnvironment;
     }
 }

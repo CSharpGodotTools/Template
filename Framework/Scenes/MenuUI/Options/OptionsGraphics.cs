@@ -8,91 +8,86 @@ namespace __TEMPLATE__.UI;
 
 public partial class OptionsGraphics : Control
 {
-    public event Action<int> OnAntialiasingChanged;
+    public event Action<int> AntialiasingChanged;
 
+    private GraphicsSetting[] _graphicsSettings = [];
     private ResourceOptions _options;
     private OptionButton _antialiasing;
 
     public override void _Ready()
     {
         _options = OptionsManager.GetOptions();
+
+        InitializeSettingsMetadata();
         SetupQualityPreset();
         SetupAntialiasing();
         SetupWorldEnvironmentSettings();
     }
 
-    private void SetupWorldEnvironmentSettings()
+    private void _OnQualityModeItemSelected(int index)
     {
-        AddNewSetting("GLOW", 
-            (checkbox) =>
-                checkbox.ButtonPressed = _options.Glow,
-            (pressed) =>
-                _options.Glow = pressed, 
-            (environment, pressed) =>
-                environment.GlowEnabled = pressed);
-
-        AddNewSetting("AMBIENT_OCCLUSION",
-            (checkbox) =>
-                checkbox.ButtonPressed = _options.AmbientOcclusion,
-            (pressed) =>
-                _options.AmbientOcclusion = pressed,
-            (environment, pressed) =>
-                environment.SsaoEnabled = pressed);
-
-        AddNewSetting("INDIRECT_LIGHTING",
-            (checkbox) =>
-                checkbox.ButtonPressed = _options.IndirectLighting,
-            (pressed) =>
-                _options.IndirectLighting = pressed,
-            (environment, pressed) =>
-                environment.SsilEnabled = pressed);
-
-        AddNewSetting("REFLECTIONS",
-            (checkbox) =>
-                checkbox.ButtonPressed = _options.Reflections,
-            (pressed) =>
-                _options.Reflections = pressed,
-            (environment, pressed) =>
-                environment.SsrEnabled = pressed);
+        _options.QualityPreset = (QualityPreset)index;
     }
 
-    private void AddNewSetting(string name, Action<CheckBox> setPressed, Action<bool> saveOption, Action<Environment, bool> applyInGame)
+    private void _OnAntialiasingItemSelected(int index)
     {
-        HBoxContainer hbox = new();
+        _options.Antialiasing = index;
+        AntialiasingChanged?.Invoke(index);
+    }
 
-        hbox.AddChild(new Label
+    private void InitializeSettingsMetadata()
+    {
+        _graphicsSettings =
+        [
+            CreateGlowSetting(),
+            CreateAmbientOcclusionSetting(),
+            CreateIndirectLightingSetting(),
+            CreateReflectionsSetting()
+        ];
+    }
+
+    private GraphicsSetting CreateGlowSetting()
+    {
+        return new()
         {
-            Text = name,
-            CustomMinimumSize = new Vector2(200, 0)
-        });
-
-        CheckBox checkBox = new();
-        setPressed(checkBox);
-
-        checkBox.Pressed += () =>
-        {
-            saveOption(checkBox.ButtonPressed);
-
-            PopupMenu popupMenu = Services.Get<PopupMenu>();
-
-            if (popupMenu == null)
-            {
-                return;
-            }
-
-            WorldEnvironment worldEnvironment = popupMenu.WorldEnvironment;
-
-            if (worldEnvironment == null)
-            {
-                return;
-            }
-
-            applyInGame(worldEnvironment.Environment, checkBox.ButtonPressed);
+            Name = "GLOW",
+            GetOption = () => _options.Glow,
+            SetOption = val => _options.Glow = val,
+            ApplyInGame = (env, val) => env.GlowEnabled = val
         };
+    }
 
-        hbox.AddChild(checkBox);
+    private GraphicsSetting CreateAmbientOcclusionSetting()
+    {
+        return new()
+        {
+            Name = "AMBIENT_OCCLUSION",
+            GetOption = () => _options.AmbientOcclusion,
+            SetOption = val => _options.AmbientOcclusion = val,
+            ApplyInGame = (env, val) => env.SsaoEnabled = val
+        };
+    }
 
-        AddChild(hbox);
+    private GraphicsSetting CreateIndirectLightingSetting()
+    {
+        return new()
+        {
+            Name = "INDIRECT_LIGHTING",
+            GetOption = () => _options.IndirectLighting,
+            SetOption = val => _options.IndirectLighting = val,
+            ApplyInGame = (env, val) => env.SsilEnabled = val
+        };
+    }
+
+    private GraphicsSetting CreateReflectionsSetting()
+    {
+        return new()
+        {
+            Name = "REFLECTIONS",
+            GetOption = () => _options.Reflections,
+            SetOption = val => _options.Reflections = val,
+            ApplyInGame = (env, val) => env.SsrEnabled = val
+        };
     }
 
     private void SetupQualityPreset()
@@ -107,15 +102,68 @@ public partial class OptionsGraphics : Control
         _antialiasing.Select(_options.Antialiasing);
     }
 
-    private void _OnQualityModeItemSelected(int index)
+    private void SetupWorldEnvironmentSettings()
     {
-        _options.QualityPreset = (QualityPreset)index;
+        foreach (GraphicsSetting setting in _graphicsSettings)
+        {
+            AddSettingControl(setting);
+        }
     }
 
-    private void _OnAntialiasingItemSelected(int index)
+    private void AddSettingControl(GraphicsSetting setting)
     {
-        _options.Antialiasing = index;
-        OnAntialiasingChanged?.Invoke(index);
+        HBoxContainer hbox = new();
+
+        Label label = CreateLabel(setting.Name);
+        hbox.AddChild(label);
+
+        CheckBox checkBox = CreateCheckBox(setting);
+        setting.CheckBoxControl = checkBox;
+        checkBox.Pressed += () => OnSettingPressed(setting);
+        hbox.AddChild(checkBox);
+
+        AddChild(hbox);
+    }
+
+    private void OnSettingPressed(GraphicsSetting setting)
+    {
+        bool pressed = setting.CheckBoxControl!.ButtonPressed;
+
+        setting.SetOption(pressed);
+
+        PopupMenu popupMenu = Services.Get<PopupMenu>();
+
+        if (popupMenu?.WorldEnvironment == null)
+            return;
+
+        setting.ApplyInGame(popupMenu.WorldEnvironment.Environment, pressed);
+    }
+
+    private static Label CreateLabel(string text)
+    {
+        return new Label
+        {
+            Text = text,
+            CustomMinimumSize = new Vector2(200, 0)
+        };
+    }
+
+    private static CheckBox CreateCheckBox(GraphicsSetting setting)
+    {
+        return new CheckBox()
+        {
+            ButtonPressed = setting.GetOption()
+        };
+    }
+
+    private class GraphicsSetting
+    {
+        public required string Name { get; init; }
+        public required Func<bool> GetOption { get; init; }
+        public required Action<bool> SetOption { get; init; }
+        public required Action<Environment, bool> ApplyInGame { get; init; }
+
+        public CheckBox CheckBoxControl;
     }
 }
 

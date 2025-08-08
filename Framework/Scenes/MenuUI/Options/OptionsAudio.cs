@@ -16,6 +16,16 @@ public partial class OptionsAudio : Control
         SetupSounds();
     }
 
+    private void _OnMusicValueChanged(float v)
+    {
+        AudioManager.SetMusicVolume(v);
+    }
+
+    private void _OnSoundsValueChanged(float v)
+    {
+        AudioManager.SetSFXVolume(v);
+    }
+
     private void SetupMusic()
     {
         HSlider slider = GetNode<HSlider>("%Music");
@@ -26,15 +36,5 @@ public partial class OptionsAudio : Control
     {
         HSlider slider = GetNode<HSlider>("%Sounds");
         slider.Value = _options.SFXVolume;
-    }
-
-    private void _OnMusicValueChanged(float v)
-    {
-        AudioManager.SetMusicVolume(v);
-    }
-
-    private void _OnSoundsValueChanged(float v)
-    {
-        AudioManager.SetSFXVolume(v);
     }
 }

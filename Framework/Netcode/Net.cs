@@ -62,7 +62,7 @@ public class Net
             PrintPacketSent = false
         });
 
-        Services.Get<UI.PopupMenu>().OnMainMenuBtnPressed += () =>
+        Services.Get<UI.PopupMenu>().MainMenuBtnPressed += () =>
         {
             Server.Stop();
         };
