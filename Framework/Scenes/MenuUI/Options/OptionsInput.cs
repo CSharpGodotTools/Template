@@ -276,10 +276,10 @@ public partial class OptionsInput : Control
 
 public class BtnInfo
 {
-    public InputEvent    InputEvent   { get; init; }
-    public string        OriginalText { get; init; }
-    public StringName    Action       { get; init; }
-    public HBoxContainer HBox         { get; init; }
-    public Button        Btn          { get; init; }
-    public bool          Plus         { get; init; }
+    public required string        OriginalText { get; init; }
+    public required StringName    Action       { get; init; }
+    public required HBoxContainer HBox         { get; init; }
+    public required Button        Btn          { get; init; }
+    public InputEvent             InputEvent   { get; init; }
+    public bool                   Plus         { get; init; }
 }

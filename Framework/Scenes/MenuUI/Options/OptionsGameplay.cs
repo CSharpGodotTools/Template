@@ -18,16 +18,6 @@ public partial class OptionsGameplay : Control
         SetupMouseSensitivity();
     }
 
-    private void SetupDifficulty()
-    {
-        GetNode<OptionButton>("%Difficulty").Select((int)_options.Difficulty);
-    }
-
-    private void SetupMouseSensitivity()
-    {
-        GetNode<HSlider>("%Sensitivity").Value = _options.MouseSensitivity;
-    }
-
     private void _OnDifficultyItemSelected(int index)
     {
         _options.Difficulty = (Difficulty)index;
@@ -37,6 +27,16 @@ public partial class OptionsGameplay : Control
     {
         _options.MouseSensitivity = value;
         OnMouseSensitivityChanged?.Invoke(value);
+    }
+
+    private void SetupDifficulty()
+    {
+        GetNode<OptionButton>("%Difficulty").Select((int)_options.Difficulty);
+    }
+
+    private void SetupMouseSensitivity()
+    {
+        GetNode<HSlider>("%Sensitivity").Value = _options.MouseSensitivity;
     }
 }
 
