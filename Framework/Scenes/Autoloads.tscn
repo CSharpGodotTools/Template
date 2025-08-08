@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://cj4fbh1a1lpq4"]
 
 [ext_resource type="Script" uid="uid://cdt2k6s3xm13g" path="res://Framework/GodotUtils/Autoloads/Global.cs" id="1_byaaa"]
-[ext_resource type="Script" uid="uid://ct4og8hi8urvd" path="res://Framework/GodotUtils/Managers/ComponentManager.cs" id="2_6wcni"]
+[ext_resource type="Script" uid="uid://ct4og8hi8urvd" path="res://Framework/GodotUtils/Components/ComponentManager.cs" id="2_6wcni"]
 [ext_resource type="Script" uid="uid://di53rvtypdwb0" path="res://Framework/GodotUtils/Autoloads/SceneManager.cs" id="3_31ojt"]
 [ext_resource type="PackedScene" uid="uid://d4a5xfmaulku1" path="res://Framework/Scenes/MenuUI/MainMenu/MainMenu.tscn" id="4_v8bjg"]
 [ext_resource type="PackedScene" uid="uid://d1jo48n2hdkih" path="res://Framework/GodotUtils/ModLoader/ModLoader.tscn" id="5_rdl47"]
