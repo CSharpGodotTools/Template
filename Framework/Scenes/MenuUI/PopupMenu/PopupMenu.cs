@@ -62,16 +62,6 @@ public partial class PopupMenu : Control
         }
     }
 
-    private void TryFindWorldEnvironmentNode()
-    {
-        Node node = GetTree().Root.FindChild("WorldEnvironment", recursive: true, owned: false);
-
-        if (node is not null and WorldEnvironment worldEnvironment)
-        {
-            WorldEnvironment = worldEnvironment;
-        }
-    }
-
     private void _OnResumePressed()
     {
         Hide();
@@ -95,5 +85,15 @@ public partial class PopupMenu : Control
     private async void _OnQuitPressed()
     {
         await Global.Instance.QuitAndCleanup();
+    }
+
+    private void TryFindWorldEnvironmentNode()
+    {
+        Node node = GetTree().Root.FindChild("WorldEnvironment", recursive: true, owned: false);
+
+        if (node is not null and WorldEnvironment worldEnvironment)
+        {
+            WorldEnvironment = worldEnvironment;
+        }
     }
 }
