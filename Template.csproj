@@ -13,6 +13,8 @@
     <!-- 'X' hides inherited member 'Y'. Use the new keyword if hiding was intended. -->
     <!-- Consider the scenario where you want [OnInstantiate] for both derived and inherited types -->
     <NoWarn>CS0108</NoWarn>
+    <!-- We use $(DefineConstants); so we do not remove all existing constants -->
+    <DefineConstants>$(DefineConstants);NETCODE_ENABLED</DefineConstants>
   </PropertyGroup>
 
   <!-- NuGet Packages -->

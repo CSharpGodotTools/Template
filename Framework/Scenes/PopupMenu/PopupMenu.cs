@@ -1,9 +1,11 @@
+using __TEMPLATE__.UI;
 using Godot;
-using GodotUtils;
 using GodotUtils.UI.Console;
 using System;
 
-namespace __TEMPLATE__.UI;
+// This was intentionally set to GodotUtils instead of __TEMPLATE__ as GodotUtils relies on MainMenuBtnPressed
+// and GodotUtils should NOT have any trace of using __TEMPLATE__.
+namespace GodotUtils.UI; 
 
 [SceneTree]
 public partial class PopupMenu : Control

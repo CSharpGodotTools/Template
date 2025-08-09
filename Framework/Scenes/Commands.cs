@@ -1,4 +1,3 @@
-using Godot;
 using GodotUtils;
 using GodotUtils.UI.Console;
 using System.Collections.Generic;
