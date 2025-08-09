@@ -6,7 +6,7 @@ namespace __TEMPLATE__.Netcode;
 
 public abstract partial class NetControlPanelLow : Control
 {
-    public Net Net { get; private set; } = new();
+    public Net Net { get; private set; }
 
     private string _ip = "127.0.0.1";
     private ushort _port = 25565;
@@ -18,7 +18,7 @@ public abstract partial class NetControlPanelLow : Control
 
     public override void _Ready()
     {
-        Net.Initialize(this, GameServerFactory(), GameClientFactory());
+        Net = new Net(this, GameServerFactory(), GameClientFactory());
 
         SetupButtons();
         SetupInputFields();

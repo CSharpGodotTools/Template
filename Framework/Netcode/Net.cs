@@ -23,7 +23,7 @@ public class Net
     private IGameServerFactory _serverFactory;
     private IGameClientFactory _clientFactory;
 
-    public void Initialize(Node node, IGameServerFactory serverFactory, IGameClientFactory clientFactory)
+    public Net(Node node, IGameServerFactory serverFactory, IGameClientFactory clientFactory)
     {
         Global.Instance.PreQuit += StopThreads;
 
