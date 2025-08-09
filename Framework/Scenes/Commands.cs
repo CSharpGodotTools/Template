@@ -6,27 +6,27 @@ using System.Linq;
 
 namespace __TEMPLATE__.UI;
 
-public partial class Commands : Node
+public class Commands
 {
-    public override void _Ready()
+    public static void RegisterAll()
     {
         GameConsole.RegisterCommand("help",  CommandHelp);
         GameConsole.RegisterCommand("quit",  CommandQuit).WithAliases("exit");
         GameConsole.RegisterCommand("debug", CommandDebug);
     }
 
-    private void CommandHelp(string[] args)
+    private static void CommandHelp(string[] args)
     {
         IEnumerable<string> cmds = GameConsole.Instance.GetCommands().Select(x => x.Name);
         Logger.Log(cmds.ToFormattedString());
     }
 
-    private async void CommandQuit(string[] args)
+    private async static void CommandQuit(string[] args)
     {
         await Global.Instance.QuitAndCleanup();
     }
 
-    private void CommandDebug(string[] args)
+    private static void CommandDebug(string[] args)
     {
         if (args.Length <= 0)
         {
