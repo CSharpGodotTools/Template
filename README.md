@@ -29,12 +29,9 @@ First make sure you have the following.
 - [Latest Godot C# Release](https://godotengine.org/)
 - [Custom ENet build](https://github.com/CSharpGodotTools/Template/wiki/Custom-ENet-Builds) may be required if using Mac or Linux
 
-Clone with all submodules.
-```bash
-git clone --recurse-submodules https://github.com/CSharpGodotTools/Template
-```
+Download the [latest stable release](https://github.com/CSharpGodotTools/Template/releases/latest).
 
-Press play to run the setup, click apply changes and you're done.
+Press play (`F5`) to run the setup and click apply changes. Godot will restart with your template ready to go.
 
 <img width="1589" height="875" alt="image" src="https://github.com/user-attachments/assets/50d0b1ef-4d63-48e9-bb9a-84fe3c1e3391" />
 
