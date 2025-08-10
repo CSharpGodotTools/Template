@@ -1,5 +1,4 @@
 using Godot;
-using GodotUtils;
 using GodotUtils.UI;
 using System.Collections.Generic;
 
@@ -42,6 +41,9 @@ public partial class OptionsNav : Control
 
     private void HideAllTabs()
     {
-        _tabs.Values.ForEach(x => x.Hide());
+        foreach (Control tab in _tabs.Values)
+        {
+            tab.Hide();
+        }
     }
 }

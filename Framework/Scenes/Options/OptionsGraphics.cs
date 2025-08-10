@@ -131,7 +131,7 @@ public partial class OptionsGraphics : Control
 
         setting.SetOption(pressed);
 
-        PopupMenu popupMenu = Services.Get<PopupMenu>();
+        GodotUtils.UI.PopupMenu popupMenu = Services.Get<GodotUtils.UI.PopupMenu>();
 
         if (popupMenu?.WorldEnvironment == null)
             return;
