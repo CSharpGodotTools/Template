@@ -14,7 +14,7 @@ config/name="Template"
 run/main_scene="uid://dnmu3cujgayk2"
 config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 boot_splash/show_image=false
-config/icon="uid://b23bhiuc3hpkp"
+config/icon="res://Icon.svg"
 
 [autoload]
 
