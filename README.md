@@ -41,5 +41,6 @@ Press play (`F5`) to run the setup and click apply changes. Godot will restart w
 
 [Brian Shao](https://github.com/cydq) for helping with cross-platform compatibility.  
 [Piep Matz](https://github.com/riffy) for helping with the drag drop system.  
+[Vaggelismsxp](https://github.com/vaggelismsxp) for helping improve the options theme.
 
 New contributors please read [this](https://github.com/CSharpGodotTools/Template/wiki/Contributing).
