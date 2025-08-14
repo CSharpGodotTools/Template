@@ -1,5 +1,6 @@
-[gd_scene load_steps=12 format=3 uid="uid://7tfets4irkba"]
+[gd_scene load_steps=13 format=3 uid="uid://7tfets4irkba"]
 
+[ext_resource type="Theme" uid="uid://ibmc6w25alkn" path="res://Framework/Scenes/Options/OptionsRootTheme.tres" id="1_3xnrr"]
 [ext_resource type="Script" uid="uid://b88ck7eam4e70" path="res://Framework/Scenes/Options/Options.cs" id="1_xjg3i"]
 [ext_resource type="Script" uid="uid://pdomcsu3uajx" path="res://Framework/Scenes/Options/OptionsNav.cs" id="2_w30yg"]
 [ext_resource type="Theme" uid="uid://8f4q252ns4xm" path="res://Framework/Scenes/MenuUI/MainMenu/NavBtns.tres" id="3_mvq8n"]
@@ -11,9 +12,20 @@
 [ext_resource type="Script" uid="uid://bkctgqs1uogu8" path="res://Framework/Scenes/Options/OptionsGraphics.cs" id="6_wctgl"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v8h3e"]
-bg_color = Color(0, 0, 0, 0.392157)
+bg_color = Color(0.0509804, 0, 0.192157, 0.392157)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.74902, 0.796078, 0.545098, 1)
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ijcjj"]
+content_margin_left = 120.0
+content_margin_top = 15.0
 
 [node name="Options" type="PanelContainer"]
 anchors_preset = 15
@@ -21,6 +33,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_3xnrr")
 theme_override_styles/panel = SubResource("StyleBoxFlat_v8h3e")
 script = ExtResource("1_xjg3i")
 metadata/_edit_lock_ = true
@@ -39,36 +52,42 @@ theme_override_constants/separation = 30
 [node name="Nav" type="VBoxContainer" parent="Margin/HBox"]
 layout_mode = 2
 theme = ExtResource("3_mvq8n")
-theme_override_constants/separation = 0
+theme_override_constants/separation = 2
 alignment = 1
 script = ExtResource("2_w30yg")
 
 [node name="General" type="Button" parent="Margin/HBox/Nav"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
+size_flags_vertical = 3
 text = "GENERAL"
 
 [node name="Gameplay" type="Button" parent="Margin/HBox/Nav"]
 layout_mode = 2
+size_flags_vertical = 3
 text = "GAMEPLAY"
 
 [node name="Display" type="Button" parent="Margin/HBox/Nav"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
+size_flags_vertical = 3
 text = "DISPLAY"
 
 [node name="Graphics" type="Button" parent="Margin/HBox/Nav"]
 layout_mode = 2
+size_flags_vertical = 3
 text = "GRAPHICS"
 
 [node name="Audio" type="Button" parent="Margin/HBox/Nav"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
+size_flags_vertical = 3
 text = "AUDIO"
 
 [node name="Input" type="Button" parent="Margin/HBox/Nav"]
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
+size_flags_vertical = 3
 text = "INPUT"
 
 [node name="Content" type="PanelContainer" parent="Margin/HBox"]
