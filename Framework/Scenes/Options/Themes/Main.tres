@@ -1,0 +1,34 @@
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://ibmc6w25alkn"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yh8rv"]
+content_margin_left = 10.0
+content_margin_top = 5.0
+content_margin_right = 10.0
+content_margin_bottom = 5.0
+bg_color = Color(0.0588235, 0.0588235, 0.0588235, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fyn2w"]
+bg_color = Color(0.0588235, 0.0588235, 0.0588235, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_57ot4"]
+bg_color = Color(0.0588235, 0.0588235, 0.0588235, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+corner_detail = 1
+
+[resource]
+Button/styles/normal = SubResource("StyleBoxFlat_yh8rv")
+LineEdit/styles/normal = SubResource("StyleBoxFlat_fyn2w")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_57ot4")
