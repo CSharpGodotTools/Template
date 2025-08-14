@@ -1,25 +1,16 @@
-[gd_scene load_steps=9 format=3 uid="uid://dnmu3cujgayk2"]
+[gd_scene load_steps=7 format=3 uid="uid://dnmu3cujgayk2"]
 
 [ext_resource type="Script" uid="uid://dosqetacy3knn" path="res://Setup/SetupUI.cs" id="1_m5u8t"]
 [ext_resource type="Script" uid="uid://blxj0cebqkjo2" path="res://Setup/CheckDotNetVersion.cs" id="2_ut11q"]
 
-[sub_resource type="SystemFont" id="SystemFont_ax7t0"]
-font_names = PackedStringArray("Segoe UI")
-subpixel_positioning = 0
-multichannel_signed_distance_field = true
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v5lq2"]
-bg_color = Color(0, 0, 0, 1)
-
-[sub_resource type="Theme" id="Theme_rop0o"]
-Label/colors/font_color = Color(0.99, 1, 0.7, 1)
-Label/fonts/font = SubResource("SystemFont_ax7t0")
-PanelContainer/styles/panel = SubResource("StyleBoxFlat_v5lq2")
-
 [sub_resource type="SystemFont" id="SystemFont_gx0is"]
 font_names = PackedStringArray("Segoe UI")
+font_weight = 600
 subpixel_positioning = 0
 multichannel_signed_distance_field = true
+
+[sub_resource type="SystemFont" id="SystemFont_cov1j"]
+font_names = PackedStringArray("Consolas")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mv57m"]
 bg_color = Color(0.6, 0, 0.0470588, 1)
@@ -33,7 +24,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = SubResource("Theme_rop0o")
 script = ExtResource("1_m5u8t")
 metadata/_edit_lock_ = true
 
@@ -44,7 +34,7 @@ stretch = true
 [node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
 transparent_bg = true
 handle_input_locally = false
-size = Vector2i(1152, 648)
+size = Vector2i(1920, 1080)
 size_2d_override = Vector2i(1152, 648)
 size_2d_override_stretch = true
 render_target_update_mode = 4
@@ -64,7 +54,6 @@ theme_override_constants/separation = 25
 unique_name_in_owner = true
 custom_minimum_size = Vector2(700, 0)
 layout_mode = 2
-theme_override_colors/default_color = Color(0.664063, 0.664063, 0.664063, 1)
 theme_override_fonts/normal_font = SubResource("SystemFont_gx0is")
 bbcode_enabled = true
 text = "The name you select for your game will be used for all C# script namespaces. A name that follows PascalCase formatting is recommended, for example BananaBlasters3."
@@ -79,31 +68,27 @@ theme_override_constants/separation = 50
 [node name="Name" type="VBoxContainer" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 0
+theme_override_constants/separation = 10
 
 [node name="Label2" type="Label" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Name"]
 layout_mode = 2
-text = "What is the name?"
+text = "What is the name of your game?"
 horizontal_alignment = 1
 
 [node name="GameName" type="LineEdit" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Name"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = SubResource("SystemFont_cov1j")
 max_length = 40
 
 [node name="ApplyChanges" type="Button" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(250, 75)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_colors/font_color = Color(1, 0.79, 0.9615, 1)
 theme_override_font_sizes/font_size = 28
 text = "Apply Changes"
-
-[node name="Label2" type="Label" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.114897, 0.114897, 0.114897, 1)
-text = "Hang in there. You got this. You can make a game. ^>.<^"
-horizontal_alignment = 1
 
 [node name="NodePopupPanel" type="PopupPanel" parent="SubViewportContainer/SubViewport"]
 unique_name_in_owner = true
