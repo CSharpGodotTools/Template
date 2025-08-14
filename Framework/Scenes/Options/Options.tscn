@@ -12,16 +12,7 @@
 [ext_resource type="Script" uid="uid://bkctgqs1uogu8" path="res://Framework/Scenes/Options/Scripts/OptionsGraphics.cs" id="6_wctgl"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v8h3e"]
-bg_color = Color(0.0509804, 0, 0.192157, 0.392157)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.74902, 0.796078, 0.545098, 1)
-corner_radius_top_left = 15
-corner_radius_top_right = 15
-corner_radius_bottom_right = 15
-corner_radius_bottom_left = 15
+bg_color = Color(0, 0, 0, 0.588235)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ijcjj"]
 content_margin_left = 120.0
@@ -47,17 +38,14 @@ theme_override_constants/margin_bottom = 50
 
 [node name="HBox" type="HBoxContainer" parent="Margin"]
 layout_mode = 2
-theme_override_constants/separation = 30
 
 [node name="Nav" type="VBoxContainer" parent="Margin/HBox"]
 layout_mode = 2
 theme = ExtResource("3_mvq8n")
-theme_override_constants/separation = 2
 alignment = 1
 script = ExtResource("2_w30yg")
 
 [node name="General" type="Button" parent="Margin/HBox/Nav"]
-custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 size_flags_vertical = 3
 text = "GENERAL"
@@ -68,7 +56,6 @@ size_flags_vertical = 3
 text = "GAMEPLAY"
 
 [node name="Display" type="Button" parent="Margin/HBox/Nav"]
-custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 size_flags_vertical = 3
 text = "DISPLAY"
@@ -79,13 +66,11 @@ size_flags_vertical = 3
 text = "GRAPHICS"
 
 [node name="Audio" type="Button" parent="Margin/HBox/Nav"]
-custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 size_flags_vertical = 3
 text = "AUDIO"
 
 [node name="Input" type="Button" parent="Margin/HBox/Nav"]
-custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 size_flags_vertical = 3
 text = "INPUT"
