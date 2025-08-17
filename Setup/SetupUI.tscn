@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://dnmu3cujgayk2"]
+[gd_scene load_steps=6 format=3 uid="uid://dnmu3cujgayk2"]
 
 [ext_resource type="Script" uid="uid://dosqetacy3knn" path="res://Setup/SetupUI.cs" id="1_m5u8t"]
 [ext_resource type="Script" uid="uid://blxj0cebqkjo2" path="res://Setup/CheckDotNetVersion.cs" id="2_ut11q"]
@@ -8,9 +8,6 @@ font_names = PackedStringArray("Segoe UI")
 font_weight = 600
 subpixel_positioning = 0
 multichannel_signed_distance_field = true
-
-[sub_resource type="SystemFont" id="SystemFont_cov1j"]
-font_names = PackedStringArray("Consolas")
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mv57m"]
 bg_color = Color(0.6, 0, 0.0470588, 1)
@@ -80,8 +77,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_fonts/font = SubResource("SystemFont_cov1j")
-max_length = 40
+max_length = 30
 
 [node name="ApplyChanges" type="Button" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
 custom_minimum_size = Vector2(250, 75)

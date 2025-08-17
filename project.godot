@@ -52,7 +52,6 @@ import/blender/enabled=false
 [gui]
 
 theme/custom="uid://8fdrucqkrf5m"
-theme/custom_font="uid://bk4t0yuov4dyq"
 
 [input]
 

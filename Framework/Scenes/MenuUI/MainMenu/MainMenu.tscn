@@ -1,86 +1,76 @@
-[gd_scene load_steps=3 format=3 uid="uid://d4a5xfmaulku1"]
+[gd_scene load_steps=2 format=3 uid="uid://d4a5xfmaulku1"]
 
-[ext_resource type="Script" uid="uid://ckf2hfrig7e7o" path="res://Framework/Scenes/MenuUI/MainMenu/MainMenu.cs" id="1_cqe0w"]
 [ext_resource type="Script" uid="uid://bi551lrt82awu" path="res://Framework/Scenes/MenuUI/MainMenu/MainMenuNav.cs" id="5_sc4as"]
 
-[node name="Main Menu" type="Control"]
-layout_mode = 3
+[node name="Main Menu" type="PanelContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_cqe0w")
 metadata/_edit_lock_ = true
 
-[node name="PanelContainer" type="PanelContainer" parent="."]
-layout_mode = 0
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Nav" type="VBoxContainer" parent="PanelContainer"]
+[node name="Nav" type="VBoxContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 alignment = 1
 script = ExtResource("5_sc4as")
 
-[node name="Play" type="Button" parent="PanelContainer/Nav"]
+[node name="Play" type="Button" parent="Nav"]
 custom_minimum_size = Vector2(175, 60)
 layout_mode = 2
 text = "PLAY"
 
-[node name="Mods" type="Button" parent="PanelContainer/Nav"]
+[node name="Mods" type="Button" parent="Nav"]
 custom_minimum_size = Vector2(175, 60)
 layout_mode = 2
 text = "MODS"
 
-[node name="Options" type="Button" parent="PanelContainer/Nav"]
+[node name="Options" type="Button" parent="Nav"]
 custom_minimum_size = Vector2(175, 60)
 layout_mode = 2
 text = "OPTIONS"
 
-[node name="Credits" type="Button" parent="PanelContainer/Nav"]
+[node name="Credits" type="Button" parent="Nav"]
 custom_minimum_size = Vector2(175, 60)
 layout_mode = 2
 text = "CREDITS"
 
-[node name="Quit" type="Button" parent="PanelContainer/Nav"]
+[node name="Quit" type="Button" parent="Nav"]
 custom_minimum_size = Vector2(175, 60)
 layout_mode = 2
 text = "QUIT"
 
-[node name="Margin" type="MarginContainer" parent="PanelContainer"]
+[node name="Socials" type="MarginContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_bottom = 10
 
-[node name="Socials" type="HBoxContainer" parent="PanelContainer/Margin"]
+[node name="HBox" type="HBoxContainer" parent="Socials"]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
 theme_override_constants/separation = 15
 
-[node name="Discord" type="Button" parent="PanelContainer/Margin/Socials"]
+[node name="Discord" type="Button" parent="Socials/HBox"]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 text = "Discord"
 
-[node name="Github" type="Button" parent="PanelContainer/Margin/Socials"]
+[node name="Github" type="Button" parent="Socials/HBox"]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 text = "GitHub"
 
-[connection signal="pressed" from="PanelContainer/Nav/Play" to="PanelContainer/Nav" method="_OnPlayPressed"]
-[connection signal="pressed" from="PanelContainer/Nav/Mods" to="PanelContainer/Nav" method="_OnModsPressed"]
-[connection signal="pressed" from="PanelContainer/Nav/Options" to="PanelContainer/Nav" method="_OnOptionsPressed"]
-[connection signal="pressed" from="PanelContainer/Nav/Credits" to="PanelContainer/Nav" method="_OnCreditsPressed"]
-[connection signal="pressed" from="PanelContainer/Nav/Quit" to="PanelContainer/Nav" method="_OnQuitPressed"]
-[connection signal="pressed" from="PanelContainer/Margin/Socials/Discord" to="PanelContainer/Nav" method="_OnDiscordPressed"]
-[connection signal="pressed" from="PanelContainer/Margin/Socials/Github" to="PanelContainer/Nav" method="_OnGitHubPressed"]
+[connection signal="pressed" from="Nav/Play" to="Nav" method="_OnPlayPressed"]
+[connection signal="pressed" from="Nav/Mods" to="Nav" method="_OnModsPressed"]
+[connection signal="pressed" from="Nav/Options" to="Nav" method="_OnOptionsPressed"]
+[connection signal="pressed" from="Nav/Credits" to="Nav" method="_OnCreditsPressed"]
+[connection signal="pressed" from="Nav/Quit" to="Nav" method="_OnQuitPressed"]
+[connection signal="pressed" from="Socials/HBox/Discord" to="Nav" method="_OnDiscordPressed"]
+[connection signal="pressed" from="Socials/HBox/Github" to="Nav" method="_OnGitHubPressed"]
