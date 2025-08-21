@@ -109,6 +109,4 @@ locale/translations=PackedStringArray("res://Localisation/text.en.translation", 
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
-anti_aliasing/quality/msaa_2d=3
-anti_aliasing/quality/msaa_3d=3
 environment/defaults/default_clear_color=Color(0.29219, 0.29219, 0.29219, 1)
