@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://djhd6uw7l1ok"]
 
-[ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://Framework/Scenes/PopupMenu/PopupMenu.tscn" id="1_bexhn"]
+[ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://Framework/GodotUtils/Scenes/PopupMenu/PopupMenu.tscn" id="1_bexhn"]
 
 [node name="Main" type="Node2D"]
 
