@@ -22,7 +22,7 @@ public class Commands
 
     private async static void CommandQuit(string[] args)
     {
-        await Global.Instance.QuitAndCleanup();
+        await Autoloads.Instance.QuitAndCleanup();
     }
 
     private static void CommandDebug(string[] args)

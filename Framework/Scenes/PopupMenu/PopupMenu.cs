@@ -76,7 +76,7 @@ public partial class PopupMenu : Control
 
     private async void _OnQuitPressed()
     {
-        await Global.Instance.QuitAndCleanup();
+        await Autoloads.Instance.QuitAndCleanup();
     }
 
     private void CreateOptions()

@@ -36,7 +36,7 @@ public partial class MainMenuNav : Node
 
     private async void _OnQuitPressed()
     {
-        await Global.Instance.QuitAndCleanup();
+        await Autoloads.Instance.QuitAndCleanup();
     }
 
     private void _OnDiscordPressed()
