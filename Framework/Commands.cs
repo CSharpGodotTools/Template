@@ -1,3 +1,4 @@
+using Godot;
 using GodotUtils;
 using GodotUtils.UI.Console;
 using System.Collections.Generic;
@@ -5,12 +6,12 @@ using System.Linq;
 
 namespace __TEMPLATE__.UI;
 
-public class Commands
+public partial class Commands : Node
 {
-    public static void RegisterAll()
+    public override void _Ready()
     {
-        GameConsole.RegisterCommand("help",  CommandHelp);
-        GameConsole.RegisterCommand("quit",  CommandQuit).WithAliases("exit");
+        GameConsole.RegisterCommand("help", CommandHelp);
+        GameConsole.RegisterCommand("quit", CommandQuit).WithAliases("exit");
         GameConsole.RegisterCommand("debug", CommandDebug);
     }
 
@@ -22,7 +23,7 @@ public class Commands
 
     private async static void CommandQuit(string[] args)
     {
-        await Global.Instance.QuitAndCleanup();
+        await Autoloads.Instance.QuitAndCleanup();
     }
 
     private static void CommandDebug(string[] args)

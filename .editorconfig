@@ -43,6 +43,9 @@ dotnet_diagnostic.IDE0044.severity = none
 # Stop warning about user defined suppressions
 dotnet_diagnostic.IDE0079.severity = none
 
+# Stop GC.SuppressFinalize(this) warnings
+dotnet_diagnostic.CA1816.severity = none
+
 # Do not simplify XYZ.ToArray() to [.. XYZ] (I do not understand it)
 dotnet_diagnostic.IDE0305.severity = none
 

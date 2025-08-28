@@ -4,19 +4,25 @@ using System.IO;
 
 namespace __TEMPLATE__.Setup;
 
-[SceneTree]
 public partial class SetupUI : Node
 {
     private string _prevGameName = string.Empty;
+    private LineEdit _gameNameLineEdit;
+    private RichTextLabel _namePreviewLabel;
+    private PopupPanel _popupPanel;
 
     public override void _Ready()
     {
-        SetupUtils.DisplayGameNamePreview("Undefined", NamePreview);
+        _gameNameLineEdit = GetNode<LineEdit>("%GameName");
+        _namePreviewLabel = GetNode<RichTextLabel>("%NamePreview");
+        _popupPanel = GetNode<PopupPanel>("%NodePopupPanel");
+
+        SetupUtils.DisplayGameNamePreview("Undefined", _namePreviewLabel);
     }
 
     private void _OnYesPressed()
     {
-        string gameName = SetupUtils.FormatGameName(GameName.Text);
+        string gameName = SetupUtils.FormatGameName(_gameNameLineEdit.Text);
         string path = ProjectSettings.GlobalizePath("res://");
 
         // Prevent namespace being the same name as a class name in the project
@@ -24,7 +30,7 @@ public partial class SetupUI : Node
 
         DirectoryUtils.Traverse("res://", fullFilePath =>
         {
-            if (Path.GetFileName(fullFilePath).Equals(GameName.Text + ".cs"))
+            if (Path.GetFileName(fullFilePath).Equals(_gameNameLineEdit.Text + ".cs"))
             {
                 namespaceSameAsClassName = true;
                 return true;
@@ -35,7 +41,7 @@ public partial class SetupUI : Node
 
         if (namespaceSameAsClassName)
         {
-            GD.PrintErr($"Namespace {GameName.Text} is the same name as {GameName.Text}.cs");
+            GD.PrintErr($"Namespace {_gameNameLineEdit.Text} is the same name as {_gameNameLineEdit.Text}.cs");
             return;
         }
 
@@ -65,24 +71,24 @@ public partial class SetupUI : Node
         // a number and every other character must be alphanumeric
         if (!SetupUtils.IsAlphaNumericAndAllowSpaces(newText) || char.IsNumber(newText.Trim()[0]))
         {
-            SetupUtils.DisplayGameNamePreview(_prevGameName, NamePreview);
-            GameName.Text = _prevGameName;
-            GameName.CaretColumn = _prevGameName.Length;
+            SetupUtils.DisplayGameNamePreview(_prevGameName, _namePreviewLabel);
+            _gameNameLineEdit.Text = _prevGameName;
+            _gameNameLineEdit.CaretColumn = _prevGameName.Length;
             return;
         }
 
-        SetupUtils.DisplayGameNamePreview(newText, NamePreview);
+        SetupUtils.DisplayGameNamePreview(newText, _namePreviewLabel);
         _prevGameName = newText;
     }
 
     private void _OnNoPressed()
     {
-        NodePopupPanel.Hide();
+        _popupPanel.Hide();
     }
 
     private void _OnApplyChangesPressed() 
     {
-        string gameName = SetupUtils.FormatGameName(GameName.Text);
+        string gameName = SetupUtils.FormatGameName(_gameNameLineEdit.Text);
 
         if (string.IsNullOrWhiteSpace(gameName))
         {
@@ -90,6 +96,6 @@ public partial class SetupUI : Node
             return;
         }
 
-        NodePopupPanel.PopupCentered();
+        _popupPanel.PopupCentered();
     }
 }

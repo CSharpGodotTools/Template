@@ -12,13 +12,14 @@
 ----
 
 **Highlights**
-- **[Multiplayer](https://github.com/CSharpGodotTools/Template/wiki/Multiplayer)** - Send minimal packet data with ENet.
-- **[In-Game Debugging Tools](https://github.com/CSharpGodotTools/Template/wiki/In%E2%80%90Game-Debugging)**
-- **[Menu UI](https://github.com/CSharpGodotTools/Template/wiki/Menu-UI)** - Main menu, options and credits.
-- **[Simplified Tweens](https://github.com/CSharpGodotTools/Template/wiki/Simplified-Tweens)**
-- **[Services](https://github.com/CSharpGodotTools/Template/wiki/Services)** - Alternative to using static members.
 - **[Cat Lips Source Generators](https://github.com/CSharpGodotTools/Template/wiki/Source-Generators)**
-- **[Useful Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)**
+- **[Component Manager](https://github.com/CSharpGodotTools/Template/wiki/Component-Manager)**
+- **[Debugging Tools](https://github.com/CSharpGodotTools/Template/wiki/In%E2%80%90Game-Debugging)**
+- **[ENet Multiplayer Framework](https://github.com/CSharpGodotTools/Template/wiki/Multiplayer)**
+- **[Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)**
+- **[Menu UI](https://github.com/CSharpGodotTools/Template/wiki/Menu-UI)**
+- **[Services](https://github.com/CSharpGodotTools/Template/wiki/Services)**
+- **[Simplified Tweens](https://github.com/CSharpGodotTools/Template/wiki/Simplified-Tweens)**
 
 <div align="center">
     <h2>Setup</h2>
