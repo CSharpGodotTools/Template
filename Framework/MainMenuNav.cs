@@ -6,7 +6,6 @@ namespace __TEMPLATE__.UI;
 
 public partial class MainMenuNav : Node
 {
-    [Export] private MenuScenes _menuScenes;
     [Export] private PackedScene _gameScene;
 
     public override void _Ready()
@@ -23,19 +22,19 @@ public partial class MainMenuNav : Node
     private void _OnModsPressed()
     {
         //AudioManager.PlayMusic(Music.Level4);
-        SceneManager.SwitchScene(_menuScenes.ModLoader);
+        SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.ModLoader);
     }
 
     private void _OnOptionsPressed()
     {
         //AudioManager.PlayMusic(Music.Level4);
-        SceneManager.SwitchScene(_menuScenes.Options);
+        SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.Options);
     }
 
     private void _OnCreditsPressed()
     {
         //AudioManager.PlayMusic(Music.Level4);
-        SceneManager.SwitchScene(_menuScenes.Credits);
+        SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.Credits);
     }
 
     private async void _OnQuitPressed()
