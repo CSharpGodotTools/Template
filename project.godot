@@ -20,6 +20,7 @@ config/icon="res://Framework/Icon.svg"
 
 Autoloads="*res://Framework/GodotUtils/Scenes/Autoloads.tscn"
 ImGuiRoot="*res://addons/imgui-godot/data/ImGuiRoot.tscn"
+Commands="*res://Framework/Commands.cs"
 
 [display]
 
