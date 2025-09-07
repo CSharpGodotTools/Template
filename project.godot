@@ -104,7 +104,7 @@ toggle_console={
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://Localisation/text.en.translation", "res://Localisation/text.fr.translation", "res://Localisation/text.ja.translation")
+locale/translations=PackedStringArray("res://Framework/GodotUtils/Localisation/text.en.translation", "res://Framework/GodotUtils/Localisation/text.fr.translation", "res://Framework/GodotUtils/Localisation/text.ja.translation")
 
 [rendering]
 
