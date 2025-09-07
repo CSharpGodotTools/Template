@@ -1,14 +1,12 @@
-using Godot;
-using GodotUtils;
 using GodotUtils.UI.Console;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace __TEMPLATE__.UI;
+namespace GodotUtils.UI;
 
-public partial class Commands : Node
+public class Commands
 {
-    public override void _Ready()
+    public static void RegisterAll()
     {
         GameConsole.RegisterCommand("help", CommandHelp);
         GameConsole.RegisterCommand("quit", CommandQuit).WithAliases("exit");

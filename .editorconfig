@@ -6,23 +6,15 @@ root = true
 generated_code = true
 dotnet_analyzer_diagnostic.severity = none
 
-# C# files
-[*.cs]
-
 # Godot Documentation says to use LF line endings
-[*]
+[*.cs]
 end_of_line = lf
-
-#### Core EditorConfig Options ####
+insert_final_newline = true
 
 # Indentation and spacing
 indent_size = 4
 indent_style = space
 tab_width = 4
-
-# New line preferences
-end_of_line = crlf
-insert_final_newline = true
 
 # Allow implicit casting in foreach loop (Explicit casting is too verbose)
 dotnet_diagnostic.IDE0220.severity = none
