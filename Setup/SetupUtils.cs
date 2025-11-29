@@ -143,9 +143,9 @@ public static partial class SetupUtils
     {
         string name = FormatGameName(inputName);
 
-        string text = $"The name of the project will be {Highlight(name)}. " +
+        string text = $"[color=gray]The name of the project will be {Highlight(name)}. " +
               $"The root namespace for all scripts will be {Highlight(name)}. " +
-              $"Please ensure the name is in PascalFormat.";
+              $"Please ensure the name is in PascalFormat.[/color]";
 
         gameNamePreview.Text = text;
     }
