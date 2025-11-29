@@ -1,13 +1,27 @@
-[gd_scene load_steps=6 format=3 uid="uid://dnmu3cujgayk2"]
+[gd_scene load_steps=8 format=3 uid="uid://dnmu3cujgayk2"]
 
 [ext_resource type="Script" uid="uid://dosqetacy3knn" path="res://Setup/SetupUI.cs" id="1_m5u8t"]
 [ext_resource type="Script" uid="uid://blxj0cebqkjo2" path="res://Setup/CheckDotNetVersion.cs" id="2_ut11q"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cov1j"]
+bg_color = Color(0, 0, 0, 1)
 
 [sub_resource type="SystemFont" id="SystemFont_gx0is"]
 font_names = PackedStringArray("Segoe UI")
 font_weight = 600
 subpixel_positioning = 0
 multichannel_signed_distance_field = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_c1tok"]
+content_margin_left = 10.0
+content_margin_right = 10.0
+bg_color = Color(0.051970907, 0.05197099, 0.051970936, 1)
+border_width_bottom = 5
+border_color = Color(0.043039158, 0.04303915, 0.04303915, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mv57m"]
 bg_color = Color(0.6, 0, 0.0470588, 1)
@@ -21,6 +35,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_cov1j")
 script = ExtResource("1_m5u8t")
 metadata/_edit_lock_ = true
 
@@ -69,6 +84,7 @@ theme_override_constants/separation = 10
 
 [node name="Label2" type="Label" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer/HBoxContainer/Name"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.8132577, 0.8132577, 0.81325763, 1)
 text = "What is the name of your game?"
 horizontal_alignment = 1
 
@@ -83,8 +99,16 @@ max_length = 30
 custom_minimum_size = Vector2(250, 75)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_colors/font_color = Color(1, 0.84000003, 0.96, 1)
 theme_override_font_sizes/font_size = 28
+theme_override_styles/normal = SubResource("StyleBoxFlat_c1tok")
 text = "Apply Changes"
+
+[node name="Label" type="Label" parent="SubViewportContainer/SubViewport/CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.04, 0.04, 0.04, 1)
+text = "Hang in there. You got this. You can make a game. ^>.<^"
+horizontal_alignment = 1
 
 [node name="NodePopupPanel" type="PopupPanel" parent="SubViewportContainer/SubViewport"]
 unique_name_in_owner = true
