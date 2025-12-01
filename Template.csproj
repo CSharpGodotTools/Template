@@ -23,15 +23,20 @@
     <PackageReference Include="ENet-CSharp" Version="2.4.8" Condition="!Exists('ENet-CSharp.dll')" />
     <PackageReference Include="ImGui.NET" Version="1.91.6.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="GodotSharp.SourceGenerators" Version="2.4.0" />
+    <PackageReference Include="GodotSharp.SourceGenerators" Version="2.6.0" />
     <!-- https://github.com/Cat-Lips/GodotSharp.SourceGenerators -->
   </ItemGroup>
   <!-- Local Packages -->
-  <!-- This is required for other platforms where the ENet NuGet package is not enough -->
   <ItemGroup>
+	<!-- This is required for other platforms where the ENet NuGet package is not enough -->
     <Reference Include="ENet-CSharp" Condition="Exists('ENet-CSharp.dll')">
       <HintPath>ENet-CSharp.dll</HintPath>
     </Reference>
+	  
+	<!-- Include Visualize -->
+	<Reference Include="Visualize">
+		<HintPath>addons/Visualize.dll</HintPath>
+	</Reference>
   </ItemGroup>
   <!-- Exclude obj and bin directories from subfolders -->
   <ItemGroup>

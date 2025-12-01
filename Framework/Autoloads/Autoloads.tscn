@@ -1,0 +1,33 @@
+[gd_scene load_steps=10 format=3 uid="uid://cj4fbh1a1lpq4"]
+
+[ext_resource type="Script" uid="uid://cdt2k6s3xm13g" path="res://Framework/Autoloads/Autoloads.cs" id="1_00yjk"]
+[ext_resource type="PackedScene" uid="uid://rbcqvr4snrvn" path="res://Framework/Scenes/MenuUI/Credits/Credits.tscn" id="2_xdmsn"]
+[ext_resource type="PackedScene" uid="uid://d4a5xfmaulku1" path="res://Framework/Scenes/MenuUI/MainMenu/MainMenu.tscn" id="3_sv5ok"]
+[ext_resource type="Script" uid="uid://ct4og8hi8urvd" path="res://Framework/Components/ComponentManager.cs" id="3_sycog"]
+[ext_resource type="PackedScene" uid="uid://jrjqky6ag6gg" path="res://Framework/Console/GameConsole.tscn" id="4_8po21"]
+[ext_resource type="PackedScene" uid="uid://d1jo48n2hdkih" path="res://Framework/ModLoader/ModLoader.tscn" id="4_ems5f"]
+[ext_resource type="PackedScene" uid="uid://7tfets4irkba" path="res://Framework/Scenes/Options/Options.tscn" id="5_vm4c5"]
+[ext_resource type="Script" uid="uid://17yxgcswri77" path="res://Framework/Scenes/MenuScenes.cs" id="6_2fq88"]
+
+[sub_resource type="Resource" id="Resource_xdmsn"]
+script = ExtResource("6_2fq88")
+MainMenu = ExtResource("3_sv5ok")
+ModLoader = ExtResource("4_ems5f")
+Options = ExtResource("5_vm4c5")
+Credits = ExtResource("2_xdmsn")
+metadata/_custom_type_script = "uid://17yxgcswri77"
+
+[node name="Autoloads" type="Node"]
+process_mode = 3
+script = ExtResource("1_00yjk")
+_scenes = SubResource("Resource_xdmsn")
+
+[node name="ComponentManager" type="Node" parent="."]
+process_mode = 1
+script = ExtResource("3_sycog")
+
+[node name="Debug" type="CanvasLayer" parent="."]
+layer = 128
+
+[node name="Console" parent="Debug" instance=ExtResource("4_8po21")]
+unique_name_in_owner = true

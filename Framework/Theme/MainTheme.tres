@@ -1,0 +1,45 @@
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://8fdrucqkrf5m"]
+
+[ext_resource type="StyleBox" uid="uid://bu2ywx2nob8v3" path="res://Framework/GodotUtils/Theme/NormalButton.tres" id="1_tk1xn"]
+[ext_resource type="StyleBox" uid="uid://b8uqbeckjjkp0" path="res://Framework/GodotUtils/Theme/PressedButton.tres" id="2_xsdux"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vs2pc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cevqf"]
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xsdux"]
+bg_color = Color(0.14902, 0.14902, 0.14902, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.147672, 0.147672, 0.147672, 1)
+corner_radius_top_left = 1
+corner_radius_top_right = 1
+corner_radius_bottom_right = 1
+corner_radius_bottom_left = 1
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_cevqf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0ldbu"]
+bg_color = Color(0, 0, 0, 0.196078)
+
+[resource]
+Button/styles/focus = SubResource("StyleBoxEmpty_vs2pc")
+Button/styles/hover = ExtResource("1_tk1xn")
+Button/styles/normal = ExtResource("1_tk1xn")
+Button/styles/pressed = ExtResource("2_xsdux")
+HSlider/styles/grabber_area = SubResource("StyleBoxFlat_cevqf")
+HSlider/styles/slider = SubResource("StyleBoxFlat_xsdux")
+LineEdit/styles/focus = SubResource("StyleBoxEmpty_cevqf")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_0ldbu")
