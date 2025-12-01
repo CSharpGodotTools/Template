@@ -32,8 +32,13 @@
     <Reference Include="ENet-CSharp" Condition="Exists('ENet-CSharp.dll')">
       <HintPath>ENet-CSharp.dll</HintPath>
     </Reference>
+
+	<!-- GodotUtils reference -->
+	<Reference Include="GodotUtils">
+		<HintPath>addons/GodotUtils.dll</HintPath>
+	</Reference>
 	  
-	<!-- Include Visualize -->
+	<!-- Visualize reference -->
 	<Reference Include="Visualize">
 		<HintPath>addons/Visualize.dll</HintPath>
 	</Reference>
