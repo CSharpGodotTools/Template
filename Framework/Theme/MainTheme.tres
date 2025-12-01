@@ -1,7 +1,7 @@
 [gd_resource type="Theme" load_steps=8 format=3 uid="uid://8fdrucqkrf5m"]
 
-[ext_resource type="StyleBox" uid="uid://bu2ywx2nob8v3" path="res://Framework/GodotUtils/Theme/NormalButton.tres" id="1_tk1xn"]
-[ext_resource type="StyleBox" uid="uid://b8uqbeckjjkp0" path="res://Framework/GodotUtils/Theme/PressedButton.tres" id="2_xsdux"]
+[ext_resource type="StyleBox" uid="uid://bu2ywx2nob8v3" path="res://Framework/Theme/NormalButton.tres" id="1_tk1xn"]
+[ext_resource type="StyleBox" uid="uid://b8uqbeckjjkp0" path="res://Framework/Theme/PressedButton.tres" id="2_xsdux"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vs2pc"]
 
