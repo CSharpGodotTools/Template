@@ -18,7 +18,7 @@ config/icon="res://Framework/Icon.svg"
 
 [autoload]
 
-Autoloads="*res://Framework/GodotUtils/Scenes/Autoloads.tscn"
+Autoloads="*res://Framework/Autoloads/Autoloads.tscn"
 ImGuiRoot="*res://addons/imgui-godot/data/ImGuiRoot.tscn"
 
 [display]
@@ -104,7 +104,7 @@ toggle_console={
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://Framework/GodotUtils/Localisation/text.en.translation", "res://Framework/GodotUtils/Localisation/text.fr.translation", "res://Framework/GodotUtils/Localisation/text.ja.translation")
+locale/translations=PackedStringArray("res://Framework/Localisation/text.en.translation", "res://Framework/Localisation/text.fr.translation", "res://Framework/Localisation/text.ja.translation")
 
 [rendering]
 
