@@ -6,7 +6,7 @@ public partial class MainMenuNav : Node
 {
     [Export] private PackedScene _gameScene;
 
-    private SceneManager _sceneManager = Game.Scene;
+    private SceneManager _scene = Game.Scene;
 
     public override void _Ready()
     {
@@ -15,26 +15,22 @@ public partial class MainMenuNav : Node
 
     private void _OnPlayPressed()
     {
-        //AudioManager.PlayMusic(Music.Level1, false);
-        _sceneManager.SwitchScene(_gameScene);
+        _scene.SwitchTo(_gameScene);
     }
 
     private void _OnModsPressed()
     {
-        //AudioManager.PlayMusic(Music.Level4);
-        _sceneManager.SwitchScene(_sceneManager.MenuScenes.ModLoader);
+        _scene.SwitchToModLoader();
     }
 
     private void _OnOptionsPressed()
     {
-        //AudioManager.PlayMusic(Music.Level4);
-        _sceneManager.SwitchScene(_sceneManager.MenuScenes.Options);
+        _scene.SwitchToOptions();
     }
 
     private void _OnCreditsPressed()
     {
-        //AudioManager.PlayMusic(Music.Level4);
-        _sceneManager.SwitchScene(_sceneManager.MenuScenes.Credits);
+        _scene.SwitchToCredits();
     }
 
     private async void _OnQuitPressed()

@@ -14,8 +14,8 @@ public class SceneManager
     public event Action<string> PreSceneChanged;
 
     public const int DefaultSceneFadeDuration = 2;
-    public MenuScenes MenuScenes { get; private set; }
 
+    private MenuScenes _menuScenes;
     private SceneTree _tree;
     private Autoloads _autoloads;
     private Node _currentScene;
@@ -23,7 +23,7 @@ public class SceneManager
     public SceneManager(Autoloads autoloads, MenuScenes scenes)
     {
         _autoloads = autoloads;
-        MenuScenes = scenes;
+        _menuScenes = scenes;
         _tree = autoloads.GetTree();
 
         Window root = _tree.Root;
@@ -44,7 +44,12 @@ public class SceneManager
         PreSceneChanged -= OnPreSceneChanged;
     }
 
-    public void SwitchScene(PackedScene scene, TransType transType = TransType.None)
+    public void SwitchToOptions(TransType transType = TransType.None) => SwitchTo(_menuScenes.Options, transType);
+    public void SwitchToMainMenu(TransType transType = TransType.None) => SwitchTo(_menuScenes.MainMenu, transType);
+    public void SwitchToModLoader(TransType transType = TransType.None) => SwitchTo(_menuScenes.ModLoader, transType);
+    public void SwitchToCredits(TransType transType = TransType.None) => SwitchTo(_menuScenes.Credits, transType);
+
+    public void SwitchTo(PackedScene scene, TransType transType = TransType.None)
     {
         ArgumentNullException.ThrowIfNull(scene);
         string path = scene.ResourcePath;

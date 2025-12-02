@@ -23,7 +23,6 @@ public partial class PopupMenu : Control
     public WorldEnvironment WorldEnvironment { get; private set; }
 
     private GameConsole _console = Game.Console;
-    private SceneManager _sceneManager = Game.Scene;
     private PanelContainer _menu;
     private VBoxContainer _nav;
     private Options _options;
@@ -91,7 +90,7 @@ public partial class PopupMenu : Control
     {
         MainMenuBtnPressed?.Invoke();
         GetTree().Paused = false;
-        _sceneManager.SwitchScene(_sceneManager.MenuScenes.MainMenu);
+        Game.Scene.SwitchToMainMenu();
     }
 
     private void OnQuitPressed()

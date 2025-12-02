@@ -16,7 +16,7 @@ public partial class OptionsInput(Options options)
 
     private VBoxContainer _content;
     private BtnInfo _btnNewInput; // The button currently waiting for new input
-    private SceneManager _sceneManager = Game.Scene;
+    private SceneManager _scene = Game.Scene;
 
     public void Initialize()
     {
@@ -99,10 +99,10 @@ public partial class OptionsInput(Options options)
             return;
 
         // If we are in the Options scene, going back should return to the main menu.
-        if (_sceneManager.GetCurrentScene().Name != OptionsSceneName)
+        if (_scene.GetCurrentScene().Name != OptionsSceneName)
             return;
 
-        _sceneManager.SwitchScene(_sceneManager.MenuScenes.MainMenu);
+        _scene.SwitchToMainMenu();
     }
 
     private void ProcessCapturedInput(InputEvent @event)

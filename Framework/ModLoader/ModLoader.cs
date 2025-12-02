@@ -14,7 +14,6 @@ public partial class ModLoader : Node
     private Label _uiDescription;
     private Label _uiAuthors;
     private Label _uiIncompatibilities;
-    private SceneManager _sceneManager = Game.Scene;
 
     public override void _Ready()
     {
@@ -61,7 +60,7 @@ public partial class ModLoader : Node
     {
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
-            _sceneManager.SwitchScene(_sceneManager.MenuScenes.MainMenu);
+            Game.Scene.SwitchToMainMenu();
         }
     }
 

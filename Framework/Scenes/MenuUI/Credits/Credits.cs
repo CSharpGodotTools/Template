@@ -14,7 +14,7 @@ public partial class Credits : Node
     private bool _paused;
     private byte _curSpeedSetting = 1;
     private float _speed = STARTING_SPEED;
-    private SceneManager _sceneManager = Game.Scene;
+    private SceneManager _scene = Game.Scene;
 
     public override void _Ready()
     {
@@ -110,7 +110,7 @@ public partial class Credits : Node
         // Go back to the main menu when the credits are finished
         if (pos.Y <= -_vbox.Size.Y)
         {
-            _sceneManager.SwitchScene(_sceneManager.MenuScenes.MainMenu);
+            _scene.SwitchToMainMenu();
         }
     }
 
@@ -118,7 +118,7 @@ public partial class Credits : Node
     {
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
-            _sceneManager.SwitchScene(_sceneManager.MenuScenes.MainMenu);
+            _scene.SwitchToMainMenu();
         }
     }
 
