@@ -32,6 +32,10 @@ public class AudioManager : IDisposable
     public void Dispose()
     {
         _musicPlayer.QueueFree();
+
+        foreach (AudioStreamPlayer2D sfxPlayer in _activeSfxPlayers)
+            sfxPlayer?.QueueFree();
+
         _activeSfxPlayers.Clear();
     }
 
@@ -63,17 +67,26 @@ public class AudioManager : IDisposable
             PitchScale = GetRandomPitch(minPitch, maxPitch)
         };
 
-        sfxPlayer.Finished += () =>
-        {
-            sfxPlayer.QueueFree();
-            _activeSfxPlayers.Remove(sfxPlayer);
-        };
+        sfxPlayer.Finished += DestroyPlayer;
+        sfxPlayer.TreeExited += OnPlayerExitedTree;
         
         _autoloads.AddChild(sfxPlayer);
         _activeSfxPlayers.Add(sfxPlayer);
 
         sfxPlayer.GlobalPosition = position;
         sfxPlayer.Play();
+
+        void OnPlayerExitedTree()
+        {
+            sfxPlayer.Finished -= DestroyPlayer;
+            sfxPlayer.TreeExited -= OnPlayerExitedTree;
+        }
+
+        void DestroyPlayer()
+        {
+            sfxPlayer.QueueFree();
+            _activeSfxPlayers.Remove(sfxPlayer);
+        }
     }
 
     public void FadeOutSFX(double fadeTime = 1)
