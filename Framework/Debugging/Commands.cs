@@ -1,9 +1,9 @@
-using __TEMPLATE__;
-using GodotUtils.UI.Console;
+using __TEMPLATE__.UI.Console;
+using GodotUtils;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public class Commands
 {

@@ -1,7 +1,6 @@
-using __TEMPLATE__;
 using Godot;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class OptionsAudio(Options options)
 {

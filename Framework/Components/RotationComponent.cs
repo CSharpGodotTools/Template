@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotUtils;
+namespace __TEMPLATE__;
 
 // Useful to quickly rotate a Sprite2D node to see if the game is truly paused or not
 [GlobalClass]

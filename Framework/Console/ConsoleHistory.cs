@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace GodotUtils.UI.Console;
+namespace __TEMPLATE__.UI.Console;
 
 public class ConsoleHistory
 {

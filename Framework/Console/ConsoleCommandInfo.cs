@@ -1,6 +1,6 @@
 using System;
 
-namespace GodotUtils.UI.Console;
+namespace __TEMPLATE__.UI.Console;
 
 public class ConsoleCommandInfo
 {

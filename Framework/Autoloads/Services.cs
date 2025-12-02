@@ -1,8 +1,9 @@
 using Godot;
+using GodotUtils;
 using System;
 using System.Collections.Generic;
 
-namespace GodotUtils;
+namespace __TEMPLATE__;
 
 /// <summary>
 /// Services have a scene lifetime meaning they will be destroyed when the scene changes. Services

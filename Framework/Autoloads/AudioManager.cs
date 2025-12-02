@@ -1,10 +1,9 @@
-using __TEMPLATE__;
 using Godot;
-using GodotUtils.UI;
+using GodotUtils;
 using System;
 using System.Collections.Generic;
 
-namespace GodotUtils;
+namespace __TEMPLATE__;
 
 public class AudioManager : IDisposable
 {

@@ -1,13 +1,14 @@
+using __TEMPLATE__.Debugging;
+using __TEMPLATE__.UI;
+using __TEMPLATE__.UI.Console;
 using Godot;
-using GodotUtils.UI;
-using GodotUtils.UI.Console;
 #if DEBUG
 using GodotUtils.Debugging;
 #endif
 using System;
 using System.Threading.Tasks;
 
-namespace GodotUtils;
+namespace __TEMPLATE__;
 
 // Autoload
 // Access this with GetNode<Autoloads>("/root/Autoloads")

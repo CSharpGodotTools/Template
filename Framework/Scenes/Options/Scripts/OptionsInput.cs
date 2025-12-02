@@ -1,10 +1,10 @@
-using __TEMPLATE__;
 using Godot;
 using Godot.Collections;
+using GodotUtils;
 using System;
 using System.Linq;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class OptionsInput(Options options)
 {

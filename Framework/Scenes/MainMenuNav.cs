@@ -1,5 +1,4 @@
 using Godot;
-using GodotUtils;
 
 namespace __TEMPLATE__.UI;
 

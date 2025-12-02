@@ -1,7 +1,6 @@
-﻿using GodotUtils;
-using GodotUtils.Debugging;
-using GodotUtils.UI;
-using GodotUtils.UI.Console;
+﻿using __TEMPLATE__.Debugging;
+using __TEMPLATE__.UI;
+using __TEMPLATE__.UI.Console;
 
 namespace __TEMPLATE__;
 

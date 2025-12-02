@@ -1,5 +1,6 @@
 using Godot;
 using Godot.Collections;
+using GodotUtils;
 using GodotUtils.RegEx;
 using System;
 using System.IO;
@@ -9,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FileAccess = Godot.FileAccess;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 // Autoload
 public partial class OptionsManager : IDisposable

@@ -1,8 +1,7 @@
-using __TEMPLATE__;
 using Godot;
 using System;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public class OptionsGraphics(Options options)
 {

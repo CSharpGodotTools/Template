@@ -1,9 +1,9 @@
-using __TEMPLATE__;
+using __TEMPLATE__.UI;
 using Godot;
-using GodotUtils.UI;
+using GodotUtils;
 using System;
 
-namespace GodotUtils;
+namespace __TEMPLATE__;
 
 // About Scene Switching: https://docs.godotengine.org/en/latest/tutorials/scripting/singletons_autoload.html
 public class SceneManager

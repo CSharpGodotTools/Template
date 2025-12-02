@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GodotUtils.UI.Console;
+namespace __TEMPLATE__.UI.Console;
 
 public partial class GameConsole : Node
 {

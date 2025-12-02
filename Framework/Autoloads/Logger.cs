@@ -1,5 +1,6 @@
+using __TEMPLATE__.UI.Console;
 using Godot;
-using GodotUtils.UI.Console;
+using GodotUtils;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace GodotUtils;
+namespace __TEMPLATE__;
 
 /*
  * This is meant to replace all GD.Print(...) with Logger.Log(...) to make logging multi-thread friendly. 

@@ -1,8 +1,8 @@
-using __TEMPLATE__;
 using Godot;
+using GodotUtils;
 using System;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class Credits : Node
 {

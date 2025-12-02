@@ -1,10 +1,11 @@
-using __TEMPLATE__;
 using Godot;
+using GodotUtils;
 using System;
 
 using static Godot.DisplayServer;
+using WindowMode = GodotUtils.WindowMode;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public class OptionsDisplay(Options options)
 {

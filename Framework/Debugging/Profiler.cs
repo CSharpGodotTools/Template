@@ -1,9 +1,8 @@
-using __TEMPLATE__;
 using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace GodotUtils.Debugging;
+namespace __TEMPLATE__.Debugging;
 
 public class Profiler
 {

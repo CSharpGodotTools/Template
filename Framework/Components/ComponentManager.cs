@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-namespace GodotUtils;
+namespace __TEMPLATE__;
 
 /// <summary>
 /// Using any kind of Godot functions from C# is expensive, so we try to minimize this with centralized logic.
