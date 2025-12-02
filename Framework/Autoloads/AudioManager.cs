@@ -7,11 +7,11 @@ namespace __TEMPLATE__;
 
 public class AudioManager : IDisposable
 {
-    private const float MinDefaultRandomPitch = 0.8f;
-    private const float MaxDefaultRandomPitch = 1.2f;
-    private const float RandomPitchThreshold  = 0.1f;
-    private const int   MutedVolume           = -80;
-    private const int   MutedVolumeNormalized = -40;
+    private const float MinDefaultRandomPitch = 0.8f;   // Default minimum pitch value for SFX.
+    private const float MaxDefaultRandomPitch = 1.2f;   // Default maximum pitch value for SFX.
+    private const float RandomPitchThreshold  = 0.1f;   // Minimum difference in pitch between repeated sounds.
+    private const int   MutedVolume           = -80;    // dB value representing mute.
+    private const int   MutedVolumeNormalized = -40;    // Normalized muted volume for volume mapping.
 
     private AudioStreamPlayer   _musicPlayer;
     private ResourceOptions     _options;
@@ -20,6 +20,9 @@ public class AudioManager : IDisposable
 
     private List<AudioStreamPlayer2D> _activeSfxPlayers = [];
 
+    /// <summary>
+    /// Initializes the AudioManager by attaching a music player to the given autoload node.
+    /// </summary>
     public AudioManager(Autoloads autoloads)
     {
         _autoloads = autoloads;
@@ -29,6 +32,9 @@ public class AudioManager : IDisposable
         autoloads.AddChild(_musicPlayer);
     }
 
+    /// <summary>
+    /// Frees all managed players and clears references for cleanup.
+    /// </summary>
     public void Dispose()
     {
         _musicPlayer.QueueFree();
@@ -39,6 +45,9 @@ public class AudioManager : IDisposable
         _activeSfxPlayers.Clear();
     }
 
+    /// <summary>
+    /// Plays a music track, instantly or with optional fade between tracks. Music volume is in config scale (0-100).
+    /// </summary>
     public void PlayMusic(AudioStream song, bool instant = true, double fadeOut = 1.5, double fadeIn = 0.5)
     {
         if (!instant && _musicPlayer.Playing)
@@ -54,10 +63,8 @@ public class AudioManager : IDisposable
     }
 
     /// <summary>
-    /// Plays a <paramref name="sound"/> at <paramref name="position"/>.
+    /// Plays a sound effect at the specified global position with randomized pitch to reduce repetition. Volume is normalized (0-100).
     /// </summary>
-    /// <param name="parent"></param>
-    /// <param name="sound"></param>
     public void PlaySFX(AudioStream sound, Vector2 position, float minPitch = MinDefaultRandomPitch, float maxPitch = MaxDefaultRandomPitch)
     {
         AudioStreamPlayer2D sfxPlayer = new()
@@ -89,6 +96,9 @@ public class AudioManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Fades out all currently playing sound effects over the specified duration in seconds.
+    /// </summary>
     public void FadeOutSFX(double fadeTime = 1)
     {
         foreach (AudioStreamPlayer2D sfxPlayer in _activeSfxPlayers)
@@ -97,12 +107,18 @@ public class AudioManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Sets the music volume, affecting current playback. Volume is in config scale (0-100).
+    /// </summary>
     public void SetMusicVolume(float volume)
     {
         _musicPlayer.VolumeDb = NormalizeConfigVolume(volume);
         _options.MusicVolume = volume;
     }
 
+    /// <summary>
+    /// Sets the SFX volume for all active sound effect players. Volume is in config scale (0-100).
+    /// </summary>
     public void SetSFXVolume(float volume)
     {
         _options.SFXVolume = volume;
@@ -115,6 +131,9 @@ public class AudioManager : IDisposable
         }
     }
 
+    /// <summary>
+    /// Generates a random pitch between min and max, avoiding values too similar to the previous sound.
+    /// </summary>
     private float GetRandomPitch(float min, float max)
     {
         RandomNumberGenerator rng = new();
@@ -132,6 +151,9 @@ public class AudioManager : IDisposable
         return pitch;
     }
 
+    /// <summary>
+    /// Instantly plays the given audio stream with the specified player and volume.
+    /// </summary>
     private static void PlayAudio(AudioStreamPlayer player, AudioStream song, float volume)
     {
         player.Stream = song;
@@ -139,6 +161,9 @@ public class AudioManager : IDisposable
         player.Play();
     }
 
+    /// <summary>
+    /// Smoothly crossfades between songs by fading out the current and fading in the new one. Volume is in config scale (0-100).
+    /// </summary>
     private static void PlayAudioCrossfade(AudioStreamPlayer player, AudioStream song, float volume, double fadeOut, double fadeIn)
     {
         new GodotTween(player)
@@ -148,6 +173,9 @@ public class AudioManager : IDisposable
             .AnimateProp(NormalizeConfigVolume(volume), fadeIn).EaseIn();
     }
 
+    /// <summary>
+    /// Maps a config volume value (0-100) to an AudioStreamPlayer VolumeDb value, returning mute if zero.
+    /// </summary>
     private static float NormalizeConfigVolume(float volume)
     {
         return volume == 0 ? MutedVolume : volume.Remap(0, 100, MutedVolumeNormalized, 0);
