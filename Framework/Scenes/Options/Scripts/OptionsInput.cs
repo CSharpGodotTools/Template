@@ -1,3 +1,4 @@
+using __TEMPLATE__;
 using Godot;
 using Godot.Collections;
 using System;
@@ -15,6 +16,7 @@ public partial class OptionsInput(Options options)
 
     private VBoxContainer _content;
     private BtnInfo _btnNewInput; // The button currently waiting for new input
+    private SceneManager _sceneManager = Game.Scene;
 
     public void Initialize()
     {
@@ -69,7 +71,7 @@ public partial class OptionsInput(Options options)
         StringName action = _btnNewInput.Action;
 
         InputMap.ActionEraseEvent(action, _btnNewInput.InputEvent);
-        OptionsManager.GetHotkeys().Actions[action].Remove(_btnNewInput.InputEvent);
+        Game.Options.GetHotkeys().Actions[action].Remove(_btnNewInput.InputEvent);
 
         // Remove the UI button representing that binding and stop listening.
         _btnNewInput.Btn.QueueFree();
@@ -97,10 +99,10 @@ public partial class OptionsInput(Options options)
             return;
 
         // If we are in the Options scene, going back should return to the main menu.
-        if (SceneManager.GetCurrentScene().Name != OptionsSceneName)
+        if (_sceneManager.GetCurrentScene().Name != OptionsSceneName)
             return;
 
-        SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.MainMenu);
+        _sceneManager.SwitchScene(_sceneManager.MenuScenes.MainMenu);
     }
 
     private void ProcessCapturedInput(InputEvent @event)
@@ -141,7 +143,7 @@ public partial class OptionsInput(Options options)
     private void UpdateOptionStorageAndInputMap(StringName action, InputEvent @event)
     {
         // Load the dictionary of actions from the saved hotkeys options.
-        Dictionary<StringName, Array<InputEvent>> actions = OptionsManager.GetHotkeys().Actions;
+        Dictionary<StringName, Array<InputEvent>> actions = Game.Options.GetHotkeys().Actions;
 
         // Remove the previous InputEvent entry for this action in the saved options.
         actions[action].Remove(_btnNewInput.InputEvent);
@@ -253,7 +255,7 @@ public partial class OptionsInput(Options options)
     private void CreateHotkeys()
     {
         // Iterate actions sorted alphabetically so the UI is deterministic.
-        foreach (StringName action in OptionsManager.GetHotkeys().Actions.Keys.OrderBy(x => x.ToString()))
+        foreach (StringName action in Game.Options.GetHotkeys().Actions.Keys.OrderBy(x => x.ToString()))
         {
             string actionStr = action.ToString();
 
@@ -299,7 +301,7 @@ public partial class OptionsInput(Options options)
     private void AddEventButtonsForAction(StringName action, HBoxContainer hboxEvents)
     {
         // Fetch the saved events for this action from the options.
-        Array<InputEvent> events = OptionsManager.GetHotkeys().Actions[action];
+        Array<InputEvent> events = Game.Options.GetHotkeys().Actions[action];
 
         // Create a button for each keyboard and mouse binding.
         foreach (InputEvent @event in events)
@@ -332,7 +334,7 @@ public partial class OptionsInput(Options options)
         _btnNewInput = null;
 
         // Reset saved hotkeys to defaults and rebuild the UI.
-        OptionsManager.ResetHotkeys();
+        Game.Options.ResetHotkeys();
         CreateHotkeys();
     }
 

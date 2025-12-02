@@ -1,3 +1,4 @@
+using __TEMPLATE__;
 using Godot;
 using GodotUtils.UI.Console;
 using System;
@@ -21,6 +22,8 @@ public partial class PopupMenu : Control
 
     public WorldEnvironment WorldEnvironment { get; private set; }
 
+    private GameConsole _console = Game.Console;
+    private SceneManager _sceneManager = Game.Scene;
     private PanelContainer _menu;
     private VBoxContainer _nav;
     private Options _options;
@@ -38,7 +41,7 @@ public partial class PopupMenu : Control
 
         WorldEnvironment = TryFindWorldEnvironment(GetTree().Root);
 
-        Services.Register(this);
+        Game.Services.Register(this);
         CreateOptions();
         HideOptions();
         Hide();
@@ -48,9 +51,9 @@ public partial class PopupMenu : Control
     {
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
-            if (GameConsole.Visible)
+            if (_console.Visible)
             {
-                GameConsole.ToggleVisibility();
+                _console.ToggleVisibility();
                 return;
             }
 
@@ -75,7 +78,7 @@ public partial class PopupMenu : Control
     private void OnRestartPressed()
     {
         GetTree().Paused = false;
-        SceneManager.Instance.ResetCurrentScene();
+        Game.Scene.ResetCurrentScene();
     }
 
     private void OnOptionsPressed()
@@ -88,12 +91,12 @@ public partial class PopupMenu : Control
     {
         MainMenuBtnPressed?.Invoke();
         GetTree().Paused = false;
-        SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.MainMenu);
+        _sceneManager.SwitchScene(_sceneManager.MenuScenes.MainMenu);
     }
 
     private void OnQuitPressed()
     {
-        Autoloads.Instance.QuitAndCleanup().FireAndForget();
+        Autoloads.Instance.ExitGame().FireAndForget();
     }
 
     private void CreateOptions()

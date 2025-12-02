@@ -1,3 +1,4 @@
+using __TEMPLATE__;
 using Godot;
 using System;
 
@@ -12,7 +13,7 @@ public class OptionsGraphics(Options options)
 
     public void Initialize()
     {
-        _options = OptionsManager.GetOptions();
+        _options = Game.Options.GetOptions();
 
         SetupQualityPreset();
         SetupAntialiasing();

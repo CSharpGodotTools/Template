@@ -1,3 +1,4 @@
+using __TEMPLATE__;
 using Godot;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +14,7 @@ public partial class ModLoader : Node
     private Label _uiDescription;
     private Label _uiAuthors;
     private Label _uiIncompatibilities;
+    private SceneManager _sceneManager = Game.Scene;
 
     public override void _Ready()
     {
@@ -59,7 +61,7 @@ public partial class ModLoader : Node
     {
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
-            SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.MainMenu);
+            _sceneManager.SwitchScene(_sceneManager.MenuScenes.MainMenu);
         }
     }
 
@@ -85,7 +87,7 @@ public partial class ModLoader : Node
     {
         //OS.CreateProcess(OS.GetExecutablePath(), null);
         OS.CreateInstance(null);
-        await Autoloads.Instance.QuitAndCleanup();
+        await Autoloads.Instance.ExitGame();
     }
 
     private static void _OnOpenModsFolderPressed()

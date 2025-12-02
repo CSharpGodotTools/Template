@@ -7,6 +7,8 @@ public partial class MainMenuNav : Node
 {
     [Export] private PackedScene _gameScene;
 
+    private SceneManager _sceneManager = Game.Scene;
+
     public override void _Ready()
     {
         GetNode<Button>("Play").GrabFocus();
@@ -15,30 +17,30 @@ public partial class MainMenuNav : Node
     private void _OnPlayPressed()
     {
         //AudioManager.PlayMusic(Music.Level1, false);
-        SceneManager.SwitchScene(_gameScene);
+        _sceneManager.SwitchScene(_gameScene);
     }
 
     private void _OnModsPressed()
     {
         //AudioManager.PlayMusic(Music.Level4);
-        SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.ModLoader);
+        _sceneManager.SwitchScene(_sceneManager.MenuScenes.ModLoader);
     }
 
     private void _OnOptionsPressed()
     {
         //AudioManager.PlayMusic(Music.Level4);
-        SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.Options);
+        _sceneManager.SwitchScene(_sceneManager.MenuScenes.Options);
     }
 
     private void _OnCreditsPressed()
     {
         //AudioManager.PlayMusic(Music.Level4);
-        SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.Credits);
+        _sceneManager.SwitchScene(_sceneManager.MenuScenes.Credits);
     }
 
     private async void _OnQuitPressed()
     {
-        await Autoloads.Instance.QuitAndCleanup();
+        await Autoloads.Instance.ExitGame();
     }
 
     private void _OnDiscordPressed()

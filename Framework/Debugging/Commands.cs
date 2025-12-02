@@ -1,3 +1,4 @@
+using __TEMPLATE__;
 using GodotUtils.UI.Console;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,20 +9,21 @@ public class Commands
 {
     public static void RegisterAll()
     {
-        GameConsole.RegisterCommand("help", CommandHelp);
-        GameConsole.RegisterCommand("quit", CommandQuit).WithAliases("exit");
-        GameConsole.RegisterCommand("debug", CommandDebug);
+        GameConsole console = Game.Console;
+        console.RegisterCommand("help", CommandHelp);
+        console.RegisterCommand("quit", CommandQuit).WithAliases("exit");
+        console.RegisterCommand("debug", CommandDebug);
     }
 
     private static void CommandHelp(string[] args)
     {
-        IEnumerable<string> cmds = GameConsole.Instance.GetCommands().Select(x => x.Name);
+        IEnumerable<string> cmds = Game.Console.GetCommands().Select(x => x.Name);
         Logger.Log(cmds.ToFormattedString());
     }
 
     private async static void CommandQuit(string[] args)
     {
-        await Autoloads.Instance.QuitAndCleanup();
+        await Autoloads.Instance.ExitGame();
     }
 
     private static void CommandDebug(string[] args)

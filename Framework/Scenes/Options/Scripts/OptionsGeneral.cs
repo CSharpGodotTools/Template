@@ -1,3 +1,4 @@
+using __TEMPLATE__;
 using Godot;
 
 namespace GodotUtils.UI;
@@ -8,7 +9,7 @@ public class OptionsGeneral(Options options)
 
     public void Initialize()
     {
-        _options = OptionsManager.GetOptions();
+        _options = Game.Options.GetOptions();
 
         OptionButton languageBtn = options.GetNode<OptionButton>("%LanguageButton");
 

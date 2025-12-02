@@ -16,8 +16,6 @@ public partial class OptionsManager : IDisposable
 {
     public event Action<WindowMode> WindowModeChanged;
 
-    public static OptionsManager Instance { get; private set; }
-
     private const string PathOptions = "user://options.json";
     private const string PathHotkeys = "user://hotkeys.tres";
 
@@ -30,10 +28,6 @@ public partial class OptionsManager : IDisposable
 
     public OptionsManager(Autoloads autoloads)
     {
-        if (Instance != null)
-            throw new InvalidOperationException($"{nameof(OptionsManager)} was initialized already");
-
-        Instance = this;
         _autoloads = autoloads;
         _autoloads.PreQuit += SaveSettingsOnQuit;
 
@@ -63,27 +57,26 @@ public partial class OptionsManager : IDisposable
         _autoloads.PreQuit -= SaveSettingsOnQuit;
 
         WindowModeChanged = null;
-        Instance = null;
     }
 
-    public static string GetCurrentTab()
+    public string GetCurrentTab()
     {
-        return Instance._currentOptionsTab;
+        return _currentOptionsTab;
     }
 
-    public static void SetCurrentTab(string tab)
+    public void SetCurrentTab(string tab)
     {
-        Instance._currentOptionsTab = tab;
+        _currentOptionsTab = tab;
     }
 
-    public static ResourceOptions GetOptions()
+    public ResourceOptions GetOptions()
     {
-        return Instance._options;
+        return _options;
     }
 
-    public static ResourceHotkeys GetHotkeys()
+    public ResourceHotkeys GetHotkeys()
     {
-        return Instance._hotkeys;
+        return _hotkeys;
     }
 
     private void ToggleFullscreen()
@@ -118,25 +111,25 @@ public partial class OptionsManager : IDisposable
         }
     }
 
-    public static void ResetHotkeys()
+    public void ResetHotkeys()
     {
         // Deep clone default hotkeys over
-        Instance._hotkeys.Actions = [];
+        _hotkeys.Actions = [];
 
-        foreach (System.Collections.Generic.KeyValuePair<StringName, Array<InputEvent>> element in Instance._defaultHotkeys)
+        foreach (System.Collections.Generic.KeyValuePair<StringName, Array<InputEvent>> element in _defaultHotkeys)
         {
             Array<InputEvent> arr = [];
 
-            foreach (InputEvent item in Instance._defaultHotkeys[element.Key])
+            foreach (InputEvent item in _defaultHotkeys[element.Key])
             {
                 arr.Add((InputEvent)item.Duplicate());
             }
 
-            Instance._hotkeys.Actions.Add(element.Key, arr);
+            _hotkeys.Actions.Add(element.Key, arr);
         }
 
         // Set input map
-        LoadInputMap(Instance._defaultHotkeys);
+        LoadInputMap(_defaultHotkeys);
     }
 
     private void LoadOptions()

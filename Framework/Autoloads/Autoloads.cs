@@ -19,7 +19,6 @@ public partial class Autoloads : Node
 
     public static Autoloads Instance { get; private set; }
 
-    // Game developers should be able to access each individual manager
     public ComponentManager ComponentManager { get; private set; }
     public AudioManager     AudioManager     { get; private set; }
     public OptionsManager   OptionsManager   { get; private set; }
@@ -27,6 +26,7 @@ public partial class Autoloads : Node
     public MetricsOverlay   MetricsOverlay   { get; private set; }
     public SceneManager     SceneManager     { get; private set; }
     public GameConsole      GameConsole      { get; private set; }
+    public Profiler         Profiler         { get; private set; }
 
 #if NETCODE_ENABLED
     private Logger _logger;
@@ -47,6 +47,7 @@ public partial class Autoloads : Node
         SceneManager = new SceneManager(this, _scenes);
         Services = new Services(this);
         MetricsOverlay = new MetricsOverlay();
+        Profiler = new Profiler();
 
 #if NETCODE_ENABLED
         _logger = new Logger(GameConsole);
@@ -89,7 +90,7 @@ public partial class Autoloads : Node
     {
         if (what == NotificationWMCloseRequest)
         {
-            await QuitAndCleanup();
+            await ExitGame();
         }
     }
 
@@ -98,8 +99,6 @@ public partial class Autoloads : Node
         AudioManager.Dispose();
         OptionsManager.Dispose();
         SceneManager.Dispose();
-        Services.Dispose();
-        MetricsOverlay.Dispose();
 
 #if DEBUG
         _visualizeAutoload.Dispose();
@@ -114,16 +113,13 @@ public partial class Autoloads : Node
         Instance = null;
     }
 
-    // Using deferred is always complicated...
+    // I'm pretty sure Deferred must be called from a script that extends from Node
     public void DeferredSwitchSceneProxy(string rawName, Variant transTypeVariant)
     {
-        if (SceneManager.Instance == null)
-            return;
-
-        SceneManager.Instance.DeferredSwitchScene(rawName, transTypeVariant);
+        SceneManager.DeferredSwitchScene(rawName, transTypeVariant);
     }
 
-    public async Task QuitAndCleanup()
+    public async Task ExitGame()
     {
         GetTree().AutoAcceptQuit = false;
 
