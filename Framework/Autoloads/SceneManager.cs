@@ -1,3 +1,4 @@
+using __TEMPLATE__;
 using Godot;
 using GodotUtils.UI;
 using System;
@@ -5,14 +6,14 @@ using System;
 namespace GodotUtils;
 
 // About Scene Switching: https://docs.godotengine.org/en/latest/tutorials/scripting/singletons_autoload.html
-public class SceneManager : IDisposable
+public class SceneManager
 {
     /// <summary>
     /// The event is invoked right before the scene is changed
     /// </summary>
     public event Action<string> PreSceneChanged;
 
-    public static SceneManager Instance { get; private set; }
+    public const int DefaultSceneFadeDuration = 2;
     public MenuScenes MenuScenes { get; private set; }
 
     private SceneTree _tree;
@@ -21,10 +22,6 @@ public class SceneManager : IDisposable
 
     public SceneManager(Autoloads autoloads, MenuScenes scenes)
     {
-        if (Instance != null)
-            throw new InvalidOperationException($"{nameof(SceneManager)} was initialized already");
-
-        Instance = this;
         _autoloads = autoloads;
         MenuScenes = scenes;
         _tree = autoloads.GetTree();
@@ -37,36 +34,32 @@ public class SceneManager : IDisposable
         PreSceneChanged += OnPreSceneChanged;
     }
 
+    public Node GetCurrentScene()
+    {
+        return _currentScene;
+    }
+
     public void Dispose()
     {
         PreSceneChanged -= OnPreSceneChanged;
-        Instance = null;
     }
 
-    private void OnPreSceneChanged(string scene) => AudioManager.FadeOutSFX();
-
-    public static Node GetCurrentScene()
-    {
-        return Instance._currentScene;
-    }
-
-    public static void SwitchScene(PackedScene scene, TransType transType = TransType.None)
+    public void SwitchScene(PackedScene scene, TransType transType = TransType.None)
     {
         ArgumentNullException.ThrowIfNull(scene);
         string path = scene.ResourcePath;
-        Instance.PreSceneChanged?.Invoke(path);
+        PreSceneChanged?.Invoke(path);
 
         switch (transType)
         {
             case TransType.None:
-                Instance.ChangeScene(path, transType);
+                ChangeScene(path, transType);
                 break;
             case TransType.Fade:
-                Instance.FadeTo(TransColor.Black, 2, () => Instance.ChangeScene(path, transType));
+                FadeTo(TransColor.Black, DefaultSceneFadeDuration, () => ChangeScene(path, transType));
                 break;
         }
     }
-
 
     /// <summary>
     /// Resets the currently active scene.
@@ -82,12 +75,6 @@ public class SceneManager : IDisposable
 
         // Wait for engine to be ready before switching scenes
         _autoloads.CallDeferred(nameof(Autoloads.DeferredSwitchSceneProxy), sceneFilePath, Variant.From(TransType.None));
-    }
-
-    private void ChangeScene(string scenePath, TransType transType)
-    {
-        // Wait for engine to be ready before switching scenes
-        _autoloads.CallDeferred(nameof(Autoloads.DeferredSwitchSceneProxy), scenePath, Variant.From(transType));
     }
 
     public void DeferredSwitchScene(string rawName, Variant transTypeVariant)
@@ -117,6 +104,14 @@ public class SceneManager : IDisposable
                 FadeTo(TransColor.Transparent, 1);
                 break;
         }
+    }
+
+    private void OnPreSceneChanged(string scene) => Game.Audio.FadeOutSFX();
+
+    private void ChangeScene(string scenePath, TransType transType)
+    {
+        // Wait for engine to be ready before switching scenes
+        _autoloads.CallDeferred(nameof(Autoloads.DeferredSwitchSceneProxy), scenePath, Variant.From(transType));
     }
 
     private void FadeTo(TransColor transColor, double duration, Action finished = null)
@@ -156,7 +151,7 @@ public class SceneManager : IDisposable
         Fade
     }
 
-    private enum TransColor
+    public enum TransColor
     {
         Black,
         Transparent
