@@ -56,8 +56,6 @@ public partial class OptionsManager : IDisposable
     public void Dispose()
     {
         _autoloads.PreQuit -= SaveSettingsOnQuit;
-
-        WindowModeChanged = null;
     }
 
     public string GetCurrentTab()

@@ -344,10 +344,16 @@ public partial class OptionsInput(Options options)
 
         public BtnInfo Info { get; set; }
 
-        public HotkeyButton()
+        public override void _Ready()
         {
-            // Use Godot's Pressed event internally to raise a C# event for external code.
             Pressed += OnPressedLocal;
+            TreeExited += OnTreeExited;
+        }
+
+        private void OnTreeExited()
+        {
+            Pressed -= OnPressedLocal;
+            TreeExited -= OnTreeExited;
         }
 
         private void OnPressedLocal()
