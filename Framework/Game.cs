@@ -13,4 +13,5 @@ public static class Game
     public static GameConsole    Console  => Autoloads.Instance.GameConsole;
     public static Profiler       Profiler => Autoloads.Instance.Profiler;
     public static Services       Services => Autoloads.Instance.Services;
+    public static Logger         Logger   => Autoloads.Instance.Logger;
 }

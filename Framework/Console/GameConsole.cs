@@ -127,7 +127,7 @@ public partial class GameConsole : Node
 
         if (cmdInfo == null)
         {
-            Logger.Log($"The command '{cmd}' does not exist");
+            Game.Logger.Log($"The command '{cmd}' does not exist");
             return false;
         }
 

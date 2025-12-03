@@ -19,15 +19,16 @@ public class Logger : IDisposable
 {
     public event Action<string> MessageLogged;
 
-    private static Logger _instance;
-    private ConcurrentQueue<LogInfo> _messages = [];
-    private GameConsole _console;
+    private readonly ConcurrentQueue<LogInfo> _messages = [];
+    private readonly GameConsole _console;
+
+    public Logger() // No game console dependence
+    {
+    }
 
     public Logger(GameConsole console)
     {
-        _instance = this;
         _console = console;
-
         MessageLogged += _console.AddMessage;
     }
 
@@ -38,22 +39,22 @@ public class Logger : IDisposable
 
     public void Dispose()
     {
-        MessageLogged -= _console.AddMessage;
-        _instance = null;
+        if (_console != null)
+            MessageLogged -= _console.AddMessage;
     }
 
     /// <summary>
     /// Log a message
     /// </summary>
-    public static void Log(object message, BBColor color = BBColor.Gray)
+    public void Log(object message, BBColor color = BBColor.Gray)
     {
-        _instance._messages.Enqueue(new LogInfo(LoggerOpcode.Message, new LogMessage($"{message}"), color));
+        _messages.Enqueue(new LogInfo(LoggerOpcode.Message, new LogMessage($"{message}"), color));
     }
 
     /// <summary>
     /// Logs multiple objects by concatenating them into a single message.
     /// </summary>
-    public static void Log(params object[] objects)
+    public void Log(params object[] objects)
     {
         if (objects == null || objects.Length == 0)
         {
@@ -72,13 +73,13 @@ public class Logger : IDisposable
 
         LogInfo logInfo = new(LoggerOpcode.Message, new LogMessage(message));
 
-        _instance._messages.Enqueue(logInfo);
+        _messages.Enqueue(logInfo);
     }
 
     /// <summary>
     /// Log a warning
     /// </summary>
-    public static void LogWarning(object message, BBColor color = BBColor.Orange)
+    public void LogWarning(object message, BBColor color = BBColor.Orange)
     {
         Log($"[Warning] {message}", color);
     }
@@ -86,7 +87,7 @@ public class Logger : IDisposable
     /// <summary>
     /// Log a todo
     /// </summary>
-    public static void LogTodo(object message, BBColor color = BBColor.White)
+    public void LogTodo(object message, BBColor color = BBColor.White)
     {
         Log($"[Todo] {message}", color);
     }
@@ -94,7 +95,7 @@ public class Logger : IDisposable
     /// <summary>
     /// Logs an exception with trace information. Optionally allows logging a human readable hint
     /// </summary>
-    public static void LogErr
+    public void LogErr
     (
         Exception e,
         string hint = default,
@@ -109,7 +110,7 @@ public class Logger : IDisposable
     /// <summary>
     /// Logs a debug message that optionally contains trace information
     /// </summary>
-    public static void LogDebug
+    public void LogDebug
     (
         object message,
         BBColor color = BBColor.Magenta,
@@ -124,7 +125,7 @@ public class Logger : IDisposable
     /// <summary>
     /// Log the time it takes to do a section of code
     /// </summary>
-    public static void LogMs(Action code)
+    public void LogMs(Action code)
     {
         Stopwatch watch = new();
         watch.Start();
@@ -136,26 +137,32 @@ public class Logger : IDisposable
     /// <summary>
     /// Checks to see if there are any messages left in the queue
     /// </summary>
-    public static bool StillWorking()
+    public bool StillWorking()
     {
-        return !_instance._messages.IsEmpty;
+        return !_messages.IsEmpty;
     }
 
     /// <summary>
-    /// Dequeues a Requested Message and Logs it
+    /// Dequeues all requested messages and logs them
     /// </summary>
     private void DequeueMessages()
     {
-        if (!_messages.TryDequeue(out LogInfo result))
+        while (_messages.TryDequeue(out LogInfo result))
         {
-            return;
+            DequeueMessage(result);
         }
+    }
 
+    /// <summary>
+    /// Dequeues a message and logs it.
+    /// </summary>
+    /// <param name="result">The information from the message to log</param>
+    private void DequeueMessage(LogInfo result)
+    {
         switch (result.Opcode)
         {
             case LoggerOpcode.Message:
                 Print(result.Data.Message, result.Color);
-                System.Console.ResetColor();
                 break;
 
             case LoggerOpcode.Exception:
@@ -165,8 +172,6 @@ public class Logger : IDisposable
                 {
                     PrintErr(exceptionData.TracePath);
                 }
-
-                System.Console.ResetColor();
                 break;
 
             case LoggerOpcode.Debug:
@@ -176,18 +181,17 @@ public class Logger : IDisposable
                 {
                     Print(debugData.TracePath, BBColor.DarkGray);
                 }
-
-                System.Console.ResetColor();
                 break;
         }
 
+        Console.ResetColor();
         MessageLogged?.Invoke(result.Data.Message);
     }
 
     /// <summary>
     /// Logs a message that may contain trace information
     /// </summary>
-    private static void LogDetailed(LoggerOpcode opcode, string message, BBColor color, bool trace, string filePath, int lineNumber)
+    private void LogDetailed(LoggerOpcode opcode, string message, BBColor color, bool trace, string filePath, int lineNumber)
     {
         string tracePath;
 
@@ -204,7 +208,7 @@ public class Logger : IDisposable
             tracePath = $"  at {elements[elements.Length - 1]}:{lineNumber}";
         }
 
-        _instance._messages.Enqueue(
+        _messages.Enqueue(
             new LogInfo(opcode,
                 new LogMessageTrace(
                     message,

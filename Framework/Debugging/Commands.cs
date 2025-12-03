@@ -18,7 +18,7 @@ public class Commands
     private static void CommandHelp(string[] args)
     {
         IEnumerable<string> cmds = Game.Console.GetCommands().Select(x => x.Name);
-        Logger.Log(cmds.ToFormattedString());
+        Game.Logger.Log(cmds.ToFormattedString());
     }
 
     private async static void CommandQuit(string[] args)
@@ -30,10 +30,10 @@ public class Commands
     {
         if (args.Length <= 0)
         {
-            Logger.Log("Specify at least one argument");
+            Game.Logger.Log("Specify at least one argument");
             return;
         }
 
-        Logger.Log(args[0]);
+        Game.Logger.Log(args[0]);
     }
 }

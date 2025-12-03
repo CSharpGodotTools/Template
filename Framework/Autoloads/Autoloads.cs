@@ -3,12 +3,12 @@ using __TEMPLATE__.UI;
 using __TEMPLATE__.UI.Console;
 using Godot;
 using GodotUtils;
+using System;
+using System.Threading.Tasks;
 
 #if DEBUG
 using GodotUtils.Debugging;
 #endif
-using System;
-using System.Threading.Tasks;
 
 namespace __TEMPLATE__;
 
@@ -36,7 +36,7 @@ public partial class Autoloads : Node
     public Profiler         Profiler         { get; private set; }
 
 #if NETCODE_ENABLED
-    private Logger _logger;
+    public Logger Logger { get; private set; }
 #endif
 
 #if DEBUG
@@ -55,7 +55,7 @@ public partial class Autoloads : Node
         Profiler = new Profiler();
 
 #if NETCODE_ENABLED
-        _logger = new Logger(GameConsole);
+        Logger = new Logger(GameConsole);
 #endif
     }
 
@@ -82,7 +82,7 @@ public partial class Autoloads : Node
 #endif
 
 #if NETCODE_ENABLED
-        _logger.Update();
+        Logger.Update();
 #endif
     }
 
@@ -110,7 +110,7 @@ public partial class Autoloads : Node
 #endif
 
 #if NETCODE_ENABLED
-        _logger.Dispose();
+        Logger.Dispose();
 #endif
 
         Profiler.Dispose();
