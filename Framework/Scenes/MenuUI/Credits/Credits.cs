@@ -6,14 +6,15 @@ namespace __TEMPLATE__.UI;
 
 public partial class Credits : Node
 {
-    private const float STARTING_SPEED = 0.75f;
+    private const float StartingSpeed = 40;
+    private const float SpeedBoostOffset = 60;
 
     private VBoxContainer _vbox;
     private Button _btnPause;
     private Button _btnSpeed;
     private bool _paused;
     private byte _curSpeedSetting = 1;
-    private float _speed = STARTING_SPEED;
+    private float _speed = StartingSpeed;
     private SceneManager _scene;
 
     public override void _Ready()
@@ -57,7 +58,7 @@ public partial class Credits : Node
 
             if (translatedLine.Contains("http"))
             {
-                AddTextWithLink(translatedLine);
+                _vbox.AddChild(GetHBoxTextWithLink(translatedLine));
             }
             else
             {
@@ -101,47 +102,16 @@ public partial class Credits : Node
         };*/
     }
 
-    public override void _PhysicsProcess(double delta)
-    {
-        // Animate the credits
-        Vector2 pos = _vbox.Position;
-        pos.Y -= _speed;
-        _vbox.Position = pos;
-
-        // Go back to the main menu when the credits are finished
-        if (pos.Y <= -_vbox.Size.Y)
-        {
-            _scene.SwitchToMainMenu();
-        }
-    }
-
     public override void _Process(double delta)
     {
-        if (Input.IsActionJustPressed(InputActions.UICancel))
-        {
+        Vector2 pos = _vbox.Position;
+        pos.Y -= _speed * (float)delta;
+        _vbox.Position = pos;
+
+        bool creditsFinished = pos.Y <= -_vbox.Size.Y;
+
+        if (creditsFinished || Input.IsActionJustPressed(InputActions.UICancel))
             _scene.SwitchToMainMenu();
-        }
-    }
-
-    private void AddTextWithLink(string text)
-    {
-        int indexOfHttp = text.IndexOf("http", StringComparison.Ordinal);
-
-        string textDesc = text.Substring(0, indexOfHttp);
-        string textLink = text.Substring(indexOfHttp);
-
-        HBoxContainer hbox = new()
-        {
-            SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter
-        };
-
-        Label label = LabelFactory.Create(textDesc);
-        LinkButton linkButton = LinkButtonFactory.Create(textLink);
-
-        hbox.AddChild(linkButton);
-        hbox.AddChild(label);
-
-        _vbox.AddChild(hbox);
     }
 
     private void _OnPausePressed()
@@ -166,13 +136,32 @@ public partial class Credits : Node
         {
             _curSpeedSetting++;
             _btnSpeed.Text = $"{_curSpeedSetting}.0x";
-            _speed += 1;
+            _speed += SpeedBoostOffset;
         }
         else
         {
             _curSpeedSetting = 1;
             _btnSpeed.Text = $"{_curSpeedSetting}.0x";
-            _speed = STARTING_SPEED;
+            _speed = StartingSpeed;
         }
+    }
+
+    private static HBoxContainer GetHBoxTextWithLink(string text)
+    {
+        int indexOfHttp = text.IndexOf("http", StringComparison.Ordinal);
+        string textDesc = text.Substring(0, indexOfHttp);
+        string textLink = text.Substring(indexOfHttp);
+        
+        HBoxContainer hbox = new()
+        {
+            SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter
+        };
+
+        Label label = LabelFactory.Create(textDesc);
+        LinkButton linkButton = LinkButtonFactory.Create(textLink);
+
+        hbox.AddChild(linkButton);
+        hbox.AddChild(label);
+        return hbox;
     }
 }
