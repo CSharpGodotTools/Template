@@ -32,3 +32,4 @@ script = ExtResource("3_sycog")
 layer = 128
 
 [node name="Console" parent="Debug" instance=ExtResource("4_8po21")]
+unique_name_in_owner = true

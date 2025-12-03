@@ -22,12 +22,8 @@ public partial class Autoloads : Node
 
     public static Autoloads Instance { get; private set; }
 
-    [Export] 
-    public GameConsole      GameConsole      { get; private set; }
-
-    [Export]
-    public ComponentManager ComponentManager { get; private set; }
-
+    public ComponentManager ComponentManager { get; private set; } // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
+    public GameConsole      GameConsole      { get; private set; } // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
     public AudioManager     AudioManager     { get; private set; }
     public OptionsManager   OptionsManager   { get; private set; }
     public Services         Services         { get; private set; }
@@ -49,10 +45,12 @@ public partial class Autoloads : Node
             throw new InvalidOperationException("Global has been initialized already");
 
         Instance = this;
+        ComponentManager = GetNode<ComponentManager>("ComponentManager");
         SceneManager = new SceneManager(this, _scenes);
         Services = new Services(this);
         MetricsOverlay = new MetricsOverlay();
         Profiler = new Profiler();
+        GameConsole = GetNode<GameConsole>("%Console");
 
 #if NETCODE_ENABLED
         Logger = new Logger(GameConsole);
