@@ -52,9 +52,9 @@ DIFFICULTY,Difficulty,Difficulté,困難
 ANTIALIASING,Antialiasing,Anticrénelage,アンチエイリアシング
 MODS,Mods,Mods,Mods
 RESOLUTION,Resolution,Résolution,解像度
-MOUSE\_SENSITIVITY,Mouse Sensitivity,Sensibilité de la souris,マウス感度
+MOUSE_SENSITIVITY,Mouse Sensitivity,Sensibilité de la souris,マウス感度
 GLOW,Glow,Lueur,グロー
-AMBIENT\_OCCLUSION,Ambient Occlusion,Oclusion ambiante,アンビエントオクルージョン
-INDIRECT\_LIGHTING,Indirect Lighting,Éclairage indirect,間接照明
+AMBIENT_OCCLUSION,Ambient Occlusion,Oclusion ambiante,アンビエントオクルージョン
+INDIRECT_LIGHTING,Indirect Lighting,Éclairage indirect,間接照明
 REFLECTIONS,Reflections,Reflets,反射
 RESTART,Restart,Redémarrer,再起動
