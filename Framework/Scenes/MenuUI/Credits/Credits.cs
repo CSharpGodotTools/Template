@@ -6,90 +6,108 @@ namespace __TEMPLATE__.UI;
 
 public partial class Credits : Node
 {
-    private const float STARTING_SPEED = 0.75f;
+    // Constants
+    private const string HeaderOneIdentifier = "[h1]";
+    private const string HeaderTwoIdentifier = "[h2]";
+    private const string LinkIdentifier = "http";
+    private const string ForwardText = "F";
+    private const string ReverseText = "R";
+    private const string PauseText = "Pause";
+    private const string ResumeText = "Resume";
 
-    private VBoxContainer _vbox;
+    private const float StartingSpeed = 40;
+    private const float SpeedBoostOffset = 60;
+
+    private const int PaddingBetweenLines = 10;
+    private const int TextSize = 16;
+    private const int HeaderOneSize = 32;
+    private const int HeaderTwoSize = 24;
+    private const int NumSpeedSettings = 3;
+
+    // Fields
+    private VBoxContainer _credits;
+    private SceneManager _scene;
+    private Vector2 _startingCreditsPosition;
     private Button _btnPause;
     private Button _btnSpeed;
+    private Button _btnReverse;
+    private float _speed = StartingSpeed;
     private bool _paused;
     private byte _curSpeedSetting = 1;
-    private float _speed = STARTING_SPEED;
-    private SceneManager _scene = Game.Scene;
+    private int _direction = 1;
 
     public override void _Ready()
     {
+        SetupFields();
+        BuildCredits("res://Credits.txt");
+        PositionCredits();
+    }
+
+    public override void _Process(double delta)
+    {
+        if (Input.IsActionJustPressed(InputActions.UICancel))
+            _scene.SwitchToMainMenu();
+
+        if (!_paused)
+        {
+            Vector2 position = _credits.Position;
+
+            bool creditsAtStart = position.Y > _startingCreditsPosition.Y;
+            bool creditsAtFinish = position.Y <= -_credits.Size.Y;
+            bool isReverseDirection = _direction == -1;
+
+            position.Y -= _speed * _direction * (float)delta;
+
+            if (isReverseDirection && creditsAtStart)
+            {
+                position.Y = _startingCreditsPosition.Y;
+            }
+
+            _credits.Position = position;
+
+            if (creditsAtFinish)
+                _scene.SwitchToMainMenu();
+        }
+    }
+
+    private void SetupFields()
+    {
+        _scene = Game.Scene;
         _btnPause = GetNode<Button>("%Pause");
         _btnSpeed = GetNode<Button>("%Speed");
+        _btnReverse = GetNode<Button>("%Reverse");
+    }
 
-        _vbox = new VBoxContainer
+    private void BuildCredits(string filePath)
+    {
+        _credits = new VBoxContainer
         {
-            SizeFlagsVertical = Control.SizeFlags.ShrinkBegin
+            SizeFlagsVertical = Control.SizeFlags.ShrinkBegin,
+            MouseFilter = Control.MouseFilterEnum.Ignore
         };
 
         // Read the contents from credits.txt and construct the credits
-        FileAccess file = FileAccess.Open("res://Credits.txt", FileAccess.ModeFlags.Read);
+        FileAccess file = FileAccess.Open(filePath, FileAccess.ModeFlags.Read);
 
         while (!file.EofReached())
         {
             string line = Tr(file.GetLine());
-
-            int size = 16;
-
-            if (line.Contains("[h1]"))
-            {
-                size = 32;
-                line = line.Replace("[h1]", "");
-            }
-
-            if (line.Contains("[h2]"))
-            {
-                size = 24;
-                line = line.Replace("[h2]", "");
-            }
-
-            string translatedLine = string.Empty;
-
-            foreach (string word in line.Split(' '))
-            {
-                translatedLine += Tr(word) + " ";
-            }
-
-            if (translatedLine.Contains("http"))
-            {
-                AddTextWithLink(translatedLine);
-            }
-            else
-            {
-                if (string.IsNullOrWhiteSpace(translatedLine))
-                {
-                    Control padding = new()
-                    {
-                        CustomMinimumSize = new Vector2(0, 10),
-                        MouseFilter = Control.MouseFilterEnum.Ignore
-                    };
-
-                    _vbox.AddChild(padding);
-                }
-                else
-                {
-                    Label label = LabelFactory.Create(translatedLine, size);
-                    label.MouseFilter = Control.MouseFilterEnum.Ignore;
-
-                    _vbox.AddChild(label);
-                }
-            }   
-        } 
+            ProcessLine(line);
+        }
 
         file.Close();
 
-        AddChild(_vbox);
+        AddChild(_credits);
+    }
 
-        _vbox.MouseFilter = Control.MouseFilterEnum.Ignore;
-
+    private void PositionCredits()
+    {
         // Set starting position of the credits
-        _vbox.Position = new Vector2(
-            GetViewport().GetVisibleRect().Size.X / 2 - _vbox.Size.X / 2,
+        _credits.Position = new Vector2(
+            GetViewport().GetVisibleRect().Size.X / 2 - _credits.Size.X / 2,
             GetViewport().GetVisibleRect().Size.Y);
+
+        _startingCreditsPosition = _credits.Position;
 
         // Re-center credits when window size is changed
         /*GetViewport().SizeChanged += () =>
@@ -100,78 +118,118 @@ public partial class Credits : Node
         };*/
     }
 
-    public override void _PhysicsProcess(double delta)
+    private void ProcessLine(string line)
     {
-        // Animate the credits
-        Vector2 pos = _vbox.Position;
-        pos.Y -= _speed;
-        _vbox.Position = pos;
+        int size = TextSize;
 
-        // Go back to the main menu when the credits are finished
-        if (pos.Y <= -_vbox.Size.Y)
+        if (line.Contains(HeaderOneIdentifier))
         {
-            _scene.SwitchToMainMenu();
+            size = HeaderOneSize;
+            line = line.Replace(HeaderOneIdentifier, "");
+        }
+
+        if (line.Contains(HeaderTwoIdentifier))
+        {
+            size = HeaderTwoSize;
+            line = line.Replace(HeaderTwoIdentifier, "");
+        }
+
+        string trLine = string.Empty;
+
+        foreach (string word in line.Split(' '))
+            trLine += Tr(word) + " ";
+
+        if (trLine.Contains(LinkIdentifier))
+        {
+            _credits.AddChild(GetHBoxTextWithLink(trLine));
+        }
+        else
+        {
+            if (string.IsNullOrWhiteSpace(trLine))
+            {
+                Control paddingBetweenLines = new()
+                {
+                    CustomMinimumSize = new Vector2(0, PaddingBetweenLines),
+                    MouseFilter = Control.MouseFilterEnum.Ignore
+                };
+
+                _credits.AddChild(paddingBetweenLines);
+            }
+            else
+            {
+                Label label = LabelFactory.Create(trLine, size);
+                label.MouseFilter = Control.MouseFilterEnum.Ignore;
+
+                _credits.AddChild(label);
+            }
         }
     }
 
-    public override void _Process(double delta)
+    private void _OnPausePressed()
     {
-        if (Input.IsActionJustPressed(InputActions.UICancel))
+        _paused = !_paused;
+        _btnPause.Text = _paused ? PauseText : ResumeText;
+    }
+
+    private void _OnSpeedPressed()
+    {
+        if (_curSpeedSetting < NumSpeedSettings)
         {
-            _scene.SwitchToMainMenu();
+            _curSpeedSetting++;
+            _btnSpeed.Text = $"{_curSpeedSetting}.0x";
+            _speed += SpeedBoostOffset;
+        }
+        else
+        {
+            _curSpeedSetting = 1;
+            _btnSpeed.Text = $"{_curSpeedSetting}.0x";
+            _speed = StartingSpeed;
         }
     }
 
-    private void AddTextWithLink(string text)
+    private void _OnReversePressed()
     {
-        int indexOfHttp = text.IndexOf("http", StringComparison.Ordinal);
+        _direction = -_direction;
+        _btnReverse.Text = _direction > 0 ? ForwardText : ReverseText;
+    }
 
-        string textDesc = text.Substring(0, indexOfHttp);
-        string textLink = text.Substring(indexOfHttp);
+    private static HBoxContainer GetHBoxTextWithLink(string text)
+    {
+        // Find the start of the URL
+        int startIndex = text.IndexOf(LinkIdentifier, StringComparison.Ordinal);
+        if (startIndex < 0)
+        {
+            HBoxContainer fallback = new();
+            Label fallbackLabel = LabelFactory.Create(text);
+            fallback.AddChild(fallbackLabel);
+            return fallback;
+        }
+
+        // Extract exact URL: it ends at next whitespace or end of line
+        int endIndex = text.IndexOf(' ', startIndex);
+        if (endIndex < 0)
+            endIndex = text.Length;
+
+        string leftText = text.Substring(0, startIndex);
+        string url = text.Substring(startIndex, endIndex - startIndex);
+        string rightText = text.Substring(endIndex);
 
         HBoxContainer hbox = new()
         {
             SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter
         };
 
-        Label label = LabelFactory.Create(textDesc);
-        LinkButton linkButton = LinkButtonFactory.Create(textLink);
+        hbox.AddThemeConstantOverride("separation", 0);
 
-        hbox.AddChild(linkButton);
-        hbox.AddChild(label);
+        // Preserve order: LEFT -> URL -> RIGHT
+        if (!string.IsNullOrWhiteSpace(leftText))
+            hbox.AddChild(LabelFactory.Create(leftText));
 
-        _vbox.AddChild(hbox);
-    }
+        hbox.AddChild(LinkButtonFactory.Create(url));
 
-    private void _OnPausePressed()
-    {
-        _paused = !_paused;
+        if (!string.IsNullOrWhiteSpace(rightText))
+            hbox.AddChild(LabelFactory.Create(rightText));
 
-        if (_paused)
-        {
-            SetPhysicsProcess(false);
-            _btnPause.Text = "Resume";
-        }
-        else
-        {
-            SetPhysicsProcess(true);
-            _btnPause.Text = "Pause";
-        }
-    }
-
-    private void _OnSpeedPressed()
-    {
-        if (_curSpeedSetting < 3)
-        {
-            _curSpeedSetting++;
-            _btnSpeed.Text = $"{_curSpeedSetting}.0x";
-            _speed += 1;
-        }
-        else
-        {
-            _curSpeedSetting = 1;
-            _btnSpeed.Text = $"{_curSpeedSetting}.0x";
-            _speed = STARTING_SPEED;
-        }
+        return hbox;
     }
 }

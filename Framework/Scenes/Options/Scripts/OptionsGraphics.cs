@@ -12,10 +12,14 @@ public class OptionsGraphics(Options options)
 
     public void Initialize()
     {
-        _options = Game.Options.GetOptions();
-
+        GetOptions();
         SetupQualityPreset();
         SetupAntialiasing();
+    }
+
+    private void GetOptions()
+    {
+        _options = Game.Options.GetOptions();
     }
 
     private void SetupQualityPreset()

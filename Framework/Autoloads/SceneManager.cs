@@ -15,6 +15,8 @@ public class SceneManager
 
     public const int DefaultSceneFadeDuration = 2;
 
+    public Node CurrentScene => _currentScene;
+
     private MenuScenes _menuScenes;
     private SceneTree _tree;
     private Autoloads _autoloads;
@@ -22,21 +24,10 @@ public class SceneManager
 
     public SceneManager(Autoloads autoloads, MenuScenes scenes)
     {
-        _autoloads = autoloads;
-        _menuScenes = scenes;
-        _tree = autoloads.GetTree();
-
-        Window root = _tree.Root;
-
-        _currentScene = root.GetChild(root.GetChildCount() - 1);
+        SetupFields(autoloads, scenes);
 
         // Gradually fade out all SFX whenever the scene is changed
         PreSceneChanged += OnPreSceneChanged;
-    }
-
-    public Node GetCurrentScene()
-    {
-        return _currentScene;
     }
 
     public void Dispose()
@@ -109,6 +100,17 @@ public class SceneManager
                 FadeTo(TransColor.Transparent, 1);
                 break;
         }
+    }
+
+    private void SetupFields(Autoloads autoloads, MenuScenes scenes)
+    {
+        _autoloads = autoloads;
+        _menuScenes = scenes;
+        _tree = autoloads.GetTree();
+
+        Window root = _tree.Root;
+
+        _currentScene = root.GetChild(root.GetChildCount() - 1);
     }
 
     private void OnPreSceneChanged(string scene) => Game.Audio.FadeOutSFX();

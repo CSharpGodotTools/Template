@@ -24,14 +24,9 @@ public class AudioManager : IDisposable
     /// </summary>
     public AudioManager(Autoloads autoloads)
     {
-        _autoloads = autoloads;
-        _options = Game.Options.GetOptions();
-
-        _musicPlayer = new AudioStreamPlayer();
-        autoloads.AddChild(_musicPlayer);
-
-        _sfxPool = new GodotNodePool<AudioStreamPlayer2D>(autoloads, 
-            () => new AudioStreamPlayer2D());
+        SetupFields(autoloads);
+        SetupSfxPool();
+        SetupMusicPlayer();
     }
 
     /// <summary>
@@ -114,6 +109,24 @@ public class AudioManager : IDisposable
         {
             sfxPlayer.VolumeDb = mappedVolume;
         }
+    }
+
+    private void SetupFields(Autoloads autoloads)
+    {
+        _autoloads = autoloads;
+        _options = Game.Options.GetOptions();
+    }
+
+    private void SetupSfxPool()
+    {
+        _sfxPool = new GodotNodePool<AudioStreamPlayer2D>(_autoloads,
+            () => new AudioStreamPlayer2D());
+    }
+
+    private void SetupMusicPlayer()
+    {
+        _musicPlayer = new AudioStreamPlayer();
+        _autoloads.AddChild(_musicPlayer);
     }
 
     /// <summary>

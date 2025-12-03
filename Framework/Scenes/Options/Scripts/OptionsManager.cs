@@ -29,8 +29,7 @@ public partial class OptionsManager : IDisposable
 
     public OptionsManager(Autoloads autoloads)
     {
-        _autoloads = autoloads;
-        _autoloads.PreQuit += SaveSettingsOnQuit;
+        SetupAutoloads(autoloads);
 
         LoadOptions();
 
@@ -43,6 +42,12 @@ public partial class OptionsManager : IDisposable
         SetMaxFPS();
         SetLanguage();
         SetAntialiasing();
+    }
+
+    private void SetupAutoloads(Autoloads autoloads)
+    {
+        _autoloads = autoloads;
+        _autoloads.PreQuit += SaveSettingsOnQuit;
     }
 
     public void Update()
