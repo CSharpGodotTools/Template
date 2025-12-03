@@ -57,9 +57,7 @@ public class Logger : IDisposable
     public void Log(params object[] objects)
     {
         if (objects == null || objects.Length == 0)
-        {
             return; // or handle the case where no objects are provided
-        }
 
         StringBuilder messageBuilder = new();
 
@@ -95,14 +93,12 @@ public class Logger : IDisposable
     /// <summary>
     /// Logs an exception with trace information. Optionally allows logging a human readable hint
     /// </summary>
-    public void LogErr
-    (
+    public void LogErr(
         Exception e,
         string hint = default,
         BBColor color = BBColor.Red,
         [CallerFilePath] string filePath = default,
-        [CallerLineNumber] int lineNumber = 0
-    )
+        [CallerLineNumber] int lineNumber = 0)
     {
         LogDetailed(LoggerOpcode.Exception, $"[Error] {(string.IsNullOrWhiteSpace(hint) ? "" : $"'{hint}' ")}{e.Message}{e.StackTrace}", color, true, filePath, lineNumber);
     }
@@ -110,14 +106,12 @@ public class Logger : IDisposable
     /// <summary>
     /// Logs a debug message that optionally contains trace information
     /// </summary>
-    public void LogDebug
-    (
+    public void LogDebug(
         object message,
         BBColor color = BBColor.Magenta,
         bool trace = true,
         [CallerFilePath] string filePath = default,
-        [CallerLineNumber] int lineNumber = 0
-    )
+        [CallerLineNumber] int lineNumber = 0)
     {
         LogDetailed(LoggerOpcode.Debug, $"[Debug] {message}", color, trace, filePath, lineNumber);
     }
@@ -148,9 +142,7 @@ public class Logger : IDisposable
     private void DequeueMessages()
     {
         while (_messages.TryDequeue(out LogInfo result))
-        {
             DequeueMessage(result);
-        }
     }
 
     /// <summary>
@@ -169,18 +161,16 @@ public class Logger : IDisposable
                 PrintErr(result.Data.Message);
 
                 if (result.Data is LogMessageTrace exceptionData && exceptionData.ShowTrace)
-                {
                     PrintErr(exceptionData.TracePath);
-                }
+
                 break;
 
             case LoggerOpcode.Debug:
                 Print(result.Data.Message, result.Color);
 
                 if (result.Data is LogMessageTrace debugData && debugData.ShowTrace)
-                {
                     Print(debugData.TracePath, BBColor.DarkGray);
-                }
+
                 break;
         }
 
@@ -197,14 +187,7 @@ public class Logger : IDisposable
         string tracePath = $"  at {elements[^1]}:{lineNumber}"; // TracePath could become for example: "at Main.cs:23"
 
         _messages.Enqueue(
-            new LogInfo(opcode,
-                new LogMessageTrace(
-                    message,
-                    trace,
-                    tracePath
-                ),
-            color
-        ));
+            new LogInfo(opcode, new LogMessageTrace(message, trace, tracePath), color));
     }
 
     private static void Print(object v, BBColor color)
