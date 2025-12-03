@@ -17,10 +17,11 @@ Options = ExtResource("5_vm4c5")
 Credits = ExtResource("2_xdmsn")
 metadata/_custom_type_script = "uid://17yxgcswri77"
 
-[node name="Autoloads" type="Node"]
+[node name="Autoloads" type="Node" node_paths=PackedStringArray("GameConsole")]
 process_mode = 3
 script = ExtResource("1_00yjk")
 _scenes = SubResource("Resource_xdmsn")
+GameConsole = NodePath("Debug/Console")
 
 [node name="ComponentManager" type="Node" parent="."]
 process_mode = 1
@@ -30,4 +31,3 @@ script = ExtResource("3_sycog")
 layer = 128
 
 [node name="Console" parent="Debug" instance=ExtResource("4_8po21")]
-unique_name_in_owner = true

@@ -20,13 +20,14 @@ public partial class Autoloads : Node
 
     public static Autoloads Instance { get; private set; }
 
+    [Export] 
+    public GameConsole      GameConsole      { get; private set; }
     public ComponentManager ComponentManager { get; private set; }
     public AudioManager     AudioManager     { get; private set; }
     public OptionsManager   OptionsManager   { get; private set; }
     public Services         Services         { get; private set; }
     public MetricsOverlay   MetricsOverlay   { get; private set; }
     public SceneManager     SceneManager     { get; private set; }
-    public GameConsole      GameConsole      { get; private set; }
     public Profiler         Profiler         { get; private set; }
 
 #if NETCODE_ENABLED
@@ -44,7 +45,6 @@ public partial class Autoloads : Node
 
         Instance = this;
         ComponentManager = GetNode<ComponentManager>("ComponentManager");
-        GameConsole = GetNode<GameConsole>("%Console");
         SceneManager = new SceneManager(this, _scenes);
         Services = new Services(this);
         MetricsOverlay = new MetricsOverlay();
