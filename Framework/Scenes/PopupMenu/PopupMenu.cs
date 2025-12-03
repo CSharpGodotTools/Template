@@ -20,8 +20,6 @@ public partial class PopupMenu : Control
     public event Action Closed;
     public event Action MainMenuBtnPressed;
 
-    public WorldEnvironment WorldEnvironment { get; private set; }
-
     private GameConsole _console;
     private PanelContainer _menu;
     private VBoxContainer _nav;
@@ -39,8 +37,6 @@ public partial class PopupMenu : Control
         _mainMenuBtn.Pressed += OnMainMenuPressed;
         _quitBtn.Pressed += OnQuitPressed;
 
-        WorldEnvironment = TryFindWorldEnvironment(GetTree().Root);
-
         Game.Services.Register(this);
         CreateOptions();
         HideOptions();
@@ -49,24 +45,23 @@ public partial class PopupMenu : Control
 
     public override void _PhysicsProcess(double delta)
     {
-        if (Input.IsActionJustPressed(InputActions.UICancel))
-        {
-            if (_console.Visible)
-            {
-                _console.ToggleVisibility();
-                return;
-            }
+        if (!Input.IsActionJustPressed(InputActions.UICancel))
+            return;
 
-            if (_options.Visible)
-            {
-                HideOptions();
-                ShowPopupMenu();
-            }
-            else
-            {
-                ToggleGamePause();
-            }
+        if (_console.Visible)
+        {
+            _console.ToggleVisibility();
+            return;
         }
+
+        if (_options.Visible)
+        {
+            HideOptions();
+            ShowPopupMenu();
+            return;
+        }
+
+        ToggleGamePause();
     }
 
     private void OnResumePressed()
@@ -117,15 +112,8 @@ public partial class PopupMenu : Control
         _options.Hide();
     }
 
-    private void ShowPopupMenu()
-    {
-        _menu.Show();
-    }
-
-    private void HidePopupMenu()
-    {
-        _menu.Hide();
-    }
+    private void ShowPopupMenu() => _menu.Show();
+    private void HidePopupMenu() => _menu.Hide();
 
     private void ToggleGamePause()
     {
@@ -147,11 +135,5 @@ public partial class PopupMenu : Control
         Visible = false;
         GetTree().Paused = false;
         Closed?.Invoke();
-    }
-
-    private static WorldEnvironment TryFindWorldEnvironment(Window root)
-    {
-        Node node = root.FindChild("WorldEnvironment", recursive: true, owned: false);
-        return node as WorldEnvironment;
     }
 }
