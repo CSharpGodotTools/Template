@@ -8,15 +8,6 @@ namespace __TEMPLATE__;
 public static class Game
 {
 #if DEBUG
-    public static MetricsOverlay Metrics => IsAutoloadsSetup(a => a.MetricsOverlay, nameof(Metrics));
-    public static OptionsManager Options => IsAutoloadsSetup(a => a.OptionsManager, nameof(Options));
-    public static AudioManager Audio => IsAutoloadsSetup(a => a.AudioManager, nameof(Audio));
-    public static SceneManager Scene => IsAutoloadsSetup(a => a.SceneManager, nameof(Scene));
-    public static GameConsole Console => IsAutoloadsSetup(a => a.GameConsole, nameof(Console));
-    public static Profiler Profiler => IsAutoloadsSetup(a => a.Profiler, nameof(Profiler));
-    public static Services Services => IsAutoloadsSetup(a => a.Services, nameof(Services));
-    public static Logger Logger => IsAutoloadsSetup(a => a.Logger, nameof(Logger));
-
     /// <summary>
     /// Check if the autoloads singleton is not null. If it is null then show an error explaining
     /// that the developer cannot access the autoloads singleton just yet and it needs time to
@@ -42,6 +33,15 @@ public static class Game
 
         return getPropertyFrom(autoloads)!; // Assumes the field may be null, but we are not checking it here
     }
+
+    public static MetricsOverlay Metrics => IsAutoloadsSetup(a => a.MetricsOverlay, nameof(Metrics));
+    public static OptionsManager Options => IsAutoloadsSetup(a => a.OptionsManager, nameof(Options));
+    public static AudioManager Audio => IsAutoloadsSetup(a => a.AudioManager, nameof(Audio));
+    public static SceneManager Scene => IsAutoloadsSetup(a => a.SceneManager, nameof(Scene));
+    public static GameConsole Console => IsAutoloadsSetup(a => a.GameConsole, nameof(Console));
+    public static Profiler Profiler => IsAutoloadsSetup(a => a.Profiler, nameof(Profiler));
+    public static Services Services => IsAutoloadsSetup(a => a.Services, nameof(Services));
+    public static Logger Logger => IsAutoloadsSetup(a => a.Logger, nameof(Logger));
 #else
     // The games release will not have the slow debugging checks
     public static MetricsOverlay Metrics  => Autoloads.Instance.MetricsOverlay;
