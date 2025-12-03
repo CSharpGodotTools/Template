@@ -18,7 +18,7 @@ public partial class Credits : Node
     private const float StartingSpeed = 40;
     private const float SpeedBoostOffset = 60;
 
-    private const int WhitespacePaddingSize = 10;
+    private const int PaddingBetweenLines = 10;
     private const int TextSize = 16;
     private const int HeaderOneSize = 32;
     private const int HeaderTwoSize = 24;
@@ -147,13 +147,13 @@ public partial class Credits : Node
         {
             if (string.IsNullOrWhiteSpace(trLine))
             {
-                Control padding = new()
+                Control paddingBetweenLines = new()
                 {
-                    CustomMinimumSize = new Vector2(0, WhitespacePaddingSize),
+                    CustomMinimumSize = new Vector2(0, PaddingBetweenLines),
                     MouseFilter = Control.MouseFilterEnum.Ignore
                 };
 
-                _credits.AddChild(padding);
+                _credits.AddChild(paddingBetweenLines);
             }
             else
             {
@@ -195,20 +195,41 @@ public partial class Credits : Node
 
     private static HBoxContainer GetHBoxTextWithLink(string text)
     {
-        int indexOfHttp = text.IndexOf(LinkIdentifier, StringComparison.Ordinal);
-        string textDesc = text.Substring(0, indexOfHttp);
-        string textLink = text.Substring(indexOfHttp);
-        
+        // Find the start of the URL
+        int startIndex = text.IndexOf(LinkIdentifier, StringComparison.Ordinal);
+        if (startIndex < 0)
+        {
+            HBoxContainer fallback = new();
+            Label fallbackLabel = LabelFactory.Create(text);
+            fallback.AddChild(fallbackLabel);
+            return fallback;
+        }
+
+        // Extract exact URL: it ends at next whitespace or end of line
+        int endIndex = text.IndexOf(' ', startIndex);
+        if (endIndex < 0)
+            endIndex = text.Length;
+
+        string leftText = text.Substring(0, startIndex);
+        string url = text.Substring(startIndex, endIndex - startIndex);
+        string rightText = text.Substring(endIndex);
+
         HBoxContainer hbox = new()
         {
             SizeFlagsHorizontal = Control.SizeFlags.ShrinkCenter
         };
 
-        Label label = LabelFactory.Create(textDesc);
-        LinkButton linkButton = LinkButtonFactory.Create(textLink);
+        hbox.AddThemeConstantOverride("separation", 0);
 
-        hbox.AddChild(linkButton);
-        hbox.AddChild(label);
+        // Preserve order: LEFT -> URL -> RIGHT
+        if (!string.IsNullOrWhiteSpace(leftText))
+            hbox.AddChild(LabelFactory.Create(leftText));
+
+        hbox.AddChild(LinkButtonFactory.Create(url));
+
+        if (!string.IsNullOrWhiteSpace(rightText))
+            hbox.AddChild(LabelFactory.Create(rightText));
+
         return hbox;
     }
 }
