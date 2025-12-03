@@ -193,20 +193,8 @@ public class Logger : IDisposable
     /// </summary>
     private void LogDetailed(LoggerOpcode opcode, string message, BBColor color, bool trace, string filePath, int lineNumber)
     {
-        string tracePath;
-
-        if (filePath.Contains("Scripts"))
-        {
-            // Ex: Scripts/Main.cs:23
-            tracePath = $"  at {filePath.Substring(filePath.IndexOf("Scripts", StringComparison.Ordinal))}:{lineNumber}";
-            tracePath = tracePath.Replace(Path.DirectorySeparatorChar, '/');
-        }
-        else
-        {
-            // Main.cs:23
-            string[] elements = filePath.Split(Path.DirectorySeparatorChar);
-            tracePath = $"  at {elements[elements.Length - 1]}:{lineNumber}";
-        }
+        string[] elements = filePath.Split(Path.DirectorySeparatorChar);
+        string tracePath = $"  at {elements[^1]}:{lineNumber}"; // TracePath could become for example: "at Main.cs:23"
 
         _messages.Enqueue(
             new LogInfo(opcode,
