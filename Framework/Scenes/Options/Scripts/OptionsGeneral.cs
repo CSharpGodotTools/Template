@@ -8,10 +8,18 @@ public class OptionsGeneral(Options options)
 
     public void Initialize()
     {
+        GetOptions();
+        SetupLanguage();
+    }
+
+    private void GetOptions()
+    {
         _options = Game.Options.GetOptions();
+    }
 
+    private void SetupLanguage()
+    {
         OptionButton languageBtn = options.GetNode<OptionButton>("%LanguageButton");
-
         languageBtn.ItemSelected += OnLanguageItemSelected;
         languageBtn.Select((int)_options.Language);
     }

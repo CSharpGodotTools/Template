@@ -10,13 +10,25 @@ public class OptionsNav(Options options)
 
     public void Initialize()
     {
+        SetupContent();
+        SubscribeToNavBtns();
+        FocusOnLastClickedNavBtn();
+        HideAllTabs();
+        ShowCurrentTab();
+    }
+
+    private void SetupContent()
+    {
         Node content = options.GetNode("%Content");
 
         foreach (Control child in content.GetChildren())
         {
             _tabs.Add(child.Name, child);
         }
+    }
 
+    private void SubscribeToNavBtns()
+    {
         foreach (Button button in options.GetNode("%Nav").GetChildren())
         {
             button.FocusEntered += () => ShowTab(button.Name);
@@ -24,10 +36,15 @@ public class OptionsNav(Options options)
 
             _buttons.Add(button.Name, button);
         }
+    }
 
+    private void FocusOnLastClickedNavBtn()
+    {
         _buttons[Game.Options.GetCurrentTab()].GrabFocus();
+    }
 
-        HideAllTabs();
+    private void ShowCurrentTab()
+    {
         ShowTab(Game.Options.GetCurrentTab());
     }
 

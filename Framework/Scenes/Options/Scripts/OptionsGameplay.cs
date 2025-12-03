@@ -11,12 +11,25 @@ public class OptionsGameplay(Options options)
 
     public void Initialize()
     {
-        _options = Game.Options.GetOptions();
+        GetOptions();
+        SetupDifficulty();
+        SetupSensitivity();
+    }
 
+    private void GetOptions()
+    {
+        _options = Game.Options.GetOptions();
+    }
+
+    private void SetupDifficulty()
+    {
         OptionButton difficultyBtn = options.GetNode<OptionButton>("%Difficulty");
         difficultyBtn.Select((int)_options.Difficulty);
         difficultyBtn.ItemSelected += OnDifficultyItemSelected;
+    }
 
+    private void SetupSensitivity()
+    {
         HSlider sensitivity = options.GetNode<HSlider>("%Sensitivity");
         sensitivity.Value = _options.MouseSensitivity;
         sensitivity.ValueChanged += OnSensitivityValueChanged;

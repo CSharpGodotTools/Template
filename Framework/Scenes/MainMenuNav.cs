@@ -6,10 +6,11 @@ public partial class MainMenuNav : Node
 {
     [Export] private PackedScene _gameScene;
 
-    private SceneManager _scene = Game.Scene;
+    private SceneManager _scene;
 
     public override void _Ready()
     {
+        _scene = Game.Scene;
         GetNode<Button>("Play").GrabFocus();
     }
 
