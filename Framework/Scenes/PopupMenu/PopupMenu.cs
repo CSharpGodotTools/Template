@@ -22,13 +22,14 @@ public partial class PopupMenu : Control
 
     public WorldEnvironment WorldEnvironment { get; private set; }
 
-    private GameConsole _console = Game.Console;
+    private GameConsole _console;
     private PanelContainer _menu;
     private VBoxContainer _nav;
     private Options _options;
 
     public override void _Ready()
     {
+        _console = Game.Console;
         _menu = GetNode<PanelContainer>("%Menu");
         _nav = GetNode<VBoxContainer>("%Navigation");
 
