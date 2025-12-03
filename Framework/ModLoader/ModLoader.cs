@@ -1,8 +1,9 @@
 using Godot;
+using GodotUtils;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class ModLoader : Node
 {
@@ -59,7 +60,7 @@ public partial class ModLoader : Node
     {
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
-            SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.MainMenu);
+            Game.Scene.SwitchToMainMenu();
         }
     }
 
@@ -85,7 +86,7 @@ public partial class ModLoader : Node
     {
         //OS.CreateProcess(OS.GetExecutablePath(), null);
         OS.CreateInstance(null);
-        await Autoloads.Instance.QuitAndCleanup();
+        await Autoloads.Instance.ExitGame();
     }
 
     private static void _OnOpenModsFolderPressed()

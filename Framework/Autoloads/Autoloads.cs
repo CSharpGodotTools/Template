@@ -1,13 +1,16 @@
+using __TEMPLATE__.Debugging;
+using __TEMPLATE__.UI;
+using __TEMPLATE__.UI.Console;
 using Godot;
-using GodotUtils.UI;
-using GodotUtils.UI.Console;
-#if DEBUG
-using GodotUtils.Debugging;
-#endif
+using GodotUtils;
 using System;
 using System.Threading.Tasks;
 
-namespace GodotUtils;
+#if DEBUG
+using GodotUtils.Debugging;
+#endif
+
+namespace __TEMPLATE__;
 
 // Autoload
 // Access this with GetNode<Autoloads>("/root/Autoloads")
@@ -19,17 +22,17 @@ public partial class Autoloads : Node
 
     public static Autoloads Instance { get; private set; }
 
-    // Game developers should be able to access each individual manager
-    public ComponentManager ComponentManager { get; private set; }
+    public ComponentManager ComponentManager { get; private set; } // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
+    public GameConsole      GameConsole      { get; private set; } // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
     public AudioManager     AudioManager     { get; private set; }
     public OptionsManager   OptionsManager   { get; private set; }
     public Services         Services         { get; private set; }
     public MetricsOverlay   MetricsOverlay   { get; private set; }
     public SceneManager     SceneManager     { get; private set; }
-    public GameConsole      GameConsole      { get; private set; }
+    public Profiler         Profiler         { get; private set; }
 
 #if NETCODE_ENABLED
-    private Logger _logger;
+    public Logger Logger { get; private set; }
 #endif
 
 #if DEBUG
@@ -43,13 +46,14 @@ public partial class Autoloads : Node
 
         Instance = this;
         ComponentManager = GetNode<ComponentManager>("ComponentManager");
-        GameConsole = GetNode<GameConsole>("%Console");
         SceneManager = new SceneManager(this, _scenes);
         Services = new Services(this);
         MetricsOverlay = new MetricsOverlay();
+        Profiler = new Profiler();
+        GameConsole = GetNode<GameConsole>("%Console");
 
 #if NETCODE_ENABLED
-        _logger = new Logger(GameConsole);
+        Logger = new Logger(GameConsole);
 #endif
     }
 
@@ -76,7 +80,7 @@ public partial class Autoloads : Node
 #endif
 
 #if NETCODE_ENABLED
-        _logger.Update();
+        Logger.Update();
 #endif
     }
 
@@ -85,11 +89,11 @@ public partial class Autoloads : Node
         MetricsOverlay.UpdatePhysics();
     }
 
-    public override async void _Notification(int what)
+    public override void _Notification(int what)
     {
         if (what == NotificationWMCloseRequest)
         {
-            await QuitAndCleanup();
+            ExitGame().FireAndForget();
         }
     }
 
@@ -98,15 +102,13 @@ public partial class Autoloads : Node
         AudioManager.Dispose();
         OptionsManager.Dispose();
         SceneManager.Dispose();
-        Services.Dispose();
-        MetricsOverlay.Dispose();
 
 #if DEBUG
         _visualizeAutoload.Dispose();
 #endif
 
 #if NETCODE_ENABLED
-        _logger.Dispose();
+        Logger.Dispose();
 #endif
 
         Profiler.Dispose();
@@ -114,16 +116,13 @@ public partial class Autoloads : Node
         Instance = null;
     }
 
-    // Using deferred is always complicated...
+    // I'm pretty sure Deferred must be called from a script that extends from Node
     public void DeferredSwitchSceneProxy(string rawName, Variant transTypeVariant)
     {
-        if (SceneManager.Instance == null)
-            return;
-
-        SceneManager.Instance.DeferredSwitchScene(rawName, transTypeVariant);
+        SceneManager.DeferredSwitchScene(rawName, transTypeVariant);
     }
 
-    public async Task QuitAndCleanup()
+    public async Task ExitGame()
     {
         GetTree().AutoAcceptQuit = false;
 
@@ -132,10 +131,16 @@ public partial class Autoloads : Node
         {
             // Since the PreQuit event contains a Task only the first subscriber will be invoked
             // with await PreQuit?.Invoke(); so need to ensure all subs are invoked.
-            Delegate[] invocationList = PreQuit.GetInvocationList();
-            foreach (Func<Task> subscriber in invocationList)
+            foreach (Func<Task> subscriber in PreQuit.GetInvocationList())
             {
-                await subscriber();
+                try
+                {
+                    await subscriber();
+                }
+                catch (Exception ex)
+                {
+                    GD.PrintErr($"PreQuit subscriber failed: {ex}");
+                }
             }
         }
 

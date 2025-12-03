@@ -1,11 +1,12 @@
 using Godot;
-using GodotUtils;
 
 namespace __TEMPLATE__.UI;
 
 public partial class MainMenuNav : Node
 {
     [Export] private PackedScene _gameScene;
+
+    private SceneManager _scene = Game.Scene;
 
     public override void _Ready()
     {
@@ -14,31 +15,27 @@ public partial class MainMenuNav : Node
 
     private void _OnPlayPressed()
     {
-        //AudioManager.PlayMusic(Music.Level1, false);
-        SceneManager.SwitchScene(_gameScene);
+        _scene.SwitchTo(_gameScene);
     }
 
     private void _OnModsPressed()
     {
-        //AudioManager.PlayMusic(Music.Level4);
-        SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.ModLoader);
+        _scene.SwitchToModLoader();
     }
 
     private void _OnOptionsPressed()
     {
-        //AudioManager.PlayMusic(Music.Level4);
-        SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.Options);
+        _scene.SwitchToOptions();
     }
 
     private void _OnCreditsPressed()
     {
-        //AudioManager.PlayMusic(Music.Level4);
-        SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.Credits);
+        _scene.SwitchToCredits();
     }
 
     private async void _OnQuitPressed()
     {
-        await Autoloads.Instance.QuitAndCleanup();
+        await Autoloads.Instance.ExitGame();
     }
 
     private void _OnDiscordPressed()

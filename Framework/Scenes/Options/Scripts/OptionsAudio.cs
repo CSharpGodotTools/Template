@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class OptionsAudio(Options options)
 {
@@ -8,7 +8,7 @@ public partial class OptionsAudio(Options options)
 
     public void Initialize()
     {
-        _options = OptionsManager.GetOptions();
+        _options = Game.Options.GetOptions();
 
         SetupMusic();
         SetupSounds();
@@ -30,11 +30,11 @@ public partial class OptionsAudio(Options options)
 
     private void OnMusicValueChanged(double v)
     {
-        AudioManager.SetMusicVolume((float)v);
+        Game.Audio.SetMusicVolume((float)v);
     }
 
     private void OnSoundsValueChanged(double v)
     {
-        AudioManager.SetSFXVolume((float)v);
+        Game.Audio.SetSFXVolume((float)v);
     }
 }

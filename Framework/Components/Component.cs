@@ -1,8 +1,9 @@
 using Godot;
+using GodotUtils;
 using System;
 using System.Threading.Tasks;
 
-namespace GodotUtils;
+namespace __TEMPLATE__;
 
 public class Component : IDisposable
 {

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public class OptionsGameplay(Options options)
 {
@@ -11,7 +11,7 @@ public class OptionsGameplay(Options options)
 
     public void Initialize()
     {
-        _options = OptionsManager.GetOptions();
+        _options = Game.Options.GetOptions();
 
         OptionButton difficultyBtn = options.GetNode<OptionButton>("%Difficulty");
         difficultyBtn.Select((int)_options.Difficulty);

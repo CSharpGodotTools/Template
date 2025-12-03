@@ -1,7 +1,8 @@
 using Godot;
+using GodotUtils;
 using System;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class Credits : Node
 {
@@ -13,6 +14,7 @@ public partial class Credits : Node
     private bool _paused;
     private byte _curSpeedSetting = 1;
     private float _speed = STARTING_SPEED;
+    private SceneManager _scene = Game.Scene;
 
     public override void _Ready()
     {
@@ -108,7 +110,7 @@ public partial class Credits : Node
         // Go back to the main menu when the credits are finished
         if (pos.Y <= -_vbox.Size.Y)
         {
-            SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.MainMenu);
+            _scene.SwitchToMainMenu();
         }
     }
 
@@ -116,7 +118,7 @@ public partial class Credits : Node
     {
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
-            SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.MainMenu);
+            _scene.SwitchToMainMenu();
         }
     }
 

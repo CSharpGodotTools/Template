@@ -1,10 +1,11 @@
+using __TEMPLATE__.UI.Console;
 using Godot;
-using GodotUtils.UI.Console;
+using GodotUtils;
 using System;
 
 // This was intentionally set to GodotUtils instead of __TEMPLATE__ as GodotUtils relies on MainMenuBtnPressed
 // and GodotUtils should NOT have any trace of using __TEMPLATE__.
-namespace GodotUtils.UI; 
+namespace __TEMPLATE__.UI; 
 
 public partial class PopupMenu : Control
 {
@@ -19,14 +20,14 @@ public partial class PopupMenu : Control
     public event Action Closed;
     public event Action MainMenuBtnPressed;
 
-    public WorldEnvironment WorldEnvironment { get; private set; }
-
+    private GameConsole _console;
     private PanelContainer _menu;
     private VBoxContainer _nav;
     private Options _options;
 
     public override void _Ready()
     {
+        _console = Game.Console;
         _menu = GetNode<PanelContainer>("%Menu");
         _nav = GetNode<VBoxContainer>("%Navigation");
 
@@ -36,9 +37,7 @@ public partial class PopupMenu : Control
         _mainMenuBtn.Pressed += OnMainMenuPressed;
         _quitBtn.Pressed += OnQuitPressed;
 
-        WorldEnvironment = TryFindWorldEnvironment(GetTree().Root);
-
-        Services.Register(this);
+        Game.Services.Register(this);
         CreateOptions();
         HideOptions();
         Hide();
@@ -46,24 +45,23 @@ public partial class PopupMenu : Control
 
     public override void _PhysicsProcess(double delta)
     {
-        if (Input.IsActionJustPressed(InputActions.UICancel))
-        {
-            if (GameConsole.Visible)
-            {
-                GameConsole.ToggleVisibility();
-                return;
-            }
+        if (!Input.IsActionJustPressed(InputActions.UICancel))
+            return;
 
-            if (_options.Visible)
-            {
-                HideOptions();
-                ShowPopupMenu();
-            }
-            else
-            {
-                ToggleGamePause();
-            }
+        if (_console.Visible)
+        {
+            _console.ToggleVisibility();
+            return;
         }
+
+        if (_options.Visible)
+        {
+            HideOptions();
+            ShowPopupMenu();
+            return;
+        }
+
+        ToggleGamePause();
     }
 
     private void OnResumePressed()
@@ -75,7 +73,7 @@ public partial class PopupMenu : Control
     private void OnRestartPressed()
     {
         GetTree().Paused = false;
-        SceneManager.Instance.ResetCurrentScene();
+        Game.Scene.ResetCurrentScene();
     }
 
     private void OnOptionsPressed()
@@ -88,12 +86,12 @@ public partial class PopupMenu : Control
     {
         MainMenuBtnPressed?.Invoke();
         GetTree().Paused = false;
-        SceneManager.SwitchScene(SceneManager.Instance.MenuScenes.MainMenu);
+        Game.Scene.SwitchToMainMenu();
     }
 
     private void OnQuitPressed()
     {
-        Autoloads.Instance.QuitAndCleanup().FireAndForget();
+        Autoloads.Instance.ExitGame().FireAndForget();
     }
 
     private void CreateOptions()
@@ -114,15 +112,8 @@ public partial class PopupMenu : Control
         _options.Hide();
     }
 
-    private void ShowPopupMenu()
-    {
-        _menu.Show();
-    }
-
-    private void HidePopupMenu()
-    {
-        _menu.Hide();
-    }
+    private void ShowPopupMenu() => _menu.Show();
+    private void HidePopupMenu() => _menu.Hide();
 
     private void ToggleGamePause()
     {
@@ -144,11 +135,5 @@ public partial class PopupMenu : Control
         Visible = false;
         GetTree().Paused = false;
         Closed?.Invoke();
-    }
-
-    private static WorldEnvironment TryFindWorldEnvironment(Window root)
-    {
-        Node node = root.FindChild("WorldEnvironment", recursive: true, owned: false);
-        return node as WorldEnvironment;
     }
 }

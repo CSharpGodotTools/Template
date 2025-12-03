@@ -2,14 +2,14 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace GodotUtils.Debugging;
+namespace __TEMPLATE__.Debugging;
 
-public static class Profiler
+public class Profiler
 {
-    private static Dictionary<string, ProfilerEntry> _entries = [];
+    private Dictionary<string, ProfilerEntry> _entries = [];
     private const int DefaultAccuracy = 2;
 
-    public static void Start(string key)
+    public void Start(string key)
     {
         if (!_entries.TryGetValue(key, out ProfilerEntry entry))
         {
@@ -20,7 +20,7 @@ public static class Profiler
         entry.Start();
     }
 
-    public static void Stop(string key, int accuracy = DefaultAccuracy)
+    public void Stop(string key, int accuracy = DefaultAccuracy)
     {
         ProfilerEntry entry = _entries[key];
 
@@ -31,27 +31,27 @@ public static class Profiler
         entry.Reset();
     }
 
-    public static void StartProcess(string key, int accuracy = DefaultAccuracy)
+    public void StartProcess(string key, int accuracy = DefaultAccuracy)
     {
-        StartMonitor(key, accuracy, MetricsOverlay.StartMonitoringProcess);
+        StartMonitor(key, accuracy, Game.Metrics.StartMonitoringProcess);
     }
 
-    public static void StopProcess(string key)
-    {
-        _entries[key].Stop();
-    }
-
-    public static void StartPhysicsProcess(string key, int accuracy = DefaultAccuracy)
-    {
-        StartMonitor(key, accuracy, MetricsOverlay.StartMonitoringPhysicsProcess);
-    }
-
-    public static void StopPhysicsProcess(string key)
+    public void StopProcess(string key)
     {
         _entries[key].Stop();
     }
 
-    private static void StartMonitor(string key, int accuracy, Action<string, Func<object>> registerAction)
+    public void StartPhysicsProcess(string key, int accuracy = DefaultAccuracy)
+    {
+        StartMonitor(key, accuracy, Game.Metrics.StartMonitoringPhysicsProcess);
+    }
+
+    public void StopPhysicsProcess(string key)
+    {
+        _entries[key].Stop();
+    }
+
+    private void StartMonitor(string key, int accuracy, Action<string, Func<object>> registerAction)
     {
         if (!_entries.TryGetValue(key, out ProfilerEntry entry))
         {
@@ -65,7 +65,7 @@ public static class Profiler
         entry.Start();
     }
 
-    public static void Dispose()
+    public void Dispose()
     {
         _entries = null;
     }

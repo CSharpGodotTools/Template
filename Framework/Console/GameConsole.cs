@@ -3,13 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GodotUtils.UI.Console;
+namespace __TEMPLATE__.UI.Console;
 
 public partial class GameConsole : Node
 {
     private const int MaxTextFeed = 1000;
-
-    public static GameConsole Instance { get; private set; }
 
     private List<ConsoleCommandInfo> _commands = [];
     private ConsoleHistory           _history = new();
@@ -23,11 +21,6 @@ public partial class GameConsole : Node
 
     public override void _Ready()
     {
-        if (Instance != null)
-            throw new InvalidOperationException($"{nameof(GameConsole)} was initialized already");
-
-        Instance = this;
-
         _feed          = GetNode<TextEdit>("%Output");
         _input         = GetNode<LineEdit>("%CmdsInput");
         _settingsBtn   = GetNode<Button>("%Settings");
@@ -60,8 +53,6 @@ public partial class GameConsole : Node
         _input.TextSubmitted -= OnConsoleInputEntered;
         _settingsBtn.Pressed -= OnSettingsBtnPressed;
         _settingsAutoScroll.Toggled -= OnAutoScrollToggeled;
-
-        Instance = null;
     }
 
     public List<ConsoleCommandInfo> GetCommands()
@@ -69,7 +60,7 @@ public partial class GameConsole : Node
         return _commands;
     }
 
-    public static ConsoleCommandInfo RegisterCommand(string cmd, Action<string[]> code)
+    public ConsoleCommandInfo RegisterCommand(string cmd, Action<string[]> code)
     {
         ConsoleCommandInfo info = new()
         {
@@ -77,7 +68,7 @@ public partial class GameConsole : Node
             Code = code
         };
 
-        Instance._commands.Add(info);
+        _commands.Add(info);
 
         return info;
     }
@@ -106,16 +97,16 @@ public partial class GameConsole : Node
         ScrollDown();
     }
 
-    public static bool Visible => Instance._mainContainer.Visible;
+    public bool Visible => _mainContainer.Visible;
 
-    public static void ToggleVisibility()
+    public void ToggleVisibility()
     {
-        Instance._mainContainer.Visible = !Instance._mainContainer.Visible;
+        _mainContainer.Visible = !_mainContainer.Visible;
 
-        if (Instance._mainContainer.Visible)
+        if (_mainContainer.Visible)
         {
-            Instance._input.GrabFocus();
-            Instance.CallDeferred(nameof(ScrollDown));
+            _input.GrabFocus();
+            CallDeferred(nameof(ScrollDown));
         }
     }
 
@@ -136,7 +127,7 @@ public partial class GameConsole : Node
 
         if (cmdInfo == null)
         {
-            Logger.Log($"The command '{cmd}' does not exist");
+            Game.Logger.Log($"The command '{cmd}' does not exist");
             return false;
         }
 

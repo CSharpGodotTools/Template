@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public partial class Options : PanelContainer
 {

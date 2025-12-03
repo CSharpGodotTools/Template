@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public class OptionsNav(Options options)
 {
@@ -25,15 +25,15 @@ public class OptionsNav(Options options)
             _buttons.Add(button.Name, button);
         }
 
-        _buttons[OptionsManager.GetCurrentTab()].GrabFocus();
+        _buttons[Game.Options.GetCurrentTab()].GrabFocus();
 
         HideAllTabs();
-        ShowTab(OptionsManager.GetCurrentTab());
+        ShowTab(Game.Options.GetCurrentTab());
     }
 
     private void ShowTab(string tabName)
     {
-        OptionsManager.SetCurrentTab(tabName);
+        Game.Options.SetCurrentTab(tabName);
         HideAllTabs();
         _tabs[tabName].Show();
     }

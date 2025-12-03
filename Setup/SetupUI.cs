@@ -58,8 +58,8 @@ public partial class SetupUI : Node
         // Ensure all empty folders are deleted when finished
         DirectoryUtils.DeleteEmptyDirectories(path);
 
-        GetTree().Quit();
         SetupEditor.Restart();
+        GetTree().Quit();
     }
 
     private void _OnGameNameTextChanged(string newText)

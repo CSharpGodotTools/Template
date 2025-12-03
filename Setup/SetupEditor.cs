@@ -25,7 +25,9 @@ public class SetupEditor
         {
             foreach (string name in names)
             {
-                if (process.ProcessName.Contains(name, StringComparison.OrdinalIgnoreCase))
+                string winTitle = process.MainWindowTitle.ToLower();
+
+                if (winTitle.Contains(name) && !winTitle.Contains("console"))
                 {
                     process.Kill();
                     return;

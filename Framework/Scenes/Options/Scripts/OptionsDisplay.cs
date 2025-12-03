@@ -1,9 +1,11 @@
 using Godot;
+using GodotUtils;
 using System;
 
 using static Godot.DisplayServer;
+using WindowMode = GodotUtils.WindowMode;
 
-namespace GodotUtils.UI;
+namespace __TEMPLATE__.UI;
 
 public class OptionsDisplay(Options options)
 {
@@ -22,7 +24,7 @@ public class OptionsDisplay(Options options)
 
     public void Initialize()
     {
-        _options = OptionsManager.GetOptions();
+        _options = Game.Options.GetOptions();
 
         SetupMaxFps();
         SetupWindowSize();
@@ -74,7 +76,7 @@ public class OptionsDisplay(Options options)
         windowModeBtn.ItemSelected += OnWindowModeItemSelected;
         windowModeBtn.Select((int)_options.WindowMode);
 
-        OptionsManager.Instance.WindowModeChanged += windowMode =>
+        Game.Options.WindowModeChanged += windowMode =>
         {
             if (!GodotObject.IsInstanceValid(windowModeBtn))
                 return;
