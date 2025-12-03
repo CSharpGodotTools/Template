@@ -8,10 +8,14 @@ public partial class OptionsAudio(Options options)
 
     public void Initialize()
     {
-        _options = Game.Options.GetOptions();
-
+        GetOptions();
         SetupMusic();
         SetupSounds();
+    }
+
+    private void GetOptions()
+    {
+        _options = Game.Options.GetOptions();
     }
 
     private void SetupMusic()

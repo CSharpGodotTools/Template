@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://b88ck7eam4e70" path="res://Framework/Scenes/Options/Options.cs" id="1_xjg3i"]
 
-
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ijcjj"]
 content_margin_left = 120.0
 content_margin_top = 15.0

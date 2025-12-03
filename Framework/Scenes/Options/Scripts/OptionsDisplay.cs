@@ -24,13 +24,17 @@ public class OptionsDisplay(Options options)
 
     public void Initialize()
     {
-        _options = Game.Options.GetOptions();
-
+        GetOptions();
         SetupMaxFps();
         SetupWindowSize();
         SetupWindowMode();
         SetupResolution();
         SetupVSyncMode();
+    }
+
+    private void GetOptions()
+    {
+        _options = Game.Options.GetOptions();
     }
 
     private void SetupMaxFps()

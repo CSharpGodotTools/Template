@@ -42,7 +42,7 @@ public partial class Autoloads : Node
     public override void _EnterTree()
     {
         if (Instance != null)
-            throw new InvalidOperationException("Global has been initialized already");
+            throw new InvalidOperationException($"{nameof(Autoloads)} has been initialized already");
 
         Instance = this;
         ComponentManager = GetNode<ComponentManager>("ComponentManager");

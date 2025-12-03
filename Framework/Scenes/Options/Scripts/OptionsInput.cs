@@ -16,10 +16,12 @@ public partial class OptionsInput(Options options)
 
     private VBoxContainer _content;
     private BtnInfo _btnNewInput; // The button currently waiting for new input
-    private SceneManager _scene = Game.Scene;
+    private SceneManager _scene;
 
     public void Initialize()
     {
+        _scene = Game.Scene;
+
         // Cache the content container used for dynamically adding rows.
         _content = options.GetNode<VBoxContainer>("%InputContent");
 
@@ -99,7 +101,7 @@ public partial class OptionsInput(Options options)
             return;
 
         // If we are in the Options scene, going back should return to the main menu.
-        if (_scene.GetCurrentScene().Name != OptionsSceneName)
+        if (_scene.CurrentScene.Name != OptionsSceneName)
             return;
 
         _scene.SwitchToMainMenu();
