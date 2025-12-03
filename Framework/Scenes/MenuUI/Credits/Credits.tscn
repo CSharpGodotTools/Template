@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://cg3so70gfansf" path="res://Framework/Scenes/MenuUI/Credits/Credits.cs" id="1_2ybu5"]
 
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qx1q1"]
 bg_color = Color(0, 0, 0, 1)
 
@@ -50,6 +49,11 @@ grow_horizontal = 0
 grow_vertical = 0
 theme = SubResource("Theme_bxyca")
 
+[node name="Reverse" type="Button" parent="HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "F"
+
 [node name="Pause" type="Button" parent="HBox"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(75, 0)
@@ -62,5 +66,6 @@ custom_minimum_size = Vector2(75, 0)
 layout_mode = 2
 text = "1.0x"
 
+[connection signal="pressed" from="HBox/Reverse" to="." method="_OnReversePressed"]
 [connection signal="pressed" from="HBox/Pause" to="." method="_OnPausePressed"]
 [connection signal="pressed" from="HBox/Speed" to="." method="_OnSpeedPressed"]
