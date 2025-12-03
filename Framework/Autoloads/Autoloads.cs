@@ -2,6 +2,8 @@ using __TEMPLATE__.Debugging;
 using __TEMPLATE__.UI;
 using __TEMPLATE__.UI.Console;
 using Godot;
+using GodotUtils;
+
 #if DEBUG
 using GodotUtils.Debugging;
 #endif
@@ -87,11 +89,11 @@ public partial class Autoloads : Node
         MetricsOverlay.UpdatePhysics();
     }
 
-    public override async void _Notification(int what)
+    public override void _Notification(int what)
     {
         if (what == NotificationWMCloseRequest)
         {
-            await ExitGame();
+            ExitGame().FireAndForget();
         }
     }
 
