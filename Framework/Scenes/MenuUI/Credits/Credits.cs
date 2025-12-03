@@ -14,10 +14,11 @@ public partial class Credits : Node
     private bool _paused;
     private byte _curSpeedSetting = 1;
     private float _speed = STARTING_SPEED;
-    private SceneManager _scene = Game.Scene;
+    private SceneManager _scene;
 
     public override void _Ready()
     {
+        _scene = Game.Scene;
         _btnPause = GetNode<Button>("%Pause");
         _btnSpeed = GetNode<Button>("%Speed");
 
