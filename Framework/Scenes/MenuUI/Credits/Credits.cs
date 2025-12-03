@@ -45,23 +45,29 @@ public partial class Credits : Node
 
     public override void _Process(double delta)
     {
-        Vector2 position = _credits.Position;
-
-        bool creditsAtStart = position.Y > _startingCreditsPosition.Y;
-        bool creditsAtFinish = position.Y <= -_credits.Size.Y;
-        bool isReverseDirection = _direction == -1;
-
-        position.Y -= _speed * _direction * (float)delta;
-
-        if (isReverseDirection && creditsAtStart)
-        {
-            position.Y = _startingCreditsPosition.Y;
-        }
-
-        _credits.Position = position;
-
-        if (creditsAtFinish || Input.IsActionJustPressed(InputActions.UICancel))
+        if (Input.IsActionJustPressed(InputActions.UICancel))
             _scene.SwitchToMainMenu();
+
+        if (!_paused)
+        {
+            Vector2 position = _credits.Position;
+
+            bool creditsAtStart = position.Y > _startingCreditsPosition.Y;
+            bool creditsAtFinish = position.Y <= -_credits.Size.Y;
+            bool isReverseDirection = _direction == -1;
+
+            position.Y -= _speed * _direction * (float)delta;
+
+            if (isReverseDirection && creditsAtStart)
+            {
+                position.Y = _startingCreditsPosition.Y;
+            }
+
+            _credits.Position = position;
+
+            if (creditsAtFinish)
+                _scene.SwitchToMainMenu();
+        }
     }
 
     private void SetupFields()
@@ -162,17 +168,7 @@ public partial class Credits : Node
     private void _OnPausePressed()
     {
         _paused = !_paused;
-
-        if (_paused)
-        {
-            SetPhysicsProcess(false);
-            _btnPause.Text = ResumeText;
-        }
-        else
-        {
-            SetPhysicsProcess(true);
-            _btnPause.Text = PauseText;
-        }
+        _btnPause.Text = _paused ? PauseText : ResumeText;
     }
 
     private void _OnSpeedPressed()
