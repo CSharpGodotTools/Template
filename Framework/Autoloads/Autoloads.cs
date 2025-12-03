@@ -131,10 +131,16 @@ public partial class Autoloads : Node
         {
             // Since the PreQuit event contains a Task only the first subscriber will be invoked
             // with await PreQuit?.Invoke(); so need to ensure all subs are invoked.
-            Delegate[] invocationList = PreQuit.GetInvocationList();
-            foreach (Func<Task> subscriber in invocationList)
+            foreach (Func<Task> subscriber in PreQuit.GetInvocationList())
             {
-                await subscriber();
+                try
+                {
+                    await subscriber();
+                }
+                catch (Exception ex)
+                {
+                    GD.PrintErr($"PreQuit subscriber failed: {ex}");
+                }
             }
         }
 
