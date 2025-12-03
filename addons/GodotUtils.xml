@@ -1,0 +1,1196 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>GodotUtils</name>
+    </assembly>
+    <members>
+        <!-- Badly formed XML comment ignored for member "T:GodotUtils.Deprecated.EventManager`1" -->
+        <member name="M:GodotUtils.Deprecated.EventManager`1.AddListener(`0,System.Action{System.Object[]},System.String)">
+            <summary>
+            The event type to be listened to (Action uses object[] params by default)
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Deprecated.EventManager`1.RemoveListeners(`0,System.String)">
+            <summary>
+            Remove all listeners of type 'eventType' with 'id'
+            For example. If there is a listener of type OnPlayerSpawn with id 1 and another
+            with id 1 (same id). Then this function will remove both these listeners.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Deprecated.EventManager`1.RemoveAllListeners">
+            <summary>
+            Remove ALL listeners from ALL event types
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Deprecated.EventManager`1.Notify(`0,System.Object[])">
+            <summary>
+            Notify all listeners
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AnimatedSprite2DExtensions.InstantPlay(Godot.AnimatedSprite2D,System.String)">
+            <summary>
+            There may be a small delay when switching between animations. Use this function
+            to remove that delay.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AnimatedSprite2DExtensions.InstantPlay(Godot.AnimatedSprite2D,System.String,System.Int32)">
+            <summary>
+            There may be a small delay when switching between animations. Use this function
+            to remove that delay.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AnimatedSprite2DExtensions.PlayRandom(Godot.AnimatedSprite2D,System.String)">
+            <summary>
+            <para>
+            Play a animation starting at a random frame
+            </para>
+            
+            <para>
+            This is useful if making for example coin animations play at random frames
+            </para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AnimatedSprite2DExtensions.GetSize(Godot.AnimatedSprite2D,System.String)">
+            <summary>
+            Gets the size of the specified sprite animation.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AnimatedSprite2DExtensions.GetScaledSize(Godot.AnimatedSprite2D,System.String)">
+            <summary>
+            Gets the scaled size of the specified sprite animation.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AnimatedSprite2DExtensions.GetPixelSize(Godot.AnimatedSprite2D,System.String)">
+            <summary>
+            <para>
+            Gets the actual pixel size of the sprite. All rows and columns 
+            consisting of transparent pixels are subtracted from the size.
+            </para>
+            
+            <para>
+            This is useful to know if dynamically creating collision
+            shapes at runtime.
+            </para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AnimatedSprite2DExtensions.GetPixelWidth(Godot.AnimatedSprite2D,System.String)">
+            <summary>
+            <para>
+            Gets the actual pixel width of the sprite. All columns consisting of 
+            transparent pixels are subtracted from the width.
+            </para>
+            
+            <para>
+            This is useful to know if dynamically creating collision
+            shapes at runtime.
+            </para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AnimatedSprite2DExtensions.GetPixelHeight(Godot.AnimatedSprite2D,System.String)">
+            <summary>
+            <para>
+            Gets the actual pixel height of the sprite. All rows consisting of 
+            transparent pixels are subtracted from the height.
+            </para>
+            
+            <para>
+            This is useful to know if dynamically creating collision
+            shapes at runtime.
+            </para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AnimationTreeExtensions.SetCondition(Godot.AnimationTree,Godot.StringName,System.Boolean)">
+            <summary>
+            Set a condition to 'value' then flip 'value' when 0.1 seconds have passed.
+            Conditions only need to be set for a short duration otherwise you will find
+            yourself trying to set all the conditions you set earlier to false again.
+            
+            E.g. SetCondition("reload", true)
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AnimationTreeExtensions.SetBlendSpace1DPosition(Godot.AnimationTree,Godot.StringName,System.Single)">
+            <summary>
+            The name is the name of the BlendSpace1D in the AnimationTree inspector. By default this
+            is called "BlendSpace1D".
+            </summary>
+        </member>
+        <member name="M:GodotUtils.CanvasItemExtensions.GetScreenPosition(Godot.CanvasItem)">
+            <summary>
+            <para>Convert the CanvasItem's local position to a screen position</para>
+            
+            <para>Using Camera2D.GetScreenCenterPosition() as a reference may prove useful</para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ExtensionsCollection.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
+            <summary>
+            A convience method for a foreach loop at the the sacrafice of debugging support and is
+            slightly slower for performance than a regular foreach loop.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ExtensionsCollection.Duplicate``2(System.Collections.Generic.IDictionary{``0,``1},``0,System.Int32,System.String,System.String)">
+            <summary>
+            Returns true if a dictionary has a duplicate key and warns the coder
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ExtensionsCollection.DoesNotHave``2(System.Collections.Generic.IDictionary{``0,``1},``0,System.Int32,System.String,System.String)">
+            <summary>
+            Returns true if a dictionary has a non-existent key and warns the coder
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ControlExtensions.SetLayout(Godot.Control,Godot.Control.LayoutPreset)">
+            <summary>
+            Sets the layout for the specified control.
+            </summary>
+            <remarks>
+            Applies the layout immediately if the control is inside the tree, otherwise applies it when the control becomes ready.
+            </remarks>
+        </member>
+        <member name="M:GodotUtils.DoubleExtensions.IsInteger(System.Double)">
+            <summary>
+            Checks to see if <paramref name="value"/> is an integer.
+            
+            <para>
+            Since double.IsInteger(double d) is only in .NET 7, this extension 
+            will act as a helper for .NET 6 users.
+            </para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.InputEventKeyExtensions.Readable(Godot.InputEventKey)">
+            <summary>
+            <para>Convert to a human readable key</para>
+            <para>For example 'Ctrl + Shift + E'</para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsZoomIn(Godot.InputEventMouseButton)">
+            <summary>Returns true if a mouse WheelUp event was detected</summary>
+        </member>
+        <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsZoomOut(Godot.InputEventMouseButton)">
+            <summary>Returns true if a mouse WheelDown event was detected</summary>
+        </member>
+        <member name="M:GodotUtils.LineEditExtensions.Filter(Godot.LineEdit,System.Func{System.String,System.Boolean})">
+            <summary>
+            <para>
+            Prevents certain characters from being inputted onto the LineEdit.
+            The following example makes it so only alphanumeric characters are allowed
+            to be inputted.
+            </para>
+            
+            <code>
+            LineEdit.TextChanged += text =>
+            {
+                string username = LineEdit.Filter(text => text.IsAlphaNumeric());
+                GD.Print(username);
+            };
+            </code>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.MathExtensions.Pulse(System.Single,System.Single)">
+            <summary>
+            Pulses a value from 0 to 1 to 0 to 1 over time
+            </summary>
+        </member>
+        <member name="M:GodotUtils.MathExtensions.CountDigits(System.Int32)">
+            <summary>
+            Counts the number of digits in 'num'. For example 123 has 3 digits.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.MathExtensions.CountDigits(System.UInt16)">
+            <summary>
+            Counts the number of digits in 'num'. For example 123 has 3 digits.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Node2DExtensions.SetColor(Godot.Node2D,Godot.Color)">
+            <summary>
+            Sets the color of the given node only.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Node2DExtensions.SetColorRecursive(Godot.Node2D,Godot.Color)">
+            <summary>
+            Recursively sets the color of the node and all its children.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.GetAutoload``1(Godot.Node,System.String)">
+            <summary>
+            Retrieves an autoload from the scene tree using the given name.
+            <code>Global global = someNode.GetAutoload&lt;Global&gt;("Global");</code>
+            </summary>
+            <typeparam name="T">Type of the autoload node, must inherit from Node.</typeparam>
+            <param name="node">Any node in the scene tree to call this extension on.</param>
+            <param name="autoload">The name of the autoload as registered in Project Settings -> AutoLoad.</param>
+            <returns>The autoload instance of type T.</returns>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.GetSceneNode``1(Godot.Node,System.String)">
+            <summary>
+            Retrieves a node of type <typeparamref name="T"/> from the current scene at the specified path.
+            </summary>
+            <typeparam name="T">The type of the node to retrieve.</typeparam>
+            <param name="node">The node from which to start the operation.</param>
+            <param name="path">The path to the node in the scene tree.</param>
+            <returns>The node at the specified path, cast to type <typeparamref name="T"/>.</returns>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.GetSceneNode``1(Godot.Node)">
+            <summary>
+            Retrieves a node of type <typeparamref name="T"/> from the current scene.
+            </summary>
+            <typeparam name="T">The type of the node to retrieve.</typeparam>
+            <param name="node">The node from which to start the operation.</param>
+            <returns>The node of type <typeparamref name="T"/>, if found.</returns>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.GetNodes(Godot.Node,System.Type)">
+            <summary>
+            Recursively searches for all nodes of <paramref name="type"/>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.TryGetNode``1(Godot.Node,``0@,System.Boolean)">
+            <summary>
+            Attempt to find a child node of type T
+            </summary>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.HasNode``1(Godot.Node,System.Boolean)">
+            <summary>
+            Check if a child node of type T exists
+            </summary>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.GetComponent``1(Godot.Node,System.Boolean)">
+            <summary>
+            Find a child node of type T
+            </summary>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.GetNode``1(Godot.Node,System.Boolean)">
+            <summary>
+            Find a child node of type T
+            </summary>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.WaitOneFrame(Godot.Node)">
+            <summary>
+            Asynchronously waits for one procress frame.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.GetChildren``1(Godot.Node,System.Boolean)">
+            <summary>
+            Recursively retrieves all nodes of type <typeparamref name="T"/> from <paramref name="node"/>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.QueueFreeChildren(Godot.Node)">
+            <summary>
+            QueueFree all the children attached to this node.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.RemoveAllGroups(Godot.Node)">
+            <summary>
+            Remove all groups this node is attached to.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.TraverseNodes(Godot.Node,System.Action{Godot.Node})">
+            <summary>
+            Recursively traverse the tree, executing <paramref name="code"/> for this <paramref name="node"/> and all its children.
+            </summary>
+            <param name="node">The starting node for traversal.</param>
+            <param name="code">Action to execute for each node.</param>
+        </member>
+        <member name="T:GodotUtils.PrintExtensions">
+            <summary>
+            Provides extension methods for printing objects and collections in a formatted manner.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.PrintExtensions.PrintFormatted``1(System.Collections.Generic.IEnumerable{``0},System.Boolean)">
+            <summary>
+            Prints the elements of an enumerable collection in a formatted string.
+            </summary>
+            <typeparam name="T">The type of elements in the enumerable collection.</typeparam>
+            <param name="value">The enumerable collection to print.</param>
+            <param name="newLine">If true, each element will be printed on a new line; otherwise, elements will be printed on the same line separated by commas.</param>
+        </member>
+        <member name="M:GodotUtils.PrintExtensions.PrintFormatted(System.Object)">
+            <summary>
+            Converts the object to a formatted JSON string and prints it.
+            </summary>
+            <param name="v">The object to print.</param>
+        </member>
+        <member name="M:GodotUtils.PrintExtensions.ToFormattedString``1(System.Collections.Generic.IEnumerable{``0},System.Boolean)">
+            <summary>
+            Converts the elements of an enumerable collection to a formatted string.
+            </summary>
+            <typeparam name="T">The type of elements in the enumerable collection.</typeparam>
+            <param name="value">The enumerable collection to convert.</param>
+            <param name="newLine">If true, each element will be printed on a new line; otherwise, elements will be printed on the same line separated by commas.</param>
+            <returns>A formatted string representation of the enumerable collection.</returns>
+        </member>
+        <member name="M:GodotUtils.PrintExtensions.ToFormattedString(System.Object)">
+            <summary>
+            Converts the object to a formatted JSON string.
+            </summary>
+            <param name="v">The object to convert.</param>
+            <returns>A formatted JSON string representation of the object.</returns>
+        </member>
+        <member name="T:GodotUtils.PrintExtensions.IgnorePropsResolver">
+            <summary>
+            A custom contract resolver used to ignore certain Godot properties during JSON serialization.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.PrintExtensions.IgnorePropsResolver.CreateProperty(System.Reflection.MemberInfo,Newtonsoft.Json.MemberSerialization)">
+            <summary>
+            Creates a JsonProperty for the given MemberInfo.
+            </summary>
+            <param name="member">The MemberInfo to create a JsonProperty for.</param>
+            <param name="memberSerialization">The MemberSerialization mode for the member.</param>
+            <returns>A JsonProperty for the given MemberInfo.</returns>
+        </member>
+        <member name="M:GodotUtils.RayCast2DExtensions.GetTileData(Godot.RayCast2D,System.String)">
+            <summary>
+            <para>
+            Get the tile from a tilemap that a raycast is colliding with.
+            Use tileData.Equals(default(Variant)) to check if no tile data exists
+            here.
+            </para>
+            
+            <para>
+            Useful if trying to detect what tile the player is standing on
+            </para>
+            
+            <para>
+            To get the tile the player is currently in see TileMap.GetTileData(...)
+            </para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.RayCast2DExtensions.SetCollisionMask(Godot.RayCast2D,System.Int32[])">
+            <summary>
+            Set the provided mask values to true. Everything else will be set to be false.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.RayCast2DExtensions.ExcludeRaycastParents(Godot.RayCast2D,Godot.Node)">
+            <summary>
+            A convience function to tell the raycast to exlude all parents that
+            are of type CollisionObject2D (for example a ground raycast should
+            only check for the ground, not the player itself)
+            </summary>
+        </member>
+        <member name="M:GodotUtils.RayCast2DExtensions.IsAnyRayCastColliding(Godot.RayCast2D[])">
+            <summary>
+            Checks if any raycasts in a collection is colliding
+            </summary>
+            <param name="raycasts">Collection of raycasts to check</param>
+            <returns>True if any ray cast is colliding, else false</returns>
+        </member>
+        <member name="M:GodotUtils.RayCast2DExtensions.GetAnyRayCastCollider(Godot.RayCast2D[])">
+            <summary>
+            Returns the first raycasts in a collection which is colliding
+            </summary>
+            <param name="raycasts">Collection of raycasts to check</param>
+            <returns>Raycast which is colliding, else default</returns>
+        </member>
+        <member name="M:GodotUtils.RigidBody2dExtensions.RotateTowards(Godot.RigidBody2D,Godot.Vector2,System.Single,System.Single,System.Single)">
+            <summary>
+            Smoothly rotates a RigidBody2D towards a target position.
+            </summary>
+            <param name="rigidBody">The rigid body to rotate.</param>
+            <param name="targetPosition">The world position to face.</param>
+            <param name="rotationSpeed">How fast to rotate towards the target in radians.</param>
+            <param name="maxAngularSpeed">Maximum rotational speed to rotate towards the target in radians.</param>
+            <param name="smoothness">Smoothness factor.</param>
+        </member>
+        <member name="M:GodotUtils.SceneTreeExtensions.GetCurrentScene``1(Godot.SceneTree)">
+            <summary>
+            Returns the current scene as the specified type.
+            <code>MyScene scene = tree.GetCurrentScene&lt;MyScene&gt;();</code>
+            </summary>
+            <typeparam name="T">The type of the current scene, must inherit from Node.</typeparam>
+            <param name="tree">The SceneTree instance to call this extension on.</param>
+            <returns>The current scene as type T, or null if the cast fails.</returns>
+        </member>
+        <member name="M:GodotUtils.SceneTreeExtensions.GetAutoload``1(Godot.SceneTree,System.String)">
+            <summary>
+            Retrieves an autoload from the scene tree using the given name.
+            <code>Global global = someTree.GetAutoload&lt;Global&gt;("Global");</code>
+            </summary>
+            <typeparam name="T">Type of the autoload node, must inherit from Node.</typeparam>
+            <param name="tree">The SceneTree instance to call this extension on.</param>
+            <param name="autoload">The name of the autoload as registered in Project Settings -> AutoLoad.</param>
+            <returns>The autoload instance of type T.</returns>
+        </member>
+        <member name="M:GodotUtils.SceneTreeExtensions.UnfocusCurrentControl(Godot.SceneTree)">
+            <summary>
+            Removes focus from the currently focused UI control, if any.
+            </summary>
+            <param name="tree">The SceneTree instance to call this extension on.</param>
+        </member>
+        <member name="M:GodotUtils.Sprite2DExtensions.GetScaledSize(Godot.Sprite2D)">
+            <summary>
+            The sprite size multiplied by the sprites scale
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Sprite2DExtensions.GetPixelSize(Godot.Sprite2D)">
+            <summary>
+            <para>
+            Gets the actual pixel size of the sprite. All rows and columns 
+            consisting of transparent pixels are subtracted from the size.
+            </para>
+            
+            <para>
+            This is useful to know if dynamically creating collision
+            shapes at runtime.
+            </para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Sprite2DExtensions.GetPixelWidth(Godot.Sprite2D)">
+            <summary>
+            <para>
+            Gets the actual pixel width of the sprite. All columns consisting of 
+            transparent pixels are subtracted from the width.
+            </para>
+            
+            <para>
+            This is useful to know if dynamically creating collision
+            shapes at runtime.
+            </para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Sprite2DExtensions.GetPixelHeight(Godot.Sprite2D)">
+            <summary>
+            <para>
+            Gets the actual pixel height of the sprite. All rows consisting of 
+            transparent pixels are subtracted from the height.
+            </para>
+            
+            <para>
+            This is useful to know if dynamically creating collision
+            shapes at runtime.
+            </para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.StringExtensions.IsAddress(System.String)">
+            <summary>
+            Checks if a string is a valid IP address. Entering any kind of IP like 127.0.0.1
+            or localhost are valid. This function does not check for domains like play.apex.ca
+            </summary>
+        </member>
+        <member name="M:GodotUtils.StringExtensions.AddSpaceBeforeEachCapital(System.String)">
+            <summary>
+            This will transform for example "helloWorld" to "hello World"
+            </summary>
+        </member>
+        <member name="M:GodotUtils.StringExtensions.IsAlphaNumeric(System.String)">
+            <summary>
+            Returns true if the string contains only letters or digits
+            </summary>
+        </member>
+        <member name="M:GodotUtils.StringExtensions.IsAlphaOnly(System.String)">
+            <summary>
+            Returns true if the string contains only letters
+            </summary>
+        </member>
+        <member name="M:GodotUtils.StringExtensions.IsNumericOnly(System.String)">
+            <summary>
+            Returns true if the string contains only digits
+            </summary>
+        </member>
+        <member name="M:GodotUtils.StringExtensions.ToTitleCase(System.String)">
+            <summary>
+            This will transform for example "hello world" to "Hello World"
+            </summary>
+        </member>
+        <member name="M:GodotUtils.StringExtensions.SmallWordsToUpper(System.String,System.Int32,System.Func{System.String,System.Boolean})">
+            <summary>
+            If max length is set to 2 then all words smaller than or equal to 2
+            characters will be transformed to uppercase. For example "The ip is 127.0.0.1"
+            would be transformed to "The IP is 127.0.0.1"
+            </summary>
+        </member>
+        <member name="M:GodotUtils.StringExtensions.FirstCharToUpper(System.String)">
+            <summary>
+            Converts the first character in a string to be Uppercase
+            </summary>
+        </member>
+        <member name="M:GodotUtils.TileMapExtensions.GetCustomData``1(Godot.TileMapLayer,Godot.Vector2I,System.String)">
+            <summary>
+            Retrieves the custom data of type <typeparamref name="T"/> set at <paramref name="tileCoordinates"/>. 
+            
+            <para>
+            Suppose we setup a new Custom Data Layer on our tilemap named "name" and we use this 
+            data layer to paint the name data (e.g. "floor", "wall", "lava") onto each tile.
+            </para>
+            
+            <code>
+            string tileName = tileMap.GetCustomData&lt;string&gt;(new Vector2I(x, y), "name");
+            
+            // If no data is at this tile then "" will be printed
+            GD.Print(tileName);
+            </code>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.TypeExtensions.IsNumericType(System.Type)">
+            <summary>
+            Returns true if the <paramref name="type"/> is a numeric type
+            <para>For .NET 6.0 and later, consider using the INumber interface for a more generic approach.</para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.TypeExtensions.IsWholeNumber(System.Type)">
+            <summary>
+            Returns true if the <paramref name="type"/> is a whole number.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTimerFactory.OneShot(Godot.SceneTree,System.Double,System.Action)">
+            <summary>
+            Creates a oneshot timer not bound to any node that removes itself on <paramref name="timeout"/> after <paramref name="seconds"/>.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTimerFactory.OneShot(Godot.Node,System.Double,System.Action)">
+            <summary>
+            Creates a oneshot timer bound to <paramref name="node"/> that removes itself on <paramref name="timeout"/> after <paramref name="seconds"/>. Since the timer is bound to the node, it will get removed if the node is removed.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTimerFactory.Looping(Godot.Node,System.Double,System.Action)">
+            <summary>
+            Creates a looping timer bound to <paramref name="node"/> that invokes <paramref name="timeout"/> after <paramref name="seconds"/>. Since the timer is bound to the node, it will get removed if the node is removed.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTimerFactory.Create(Godot.Node,System.Double,System.Boolean,System.Action)">
+            <summary>
+            Creates a timer bound to <paramref name="node"/> that invokes <paramref name="timeout"/> after <paramref name="seconds"/> and removes itself if <paramref name="oneShot"/> is true. Since the timer is bound to the node, it will get removed if the node is removed.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.CacheManager`2">
+            <summary>
+            A generic cache manager that stores and retrieves objects based on a key.
+            If the object associated with the key does not exist, it creates and caches it.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.CacheManager`2.Get(`0,System.Func{`1})">
+            <summary>
+            Retrieves the cached object associated with the specified key, or creates and caches it if not present.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.SpriteShakeManager">
+            <summary>
+            Manages the shaking of all child sprites of a given node including the node itself if it is a sprite.
+            Both Sprite2D and AnimatedSprite2D are supported.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ColorUtils.FromHSV(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            <para>Create a color from HSV (Hue, Saturation, Value)</para>
+            <para>'hue' - values range from 0 to 359</para>
+            <para>'saturation' - values range from 0 to 100</para>
+            <para>'value' - values range from 0 to 100</para>
+            <para>'alpha' - values range from 0 to 255</para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ColorUtils.Random(System.Int32)">
+            <summary>
+            Generate a random color
+            </summary>
+        </member>
+        <member name="T:GodotUtils.CursorUtils">
+            <summary>
+            Utility class for handling cursor-related operations in a 2D Godot scene.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.DirectoryUtils.Traverse(System.String,System.Func{System.String,System.Boolean})">
+            <summary>
+            Recursively traverses all directories and performs a action on each file path. 
+            
+            <code>
+            Traverse("res://", fullFilePath => GD.Print(fullFilePath))
+            </code>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.DirectoryUtils.FindFile(System.String,System.String)">
+            <summary>
+            Recursively searches for the file name and if found returns the full file path to
+            that file.
+            
+            <code>
+            string fullPathToPlayer = FindFile("res://", "Player.tscn")
+            </code>
+            </summary>
+            <returns>Returns the full path to the file or null if the file is not found</returns>
+        </member>
+        <member name="M:GodotUtils.DirectoryUtils.NormalizePath(System.String)">
+            <summary>
+            Normalizes the specified path by replacing all forward slashes ('/') and backslashes ('\') with the system's directory separator character.
+            </summary>
+            <param name="path">The path to normalize.</param>
+            <returns>A normalized path where all directory separators are replaced with the system's directory separator character.</returns>
+            <remarks>
+            This method is useful when dealing with paths that may come from different sources (e.g., URLs, different operating systems) and need to be standardized for the current environment.
+            </remarks>
+        </member>
+        <member name="M:GodotUtils.DirectoryUtils.DeleteEmptyDirectories(System.String)">
+            <summary>
+            Recursively deletes all empty folders in this folder
+            </summary>
+        </member>
+        <member name="M:GodotUtils.DirectoryUtils.DeleteEmptyDirectory(System.String)">
+            <summary>
+            Checks if the folder is empty and deletes it if it is
+            </summary>
+        </member>
+        <member name="M:GodotUtils.DirectoryUtils.IsDirectoryEmpty(System.String)">
+            <summary>
+            Checks if the directory is empty
+            </summary>
+            <returns>Returns true if the directory is empty</returns>
+        </member>
+        <member name="T:GodotUtils.EditorUtils">
+            <summary>
+            This script is like the Godot OS class in a way
+            </summary>
+        </member>
+        <member name="T:GodotUtils.GodotNodePool`1">
+            <summary>
+            Reuses nodes to reduce allocations and improve performance.
+            Nodes are automatically added to the specified parent when created.
+            </summary>
+            <typeparam name="TValue">The type of node managed by the pool.</typeparam>
+        </member>
+        <member name="M:GodotUtils.GodotNodePool`1.#ctor(Godot.Node,System.Func{`0})">
+            <summary>
+            Reuses nodes to reduce allocations and improve performance.
+            Nodes are automatically added to the specified parent when created.
+            </summary>
+            <typeparam name="TValue">The type of node managed by the pool.</typeparam>
+        </member>
+        <member name="P:GodotUtils.GodotNodePool`1.ActiveNodes">
+            <summary>
+            Nodes currently in use by the pool.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotNodePool`1.Get">
+            <summary>
+            Returns an available node or creates a new one if all are in use.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotNodePool`1.Release(`0)">
+            <summary>
+            Releases a node from the pool.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotNodePool`1.Clear">
+            <summary>
+            Removes all nodes from the pool and queue frees them.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.GodotObjectCache`1">
+            <summary>
+            Stores objects by their instance ID and returns the cached instance if it already exists.
+            </summary>
+            <typeparam name="TValue">The type of Godot object to cache.</typeparam>
+        </member>
+        <member name="M:GodotUtils.GodotObjectCache`1.Get(`0)">
+            <summary>
+            Returns the cached object if it exists; otherwise adds the object to the cache and returns it.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotObjectCache`1.Remove(`0)">
+            <summary>
+            Removes an object from the cache.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotObjectCache`1.Clear">
+            <summary>
+            Clears all objects from the cache.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotShaderTween.AnimateShader(System.String,Godot.Variant,System.Double)">
+            <summary>
+            Animates a specified <paramref name="shaderParam"/>. All tweens use the Sine transition by default.
+            
+            <code>
+            tween.AnimateShader("blend_intensity", 1.0f, 2.0);
+            </code>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.Delay(Godot.Node,System.Double,System.Action)">
+            <summary>
+            A delay in <paramref name="seconds"/> followed by a <paramref name="callback"/>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.AnimateProp(Godot.Variant,System.Double)">
+            <summary>
+            Animates the property that was set with SetAnimatingProp(string prop)
+            
+            <code>
+            tween.SetAnimatingProp(ColorRect.PropertyName.Color);
+            tween.AnimateProp(Colors.Transparent, 0.5);
+            </code>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.Animate(System.String,Godot.Variant,System.Double)">
+            <summary>
+            Animates a specified <paramref name="property"/>. All tweens use the 
+            Sine transition by default.
+            
+            <code>
+            tween.Animate(ColorRect.PropertyName.Color, Colors.Transparent, 0.5);
+            </code>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.SetAnimatingProp(System.String)">
+            <summary>
+            Sets the <paramref name="property"/> to be animated on
+            
+            <code>
+            tween.SetAnimatingProp(ColorRect.PropertyName.Color);
+            tween.AnimateProp(Colors.Transparent, 0.5);
+            </code>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.Loop(System.Int32)">
+            <summary>
+            Sets the animation to repeat
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.Parallel">
+            <summary>
+            <para>Makes the next <see cref="T:Godot.Tweener"/> run parallelly to the previous one.</para>
+            <para><b>Example:</b></para>
+            <para><code>
+            GTween tween = new(...);
+            tween.Animate(...);
+            tween.Parallel().Animate(...);
+            tween.Parallel().Animate(...);
+            </code></para>
+            <para>All <see cref="T:Godot.Tweener"/>s in the example will run at the same time.</para>
+            <para>You can make the <see cref="T:Godot.Tween"/> parallel by default by using <see cref="M:Godot.Tween.SetParallel(System.Boolean)"/>.</para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.SetParallel(System.Boolean)">
+            <summary>
+            <para>If <paramref name="parallel"/> is <see langword="true"/>, the <see cref="T:Godot.Tweener"/>s appended after this method will by default run simultaneously, as opposed to sequentially.</para>
+            <para><code>
+            tween.SetParallel()
+            tween.Animate(...)
+            tween.Animate(...)
+            </code></para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.Finished(System.Action)">
+            <summary>
+            A <paramref name="callback"/> is executed when the tween has finished
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.Stop">
+            <summary>
+            If the tween is looping, this can be used to stop it
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.Pause">
+            <summary>
+            Pause the tween
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.Resume">
+            <summary>
+            If the tween was paused with Pause(), resume it with Resume()
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.Kill">
+            <summary>
+            Kill the tween
+            </summary>
+        </member>
+        <member name="M:GodotUtils.GodotTween.IsRunning">
+            <summary>
+            Checks if the tween is still playing
+            </summary>
+        </member>
+        <member name="M:GodotUtils.MathUtils.SumNaturalNumbers(System.Int32)">
+            <summary>
+            <para>Returns the sum of the first n natural numbers</para>
+            <para>For example if n = 4 then this would return 0 + 1 + 2 + 3</para>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.MathUtils.GetLayerValues(System.Int32[])">
+            <summary>
+            Godot has nodes with properties like LightMask, CollisionLayer
+            and MaskLayer. All these properties are integers. Simply setting
+            the property to a number like 5 won't enable the 5th layer. The
+            number needs to be in binary and that is what this function is for.
+            
+            <para>For example to enable the 1st, 4th and 5th layers of a players
+            collision layer you would do the following.</para>
+            
+            <code>player.CollisionLayer = GU.GetLayerValues(1, 4, 5)</code>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.RegEx.RegexUtils.ScriptPath">
+            <remarks>
+            Pattern:<br/>
+            <code>(?&lt;=type="Script"[^\\n]*path=")[^"]*(?=")</code><br/>
+            Options:<br/>
+            <code>RegexOptions.Multiline</code><br/>
+            Explanation:<br/>
+            <code>
+            ○ Zero-width positive lookbehind.<br/>
+                ○ Match the string "path=\"" right-to-left.<br/>
+                ○ Match a character other than '\n' greedily any number of times right-to-left.<br/>
+                ○ Match the string "type=\"Script\"" right-to-left.<br/>
+            ○ Match a character other than '"' atomically any number of times.<br/>
+            ○ Zero-width positive lookahead.<br/>
+                ○ Match '"'.<br/>
+            </code>
+            </remarks>
+        </member>
+        <member name="M:GodotUtils.RegEx.RegexUtils.CommandParams">
+            <remarks>
+            Pattern:<br/>
+            <code>[^\\s"']+|"([^"]*)"|'([^']*)'</code><br/>
+            Explanation:<br/>
+            <code>
+            ○ Match with 3 alternative expressions, atomically.<br/>
+                ○ Match a character in the set [^"'\s] atomically at least once.<br/>
+                ○ Match a sequence of expressions.<br/>
+                    ○ Match '"'.<br/>
+                    ○ 1st capture group.<br/>
+                        ○ Match a character other than '"' atomically any number of times.<br/>
+                    ○ Match '"'.<br/>
+                ○ Match a sequence of expressions.<br/>
+                    ○ Match '\''.<br/>
+                    ○ 2nd capture group.<br/>
+                        ○ Match a character other than '\'' atomically any number of times.<br/>
+                    ○ Match '\''.<br/>
+            </code>
+            </remarks>
+        </member>
+        <member name="M:GodotUtils.RegEx.RegexUtils.IpAddress">
+            <remarks>
+            Pattern:<br/>
+            <code>\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}</code><br/>
+            Explanation:<br/>
+            <code>
+            ○ Match a Unicode digit atomically at least 1 and at most 3 times.<br/>
+            ○ Match '.'.<br/>
+            ○ Match a Unicode digit atomically at least 1 and at most 3 times.<br/>
+            ○ Match '.'.<br/>
+            ○ Match a Unicode digit atomically at least 1 and at most 3 times.<br/>
+            ○ Match '.'.<br/>
+            ○ Match a Unicode digit atomically at least 1 and at most 3 times.<br/>
+            </code>
+            </remarks>
+        </member>
+        <member name="M:GodotUtils.RegEx.RegexUtils.AlphaNumericAndSpaces">
+            <remarks>
+            Pattern:<br/>
+            <code>^[a-zA-Z0-9\\s,]*$</code><br/>
+            Explanation:<br/>
+            <code>
+            ○ Match if at the beginning of the string.<br/>
+            ○ Match a character in the set [,0-9A-Za-z\s] greedily any number of times.<br/>
+            ○ Match if at the end of the string or if before an ending newline.<br/>
+            </code>
+            </remarks>
+        </member>
+        <member name="T:GodotUtils.UI.ToolScriptHelpers.MethodName">
+            <summary>
+            Cached StringNames for the methods contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.UI.ToolScriptHelpers.MethodName.DeleteEmptyFolders">
+            <summary>
+            Cached name for the 'DeleteEmptyFolders' method.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.UI.ToolScriptHelpers.MethodName.DeleteOrphanedCSUIDFiles">
+            <summary>
+            Cached name for the 'DeleteOrphanedCSUIDFiles' method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.GetGodotMethodList">
+            <summary>
+            Get the method information for all the methods declared in this class.
+            This method is used by Godot to register the available methods in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.NativeVariantPtrArgs,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.HasGodotClassMethod(Godot.NativeInterop.godot_string_name@)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GodotUtils.UI.ToolScriptHelpers.PropertyName">
+            <summary>
+            Cached StringNames for the properties and fields contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.UI.ToolScriptHelpers.PropertyName.RemoveEmptyFolders">
+            <summary>
+            Cached name for the 'RemoveEmptyFolders' property.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.UI.ToolScriptHelpers.PropertyName.RemoveOrphanedCSUIDFiles">
+            <summary>
+            Cached name for the 'RemoveOrphanedCSUIDFiles' property.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.SetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.GetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.GetGodotPropertyList">
+            <summary>
+            Get the property information for all the properties declared in this class.
+            This method is used by Godot to register the available properties in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.GetGodotPropertyDefaultValues">
+            <summary>
+            Get the default values for all properties declared in this class.
+            This method is used by Godot to determine the value that will be
+            used by the inspector when resetting properties.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.SaveGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.RestoreGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GodotUtils.UI.ToolScriptHelpers.SignalName">
+            <summary>
+            Cached StringNames for the signals contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.VectorUtils.Random">
+            <summary>
+            Returns a random vector between 0 and 1 (inclusive) for X and Y.
+            </summary>
+        </member>
+        <member name="T:Godot.OnImportEditorPlugin.MethodName">
+            <summary>
+            Cached StringNames for the methods contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetSaveExtension">
+            <summary>
+            Cached name for the '_GetSaveExtension' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetResourceType">
+            <summary>
+            Cached name for the '_GetResourceType' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetImporterName">
+            <summary>
+            Cached name for the '_GetImporterName' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetVisibleName">
+            <summary>
+            Cached name for the '_GetVisibleName' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetRecognizedExtensions">
+            <summary>
+            Cached name for the '_GetRecognizedExtensions' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetPriority">
+            <summary>
+            Cached name for the '_GetPriority' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetImportOrder">
+            <summary>
+            Cached name for the '_GetImportOrder' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetPresetCount">
+            <summary>
+            Cached name for the '_GetPresetCount' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetPresetName">
+            <summary>
+            Cached name for the '_GetPresetName' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetOptionVisibility">
+            <summary>
+            Cached name for the '_GetOptionVisibility' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetImportOptions">
+            <summary>
+            Cached name for the '_GetImportOptions' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._Import">
+            <summary>
+            Cached name for the '_Import' method.
+            </summary>
+        </member>
+        <member name="M:Godot.OnImportEditorPlugin.GetGodotMethodList">
+            <summary>
+            Get the method information for all the methods declared in this class.
+            This method is used by Godot to register the available methods in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:Godot.OnImportEditorPlugin.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.NativeVariantPtrArgs,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Godot.OnImportEditorPlugin.HasGodotClassMethod(Godot.NativeInterop.godot_string_name@)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Godot.OnImportEditorPlugin.PropertyName">
+            <summary>
+            Cached StringNames for the properties and fields contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="M:Godot.OnImportEditorPlugin.SaveGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Godot.OnImportEditorPlugin.RestoreGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Godot.OnImportEditorPlugin.SignalName">
+            <summary>
+            Cached StringNames for the signals contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.ScriptPath_0">
+            <summary>Custom <see cref="T:System.Text.RegularExpressions.Regex"/>-derived type for the ScriptPath method.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.ScriptPath_0.Instance">
+            <summary>Cached, thread-safe singleton instance.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.ScriptPath_0.#ctor">
+            <summary>Initializes the instance.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.ScriptPath_0.RunnerFactory">
+            <summary>Provides a factory for creating <see cref="T:System.Text.RegularExpressions.RegexRunner"/> instances to be used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.ScriptPath_0.RunnerFactory.CreateInstance">
+            <summary>Creates an instance of a <see cref="T:System.Text.RegularExpressions.RegexRunner"/> used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.ScriptPath_0.RunnerFactory.Runner">
+            <summary>Provides the runner that contains the custom logic implementing the specified regular expression.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.ScriptPath_0.RunnerFactory.Runner.Scan(System.ReadOnlySpan{System.Char})">
+            <summary>Scan the <paramref name="inputSpan"/> starting from base.runtextstart for the next match.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.ScriptPath_0.RunnerFactory.Runner.TryMatchAtCurrentPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Determine whether <paramref name="inputSpan"/> at base.runtextpos is a match for the regular expression.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if the regular expression matches at the current position; otherwise, false.</returns>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.CommandParams_1">
+            <summary>Custom <see cref="T:System.Text.RegularExpressions.Regex"/>-derived type for the CommandParams method.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.CommandParams_1.Instance">
+            <summary>Cached, thread-safe singleton instance.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.CommandParams_1.#ctor">
+            <summary>Initializes the instance.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.CommandParams_1.RunnerFactory">
+            <summary>Provides a factory for creating <see cref="T:System.Text.RegularExpressions.RegexRunner"/> instances to be used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.CommandParams_1.RunnerFactory.CreateInstance">
+            <summary>Creates an instance of a <see cref="T:System.Text.RegularExpressions.RegexRunner"/> used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.CommandParams_1.RunnerFactory.Runner">
+            <summary>Provides the runner that contains the custom logic implementing the specified regular expression.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.CommandParams_1.RunnerFactory.Runner.Scan(System.ReadOnlySpan{System.Char})">
+            <summary>Scan the <paramref name="inputSpan"/> starting from base.runtextstart for the next match.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.CommandParams_1.RunnerFactory.Runner.TryFindNextPossibleStartingPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Search <paramref name="inputSpan"/> starting from base.runtextpos for the next location a match could possibly start.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if a possible match was found; false if no more matches are possible.</returns>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.CommandParams_1.RunnerFactory.Runner.TryMatchAtCurrentPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Determine whether <paramref name="inputSpan"/> at base.runtextpos is a match for the regular expression.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if the regular expression matches at the current position; otherwise, false.</returns>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.IpAddress_2">
+            <summary>Custom <see cref="T:System.Text.RegularExpressions.Regex"/>-derived type for the IpAddress method.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.IpAddress_2.Instance">
+            <summary>Cached, thread-safe singleton instance.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.IpAddress_2.#ctor">
+            <summary>Initializes the instance.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.IpAddress_2.RunnerFactory">
+            <summary>Provides a factory for creating <see cref="T:System.Text.RegularExpressions.RegexRunner"/> instances to be used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.IpAddress_2.RunnerFactory.CreateInstance">
+            <summary>Creates an instance of a <see cref="T:System.Text.RegularExpressions.RegexRunner"/> used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.IpAddress_2.RunnerFactory.Runner">
+            <summary>Provides the runner that contains the custom logic implementing the specified regular expression.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.IpAddress_2.RunnerFactory.Runner.Scan(System.ReadOnlySpan{System.Char})">
+            <summary>Scan the <paramref name="inputSpan"/> starting from base.runtextstart for the next match.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.IpAddress_2.RunnerFactory.Runner.TryFindNextPossibleStartingPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Search <paramref name="inputSpan"/> starting from base.runtextpos for the next location a match could possibly start.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if a possible match was found; false if no more matches are possible.</returns>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.IpAddress_2.RunnerFactory.Runner.TryMatchAtCurrentPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Determine whether <paramref name="inputSpan"/> at base.runtextpos is a match for the regular expression.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if the regular expression matches at the current position; otherwise, false.</returns>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.AlphaNumericAndSpaces_3">
+            <summary>Custom <see cref="T:System.Text.RegularExpressions.Regex"/>-derived type for the AlphaNumericAndSpaces method.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.AlphaNumericAndSpaces_3.Instance">
+            <summary>Cached, thread-safe singleton instance.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.AlphaNumericAndSpaces_3.#ctor">
+            <summary>Initializes the instance.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.AlphaNumericAndSpaces_3.RunnerFactory">
+            <summary>Provides a factory for creating <see cref="T:System.Text.RegularExpressions.RegexRunner"/> instances to be used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.AlphaNumericAndSpaces_3.RunnerFactory.CreateInstance">
+            <summary>Creates an instance of a <see cref="T:System.Text.RegularExpressions.RegexRunner"/> used by methods on <see cref="T:System.Text.RegularExpressions.Regex"/>.</summary>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.AlphaNumericAndSpaces_3.RunnerFactory.Runner">
+            <summary>Provides the runner that contains the custom logic implementing the specified regular expression.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.AlphaNumericAndSpaces_3.RunnerFactory.Runner.Scan(System.ReadOnlySpan{System.Char})">
+            <summary>Scan the <paramref name="inputSpan"/> starting from base.runtextstart for the next match.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.AlphaNumericAndSpaces_3.RunnerFactory.Runner.TryFindNextPossibleStartingPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Search <paramref name="inputSpan"/> starting from base.runtextpos for the next location a match could possibly start.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if a possible match was found; false if no more matches are possible.</returns>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.AlphaNumericAndSpaces_3.RunnerFactory.Runner.TryMatchAtCurrentPosition(System.ReadOnlySpan{System.Char})">
+            <summary>Determine whether <paramref name="inputSpan"/> at base.runtextpos is a match for the regular expression.</summary>
+            <param name="inputSpan">The text being scanned by the regular expression.</param>
+            <returns>true if the regular expression matches at the current position; otherwise, false.</returns>
+        </member>
+        <member name="T:System.Text.RegularExpressions.Generated.Utilities">
+            <summary>Helper methods used by generated <see cref="T:System.Text.RegularExpressions.Regex"/>-derived implementations.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.Utilities.s_defaultTimeout">
+            <summary>Default timeout value set in <see cref="T:System.AppContext"/>, or <see cref="F:System.Text.RegularExpressions.Regex.InfiniteMatchTimeout"/> if none was set.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.Utilities.s_hasTimeout">
+            <summary>Whether <see cref="F:System.Text.RegularExpressions.Generated.Utilities.s_defaultTimeout"/> is non-infinite.</summary>
+        </member>
+        <member name="M:System.Text.RegularExpressions.Generated.Utilities.IndexOfAnyDigit(System.ReadOnlySpan{System.Char})">
+            <summary>Finds the next index of any character that matches a Unicode digit.</summary>
+        </member>
+        <member name="F:System.Text.RegularExpressions.Generated.Utilities.s_asciiExceptDigits">
+            <summary>Supports searching for characters in or not in "\0\u0001\u0002\u0003\u0004\u0005\u0006\a\b\t\n\v\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f !\"#$%&amp;'()*+,-./:;&lt;=&gt;?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\u007f".</summary>
+        </member>
+    </members>
+</doc>
