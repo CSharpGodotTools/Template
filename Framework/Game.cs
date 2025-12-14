@@ -34,6 +34,7 @@ public static class Game
         return getPropertyFrom(autoloads)!; // Assumes the field may be null, but we are not checking it here
     }
 
+    public static FocusOutlineManager FocusOutline => IsAutoloadsSetup(a => a.FocusOutline, nameof(FocusOutline));
     public static MetricsOverlay Metrics => IsAutoloadsSetup(a => a.MetricsOverlay, nameof(Metrics));
     public static OptionsManager Options => IsAutoloadsSetup(a => a.OptionsManager, nameof(Options));
     public static AudioManager Audio => IsAutoloadsSetup(a => a.AudioManager, nameof(Audio));
@@ -44,13 +45,14 @@ public static class Game
     public static Logger Logger => IsAutoloadsSetup(a => a.Logger, nameof(Logger));
 #else
     // The games release will not have the slow debugging checks
-    public static MetricsOverlay Metrics  => Autoloads.Instance.MetricsOverlay;
-    public static OptionsManager Options  => Autoloads.Instance.OptionsManager;
-    public static AudioManager   Audio    => Autoloads.Instance.AudioManager;
-    public static SceneManager   Scene    => Autoloads.Instance.SceneManager;
-    public static GameConsole    Console  => Autoloads.Instance.GameConsole;
-    public static Profiler       Profiler => Autoloads.Instance.Profiler;
-    public static Services       Services => Autoloads.Instance.Services;
-    public static Logger         Logger   => Autoloads.Instance.Logger;
+    public static FocusOutlineManager FocusOutline => Autoloads.Instance.FocusOutline;
+    public static MetricsOverlay      Metrics      => Autoloads.Instance.MetricsOverlay;
+    public static OptionsManager      Options      => Autoloads.Instance.OptionsManager;
+    public static AudioManager        Audio        => Autoloads.Instance.AudioManager;
+    public static SceneManager        Scene        => Autoloads.Instance.SceneManager;
+    public static GameConsole         Console      => Autoloads.Instance.GameConsole;
+    public static Profiler            Profiler     => Autoloads.Instance.Profiler;
+    public static Services            Services     => Autoloads.Instance.Services;
+    public static Logger              Logger       => Autoloads.Instance.Logger;
 #endif
-        }
+}

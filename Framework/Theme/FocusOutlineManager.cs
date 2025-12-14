@@ -4,15 +4,20 @@ namespace __TEMPLATE__.UI;
 
 public partial class FocusOutlineManager(Node owner) : Component(owner)
 {
-    [Export] public float FlashSpeed = 4f;
-    [Export] public float MinAlpha = 0.35f;
-    [Export] public float MaxAlpha = 0.7f;
+    // Config
+    private float _flashSpeed = 4f;
+    private float _minAlpha = 0.35f;
+    private float _maxAlpha = 0.7f;
+    //private float _fadeDelay = 2f;
+    //private float _fadeSpeed = 2f;
 
     private NavigationMethod _lastNavigation = NavigationMethod.Mouse;
     private Control _currentFocus;
     private Control _outline;
     private float _time;
+    private bool _ignoreNextFocus;
     private Node _owner = owner;
+    //private float _lastInputTime;
 
     public override void Ready()
     {
@@ -20,7 +25,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         _outline.Visible = false;
 
         _owner.GetViewport().GuiFocusChanged += OnGuiFocusChanged;
-        Game.Scene.PreSceneChanged += OnSceneChanged;
+        Game.Scene.PreSceneChanged += OnPreSceneChanged;
 
         SetProcess(false);
         SetInput(true);
@@ -35,10 +40,11 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         else if (@event is InputEventKey || @event is InputEventJoypadButton)
         {
             _lastNavigation = NavigationMethod.KeyboardOrGamepad;
+            //_lastInputTime = (float)(Time.GetTicksUsec() / 1_000_000.0);
         }
     }
 
-    private void OnSceneChanged(string sceneName)
+    private void OnPreSceneChanged(string scene)
     {
         _outline.Visible = false;
         _currentFocus = null;
@@ -53,9 +59,17 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         _time += (float)delta;
 
         // Alpha pulse
-        float t = Mathf.Sin(_time * FlashSpeed) * 0.5f + 0.5f;
-        float alpha = Mathf.Lerp(MinAlpha, MaxAlpha, t);
+        float t = Mathf.Sin(_time * _flashSpeed) * 0.5f + 0.5f;
+        float alpha = Mathf.Lerp(_minAlpha, _maxAlpha, t);
 
+        // Fade out if inactive
+        /*double currentTime = Time.GetTicksUsec() / 1_000_000.0; // seconds
+        float inactiveTime = (float)(currentTime - _lastInputTime);
+
+        if (inactiveTime > _fadeDelay)
+            alpha = Mathf.Lerp(alpha, 0f, (inactiveTime - _fadeDelay) * _fadeSpeed);*/
+
+        // Modulate
         Color c = _outline.Modulate;
         c.A = alpha;
         _outline.Modulate = c;
@@ -66,8 +80,24 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         _outline.Size = _currentFocus.Size + padding * 2;
     }
 
+    /// <summary>
+    /// Prevents the focus outline from appearing on next received input.
+    /// Use this when setting a control as focused with <c>GrabFocus()</c> but don't 
+    /// want the focus outline to show.
+    /// </summary>
+    public void IgnoreNextFocus()
+    {
+        _ignoreNextFocus = true;
+    }
+
     private void OnGuiFocusChanged(Control newFocus)
     {
+        if (_ignoreNextFocus)
+        {
+            _ignoreNextFocus = false;
+            return;
+        }
+
         _currentFocus = newFocus;
 
         if (_currentFocus != null && _lastNavigation == NavigationMethod.KeyboardOrGamepad)
