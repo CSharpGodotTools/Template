@@ -99,7 +99,6 @@ popup/item_2/id = 2
 
 [node name="Gameplay" type="VBoxContainer" parent="Margin/HBox/Content"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 
 [node name="Difficulty" type="HBoxContainer" parent="Margin/HBox/Content/Gameplay"]
@@ -360,6 +359,7 @@ size_flags_vertical = 4
 value = 75.0
 
 [node name="Input" type="VBoxContainer" parent="Margin/HBox/Content"]
+visible = false
 layout_mode = 2
 
 [node name="Scroll" type="ScrollContainer" parent="Margin/HBox/Content/Input"]

@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace __TEMPLATE__.UI;
 
@@ -31,10 +32,11 @@ public class OptionsNav(Options options)
     {
         foreach (Button button in options.GetNode("%Nav").GetChildren())
         {
-            button.FocusEntered += () => ShowTab(button.Name);
-            button.Pressed += () => ShowTab(button.Name);
-
-            _buttons.Add(button.Name, button);
+            string btnName = button.Name;
+            button.FocusEntered += () => ShowTab(btnName);
+            button.Pressed += () => ShowTab(btnName);
+            
+            _buttons.Add(btnName, button);
         }
     }
 

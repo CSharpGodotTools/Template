@@ -39,6 +39,8 @@ public partial class Autoloads : Node
     private VisualizeAutoload _visualizeAutoload;
 #endif
 
+    private FocusOutlineManager _focusOutlineManager;
+
     public override void _EnterTree()
     {
         if (Instance != null)
@@ -51,6 +53,7 @@ public partial class Autoloads : Node
         MetricsOverlay = new MetricsOverlay();
         Profiler = new Profiler();
         GameConsole = GetNode<GameConsole>("%Console");
+        _focusOutlineManager = new FocusOutlineManager(this);
 
 #if NETCODE_ENABLED
         Logger = new Logger(GameConsole);
