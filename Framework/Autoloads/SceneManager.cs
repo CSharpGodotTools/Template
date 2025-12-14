@@ -8,10 +8,8 @@ namespace __TEMPLATE__;
 // About Scene Switching: https://docs.godotengine.org/en/latest/tutorials/scripting/singletons_autoload.html
 public class SceneManager
 {
-    /// <summary>
-    /// The event is invoked right before the scene is changed
-    /// </summary>
     public event Action<string> PreSceneChanged;
+    public event Action<string> PostSceneChanged;
 
     public const int DefaultSceneFadeDuration = 2;
 
@@ -55,6 +53,8 @@ public class SceneManager
                 FadeTo(TransColor.Black, DefaultSceneFadeDuration, () => ChangeScene(path, transType));
                 break;
         }
+
+        PostSceneChanged?.Invoke(path);
     }
 
     /// <summary>
@@ -71,6 +71,8 @@ public class SceneManager
 
         // Wait for engine to be ready before switching scenes
         _autoloads.CallDeferred(nameof(Autoloads.DeferredSwitchSceneProxy), sceneFilePath, Variant.From(TransType.None));
+
+        PostSceneChanged?.Invoke(sceneName);
     }
 
     public void DeferredSwitchScene(string rawName, Variant transTypeVariant)

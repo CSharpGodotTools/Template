@@ -11,6 +11,7 @@ public partial class MainMenuNav : Node
     public override void _Ready()
     {
         _scene = Game.Scene;
+        Game.FocusOutline.IgnoreNextFocus();
         GetNode<Button>("Play").GrabFocus();
     }
 

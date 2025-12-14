@@ -3,7 +3,6 @@
 [ext_resource type="PackedScene" uid="uid://djhd6uw7l1ok" path="res://Level.tscn" id="3_xo0to"]
 [ext_resource type="Script" uid="uid://bi551lrt82awu" path="res://Framework/Scenes/MainMenuNav.cs" id="5_sc4as"]
 
-
 [node name="Main Menu" type="PanelContainer"]
 anchors_preset = 15
 anchor_right = 1.0
@@ -43,6 +42,7 @@ text = "CREDITS"
 [node name="Quit" type="Button" parent="Nav"]
 custom_minimum_size = Vector2(175, 60)
 layout_mode = 2
+focus_neighbor_bottom = NodePath("../../Socials/HBox/Discord")
 text = "QUIT"
 
 [node name="Socials" type="MarginContainer" parent="."]

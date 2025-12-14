@@ -2,12 +2,15 @@ using Godot;
 
 namespace __TEMPLATE__.UI;
 
-public partial class OptionsAudio(Options options)
+public partial class OptionsAudio
 {
     private ResourceOptions _options;
+    private readonly Options options;
 
-    public void Initialize()
+    public OptionsAudio(Options options)
     {
+        this.options = options;
+
         GetOptions();
         SetupMusic();
         SetupSounds();

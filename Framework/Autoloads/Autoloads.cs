@@ -22,14 +22,15 @@ public partial class Autoloads : Node
 
     public static Autoloads Instance { get; private set; }
 
-    public ComponentManager ComponentManager { get; private set; } // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
-    public GameConsole      GameConsole      { get; private set; } // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
-    public AudioManager     AudioManager     { get; private set; }
-    public OptionsManager   OptionsManager   { get; private set; }
-    public Services         Services         { get; private set; }
-    public MetricsOverlay   MetricsOverlay   { get; private set; }
-    public SceneManager     SceneManager     { get; private set; }
-    public Profiler         Profiler         { get; private set; }
+    public ComponentManager    ComponentManager { get; private set; } // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
+    public GameConsole         GameConsole      { get; private set; } // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
+    public AudioManager        AudioManager     { get; private set; }
+    public OptionsManager      OptionsManager   { get; private set; }
+    public Services            Services         { get; private set; }
+    public MetricsOverlay      MetricsOverlay   { get; private set; }
+    public SceneManager        SceneManager     { get; private set; }
+    public Profiler            Profiler         { get; private set; }
+    public FocusOutlineManager FocusOutline     { get; private set; }
 
 #if NETCODE_ENABLED
     public Logger Logger { get; private set; }
@@ -51,6 +52,7 @@ public partial class Autoloads : Node
         MetricsOverlay = new MetricsOverlay();
         Profiler = new Profiler();
         GameConsole = GetNode<GameConsole>("%Console");
+        FocusOutline = new FocusOutlineManager(this);
 
 #if NETCODE_ENABLED
         Logger = new Logger(GameConsole);

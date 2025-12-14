@@ -3,14 +3,19 @@ using System;
 
 namespace __TEMPLATE__.UI;
 
-public class OptionsGameplay(Options options)
+public class OptionsGameplay
 {
     public event Action<float> OnMouseSensitivityChanged;
 
     private ResourceOptions _options;
+    private Button _gameplayBtn;
+    private readonly Options options;
 
-    public void Initialize()
+    public OptionsGameplay(Options options, Button gameplayButton)
     {
+        this.options = options;
+        _gameplayBtn = gameplayButton;
+
         GetOptions();
         SetupDifficulty();
         SetupSensitivity();
@@ -24,6 +29,7 @@ public class OptionsGameplay(Options options)
     private void SetupDifficulty()
     {
         OptionButton difficultyBtn = options.GetNode<OptionButton>("%Difficulty");
+        difficultyBtn.FocusNeighborLeft = _gameplayBtn.GetPath();
         difficultyBtn.Select((int)_options.Difficulty);
         difficultyBtn.ItemSelected += OnDifficultyItemSelected;
     }
@@ -31,6 +37,7 @@ public class OptionsGameplay(Options options)
     private void SetupSensitivity()
     {
         HSlider sensitivity = options.GetNode<HSlider>("%Sensitivity");
+        sensitivity.FocusNeighborLeft = _gameplayBtn.GetPath();
         sensitivity.Value = _options.MouseSensitivity;
         sensitivity.ValueChanged += OnSensitivityValueChanged;
     }

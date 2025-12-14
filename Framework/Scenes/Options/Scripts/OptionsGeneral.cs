@@ -2,12 +2,17 @@ using Godot;
 
 namespace __TEMPLATE__.UI;
 
-public class OptionsGeneral(Options options)
+public class OptionsGeneral
 {
     private ResourceOptions _options;
+    private Button _generalBtn;
+    private readonly Options options;
 
-    public void Initialize()
+    public OptionsGeneral(Options options, Button generalBtn)
     {
+        this.options = options;
+        _generalBtn = generalBtn;
+
         GetOptions();
         SetupLanguage();
     }
@@ -20,6 +25,7 @@ public class OptionsGeneral(Options options)
     private void SetupLanguage()
     {
         OptionButton languageBtn = options.GetNode<OptionButton>("%LanguageButton");
+        languageBtn.FocusNeighborLeft = _generalBtn.GetPath();
         languageBtn.ItemSelected += OnLanguageItemSelected;
         languageBtn.Select((int)_options.Language);
     }
