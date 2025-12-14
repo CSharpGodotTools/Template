@@ -3,7 +3,6 @@
 [ext_resource type="PackedScene" uid="uid://djhd6uw7l1ok" path="res://Level.tscn" id="3_xo0to"]
 [ext_resource type="Script" uid="uid://bi551lrt82awu" path="res://Framework/Scenes/MainMenuNav.cs" id="5_sc4as"]
 
-
 [node name="Main Menu" type="PanelContainer"]
 anchors_preset = 15
 anchor_right = 1.0
