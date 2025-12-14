@@ -14,7 +14,7 @@ public partial class Options : PanelContainer
 
     public override void _Ready()
     {
-        _optionsNav = new OptionsNav(this);
+        _optionsNav = new OptionsNav(this, GetNode<Label>("%Title"));
         _optionsGeneral = new OptionsGeneral(this, _optionsNav.GeneralButton);
         _optionsGameplay = new OptionsGameplay(this, _optionsNav.GameplayButton);
         _optionsDisplay = new OptionsDisplay(this, _optionsNav.DisplayButton);

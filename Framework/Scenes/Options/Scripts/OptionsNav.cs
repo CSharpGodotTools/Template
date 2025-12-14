@@ -23,15 +23,15 @@ public class OptionsNav
     private Button _audioButton;
     private Button _inputButton;
 
-    public OptionsNav(Options options)
+    public OptionsNav(Options options, Label titleLabel)
     {
         this.options = options;
 
         SetupContent();
-        SubscribeToNavBtns();
+        SubscribeToNavBtns(titleLabel);
         FocusOnLastClickedNavBtn();
         HideAllTabs();
-        ShowCurrentTab();
+        ShowCurrentTab(titleLabel);
     }
 
     private void SetupContent()
@@ -44,13 +44,13 @@ public class OptionsNav
         }
     }
 
-    private void SubscribeToNavBtns()
+    private void SubscribeToNavBtns(Label titleLabel)
     {
         foreach (Button button in options.GetNode("%Nav").GetChildren())
         {
             string btnName = button.Name;
-            button.FocusEntered += () => ShowTab(btnName);
-            button.Pressed += () => ShowTab(btnName);
+            button.FocusEntered += () => ShowTab(titleLabel, btnName);
+            button.Pressed += () => ShowTab(titleLabel, btnName);
             
             _buttons.Add(btnName, button);
         }
@@ -68,13 +68,14 @@ public class OptionsNav
         _buttons[Game.Options.GetCurrentTab()].GrabFocus();
     }
 
-    private void ShowCurrentTab()
+    private void ShowCurrentTab(Label titleLabel)
     {
-        ShowTab(Game.Options.GetCurrentTab());
+        ShowTab(titleLabel, Game.Options.GetCurrentTab());
     }
 
-    private void ShowTab(string tabName)
+    private void ShowTab(Label titleLabel, string tabName)
     {
+        titleLabel.Text = tabName;
         Game.Options.SetCurrentTab(tabName);
         HideAllTabs();
         _tabs[tabName].Show();
