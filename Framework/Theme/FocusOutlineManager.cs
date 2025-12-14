@@ -8,6 +8,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
     [Export] public float MinAlpha = 0.35f;
     [Export] public float MaxAlpha = 0.7f;
 
+    private NavigationMethod _lastNavigation = NavigationMethod.Mouse;
     private Control _currentFocus;
     private Control _outline;
     private float _time;
@@ -22,6 +23,19 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         Game.Scene.PreSceneChanged += OnSceneChanged;
 
         SetProcess(false);
+        SetInput(true);
+    }
+
+    public override void ProcessInput(InputEvent @event)
+    {
+        if (@event is InputEventMouse)
+        {
+            _lastNavigation = NavigationMethod.Mouse;
+        }
+        else if (@event is InputEventKey || @event is InputEventJoypadButton)
+        {
+            _lastNavigation = NavigationMethod.KeyboardOrGamepad;
+        }
     }
 
     private void OnSceneChanged(string sceneName)
@@ -56,7 +70,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
     {
         _currentFocus = newFocus;
 
-        if (_currentFocus != null)
+        if (_currentFocus != null && _lastNavigation == NavigationMethod.KeyboardOrGamepad)
         {
             _outline.Visible = true;
             SetProcess(true);
@@ -66,5 +80,11 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
             _outline.Visible = false;
             SetProcess(false);
         }
+    }
+
+    private enum NavigationMethod
+    {
+        Mouse,
+        KeyboardOrGamepad
     }
 }
