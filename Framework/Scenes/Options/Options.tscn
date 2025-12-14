@@ -35,36 +35,45 @@ alignment = 1
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_vertical = 3
+focus_neighbor_left = NodePath(".")
+focus_neighbor_top = NodePath("../Input")
+focus_neighbor_right = NodePath("../../Content/General/Language/LanguageButton")
+focus_neighbor_bottom = NodePath("../Gameplay")
 text = "GENERAL"
 
 [node name="Gameplay" type="Button" parent="Margin/HBox/Nav"]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_vertical = 3
+focus_neighbor_right = NodePath("../../Content/Gameplay/Difficulty/Difficulty")
 text = "GAMEPLAY"
 
 [node name="Display" type="Button" parent="Margin/HBox/Nav"]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_vertical = 3
+focus_neighbor_right = NodePath("../../Content/Display/WindowMode/WindowMode")
 text = "DISPLAY"
 
 [node name="Graphics" type="Button" parent="Margin/HBox/Nav"]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_vertical = 3
+focus_neighbor_right = NodePath("../../Content/Graphics/QualityMode/QualityMode")
 text = "GRAPHICS"
 
 [node name="Audio" type="Button" parent="Margin/HBox/Nav"]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_vertical = 3
+focus_neighbor_right = NodePath("../../Content/Audio/Music/Music")
 text = "AUDIO"
 
 [node name="Input" type="Button" parent="Margin/HBox/Nav"]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_vertical = 3
+focus_neighbor_bottom = NodePath("../General")
 text = "INPUT"
 
 [node name="Content" type="PanelContainer" parent="Margin/HBox"]
@@ -99,6 +108,7 @@ popup/item_2/id = 2
 
 [node name="Gameplay" type="VBoxContainer" parent="Margin/HBox/Content"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 
 [node name="Difficulty" type="HBoxContainer" parent="Margin/HBox/Content/Gameplay"]
@@ -158,6 +168,7 @@ layout_mode = 2
 tooltip_text = "If you experience unexpected FPS drops in borderless mode, switch to fullscreen mode.
 
 Fullscreen mode may cause a lag spike at the start but this seems to be the only side effect."
+focus_neighbor_top = NodePath(".")
 selected = 0
 item_count = 3
 popup/item_0/text = "WINDOWED"
@@ -182,6 +193,7 @@ theme_override_constants/separation = 10
 [node name="WindowWidth" type="LineEdit" parent="Margin/HBox/Content/Display/WindowSize/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
+focus_neighbor_right = NodePath("../WindowHeight")
 text = "2540"
 alignment = 1
 
@@ -192,6 +204,8 @@ text = "x"
 [node name="WindowHeight" type="LineEdit" parent="Margin/HBox/Content/Display/WindowSize/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
+focus_neighbor_left = NodePath("../WindowWidth")
+focus_neighbor_right = NodePath("../WindowSizeApply")
 text = "1440"
 alignment = 1
 
@@ -213,6 +227,7 @@ text = "RESOLUTION"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
+focus_neighbor_top = NodePath("../../WindowSize/HBox/WindowWidth")
 min_value = 1.0
 max_value = 36.0
 value = 36.0
@@ -260,6 +275,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 size_flags_vertical = 4
+focus_neighbor_bottom = NodePath(".")
 max_value = 180.0
 allow_greater = true
 
