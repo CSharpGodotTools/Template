@@ -149,7 +149,6 @@ value = 25.0
 
 [node name="Display" type="VBoxContainer" parent="Margin/HBox/Content"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 
@@ -357,6 +356,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 size_flags_vertical = 4
+focus_neighbor_top = NodePath("../../../../Nav/Audio")
 value = 100.0
 
 [node name="Sounds" type="HBoxContainer" parent="Margin/HBox/Content/Audio"]
@@ -372,6 +372,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 size_flags_vertical = 4
+focus_neighbor_bottom = NodePath("../../../../Nav/Audio")
 value = 75.0
 
 [node name="Input" type="VBoxContainer" parent="Margin/HBox/Content"]

@@ -6,21 +6,25 @@ using System.Linq;
 
 namespace __TEMPLATE__.UI;
 
-public partial class OptionsInput(Options options)
+public partial class OptionsInput
 {
     private const string RemoveHotkeyAction = "remove_hotkey";
     private const string FullscreenAction = "fullscreen";
     private const string OptionsSceneName = "Options";
     private const string UiPrefix = "ui";
     private const string Ellipsis = "...";
-
+    private readonly Options options;
     private VBoxContainer _content;
     private BtnInfo _btnNewInput; // The button currently waiting for new input
     private SceneManager _scene;
+    private Button _inputNavBtn;
 
-    public void Initialize()
+    public OptionsInput(Options options, Button inputNavBtn)
     {
+        this.options = options;
+
         _scene = Game.Scene;
+        _inputNavBtn = inputNavBtn;
 
         // Cache the content container used for dynamically adding rows.
         _content = options.GetNode<VBoxContainer>("%InputContent");
@@ -132,10 +136,11 @@ public partial class OptionsInput(Options options)
     private void RecreateButtonAtIndex(StringName action, InputEvent @event, int index)
     {
         // Remove the old button from the UI (we recreate a fresh instance).
+        bool wasFirst = _btnNewInput.Btn.FocusNeighborLeft != null;
         _btnNewInput.Btn.QueueFree();
 
         // Create the new button representing this binding and enable it.
-        Button btn = CreateButton(action, @event, _btnNewInput.HBox);
+        Button btn = CreateButton(action, @event, _btnNewInput.HBox, wasFirst);
         btn.Disabled = false;
 
         // Move the new button to the original index so ordering remains unchanged.
@@ -161,7 +166,7 @@ public partial class OptionsInput(Options options)
         InputMap.ActionAddEvent(action, @event);
     }
 
-    private HotkeyButton CreateButton(StringName action, InputEvent inputEvent, HBoxContainer hbox)
+    private HotkeyButton CreateButton(StringName action, InputEvent inputEvent, HBoxContainer hbox, bool isFirst)
     {
         // Create a readable label for the input (e.g. "A" or "Mouse 1").
         string readable = GetReadableForInput(inputEvent);
@@ -170,6 +175,9 @@ public partial class OptionsInput(Options options)
         {
             Text = readable
         };
+
+        if (isFirst)
+            btn.FocusNeighborLeft = _inputNavBtn.GetPath();
 
         // Add the created button to the row's events container.
         hbox.AddChild(btn);
@@ -306,16 +314,19 @@ public partial class OptionsInput(Options options)
         Array<InputEvent> events = Game.Options.GetHotkeys().Actions[action];
 
         // Create a button for each keyboard and mouse binding.
-        foreach (InputEvent @event in events)
+        for (int i = 0; i < events.Count; i++)
         {
+            bool isFirst = i == 0;
+
+            InputEvent @event = events[i];
             if (@event is InputEventKey eventKey)
             {
-                CreateButton(action, eventKey, hboxEvents);
+                CreateButton(action, eventKey, hboxEvents, isFirst);
             }
 
             if (@event is InputEventMouseButton eventMouseBtn)
             {
-                CreateButton(action, eventMouseBtn, hboxEvents);
+                CreateButton(action, eventMouseBtn, hboxEvents, isFirst);
             }
         }
     }

@@ -42,6 +42,7 @@ text = "CREDITS"
 [node name="Quit" type="Button" parent="Nav"]
 custom_minimum_size = Vector2(175, 60)
 layout_mode = 2
+focus_neighbor_bottom = NodePath("../../Socials/HBox/Discord")
 text = "QUIT"
 
 [node name="Socials" type="MarginContainer" parent="."]

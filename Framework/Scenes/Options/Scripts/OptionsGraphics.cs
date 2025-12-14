@@ -3,18 +3,21 @@ using System;
 
 namespace __TEMPLATE__.UI;
 
-public class OptionsGraphics(Options options)
+public class OptionsGraphics
 {
     public event Action<int> AntialiasingChanged;
 
     private ResourceOptions _options;
     private OptionButton _antialiasing;
+    private readonly Options options;
 
-    public void Initialize()
+    public OptionsGraphics(Options options, Button graphicsBtn)
     {
+        this.options = options;
+
         GetOptions();
-        SetupQualityPreset();
-        SetupAntialiasing();
+        SetupQualityPreset(graphicsBtn);
+        SetupAntialiasing(graphicsBtn);
     }
 
     private void GetOptions()
@@ -22,16 +25,18 @@ public class OptionsGraphics(Options options)
         _options = Game.Options.GetOptions();
     }
 
-    private void SetupQualityPreset()
+    private void SetupQualityPreset(Button graphicsBtn)
     {
         OptionButton optionBtnQualityPreset = options.GetNode<OptionButton>("%QualityMode");
+        optionBtnQualityPreset.FocusNeighborLeft = graphicsBtn.GetPath();
         optionBtnQualityPreset.Select((int)_options.QualityPreset);
         optionBtnQualityPreset.ItemSelected += OnQualityModeItemSelected;
     }
 
-    private void SetupAntialiasing()
+    private void SetupAntialiasing(Button graphicsBtn)
     {
         _antialiasing = options.GetNode<OptionButton>("%Antialiasing");
+        _antialiasing.FocusNeighborLeft = graphicsBtn.GetPath();
         _antialiasing.Select(_options.Antialiasing);
         _antialiasing.ItemSelected += OnAntialiasingItemSelected;
     }
