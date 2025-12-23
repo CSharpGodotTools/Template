@@ -1051,6 +1051,26 @@
             
             <returns>The current <see cref="T:GodotUtils.NodeTween"/> instance for chaining.</returns>
         </member>
+        <member name="T:GodotUtils.NodeTween2D">
+            <summary>
+            Provides tweening functionality for Node2D properties.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.NodeTween2D.#ctor(Godot.Node2D)">
+            <summary>
+            Provides tweening functionality for Node2D properties.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.NodeTweenControl">
+            <summary>
+            Provides tweening functionality for Control properties.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.NodeTweenControl.#ctor(Godot.Control)">
+            <summary>
+            Provides tweening functionality for Control properties.
+            </summary>
+        </member>
         <member name="T:GodotUtils.NodeTweenProp">
             <summary>
             Provides an API for animating a property of a <see cref="T:Godot.Node"/> using Godot’s Tween system.
