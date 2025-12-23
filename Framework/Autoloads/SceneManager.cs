@@ -145,8 +145,8 @@ public class SceneManager
         canvasLayer.AddChild(colorRect);
 
         // Animate color rect
-        new GodotTween(colorRect)
-            .Animate(ColorRect.PropertyName.Color, new Color(0, 0, 0, transColor == TransColor.Black ? 1 : 0), duration)
+        new NodeTweenProp(colorRect, ColorRect.PropertyName.Color)
+            .Animate(new Color(0, 0, 0, transColor == TransColor.Black ? 1 : 0), duration)
             .Callback(() =>
             {
                 canvasLayer.QueueFree();
