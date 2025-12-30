@@ -154,6 +154,13 @@
             </para>
             </summary>
         </member>
+        <member name="M:GodotUtils.GPUParticles2DExtensions.GetParticleProcessMaterial(Godot.GpuParticles2D)">
+            <summary>
+            Returns the ParticleProcessMaterial assigned to the given GPUParticles2D.
+            </summary>
+            <param name="particles">The GPUParticles2D instance to read the process material from.</param>
+            <returns>The ParticleProcessMaterial used by the particles.</returns>
+        </member>
         <member name="M:GodotUtils.InputEventKeyExtensions.Readable(Godot.InputEventKey)">
             <summary>
             <para>Convert to a human readable key</para>
@@ -547,6 +554,24 @@
             <summary>
             Creates a timer bound to <paramref name="node"/> that invokes <paramref name="timeout"/> after <paramref name="seconds"/> and removes itself if <paramref name="oneShot"/> is true. Since the timer is bound to the node, it will get removed if the node is removed.
             </summary>
+        </member>
+        <member name="M:GodotUtils.GpuParticle2DFactory.OneShot(Godot.Node,Godot.PackedScene)">
+            <summary>
+            Instantiates a GPUParticles2D scene as a one-shot effect, frees it automatically when
+            emission finishes, and adds it as a child of the given parent node.
+            </summary>
+            <param name="parent">The node that will own the instantiated particle node.</param>
+            <param name="particleScene">A PackedScene that instantiates to a GPUParticles2D.</param>
+            <returns>The instantiated and configured GPUParticles2D.</returns>
+        </member>
+        <member name="M:GodotUtils.GpuParticle2DFactory.Looping(Godot.Node,Godot.PackedScene)">
+            <summary>
+            Instantiates a GPUParticles2D scene as a looping effect, does not automatically free it,
+            and adds it as a child of the given parent node.
+            </summary>
+            <param name="parent">The node that will own the instantiated particle node.</param>
+            <param name="particleScene">A PackedScene that instantiates to a GPUParticles2D.</param>
+            <returns>The instantiated and configured GPUParticles2D.</returns>
         </member>
         <member name="T:GodotUtils.CacheManager`2">
             <summary>
