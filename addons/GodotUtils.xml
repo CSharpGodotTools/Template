@@ -609,12 +609,13 @@
             Utility class for handling cursor-related operations in a 2D Godot scene.
             </summary>
         </member>
-        <member name="M:GodotUtils.DirectoryUtils.Traverse(System.String,System.Func{System.String,System.Boolean})">
+        <member name="M:GodotUtils.DirectoryUtils.Traverse(System.String,System.Func{GodotUtils.DirectoryUtils.TraverseEntry,GodotUtils.TraverseResult})">
             <summary>
-            Recursively traverses all directories and performs a action on each file path. 
+            Recursively traverses a directory tree and invokes a callback for each file encountered.
+            The callback may control traversal flow (continue, skip directories, or stop traversal).
             
             <code>
-            Traverse("res://", fullFilePath => GD.Print(fullFilePath))
+            Traverse("res://", entry => GD.Print(entry.FullPath));
             </code>
             </summary>
         </member>

@@ -1,6 +1,7 @@
 using Godot;
 using GodotUtils;
 using GodotUtils.RegEx;
+using System;
 using System.IO;
 
 namespace __TEMPLATE__.Setup;
@@ -9,6 +10,7 @@ public static class SetupUtils
 {
     private const string RawTemplateNamespace = "__TEMPLATE__";
     private const string TemplateName = "Template";
+    private const string TemplateMainSceneUid = "uid://dnmu3cujgayk2";
 
     /// <summary>
     /// Verifies the game name is not using the raw template namespace and not any existing class name in the project.
@@ -23,7 +25,7 @@ public static class SetupUtils
         }
 
         // Prevent game name being the same as an existing class name in the project
-        if (SetupUtils.EqualsExistingClassName(name))
+        if (EqualsExistingClassName(name))
         {
             GD.PrintErr($"Namespace {name} is the same name as {name}.cs");
             return true;
@@ -39,15 +41,15 @@ public static class SetupUtils
     {
         bool namespaceSameAsClassName = false;
 
-        DirectoryUtils.Traverse("res://", fullFilePath =>
+        DirectoryUtils.Traverse("res://", entry =>
         {
-            if (Path.GetFileName(fullFilePath).Equals(name + ".cs"))
+            if (entry.FileName.Equals(name + ".cs", StringComparison.OrdinalIgnoreCase))
             {
                 namespaceSameAsClassName = true;
-                return true;
+                return TraverseResult.Stop;
             }
 
-            return false;
+            return TraverseResult.Continue;
         });
 
         return namespaceSameAsClassName;
@@ -61,8 +63,8 @@ public static class SetupUtils
         string text = File.ReadAllText(Path.Combine(path, "project.godot"));
 
         text = text.Replace(
-            "run/main_scene=\"uid://dnmu3cujgayk2\"",
-           $"run/main_scene=\"{SetupUtils.GetUIdFromSceneFile(Path.Combine(path, $"{sceneName}.tscn"))}\"");
+           $"run/main_scene=\"{TemplateMainSceneUid}\"",
+           $"run/main_scene=\"{GetUIdFromSceneFile(Path.Combine(path, $"{sceneName}.tscn"))}\"");
 
         File.WriteAllText(Path.Combine(path, "project.godot"), text);
     }
@@ -128,35 +130,35 @@ public static class SetupUtils
     /// </summary>
     public static void RenameAllNamespaces(string path, string newNamespaceName)
     {
-        DirectoryUtils.Traverse(path, fullFilePath =>
+        DirectoryUtils.Traverse(path, entry =>
         {
             // Ignore these directories
-            switch (Path.GetDirectoryName(fullFilePath).ToLower())
+            switch (entry.FileName.ToLower())
             {
                 case ".godot":
                 case "addons":
                 case "godotutils":
                 case "mods":
-                    return false;
+                    return TraverseResult.SkipDir;
             }
 
             // Prevent modifying the currently executing setup script
-            if (fullFilePath.EndsWith($"{nameof(SetupUI)}.cs"))
-                return false;
+            if (entry.FileName.EndsWith($"{nameof(SetupUI)}.cs"))
+                return TraverseResult.Continue;
 
             // Modify all scripts
-            if (fullFilePath.EndsWith(".cs"))
+            if (entry.FileName.EndsWith(".cs"))
             {
-                string text = File.ReadAllText(fullFilePath);
+                string text = File.ReadAllText(entry.FullPath);
 
                 text = text.Replace($"namespace {RawTemplateNamespace}", $"namespace {newNamespaceName}");
                 text = text.Replace($"using {RawTemplateNamespace}", $"using {newNamespaceName}");
                 text = text.Replace($"{RawTemplateNamespace}.", $"{newNamespaceName}.");
 
-                File.WriteAllText(fullFilePath, text);
+                File.WriteAllText(entry.FullPath, text);
             }
 
-            return true;
+            return TraverseResult.Continue;
         });
     }
 
