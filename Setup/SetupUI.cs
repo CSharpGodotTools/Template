@@ -22,35 +22,19 @@ public partial class SetupUI : Node
 
     private void _OnYesPressed()
     {
-        string gameName = SetupUtils.FormatGameName(_gameNameLineEdit.Text);
+        string rawGameName = _gameNameLineEdit.Text;
+        string formattedGameName = SetupUtils.FormatGameName(rawGameName);
         string path = ProjectSettings.GlobalizePath("res://");
 
-        // Prevent namespace being the same name as a class name in the project
-        bool namespaceSameAsClassName = false;
-
-        DirectoryUtils.Traverse("res://", fullFilePath =>
-        {
-            if (Path.GetFileName(fullFilePath).Equals(_gameNameLineEdit.Text + ".cs"))
-            {
-                namespaceSameAsClassName = true;
-                return true;
-            }
-
-            return false;
-        });
-
-        if (namespaceSameAsClassName)
-        {
-            GD.PrintErr($"Namespace {_gameNameLineEdit.Text} is the same name as {_gameNameLineEdit.Text}.cs");
+        if (SetupUtils.IsGameNameBad(rawGameName))
             return;
-        }
 
         // The IO functions ran below will break if empty folders exist
         DirectoryUtils.DeleteEmptyDirectories(path);
 
         SetupUtils.SetMainScene(path, "Level");
-        SetupUtils.RenameProjectFiles(path, gameName);
-        SetupUtils.RenameAllNamespaces(path, gameName);
+        SetupUtils.RenameProjectFiles(path, formattedGameName);
+        SetupUtils.RenameAllNamespaces(path, formattedGameName);
 
         // Delete the "res://Setup" directory
         Directory.Delete(Path.Combine(path, "Setup"), recursive: true);
