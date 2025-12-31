@@ -7,13 +7,14 @@ namespace __TEMPLATE__.Setup;
 
 public static class SetupUtils
 {
+    private const string RawTemplateNamespace = "__TEMPLATE__";
+    private const string TemplateName = "Template";
+
     /// <summary>
     /// Verifies the game name is not using the raw template namespace and not any existing class name in the project.
     /// </summary>
     public static bool IsGameNameBad(string name)
     {
-        const string RawTemplateNamespace = "__TEMPLATE__";
-
         // Prevent game name being the same as the reserved raw template namespace name
         if (name.Equals(RawTemplateNamespace, System.StringComparison.OrdinalIgnoreCase))
         {
@@ -86,11 +87,11 @@ public static class SetupUtils
         string text = File.ReadAllText(fullPath);
 
         text = text.Replace(
-            "project/assembly_name=\"Template\"",
+            $"project/assembly_name=\"{TemplateName}\"",
             $"project/assembly_name=\"{name}\"");
 
         text = text.Replace(
-            "config/name=\"Template\"",
+            $"config/name=\"{TemplateName}\"",
             $"config/name=\"{name}\""
             );
 
@@ -102,9 +103,9 @@ public static class SetupUtils
     /// </summary>
     private static void RenameSolutionFile(string path, string name)
     {
-        string fullPath = Path.Combine(path, "Template.sln");
+        string fullPath = Path.Combine(path, $"{TemplateName}.sln");
         string text = File.ReadAllText(fullPath);
-        text = text.Replace("Template", name);
+        text = text.Replace(TemplateName, name);
         File.Delete(fullPath);
         File.WriteAllText(Path.Combine(path, name + ".sln"), text);
     }
@@ -114,9 +115,9 @@ public static class SetupUtils
     /// </summary>
     private static void RenameCSProjFile(string path, string name)
     {
-        string fullPath = Path.Combine(path, "Template.csproj");
+        string fullPath = Path.Combine(path, $"{TemplateName}.csproj");
         string text = File.ReadAllText(fullPath);
-        text = text.Replace("<RootNamespace>Template</RootNamespace>", $"<RootNamespace>{name}</RootNamespace>");
+        text = text.Replace($"<RootNamespace>{TemplateName}</RootNamespace>", $"<RootNamespace>{name}</RootNamespace>");
         File.Delete(fullPath);
         File.WriteAllText(Path.Combine(path, name + ".csproj"), text);
     }
@@ -127,16 +128,15 @@ public static class SetupUtils
     /// </summary>
     public static void RenameAllNamespaces(string path, string newNamespaceName)
     {
-        DirectoryUtils.Traverse(path, RenameNamespaces);
-
-        bool RenameNamespaces(string fullFilePath)
+        DirectoryUtils.Traverse(path, fullFilePath =>
         {
             // Ignore these directories
-            switch (Path.GetDirectoryName(fullFilePath))
+            switch (Path.GetDirectoryName(fullFilePath).ToLower())
             {
                 case ".godot":
-                case "GodotUtils":
                 case "addons":
+                case "godotutils":
+                case "mods":
                     return false;
             }
 
@@ -149,18 +149,20 @@ public static class SetupUtils
             {
                 string text = File.ReadAllText(fullFilePath);
 
-                    text = text.Replace($"namespace {oldNamespaceName}", $"namespace {newNamespaceName}");
-                    text = text.Replace($"using {oldNamespaceName}", $"using {newNamespaceName}");
-                    text = text.Replace($"{oldNamespaceName}.", $"{newNamespaceName}.");
+                text = text.Replace($"namespace {RawTemplateNamespace}", $"namespace {newNamespaceName}");
+                text = text.Replace($"using {RawTemplateNamespace}", $"using {newNamespaceName}");
+                text = text.Replace($"{RawTemplateNamespace}.", $"{newNamespaceName}.");
 
-                    File.WriteAllText(fullFilePath, text);
-                }
+                File.WriteAllText(fullFilePath, text);
             }
 
             return true;
-        }
+        });
     }
 
+    /// <summary>
+    /// Retrieves the Uid string from a .tscn scene file at <paramref name="path"/>.
+    /// </summary>
     public static string GetUIdFromSceneFile(string path)
     {
         string uid;
@@ -180,21 +182,33 @@ public static class SetupUtils
         return null;
     }
 
+    /// <summary>
+    /// Formats the <paramref name="text"/> to have a wave effect for BBCode.
+    /// </summary>
     public static string Highlight(string text)
     {
         return $"[wave amp=20.0 freq=2.0 connected=1][color=white]{text}[/color][/wave]";
     }
 
+    /// <summary>
+    /// Formats <paramref name="name"/> by trimming, ensuring first char is uppercase and removing all spaces
+    /// </summary>
     public static string FormatGameName(string name)
     {
         return name.Trim().FirstCharToUpper().Replace(" ", "");
     }
 
+    /// <summary>
+    /// Checks if <paramref name="str"/> is alpha numeric with spaces being allowed.
+    /// </summary>
     public static bool IsAlphaNumericAndAllowSpaces(string str)
     {
         return RegexUtils.AlphaNumericAndSpaces().IsMatch(str);
     }
 
+    /// <summary>
+    /// Displays the game name preview on <paramref name="gameNamePreview"/> using <paramref name="inputName"/>.
+    /// </summary>
     public static void DisplayGameNamePreview(string inputName, RichTextLabel gameNamePreview)
     {
         string name = FormatGameName(inputName);
