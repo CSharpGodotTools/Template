@@ -9,7 +9,7 @@ namespace __TEMPLATE__;
 /// Services have a scene lifetime meaning they will be destroyed when the scene changes. Services
 /// aid as an alternative to using the static keyword everywhere.
 /// </summary>
-public class Services(Autoloads autoloads)
+public class Services(BaseAutoloads autoloads)
 {
     /// <summary>
     /// Dictionary to store registered services, keyed by their type.

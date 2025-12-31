@@ -25,9 +25,9 @@ public partial class OptionsManager : IDisposable
     private ResourceOptions _options;
     private ResourceHotkeys _hotkeys;
     private string _currentOptionsTab = "General";
-    private Autoloads _autoloads;
+    private BaseAutoloads _autoloads;
 
-    public OptionsManager(Autoloads autoloads)
+    public OptionsManager(BaseAutoloads autoloads)
     {
         SetupAutoloads(autoloads);
 
@@ -44,7 +44,7 @@ public partial class OptionsManager : IDisposable
         SetAntialiasing();
     }
 
-    private void SetupAutoloads(Autoloads autoloads)
+    private void SetupAutoloads(BaseAutoloads autoloads)
     {
         _autoloads = autoloads;
         _autoloads.PreQuit += SaveSettingsOnQuit;

@@ -37,7 +37,7 @@ public partial class MainMenuNav : Node
 
     private async void _OnQuitPressed()
     {
-        await Autoloads.Instance.ExitGame();
+        await BaseAutoloads.Instance.ExitGame();
     }
 
     private void _OnDiscordPressed()

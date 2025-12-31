@@ -13,14 +13,15 @@ using GodotUtils.Debugging;
 namespace __TEMPLATE__;
 
 // Autoload
-// Access this with GetNode<Autoloads>("/root/Autoloads")
-public partial class Autoloads : Node
+// Access the managers that live in here through through Game.(...)
+// Alternatively access through GetNode<Autoloads>("/root/Autoloads")
+public partial class BaseAutoloads : Node
 {
     [Export] private MenuScenes _scenes;
 
     public event Func<Task> PreQuit;
 
-    public static Autoloads Instance { get; private set; }
+    public static BaseAutoloads Instance { get; private set; }
 
     public ComponentManager    ComponentManager { get; private set; } // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
     public GameConsole         GameConsole      { get; private set; } // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
@@ -43,7 +44,7 @@ public partial class Autoloads : Node
     public override void _EnterTree()
     {
         if (Instance != null)
-            throw new InvalidOperationException($"{nameof(Autoloads)} has been initialized already");
+            throw new InvalidOperationException($"{nameof(BaseAutoloads)} has been initialized already");
 
         Instance = this;
         ComponentManager = GetNode<ComponentManager>("ComponentManager");

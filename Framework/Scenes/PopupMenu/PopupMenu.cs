@@ -91,7 +91,7 @@ public partial class PopupMenu : Control
 
     private void OnQuitPressed()
     {
-        Autoloads.Instance.ExitGame().FireAndForget();
+        BaseAutoloads.Instance.ExitGame().FireAndForget();
     }
 
     private void CreateOptions()
