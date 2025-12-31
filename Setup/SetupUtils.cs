@@ -5,8 +5,56 @@ using System.IO;
 
 namespace __TEMPLATE__.Setup;
 
-public static partial class SetupUtils
+public static class SetupUtils
 {
+    /// <summary>
+    /// Verifies the game name is not using the raw template namespace and not any existing class name in the project.
+    /// </summary>
+    public static bool IsGameNameBad(string name)
+    {
+        const string RawTemplateNamespace = "__TEMPLATE__";
+
+        // Prevent game name being the same as the reserved raw template namespace name
+        if (name.Equals(RawTemplateNamespace, System.StringComparison.OrdinalIgnoreCase))
+        {
+            GD.PrintErr($"{RawTemplateNamespace} is a reserved name.");
+            return false;
+        }
+
+        // Prevent game name being the same as an existing class name in the project
+        if (SetupUtils.EqualsExistingClassName(name))
+        {
+            GD.PrintErr($"Namespace {name} is the same name as {name}.cs");
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Returns whether or not <paramref name="name"/> is equal to an existing script name in the project.
+    /// </summary>
+    public static bool EqualsExistingClassName(string name)
+    {
+        bool namespaceSameAsClassName = false;
+
+        DirectoryUtils.Traverse("res://", fullFilePath =>
+        {
+            if (Path.GetFileName(fullFilePath).Equals(name + ".cs"))
+            {
+                namespaceSameAsClassName = true;
+                return true;
+            }
+
+            return false;
+        });
+
+        return namespaceSameAsClassName;
+    }
+
+    /// <summary>
+    /// Changes the 'run/main_scene' to <paramref name="sceneName"/> in the project.godot file at <paramref name="path"/>.
+    /// </summary>
     public static void SetMainScene(string path, string sceneName)
     {
         string text = File.ReadAllText(Path.Combine(path, "project.godot"));
@@ -29,6 +77,9 @@ public static partial class SetupUtils
         RenameProjectGodotFile(path, name);
     }
 
+    /// <summary>
+    /// Renames 'project/assembly_name' and 'config/name' to <paramref name="name"/> in the project.godot at <paramref name="path"/>.
+    /// </summary>
     private static void RenameProjectGodotFile(string path, string name)
     {
         string fullPath = Path.Combine(path, "project.godot");
@@ -46,6 +97,9 @@ public static partial class SetupUtils
         File.WriteAllText(fullPath, text);
     }
 
+    /// <summary>
+    /// Renames the .sln file at <paramref name="path"/> to <paramref name="name"/> and replaces all occurences of "Template" in the .sln with <paramref name="name"/>.
+    /// </summary>
     private static void RenameSolutionFile(string path, string name)
     {
         string fullPath = Path.Combine(path, "Template.sln");
@@ -55,6 +109,9 @@ public static partial class SetupUtils
         File.WriteAllText(Path.Combine(path, name + ".sln"), text);
     }
 
+    /// <summary>
+    /// Renames the .csproj file at <paramref name="path"/> to <paramref name="name"/> and replaces the RootNamespace option with <paramref name="name"/>.
+    /// </summary>
     private static void RenameCSProjFile(string path, string name)
     {
         string fullPath = Path.Combine(path, "Template.csproj");
