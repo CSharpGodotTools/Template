@@ -19,17 +19,17 @@ public static class SetupUtils
         if (name.Equals(RawTemplateNamespace, System.StringComparison.OrdinalIgnoreCase))
         {
             GD.PrintErr($"{RawTemplateNamespace} is a reserved name.");
-            return false;
+            return true;
         }
 
         // Prevent game name being the same as an existing class name in the project
         if (SetupUtils.EqualsExistingClassName(name))
         {
             GD.PrintErr($"Namespace {name} is the same name as {name}.cs");
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /// <summary>
