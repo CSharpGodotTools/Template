@@ -140,15 +140,14 @@ public static class SetupUtils
                     return false;
             }
 
+            // Prevent modifying the currently executing setup script
+            if (fullFilePath.EndsWith($"{nameof(SetupUI)}.cs"))
+                return false;
+
             // Modify all scripts
             if (fullFilePath.EndsWith(".cs"))
             {
-                // Do not modify this script
-                if (!fullFilePath.EndsWith("Setup.cs"))
-                {
-                    const string oldNamespaceName = "__TEMPLATE__";
-
-                    string text = File.ReadAllText(fullFilePath);
+                string text = File.ReadAllText(fullFilePath);
 
                     text = text.Replace($"namespace {oldNamespaceName}", $"namespace {newNamespaceName}");
                     text = text.Replace($"using {oldNamespaceName}", $"using {newNamespaceName}");
