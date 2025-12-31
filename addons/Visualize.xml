@@ -1,0 +1,445 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Visualize</name>
+    </assembly>
+    <members>
+        <member name="T:GodotUtils.Debugging.Autoload.MethodName">
+            <summary>
+            Cached StringNames for the methods contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.Autoload.MethodName._EnterTree">
+            <summary>
+            Cached name for the '_EnterTree' method.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.Autoload.MethodName._Process">
+            <summary>
+            Cached name for the '_Process' method.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.Autoload.MethodName._ExitTree">
+            <summary>
+            Cached name for the '_ExitTree' method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.Autoload.GetGodotMethodList">
+            <summary>
+            Get the method information for all the methods declared in this class.
+            This method is used by Godot to register the available methods in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.Autoload.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.NativeVariantPtrArgs,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.Autoload.HasGodotClassMethod(Godot.NativeInterop.godot_string_name@)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GodotUtils.Debugging.Autoload.PropertyName">
+            <summary>
+            Cached StringNames for the properties and fields contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.Autoload.SaveGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.Autoload.RestoreGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GodotUtils.Debugging.Autoload.SignalName">
+            <summary>
+            Cached StringNames for the signals contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.ParameterConverter">
+            <summary>
+            Utility class for converting provided values to method parameters
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualControlTypes">
+            <summary>
+            More utility methods
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.TryGetExportAttributeRange(System.Reflection.MemberInfo,GodotUtils.Debugging.VisualControlTypes.ExportAttributeRange@)">
+            <summary>
+            Checks if the member has [Export(PropertyHint.Range, "0, 1, 0.1")] and gets the min, max, and step values.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.CreateControlForType(System.Type,System.Reflection.MemberInfo,GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a control for the given member type and context
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualControlContext">
+            <summary>
+            Represents the context for a visual control
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlContext.#ctor(System.Collections.Generic.List{GodotUtils.Debugging.VisualSpinBox},System.Object,System.Action{System.Object})">
+            <summary>
+            Represents the context for a visual control
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualData">
+            <summary>
+            Represents a node to be visualized
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualData.#ctor(Godot.Node,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Collections.Generic.IEnumerable{System.Reflection.FieldInfo},System.Collections.Generic.IEnumerable{System.Reflection.MethodInfo})">
+            <summary>
+            Represents a node to be visualized
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualHandler">
+            <summary>
+            A set of utility methods for handling the VisualizeAttribute
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeAttributeHandler">
+            <summary>
+            Handles the VisualizeAttribute
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualMethods">
+            <summary>
+            Methods that can be executed manually by pressing a button in-game. Parameters are supported.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualMethods.CreateMethodParameterControls(System.Reflection.MethodInfo,System.Collections.Generic.List{GodotUtils.Debugging.VisualSpinBox},System.Object[])">
+            <summary>
+            Creates the UI needed for the method parameters
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualUI">
+            <summary>
+            The main core class for the visualizer UI
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.LoadEmbeddedTexture(System.String)">
+            <summary>
+            Loads a PNG image embedded in the assembly as a resource and converts it into an ImageTexture.
+            The <paramref name="resourceName"/> must be the fully qualified path including the namespace 
+            and folders, for example "Visualize.Icons.EyeOpen.png".
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.CreateVisualPanel(GodotUtils.Debugging.VisualData,System.String[])">
+            <summary>
+            Creates the visual panel for a specified visual node.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.SetButtonsToReleaseFocusOnPress(Godot.VBoxContainer)">
+            <summary>
+            Ensures buttons release focus on press within a VBoxContainer.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.CreateColoredVBox(Godot.Color)">
+            <summary>
+            Creates a colored VBoxContainer with specified RGB values.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.CreatePanelContainer(System.String)">
+            <summary>
+            Creates a panel container with a specified name.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.TryGetMemberInfo(Godot.Node,System.String,System.Reflection.PropertyInfo@,System.Reflection.FieldInfo@,System.Object@)">
+            <summary>
+            Attempts to get member information for a Internal.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.AddReadonlyControls(System.String[],Godot.Node,Godot.Control,System.Collections.Generic.List{System.Action},System.Collections.Generic.List{GodotUtils.Debugging.VisualSpinBox})">
+            <summary>
+            Adds visual controls for specified members of a Internal.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.CreateCanvasLayer(System.String,System.UInt64)">
+            <summary>
+            Creates a canvas layer for a Internal with a specified name and instance ID.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.TryAddReadonlyControlAsync(System.String,Godot.Control,Godot.Node,System.Reflection.FieldInfo,System.Reflection.PropertyInfo,System.Collections.Generic.List{System.Action},System.Collections.Generic.List{GodotUtils.Debugging.VisualSpinBox})">
+            <summary>
+            Asynchronously tries to add a visual control for a Internal member.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.AddReadonlyControl(System.String,Godot.Control,Godot.Node,System.Reflection.FieldInfo,System.Reflection.PropertyInfo,System.Object,System.Collections.Generic.List{System.Action},System.Collections.Generic.List{GodotUtils.Debugging.VisualSpinBox})">
+            <summary>
+            Adds a visual control to the UI for a Internal member.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.AddMutableControls(Godot.Control,System.Collections.Generic.IEnumerable{System.Reflection.MemberInfo},Godot.Node,System.Collections.Generic.List{GodotUtils.Debugging.VisualSpinBox})">
+            <summary>
+            Adds member information elements to a VBoxContainer.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.CreateMemberInfoElement(System.Reflection.MemberInfo,Godot.Node,System.Collections.Generic.List{GodotUtils.Debugging.VisualSpinBox})">
+            <summary>
+            Creates a member information element for a specified Internal member.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.ExampleScene.MethodName">
+            <summary>
+            Cached StringNames for the methods contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.ExampleScene.MethodName._Ready">
+            <summary>
+            Cached name for the '_Ready' method.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.ExampleScene.MethodName._PhysicsProcess">
+            <summary>
+            Cached name for the '_PhysicsProcess' method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ExampleScene.GetGodotMethodList">
+            <summary>
+            Get the method information for all the methods declared in this class.
+            This method is used by Godot to register the available methods in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ExampleScene.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.NativeVariantPtrArgs,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.ExampleScene.HasGodotClassMethod(Godot.NativeInterop.godot_string_name@)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GodotUtils.Debugging.ExampleScene.PropertyName">
+            <summary>
+            Cached StringNames for the properties and fields contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.ExampleScene.PropertyName._cameraSpeed">
+            <summary>
+            Cached name for the '_cameraSpeed' field.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.ExampleScene.PropertyName._spriteExampleScene">
+            <summary>
+            Cached name for the '_spriteExampleScene' field.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.ExampleScene.PropertyName._camera">
+            <summary>
+            Cached name for the '_camera' field.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ExampleScene.SetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.ExampleScene.GetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.ExampleScene.GetGodotPropertyList">
+            <summary>
+            Get the property information for all the properties declared in this class.
+            This method is used by Godot to register the available properties in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ExampleScene.GetGodotPropertyDefaultValues">
+            <summary>
+            Get the default values for all properties declared in this class.
+            This method is used by Godot to determine the value that will be
+            used by the inspector when resetting properties.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ExampleScene.SaveGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.ExampleScene.RestoreGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GodotUtils.Debugging.ExampleScene.SignalName">
+            <summary>
+            Cached StringNames for the signals contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.MethodName">
+            <summary>
+            Cached StringNames for the methods contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.MethodName._EnterTree">
+            <summary>
+            Cached name for the '_EnterTree' method.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.MethodName._PhysicsProcess">
+            <summary>
+            Cached name for the '_PhysicsProcess' method.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.MethodName.PrintEnum">
+            <summary>
+            Cached name for the 'PrintEnum' method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.GetGodotMethodList">
+            <summary>
+            Get the method information for all the methods declared in this class.
+            This method is used by Godot to register the available methods in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.NativeVariantPtrArgs,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.HasGodotClassMethod(Godot.NativeInterop.godot_string_name@)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName">
+            <summary>
+            Cached StringNames for the properties and fields contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._rotation">
+            <summary>
+            Cached name for the '_rotation' field.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._color">
+            <summary>
+            Cached name for the '_color' field.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._skew">
+            <summary>
+            Cached name for the '_skew' field.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._offset">
+            <summary>
+            Cached name for the '_offset' field.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.SetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.GetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.GetGodotPropertyList">
+            <summary>
+            Get the property information for all the properties declared in this class.
+            This method is used by Godot to register the available properties in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.SaveGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.RestoreGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.SignalName">
+            <summary>
+            Cached StringNames for the signals contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.Visualize">
+            <summary>
+            This logger shows all messages in game making it easier to debug
+            </summary> 
+        </member>
+        <member name="T:Godot.OnImportEditorPlugin.MethodName">
+            <summary>
+            Cached StringNames for the methods contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetSaveExtension">
+            <summary>
+            Cached name for the '_GetSaveExtension' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetResourceType">
+            <summary>
+            Cached name for the '_GetResourceType' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetImporterName">
+            <summary>
+            Cached name for the '_GetImporterName' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetVisibleName">
+            <summary>
+            Cached name for the '_GetVisibleName' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetRecognizedExtensions">
+            <summary>
+            Cached name for the '_GetRecognizedExtensions' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetPriority">
+            <summary>
+            Cached name for the '_GetPriority' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetImportOrder">
+            <summary>
+            Cached name for the '_GetImportOrder' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetPresetCount">
+            <summary>
+            Cached name for the '_GetPresetCount' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetPresetName">
+            <summary>
+            Cached name for the '_GetPresetName' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetOptionVisibility">
+            <summary>
+            Cached name for the '_GetOptionVisibility' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetImportOptions">
+            <summary>
+            Cached name for the '_GetImportOptions' method.
+            </summary>
+        </member>
+        <member name="F:Godot.OnImportEditorPlugin.MethodName._Import">
+            <summary>
+            Cached name for the '_Import' method.
+            </summary>
+        </member>
+        <member name="M:Godot.OnImportEditorPlugin.GetGodotMethodList">
+            <summary>
+            Get the method information for all the methods declared in this class.
+            This method is used by Godot to register the available methods in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:Godot.OnImportEditorPlugin.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.NativeVariantPtrArgs,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Godot.OnImportEditorPlugin.HasGodotClassMethod(Godot.NativeInterop.godot_string_name@)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Godot.OnImportEditorPlugin.PropertyName">
+            <summary>
+            Cached StringNames for the properties and fields contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="M:Godot.OnImportEditorPlugin.SaveGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Godot.OnImportEditorPlugin.RestoreGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Godot.OnImportEditorPlugin.SignalName">
+            <summary>
+            Cached StringNames for the signals contained in this class, for fast lookup.
+            </summary>
+        </member>
+    </members>
+</doc>
