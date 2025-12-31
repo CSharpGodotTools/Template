@@ -14,7 +14,7 @@ public class AudioManager : IDisposable
 
     private AudioStreamPlayer   _musicPlayer;
     private ResourceOptions     _options;
-    private Autoloads           _autoloads;
+    private BaseAutoloads       _autoloads;
     private float               _lastPitch;
 
     private GodotNodePool<AudioStreamPlayer2D> _sfxPool;
@@ -22,7 +22,7 @@ public class AudioManager : IDisposable
     /// <summary>
     /// Initializes the AudioManager by attaching a music player to the given autoload node.
     /// </summary>
-    public AudioManager(Autoloads autoloads)
+    public AudioManager(BaseAutoloads autoloads)
     {
         SetupFields(autoloads);
         SetupSfxPool();
@@ -111,7 +111,7 @@ public class AudioManager : IDisposable
         }
     }
 
-    private void SetupFields(Autoloads autoloads)
+    private void SetupFields(BaseAutoloads autoloads)
     {
         _autoloads = autoloads;
         _options = Game.Options.GetOptions();

@@ -17,10 +17,10 @@ public class SceneManager
 
     private MenuScenes _menuScenes;
     private SceneTree _tree;
-    private Autoloads _autoloads;
+    private BaseAutoloads _autoloads;
     private Node _currentScene;
 
-    public SceneManager(Autoloads autoloads, MenuScenes scenes)
+    public SceneManager(BaseAutoloads autoloads, MenuScenes scenes)
     {
         SetupFields(autoloads, scenes);
 
@@ -70,7 +70,7 @@ public class SceneManager
         PreSceneChanged?.Invoke(sceneName);
 
         // Wait for engine to be ready before switching scenes
-        _autoloads.CallDeferred(nameof(Autoloads.DeferredSwitchSceneProxy), sceneFilePath, Variant.From(TransType.None));
+        _autoloads.CallDeferred(nameof(BaseAutoloads.DeferredSwitchSceneProxy), sceneFilePath, Variant.From(TransType.None));
 
         PostSceneChanged?.Invoke(sceneName);
     }
@@ -104,7 +104,7 @@ public class SceneManager
         }
     }
 
-    private void SetupFields(Autoloads autoloads, MenuScenes scenes)
+    private void SetupFields(BaseAutoloads autoloads, MenuScenes scenes)
     {
         _autoloads = autoloads;
         _menuScenes = scenes;
@@ -120,7 +120,7 @@ public class SceneManager
     private void ChangeScene(string scenePath, TransType transType)
     {
         // Wait for engine to be ready before switching scenes
-        _autoloads.CallDeferred(nameof(Autoloads.DeferredSwitchSceneProxy), scenePath, Variant.From(transType));
+        _autoloads.CallDeferred(nameof(BaseAutoloads.DeferredSwitchSceneProxy), scenePath, Variant.From(transType));
     }
 
     private void FadeTo(TransColor transColor, double duration, Action finished = null)

@@ -23,7 +23,7 @@ public class Commands
 
     private async static void CommandQuit(string[] args)
     {
-        await Autoloads.Instance.ExitGame();
+        await BaseAutoloads.Instance.ExitGame();
     }
 
     private static void CommandDebug(string[] args)

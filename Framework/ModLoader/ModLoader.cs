@@ -86,7 +86,7 @@ public partial class ModLoader : Node
     {
         //OS.CreateProcess(OS.GetExecutablePath(), null);
         OS.CreateInstance(null);
-        await Autoloads.Instance.ExitGame();
+        await BaseAutoloads.Instance.ExitGame();
     }
 
     private static void _OnOpenModsFolderPressed()
