@@ -9,9 +9,9 @@
             Cached StringNames for the methods contained in this class, for fast lookup.
             </summary>
         </member>
-        <member name="F:GodotUtils.Debugging.Autoload.MethodName._Ready">
+        <member name="F:GodotUtils.Debugging.Autoload.MethodName._EnterTree">
             <summary>
-            Cached name for the '_Ready' method.
+            Cached name for the '_EnterTree' method.
             </summary>
         </member>
         <member name="F:GodotUtils.Debugging.Autoload.MethodName._Process">
