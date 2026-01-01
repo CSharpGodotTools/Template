@@ -75,7 +75,7 @@ public class Services(BaseAutoloads autoloads)
         // The scene has changed, remove all services
         _sceneManager.PreSceneChanged += Cleanup;
 
-        void Cleanup(string scene)
+        void Cleanup()
         {
             // Stop listening to PreSceneChanged
             _sceneManager.PreSceneChanged -= Cleanup;

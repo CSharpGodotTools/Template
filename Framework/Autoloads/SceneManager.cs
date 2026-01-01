@@ -8,8 +8,8 @@ namespace __TEMPLATE__;
 // About Scene Switching: https://docs.godotengine.org/en/latest/tutorials/scripting/singletons_autoload.html
 public class SceneManager
 {
-    public event Action<string> PreSceneChanged;
-    public event Action<string> PostSceneChanged;
+    public event Action PreSceneChanged;
+    public event Action PostSceneChanged;
 
     public const int DefaultSceneFadeDuration = 2;
 
@@ -42,7 +42,7 @@ public class SceneManager
     {
         ArgumentNullException.ThrowIfNull(scene);
         string path = scene.ResourcePath;
-        PreSceneChanged?.Invoke(path);
+        PreSceneChanged?.Invoke();
 
         switch (transType)
         {
@@ -54,7 +54,7 @@ public class SceneManager
                 break;
         }
 
-        PostSceneChanged?.Invoke(path);
+        PostSceneChanged?.Invoke();
     }
 
     /// <summary>
@@ -67,12 +67,12 @@ public class SceneManager
         string[] words = sceneFilePath.Split("/");
         string sceneName = words[words.Length - 1].Replace(".tscn", "");
 
-        PreSceneChanged?.Invoke(sceneName);
+        PreSceneChanged?.Invoke();
 
         // Wait for engine to be ready before switching scenes
         _autoloads.CallDeferred(nameof(BaseAutoloads.DeferredSwitchSceneProxy), sceneFilePath, Variant.From(TransType.None));
 
-        PostSceneChanged?.Invoke(sceneName);
+        PostSceneChanged?.Invoke();
     }
 
     public void DeferredSwitchScene(string rawName, Variant transTypeVariant)
@@ -115,7 +115,7 @@ public class SceneManager
         _currentScene = root.GetChild(root.GetChildCount() - 1);
     }
 
-    private void OnPreSceneChanged(string scene) => Game.Audio.FadeOutSFX();
+    private void OnPreSceneChanged() => Game.Audio.FadeOutSFX();
 
     private void ChangeScene(string scenePath, TransType transType)
     {

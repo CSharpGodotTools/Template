@@ -44,7 +44,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         }
     }
 
-    private void OnPreSceneChanged(string scene)
+    private void OnPreSceneChanged()
     {
         _outline.Visible = false;
         _currentFocus = null;
