@@ -24,7 +24,7 @@ script = ExtResource("1_31ojt")
 _scenes = SubResource("Resource_yre3b")
 
 [node name="ComponentManager" type="Node" parent="."]
-process_mode = 1
+process_mode = 3
 script = ExtResource("3_sycog")
 
 [node name="Debug" type="CanvasLayer" parent="."]
