@@ -9,9 +9,7 @@
     <a href="https://discord.gg/j8HQZZ76r8"><img src="https://img.shields.io/discord/955956101554266132?label=discord&style=flat&color=3399FF&labelColor=1a1a1a" alt="Discord" /></a>
 </div>
 
-----
-
-**Highlights**
+## Highlights
 - **[Cat Lips Source Generators](https://github.com/CSharpGodotTools/Template/wiki/Source-Generators)**
 - **[Component Manager](https://github.com/CSharpGodotTools/Template/wiki/Component-Manager)**
 - **[Debugging Tools](https://github.com/CSharpGodotTools/Template/wiki/In%E2%80%90Game-Debugging)**
@@ -21,27 +19,21 @@
 - **[Services](https://github.com/CSharpGodotTools/Template/wiki/Services)**
 - **[Simplified Tweens](https://github.com/CSharpGodotTools/Template/wiki/Simplified-Tweens)**
 
-<div align="center">
-    <h2>Setup</h2>
-</div>
-
-First make sure you have the following.
+## Prerequisites
 - [.NET SDK](https://dotnet.microsoft.com/download) is at least `8.0.400`. Check with `dotnet --version`.
 - [Latest Godot C# Release](https://godotengine.org/)
 - [Custom ENet build](https://github.com/CSharpGodotTools/Template/wiki/Custom-ENet-Builds) may be required if using Mac or Linux
 
-Download the [latest stable release](https://github.com/CSharpGodotTools/Template/releases/latest).
-
-Press play (`F5`) to run the setup and click apply changes. Godot will restart with your template ready to go.
+## Install  
+1. Click [here](https://github.com/new?template_name=Template&template_owner=CSharpGodotTools) to create a new repository with this template.
+2. Open `project.godot` and press play (`F5`) to run the setup.
+3. Click apply changes and Godot will restart with your template ready to go.
 
 <img width="1589" height="875" alt="image" src="https://github.com/user-attachments/assets/50d0b1ef-4d63-48e9-bb9a-84fe3c1e3391" />
 
-<div align="center">
-    <h2>Thank You</h2>
-</div>
-
-[Brian Shao](https://github.com/cydq) for helping with cross-platform compatibility.  
-[Piep Matz](https://github.com/riffy) for helping with the drag drop system.  
-[Vaggelismsxp](https://github.com/vaggelismsxp) for helping improve the options theme.
+## Thank You
+[Brian Shao](https://github.com/cydq)  
+[Piep Matz](https://github.com/riffy)  
+[Vaggelismsxp](https://github.com/vaggelismsxp)  
 
 New contributors please read [this](https://github.com/CSharpGodotTools/Template/wiki/Contributing).
