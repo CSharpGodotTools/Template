@@ -881,9 +881,6 @@
             <summary>
             Base class that implements the API shared by all Godot tween builders.
             </summary>
-            <typeparam name="TSelf">
-            The concrete subclass type (e.g. <see cref="T:GodotUtils.NodeTween"/> or <see cref="T:GodotUtils.NodeTweenProp"/>).
-            </typeparam>
         </member>
         <member name="F:GodotUtils.BaseTween`1._node">
             <summary>The <see cref="T:Godot.Node"/> that the tween will operate on.</summary>
@@ -905,10 +902,27 @@
             </summary>
             <param name="node">The node that will be animated.</param>
         </member>
-        <member name="M:GodotUtils.BaseTween`1.Delay(Godot.Node,System.Double,System.Action)">
+        <member name="M:GodotUtils.BaseTween`1.PropertyTo(System.String,Godot.Variant,System.Double)">
             <summary>
-            A delay in <paramref name="seconds"/> followed by a <paramref name="callback"/>
+            Animates the specified <paramref name="property"/> of the bound <see cref="T:Godot.Node"/>.
+            The tween uses a <see cref="F:Godot.Tween.TransitionType.Sine"/> transition by default.
+            
+            <code>
+            var tween = new <see cref="T:GodotUtils.NodeTween2D"/>(this);
+            tween.Animate(ColorRect.PropertyName.Color, Colors.Transparent, 0.5);
+            </code>
+            
             </summary>
+            
+            <param name="property">
+            The name of the property to animate (e.g. <c>ColorRect.PropertyName.Color</c>).
+            </param>
+            
+            <param name="finalValue">The value the property should reach.</param>
+            
+            <param name="duration">How long, in seconds, the animation should take.</param>
+            
+            <returns>The current <see cref="T:GodotUtils.NodeTween2D"/> instance for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.SetProcessMode(Godot.Tween.TweenProcessMode)">
             <summary>Sets the <see cref="T:Godot.Tween"/> processing mode to the specified <paramref name="mode"/>.</summary>
@@ -942,7 +956,7 @@
             </code></para>
             </summary>
         </member>
-        <member name="M:GodotUtils.BaseTween`1.Callback(System.Action)">
+        <member name="M:GodotUtils.BaseTween`1.Then(System.Action)">
             <summary>Registers a callback to be invoked when the tween reaches this point in the chain.</summary>
         </member>
         <member name="M:GodotUtils.BaseTween`1.Delay(System.Double)">
@@ -1042,47 +1056,7 @@
             Throws an exception if no tweener has been created (i.e., <c>Animate(...)</c> has not been called yet).
             </summary>
         </member>
-        <member name="P:GodotUtils.BaseTween`1.Self">
-            <summary>Provides a strongly‑typed reference to the concrete subclass (used for chaining).</summary>
-        </member>
-        <member name="T:GodotUtils.NodeTween">
-            <summary>
-            Provides an API for animating a property of a <see cref="T:Godot.Node"/> using Godot’s Tween system.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.NodeTween.#ctor(Godot.Node)">
-            <summary>
-            Provides an API for animating a property of a <see cref="T:Godot.Node"/> using Godot’s Tween system.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.NodeTween.Animate(System.String,Godot.Variant,System.Double)">
-            <summary>
-            Animates the specified <paramref name="property"/> of the bound <see cref="T:Godot.Node"/>.
-            The tween uses a <see cref="F:Godot.Tween.TransitionType.Sine"/> transition by default.
-            
-            <code>
-            var tween = new <see cref="T:GodotUtils.NodeTween"/>(this);
-            tween.Animate(ColorRect.PropertyName.Color, Colors.Transparent, 0.5);
-            </code>
-            
-            </summary>
-            
-            <param name="property">
-            The name of the property to animate (e.g. <c>ColorRect.PropertyName.Color</c>).
-            </param>
-            
-            <param name="finalValue">The value the property should reach.</param>
-            
-            <param name="duration">How long, in seconds, the animation should take.</param>
-            
-            <returns>The current <see cref="T:GodotUtils.NodeTween"/> instance for chaining.</returns>
-        </member>
         <member name="T:GodotUtils.NodeTween2D">
-            <summary>
-            Provides tweening functionality for Node2D properties.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.NodeTween2D.#ctor(Godot.Node2D)">
             <summary>
             Provides tweening functionality for Node2D properties.
             </summary>
@@ -1092,22 +1066,12 @@
             Provides tweening functionality for Control properties.
             </summary>
         </member>
-        <member name="M:GodotUtils.NodeTweenControl.#ctor(Godot.Control)">
-            <summary>
-            Provides tweening functionality for Control properties.
-            </summary>
-        </member>
         <member name="T:GodotUtils.NodeTweenProp">
             <summary>
             Provides an API for animating a property of a <see cref="T:Godot.Node"/> using Godot’s Tween system.
             </summary>
         </member>
-        <member name="M:GodotUtils.NodeTweenProp.#ctor(Godot.Node,System.String)">
-            <summary>
-            Provides an API for animating a property of a <see cref="T:Godot.Node"/> using Godot’s Tween system.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.NodeTweenProp.Animate(Godot.Variant,System.Double)">
+        <member name="M:GodotUtils.NodeTweenProp.PropertyTo(Godot.Variant,System.Double)">
             <summary>
             Animates the specified property of the bound <see cref="T:Godot.Node"/>.
             The tween uses a <see cref="F:Godot.Tween.TransitionType.Sine"/> transition by default.
@@ -1133,14 +1097,13 @@
             attached to a <see cref="T:Godot.Node2D"/> using Godot’s Tween system.
             </summary>
         </member>
-        <member name="M:GodotUtils.ShaderTween.#ctor(Godot.Node)">
+        <member name="M:GodotUtils.ShaderTween.#ctor(Godot.CanvasItem)">
             <summary>
-            Creates a new <see cref="T:GodotUtils.ShaderTween"/> bound to the supplied <paramref name="node"/>.
+            Creates a new <see cref="T:GodotUtils.ShaderTween"/> bound to <paramref name="canvasItem"/>.
             The node must have a <see cref="T:Godot.ShaderMaterial"/> assigned to its <c>Material</c> property.
             </summary>
-            <param name="node">The <see cref="T:Godot.Node2D"/> whose shader material will be animated.</param>
         </member>
-        <member name="M:GodotUtils.ShaderTween.Animate(System.String,Godot.Variant,System.Double)">
+        <member name="M:GodotUtils.ShaderTween.PropertyTo(System.String,Godot.Variant,System.Double)">
             <summary>
             Animates the shader parameter identified by <paramref name="shaderParam"/>.
             The tween uses a <see cref="F:Godot.Tween.TransitionType.Sine"/> transition by default.
@@ -1186,7 +1149,7 @@
             assigned to its <c>Material</c> property.
             </exception>
         </member>
-        <member name="M:GodotUtils.ShaderTweenProp.Animate(Godot.Variant,System.Double)">
+        <member name="M:GodotUtils.ShaderTweenProp.PropertyTo(Godot.Variant,System.Double)">
             <summary>
             Animates the shader‑parameter supplied to the constructor.
             The tween uses a <see cref="F:Godot.Tween.TransitionType.Sine"/> transition by default.
@@ -1202,6 +1165,69 @@
             How long, in seconds, the animation should take.
             </param>
             <returns>The current <see cref="T:GodotUtils.ShaderTweenProp"/> instance for chaining.</returns>
+        </member>
+        <member name="M:GodotUtils.Tweens.Animate(Godot.Node)">
+            <summary>
+            Creates a <see cref="T:GodotUtils.NodeTween"/> bound to <paramref name="node"/>.
+            </summary>
+            <returns>The <see cref="T:GodotUtils.NodeTween"/> for chain building.</returns>
+        </member>
+        <member name="M:GodotUtils.Tweens.Animate(Godot.Node,System.String)">
+            <summary>
+            Creates a <see cref="T:GodotUtils.NodeTweenProp"/> bound to <paramref name="node"/> ready to animate on <paramref name="property"/>.
+            </summary>
+            <returns>The <see cref="T:GodotUtils.NodeTweenProp"/> for chain building.</returns>
+        </member>
+        <member name="M:GodotUtils.Tweens.Animate(Godot.Node2D)">
+            <summary>
+            Creates a <see cref="T:GodotUtils.NodeTween2D"/> bound to <paramref name="node"/>.
+            </summary>
+            <returns>The <see cref="T:GodotUtils.NodeTween2D"/> for chain building.</returns>
+        </member>
+        <member name="M:GodotUtils.Tweens.Animate(Godot.Control)">
+            <summary>
+            Creates a <see cref="T:GodotUtils.NodeTweenControl"/> bound to <paramref name="control"/>.
+            </summary>
+            <returns>The <see cref="T:GodotUtils.NodeTweenControl"/> for chain building.</returns>
+        </member>
+        <member name="M:GodotUtils.Tweens.AnimateShader(Godot.CanvasItem)">
+            <summary>
+            Creates a <see cref="T:GodotUtils.ShaderTween"/> bound to <paramref name="canvasItem"/>.
+            </summary>
+            <returns>The <see cref="T:GodotUtils.ShaderTween"/> for chain building.</returns>
+        </member>
+        <member name="M:GodotUtils.Tweens.AnimateShader(Godot.CanvasItem,System.String)">
+            <summary>
+            Creates a <see cref="T:GodotUtils.ShaderTween"/> bound to <paramref name="canvasItem"/> ready to animate <paramref name="property"/>.
+            </summary>
+            <returns>The <see cref="T:GodotUtils.ShaderTween"/> for chain building.</returns>
+        </member>
+        <member name="M:GodotUtils.Tweens.Animate(Godot.Node2D,System.String)">
+            <summary>
+            Creates a tween bound to <paramref name="node"/> ready to animate on the <paramref name="property"/>.
+            </summary>
+            <returns>The tween for chain building.</returns>
+        </member>
+        <member name="M:GodotUtils.Tweens.Animate(Godot.Control,System.String)">
+            <summary>
+            Creates a tween bound to <paramref name="control"/> ready to animate on the <paramref name="property"/>.
+            </summary>
+            <returns>The tween for chain building.</returns>
+        </member>
+        <member name="M:GodotUtils.Tweens.Delay(Godot.Node,System.Double,System.Action)">
+            <summary>
+            Creates a <see cref="T:GodotUtils.NodeTween"/> bound to <paramref name="node"/> and runs <paramref name="callback"/> after <paramref name="seconds"/>.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Tweens.Delay(Godot.Node2D,System.Double,System.Action)">
+            <summary>
+            Creates a <see cref="T:GodotUtils.NodeTween2D"/> bound to <paramref name="node"/> and runs <paramref name="callback"/> after <paramref name="seconds"/>.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Tweens.Delay(Godot.Control,System.Double,System.Action)">
+            <summary>
+            Creates a <see cref="T:GodotUtils.NodeTweenControl"/> bound to <paramref name="control"/> and runs <paramref name="callback"/> after <paramref name="seconds"/>.
+            </summary>
         </member>
         <member name="M:GodotUtils.VectorUtils.Random">
             <summary>

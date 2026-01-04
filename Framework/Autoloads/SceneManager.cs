@@ -143,9 +143,9 @@ public class SceneManager
         canvasLayer.AddChild(colorRect);
 
         // Animate color rect
-        new NodeTweenProp(colorRect, ColorRect.PropertyName.Color)
-            .Animate(new Color(0, 0, 0, transColor == TransColor.Black ? 1 : 0), duration)
-            .Callback(() =>
+        Tweens.Animate(colorRect, ColorRect.PropertyName.Color)
+            .PropertyTo(new Color(0, 0, 0, transColor == TransColor.Black ? 1 : 0), duration)
+            .Then(() =>
             {
                 canvasLayer.QueueFree();
                 finished?.Invoke();

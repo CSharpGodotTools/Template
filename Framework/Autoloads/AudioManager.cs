@@ -83,7 +83,8 @@ public class AudioManager : IDisposable
     {
         foreach (AudioStreamPlayer2D sfxPlayer in _sfxPool.ActiveNodes)
         {
-            new NodeTween(sfxPlayer).Animate(AudioStreamPlayer.PropertyName.VolumeDb, MutedVolume, fadeTime);
+            Tweens.Animate(sfxPlayer, AudioStreamPlayer.PropertyName.VolumeDb)
+                .PropertyTo(MutedVolume, fadeTime);
         }
     }
 
@@ -164,10 +165,10 @@ public class AudioManager : IDisposable
     /// </summary>
     private static void PlayAudioCrossfade(AudioStreamPlayer player, AudioStream song, float volume, double fadeOut, double fadeIn)
     {
-        new NodeTweenProp(player, AudioStreamPlayer.PropertyName.VolumeDb)
-            .Animate(MutedVolume, fadeOut).EaseIn()
-            .Callback(() => PlayAudio(player, song, volume))
-            .Animate(NormalizeConfigVolume(volume), fadeIn).EaseIn();
+        Tweens.Animate(player, AudioStreamPlayer.PropertyName.VolumeDb)
+            .PropertyTo(MutedVolume, fadeOut).EaseIn()
+            .Then(() => PlayAudio(player, song, volume))
+            .PropertyTo(NormalizeConfigVolume(volume), fadeIn).EaseIn();
     }
 
     /// <summary>
