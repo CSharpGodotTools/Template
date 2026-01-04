@@ -53,8 +53,6 @@ public class SceneManager
                 FadeTo(TransColor.Black, DefaultSceneFadeDuration, () => ChangeScene(path, transType));
                 break;
         }
-
-        PostSceneChanged?.Invoke();
     }
 
     /// <summary>
@@ -71,8 +69,6 @@ public class SceneManager
 
         // Wait for engine to be ready before switching scenes
         _autoloads.CallDeferred(nameof(BaseAutoloads.DeferredSwitchSceneProxy), sceneFilePath, Variant.From(TransType.None));
-
-        PostSceneChanged?.Invoke();
     }
 
     public void DeferredSwitchScene(string rawName, Variant transTypeVariant)
@@ -102,6 +98,8 @@ public class SceneManager
                 FadeTo(TransColor.Transparent, 1);
                 break;
         }
+
+        PostSceneChanged?.Invoke();
     }
 
     private void SetupFields(BaseAutoloads autoloads, MenuScenes scenes)
