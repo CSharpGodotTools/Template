@@ -29,7 +29,7 @@
 2. Open `project.godot` and press play (`F5`) to run the setup.
 3. Click apply changes and Godot will restart with your template ready to go.
 
-<img width="1589" height="875" alt="image" src="https://github.com/user-attachments/assets/50d0b1ef-4d63-48e9-bb9a-84fe3c1e3391" />
+![SetupPreview](https://github.com/user-attachments/assets/b43f59bb-34b4-414c-a979-705d9a31d91b)
 
 ## Thank You
 [Brian Shao](https://github.com/cydq)  
@@ -37,3 +37,8 @@
 [Vaggelismsxp](https://github.com/vaggelismsxp)  
 
 New contributors please read [this](https://github.com/CSharpGodotTools/Template/wiki/Contributing).
+
+![MainMenuPreview](https://github.com/user-attachments/assets/e2cf3c4f-ea22-4b26-85df-a953383a9b99)  
+![OptionsPreview](https://github.com/user-attachments/assets/7d744362-7c70-4f17-9262-c5e77182e942)  
+![MainScenePreview](https://github.com/user-attachments/assets/817f1cda-68ff-4d9c-bda5-6628e2d501b6)  
+![TweensPreview](https://github.com/user-attachments/assets/38b352bc-a8f6-49f9-ad9a-d0e85a55e081)
