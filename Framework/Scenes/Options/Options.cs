@@ -21,10 +21,32 @@ public partial class Options : PanelContainer
         _optionsGraphics = new OptionsGraphics(this, _optionsNav.GraphicsButton);
         _optionsAudio = new OptionsAudio(this);
         _optionsInput = new OptionsInput(this, _optionsNav.InputButton);
+
+        VisibilityChanged += OnVisibilityChanged;
+
+        Game.Scene.PostSceneChanged += OnPostSceneChanged;
     }
 
     public override void _Input(InputEvent @event)
     {
         _optionsInput.HandleInput(@event);
+    }
+
+    public override void _ExitTree()
+    {
+        Game.Scene.PostSceneChanged -= OnPostSceneChanged;
+        VisibilityChanged -= OnVisibilityChanged;
+    }
+
+    private void OnPostSceneChanged()
+    {
+        if (Visible)
+            Game.FocusOutline.Focus(GetNode("%Nav").GetChild<Button>(0));
+    }
+
+    private void OnVisibilityChanged()
+    {
+        if (Visible)
+            GetNode("%Nav").GetChild<Button>(0).GrabFocus();
     }
 }

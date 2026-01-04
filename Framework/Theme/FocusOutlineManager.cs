@@ -1,4 +1,5 @@
 using Godot;
+using System;
 
 namespace __TEMPLATE__.UI;
 
@@ -15,17 +16,18 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
     private Control _currentFocus;
     private Control _outline;
     private float _time;
-    private bool _ignoreNextFocus;
     private Node _owner = owner;
+    private Viewport _viewport;
+    private PopupMenu _popupMenu;
     //private float _lastInputTime;
 
     public override void Ready()
     {
-        _outline = _owner.GetNode<Control>("CornerDashOutline");
-        _outline.Visible = false;
-
-        _owner.GetViewport().GuiFocusChanged += OnGuiFocusChanged;
-        Game.Scene.PreSceneChanged += OnPreSceneChanged;
+        _outline = _owner.GetNode<Control>("%CornerDashOutline");
+        _outline.Hide();
+        _viewport = _owner.GetViewport();
+        _viewport.GuiFocusChanged += OnGuiFocusChanged;
+        Game.Scene.PostSceneChanged += OnPostSceneChanged;
 
         SetProcess(false);
         SetInput(true);
@@ -42,13 +44,6 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
             _lastNavigation = NavigationMethod.KeyboardOrGamepad;
             //_lastInputTime = (float)(Time.GetTicksUsec() / 1_000_000.0);
         }
-    }
-
-    private void OnPreSceneChanged()
-    {
-        _outline.Visible = false;
-        _currentFocus = null;
-        SetProcess(false);
     }
 
     public override void Process(double delta)
@@ -80,41 +75,89 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         _outline.Size = _currentFocus.Size + padding * 2;
     }
 
-    /// <summary>
-    /// Prevents the focus outline from appearing on next received input.
-    /// Use this when setting a control as focused with <c>GrabFocus()</c> but don't 
-    /// want the focus outline to show.
-    /// </summary>
-    public void IgnoreNextFocus()
+    public override void Dispose()
     {
-        _ignoreNextFocus = true;
+        _viewport.GuiFocusChanged -= OnGuiFocusChanged;
+        Game.Scene.PostSceneChanged -= OnPostSceneChanged;
+    }
+
+    public void RegisterPopupMenu(PopupMenu popupMenu)
+    {
+        if (_popupMenu != null)
+            throw new InvalidOperationException("Popup menu was registered already.");
+
+        _popupMenu = popupMenu;
+        _popupMenu.Closed += OnPopupMenuClosed;
+        _popupMenu.OptionsClosed += OnOptionsClosed;
+    }
+
+    public void UnregisterPopupMenu(PopupMenu popupMenu)
+    {
+        if (_popupMenu == popupMenu)
+        {
+            _popupMenu.Closed -= OnPopupMenuClosed;
+            _popupMenu.OptionsClosed -= OnOptionsClosed;
+            _popupMenu = null;
+        }
+    }
+
+    private void OnPopupMenuClosed()
+    {
+        Disable();
+    }
+
+    private void OnOptionsClosed()
+    {
+        Disable();
+    }
+
+    /// <summary>
+    /// Focused on the targeted <paramref name="focus"/> control.
+    /// </summary>
+    public void Focus(Control focus)
+    {
+        Enable(focus);
+    }
+
+    private void OnPostSceneChanged()
+    {
+        Disable();
+    }
+
+    private void Enable(Control focus)
+    {
+        _currentFocus = focus;
+        _currentFocus.GrabFocus();
+        _outline.Show();
+        SetProcess(true);
+    }
+
+    private void Disable()
+    {
+        _outline.Hide();
+        _currentFocus = null;
+        SetProcess(false);
     }
 
     private void OnGuiFocusChanged(Control newFocus)
     {
-        if (_ignoreNextFocus)
-        {
-            _ignoreNextFocus = false;
-            return;
-        }
-
         _currentFocus = newFocus;
 
         if (_currentFocus != null && _lastNavigation == NavigationMethod.KeyboardOrGamepad)
         {
-            _outline.Visible = true;
+            _outline.Show();
             SetProcess(true);
         }
         else
         {
-            _outline.Visible = false;
+            _outline.Hide();
             SetProcess(false);
         }
     }
 
     private enum NavigationMethod
     {
-        Mouse,
-        KeyboardOrGamepad
+        KeyboardOrGamepad,
+        Mouse
     }
 }

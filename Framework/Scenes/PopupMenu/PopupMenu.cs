@@ -18,6 +18,8 @@ public partial class PopupMenu : Control
 
     public event Action Opened;
     public event Action Closed;
+    public event Action OptionsOpened;
+    public event Action OptionsClosed;
     public event Action MainMenuBtnPressed;
 
     private GameConsole _console;
@@ -38,6 +40,7 @@ public partial class PopupMenu : Control
         _quitBtn.Pressed += OnQuitPressed;
 
         Game.Services.Register(this);
+        Game.FocusOutline.RegisterPopupMenu(this);
         CreateOptions();
         HideOptions();
         Hide();
@@ -64,10 +67,22 @@ public partial class PopupMenu : Control
         ToggleGamePause();
     }
 
+    public override void _ExitTree()
+    {
+        _resumeBtn.Pressed -= OnResumePressed;
+        _restartBtn.Pressed -= OnRestartPressed;
+        _optionsBtn.Pressed -= OnOptionsPressed;
+        _mainMenuBtn.Pressed -= OnMainMenuPressed;
+        _quitBtn.Pressed -= OnQuitPressed;
+
+        Game.FocusOutline.UnregisterPopupMenu(this);
+    }
+
     private void OnResumePressed()
     {
         Hide();
         GetTree().Paused = false;
+        Closed?.Invoke();
     }
 
     private void OnRestartPressed()
@@ -104,15 +119,22 @@ public partial class PopupMenu : Control
     {
         _options.ProcessMode = ProcessModeEnum.Always;
         _options.Show();
+        OptionsOpened?.Invoke();
     }
 
     private void HideOptions()
     {
         _options.ProcessMode = ProcessModeEnum.Disabled;
         _options.Hide();
+        OptionsClosed?.Invoke();
+        FocusResumeBtn();
     }
 
-    private void ShowPopupMenu() => _menu.Show();
+    private void ShowPopupMenu()
+    {
+        _menu.Show();
+    }
+
     private void HidePopupMenu() => _menu.Hide();
 
     private void ToggleGamePause()
@@ -123,11 +145,14 @@ public partial class PopupMenu : Control
             PauseGame();
     }
 
+    private void FocusResumeBtn() => GetNode<Button>("%Resume").GrabFocus();
+
     private void PauseGame()
     {
         Visible = true;
         GetTree().Paused = true;
         Opened?.Invoke();
+        FocusResumeBtn();
     }
 
     private void ResumeGame()

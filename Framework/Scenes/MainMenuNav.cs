@@ -11,8 +11,13 @@ public partial class MainMenuNav : Node
     public override void _Ready()
     {
         _scene = Game.Scene;
-        Game.FocusOutline.IgnoreNextFocus();
-        GetNode<Button>("Play").GrabFocus();
+        FocusOnPlayBtn();
+        Game.Scene.PostSceneChanged += OnPostSceneChanged;
+    }
+
+    public override void _ExitTree()
+    {
+        Game.Scene.PostSceneChanged -= OnPostSceneChanged;
     }
 
     private void _OnPlayPressed()
@@ -48,5 +53,15 @@ public partial class MainMenuNav : Node
     private void _OnGitHubPressed()
     {
         OS.ShellOpen("https://github.com/ValksGodotTools/Template");
+    }
+
+    private void OnPostSceneChanged()
+    {
+        FocusOnPlayBtn();
+    }
+
+    private void FocusOnPlayBtn()
+    {
+        Game.FocusOutline.Focus(GetNode<Button>("Play"));
     }
 }

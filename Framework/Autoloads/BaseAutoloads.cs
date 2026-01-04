@@ -44,7 +44,7 @@ public partial class BaseAutoloads : Node
     public override void _EnterTree()
     {
         if (Instance != null)
-            throw new InvalidOperationException($"{nameof(BaseAutoloads)} has been initialized already");
+            throw new InvalidOperationException($"{nameof(BaseAutoloads)} has been initialized already. Did you try to run the Autoloads scene by itself?");
 
         Instance = this;
         ComponentManager = GetNode<ComponentManager>("ComponentManager");

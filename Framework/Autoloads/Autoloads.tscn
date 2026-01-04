@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://cj4fbh1a1lpq4"]
+[gd_scene load_steps=12 format=3 uid="uid://cj4fbh1a1lpq4"]
 
 [ext_resource type="Script" uid="uid://maw341aqkttj" path="res://Framework/Autoloads.cs" id="1_31ojt"]
 [ext_resource type="PackedScene" uid="uid://rbcqvr4snrvn" path="res://Framework/Scenes/MenuUI/Credits/Credits.tscn" id="2_3cpyl"]
@@ -18,6 +18,9 @@ Options = ExtResource("5_6wcni")
 Credits = ExtResource("2_3cpyl")
 metadata/_custom_type_script = "uid://17yxgcswri77"
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_3cpyl"]
+light_mode = 1
+
 [node name="Autoloads" type="Node"]
 process_mode = 3
 script = ExtResource("1_31ojt")
@@ -33,8 +36,13 @@ layer = 128
 [node name="Console" parent="Debug" instance=ExtResource("4_8po21")]
 unique_name_in_owner = true
 
-[node name="CornerDashOutline" type="NinePatchRect" parent="."]
-z_index = 1
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="CornerDashOutline" type="NinePatchRect" parent="CanvasLayer"]
+unique_name_in_owner = true
+top_level = true
+z_index = 4096
+material = SubResource("CanvasItemMaterial_3cpyl")
 offset_right = 40.0
 offset_bottom = 40.0
 texture = ExtResource("9_3cpyl")
