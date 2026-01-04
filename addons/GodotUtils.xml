@@ -902,7 +902,7 @@
             </summary>
             <param name="node">The node that will be animated.</param>
         </member>
-        <member name="M:GodotUtils.BaseTween`1.PropertyTo(System.String,Godot.Variant,System.Double)">
+        <member name="M:GodotUtils.BaseTween`1.Property(System.String,Godot.Variant,System.Double)">
             <summary>
             Animates the specified <paramref name="property"/> of the bound <see cref="T:Godot.Node"/>.
             The tween uses a <see cref="F:Godot.Tween.TransitionType.Sine"/> transition by default.
@@ -1103,7 +1103,7 @@
             The node must have a <see cref="T:Godot.ShaderMaterial"/> assigned to its <c>Material</c> property.
             </summary>
         </member>
-        <member name="M:GodotUtils.ShaderTween.PropertyTo(System.String,Godot.Variant,System.Double)">
+        <member name="M:GodotUtils.ShaderTween.Property(System.String,Godot.Variant,System.Double)">
             <summary>
             Animates the shader parameter identified by <paramref name="shaderParam"/>.
             The tween uses a <see cref="F:Godot.Tween.TransitionType.Sine"/> transition by default.
