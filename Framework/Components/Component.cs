@@ -25,6 +25,14 @@ public class Component : IDisposable
     public virtual void UnhandledInput(InputEvent @event) { }
     public virtual void Dispose() { }
 
+    public void SetActive(bool active)
+    {
+        SetProcess(active);
+        SetPhysicsProcess(active);
+        SetInput(active);
+        SetUnhandledInput(active);
+    }
+
     protected void SetProcess(bool enabled)
     {
         if (enabled)
