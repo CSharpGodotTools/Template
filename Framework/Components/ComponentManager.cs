@@ -26,33 +26,33 @@ public partial class ComponentManager : Node
     // Handle Godot overrides
     public override void _Process(double delta)
     {
-        foreach (Component component in _process)
+        for (int i = _process.Count - 1; i >= 0; i--)
         {
-            component.Process(delta);
+            _process[i].Process(delta);
         }
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        foreach (Component component in _physicsProcess)
+        for (int i = _physicsProcess.Count - 1; i >= 0; i--)
         {
-            component.PhysicsProcess(delta);
+            _physicsProcess[i].PhysicsProcess(delta);
         }
     }
 
     public override void _Input(InputEvent @event)
     {
-        foreach (Component component in _input)
+        for (int i = _input.Count - 1; i >= 0; i--)
         {
-            component.ProcessInput(@event);
+            _input[i].ProcessInput(@event);
         }
     }
 
     public override void _UnhandledInput(InputEvent @event)
     {
-        foreach (Component component in _unhandledInput)
+        for (int i = _unhandledInput.Count - 1; i >= 0; i--)
         {
-            component.UnhandledInput(@event);
+            _unhandledInput[i].UnhandledInput(@event);
         }
     }
 
