@@ -17,7 +17,7 @@ public class AudioManager : IDisposable
     private BaseAutoloads       _autoloads;
     private float               _lastPitch;
 
-    private GodotPool<PAudioStreamPlayer2D> _sfxPool;
+    private Pool<AudioStreamPlayer2D> _sfxPool;
 
     /// <summary>
     /// Initializes the AudioManager by attaching a music player to the given autoload node.
@@ -60,7 +60,7 @@ public class AudioManager : IDisposable
     /// </summary>
     public void PlaySFX(AudioStream sound, Vector2 position, float minPitch = MinDefaultRandomPitch, float maxPitch = MaxDefaultRandomPitch)
     {
-        PAudioStreamPlayer2D sfxPlayer = _sfxPool.Get();
+        AudioStreamPlayer2D sfxPlayer = _sfxPool.Acquire();
 
         sfxPlayer.GlobalPosition = position;
         sfxPlayer.Stream = sound;
@@ -119,8 +119,7 @@ public class AudioManager : IDisposable
 
     private void SetupSfxPool()
     {
-        _sfxPool = new GodotPool<PAudioStreamPlayer2D>(_autoloads,
-            () => new PAudioStreamPlayer2D());
+        _sfxPool = new Pool<AudioStreamPlayer2D>(_autoloads, () => new AudioStreamPlayer2D());
     }
 
     private void SetupMusicPlayer()
@@ -176,18 +175,5 @@ public class AudioManager : IDisposable
     private static float NormalizeConfigVolume(float volume)
     {
         return volume == 0 ? MutedVolume : volume.Remap(0, 100, MutedVolumeNormalized, 0);
-    }
-}
-
-public partial class PAudioStreamPlayer2D : AudioStreamPlayer2D, IPoolable<PAudioStreamPlayer2D>
-{
-    public void AssignPool(GodotPool<PAudioStreamPlayer2D> pool)
-    {
-        // Do not need a reference to pool right now
-    }
-
-    public void SetActive(bool active)
-    {
-        // Do not need to do any special enabling or disabling for AudioStreamPlayer2D
     }
 }

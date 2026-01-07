@@ -573,16 +573,6 @@
             <param name="particleScene">A PackedScene that instantiates to a GPUParticles2D.</param>
             <returns>The instantiated and configured GPUParticles2D.</returns>
         </member>
-        <member name="M:GodotUtils.IPoolable`1.SetActive(System.Boolean)">
-            <summary>
-            Enable or disable the <typeparamref name="TNode"/>. This usually involves enabling or disabling all scripts from running.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.IPoolable`1.AssignPool(GodotUtils.GodotPool{`0})">
-            <summary>
-            The pool is assigned before <c>_Ready()</c> is called.
-            </summary>
-        </member>
         <member name="T:GodotUtils.CacheManager`2">
             <summary>
             A generic cache manager that stores and retrieves objects based on a key.
@@ -612,6 +602,12 @@
         <member name="M:GodotUtils.ColorUtils.Random(System.Int32)">
             <summary>
             Generate a random color
+            </summary>
+        </member>
+        <member name="T:GodotUtils.ComponentManager">
+            <summary>
+            Using any kind of Godot functions from C# is expensive, so we try to minimize this with centralized logic.
+            See <see href="https://www.reddit.com/r/godot/comments/1me7669/a_follow_up_to_my_first_c_stress_test/">stress test results</see>.
             </summary>
         </member>
         <member name="T:GodotUtils.CursorUtils">
@@ -692,37 +688,6 @@
             Clears all objects from the cache.
             </summary>
         </member>
-        <member name="T:GodotUtils.GodotPool`1">
-            <summary>
-            Creates a pool of nodes to eliminate expensive queue free calls.
-            </summary>
-            <typeparam name="TNode">The nodes managed in the pool.</typeparam>
-        </member>
-        <member name="P:GodotUtils.GodotPool`1.ActiveNodes">
-            <summary>
-            Nodes currently in use by the pool.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.GodotPool`1.#ctor(Godot.Node,System.Func{`0})">
-            <summary>
-            Creates a pool of nodes using <paramref name="createNode"/> and attaches them as children of <paramref name="parent"/> to avoid expensive <c>QueueFree()</c> calls.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.GodotPool`1.Get">
-            <summary>
-            Returns an available <typeparamref name="TNode"/> or creates a new one if all are in use.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.GodotPool`1.Release(`0)">
-            <summary>
-            Releases the <paramref name="node"/> from the pool.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.GodotPool`1.QueueFreeAll">
-            <summary>
-            Queue frees all inactive and active nodes in the pool.
-            </summary>
-        </member>
         <member name="M:GodotUtils.MathUtils.SumNaturalNumbers(System.Int32)">
             <summary>
             <para>Returns the sum of the first n natural numbers</para>
@@ -740,6 +705,174 @@
             collision layer you would do the following.</para>
             
             <code>player.CollisionLayer = GU.GetLayerValues(1, 4, 5)</code>
+            </summary>
+        </member>
+        <member name="T:GodotUtils.ComponentPool`1">
+            <summary>
+            Creates a pool of nodes to eliminate expensive QueueFree calls.
+            <code>
+            // Create the pool
+            GodotPool pool = new(parentNode, () => projectilePackedScene.Instantiate());
+            
+            // Get a projectile from the pool
+            Projectile projectile = pool.Acquire();
+            
+            // Projectile goes off screen or dies
+            projectile.Release(); // Never use QueueFree()
+            </code>
+            </summary>
+            <typeparam name="TNode">The nodes managed in the pool.</typeparam>
+        </member>
+        <member name="P:GodotUtils.ComponentPool`1.ActiveNodes">
+            <summary>
+            Nodes currently in use by the pool.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ComponentPool`1.#ctor(Godot.Node,System.Func{`0})">
+            <summary>
+            Creates a pool of nodes using <paramref name="createNodeFunc"/> and attaches them as children of <paramref name="parent"/> to avoid expensive <c>QueueFree()</c> calls.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ComponentPool`1.Acquire">
+            <summary>
+            Returns an available <typeparamref name="TNode"/> or creates a new one if all are in use.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ComponentPool`1.Release(`0)">
+            <summary>
+            Releases the <paramref name="node"/> from the pool.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ComponentPool`1.QueueFreeAll">
+            <summary>
+            Queue frees all inactive and active nodes in the pool.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.IComponentPoolable`1.OnCreate(GodotUtils.ComponentPool{`0})">
+            <summary>
+            Invoked when a new <typeparamref name="TNode"/> is created.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.IPoolable`1.OnCreate(GodotUtils.LifecyclePool{`0})">
+            <summary>
+            Invoked when a new <typeparamref name="TNode"/> is created.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.IPoolable`1.OnAcquire">
+            <summary>
+            Invoked when a <typeparamref name="TNode"/> is aquired with <c><see cref="T:GodotUtils.PoolCore`1"/>.Get()</c>
+            </summary>
+        </member>
+        <member name="M:GodotUtils.IPoolable`1.OnRelease">
+            <summary>
+            Invoked when a <typeparamref name="TNode"/> is released from the pool.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.LifecyclePool`1">
+            <summary>
+            Creates a pool of nodes to eliminate expensive QueueFree calls.
+            <code>
+            // Create the pool
+            GodotPool pool = new(parentNode, () => projectilePackedScene.Instantiate());
+            
+            // Get a projectile from the pool
+            Projectile projectile = pool.Acquire();
+            
+            // Projectile goes off screen or dies
+            projectile.Release(); // Never use QueueFree()
+            </code>
+            </summary>
+            <typeparam name="TNode">The nodes managed in the pool.</typeparam>
+        </member>
+        <member name="P:GodotUtils.LifecyclePool`1.ActiveNodes">
+            <summary>
+            Nodes currently in use by the pool.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.LifecyclePool`1.#ctor(Godot.Node,System.Func{`0})">
+            <summary>
+            Creates a pool of nodes using <paramref name="createNodeFunc"/> and attaches them as children of <paramref name="parent"/> to avoid expensive <c>QueueFree()</c> calls.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.LifecyclePool`1.Acquire">
+            <summary>
+            Returns an available <typeparamref name="TNode"/> or creates a new one if all are in use.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.LifecyclePool`1.Release(`0)">
+            <summary>
+            Releases the <paramref name="node"/> from the pool.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.LifecyclePool`1.QueueFreeAll">
+            <summary>
+            Queue frees all inactive and active nodes in the pool.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Pool`1">
+            <summary>
+            Creates a pool of nodes to eliminate expensive QueueFree calls.
+            <code>
+            // Create the pool
+            GodotPool pool = new(parentNode, () => projectilePackedScene.Instantiate());
+            
+            // Get a projectile from the pool
+            Projectile projectile = pool.Acquire();
+            
+            // Projectile goes off screen or dies
+            projectile.Release(); // Never use QueueFree()
+            </code>
+            </summary>
+            <typeparam name="TNode">The nodes managed in the pool.</typeparam>
+        </member>
+        <member name="P:GodotUtils.Pool`1.ActiveNodes">
+            <summary>
+            Nodes currently in use by the pool.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Pool`1.#ctor(Godot.Node,System.Func{`0})">
+            <summary>
+            Creates a pool of nodes using <paramref name="createNodeFunc"/> and attaches them as children of <paramref name="parent"/> to avoid expensive <c>QueueFree()</c> calls.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Pool`1.Acquire">
+            <summary>
+            Returns an available <typeparamref name="TNode"/> or creates a new one if all are in use.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Pool`1.Release(`0)">
+            <summary>
+            Releases the <paramref name="node"/> from the pool.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Pool`1.QueueFreeAll">
+            <summary>
+            Queue frees all inactive and active nodes in the pool.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.PoolCore`1.ActiveNodes">
+            <summary>
+            Nodes currently in use by the pool.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.PoolCore`1.#ctor(Godot.Node,System.Func{`0})">
+            <summary>
+            Creates a pool of nodes using <paramref name="createNodeFunc"/> and attaches them as children of <paramref name="parent"/> to avoid expensive <c>QueueFree()</c> calls.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.PoolCore`1.Acquire(System.Action{`0},System.Action{`0})">
+            <summary>
+            Returns an available <typeparamref name="TNode"/> or creates a new one if all are in use.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.PoolCore`1.Release(`0,System.Action{`0})">
+            <summary>
+            Releases the <paramref name="node"/> from the pool.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.PoolCore`1.QueueFreeAll">
+            <summary>
+            Queue frees all inactive and active nodes in the pool.
             </summary>
         </member>
         <member name="M:GodotUtils.RegEx.RegexUtils.ScriptPath">
