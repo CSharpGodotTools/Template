@@ -21,7 +21,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
     #endregion
 
     #region Godot Overrides
-    public override void Ready()
+    protected override void Ready()
     {
         _outline = _owner.GetNode<Control>("%CornerDashOutline");
         _outline.Hide();
@@ -32,7 +32,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         SetInput(true);
     }
 
-    public override void ProcessInput(InputEvent @event)
+    protected override void ProcessInput(InputEvent @event)
     {
         if (@event is InputEventMouse)
         {
@@ -45,7 +45,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         }
     }
 
-    public override void Process(double delta)
+    protected override void Process(double delta)
     {
         if (_currentFocus == null)
             return;
@@ -67,7 +67,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         _outline.Size = _currentFocus.Size + padding * 2;
     }
 
-    public override void Dispose()
+    protected override void Dispose()
     {
         _viewport.GuiFocusChanged -= OnGuiFocusChanged;
     }
