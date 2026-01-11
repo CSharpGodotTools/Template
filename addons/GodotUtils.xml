@@ -1215,20 +1215,15 @@
             <summary>
             Animates the specified property of the bound <see cref="T:Godot.Node"/>.
             The tween uses a <see cref="F:Godot.Tween.TransitionType.Sine"/> transition by default.
-            
             <code>
-            var tween = new <see cref="T:GodotUtils.NodeTweenProp"/>(this, ColorRect.PropertyName.Color);
-            tween.Animate(Colors.Red, 0.5);
-            tween.Animate(Colors.Green, 0.5);
-            tween.Animate(Colors.Blue, 0.5);
+            Tweens.Animate(this, ColorRect.PropertyName.Color);
+            tween.PropertyTo(Colors.Red, 0.5);
+            tween.PropertyTo(Colors.Green, 0.5);
+            tween.PropertyTo(Colors.Blue, 0.5);
             </code>
-            
             </summary>
-            
             <param name="finalValue">The value the property should reach.</param>
-            
             <param name="duration">How long, in seconds, the animation should take.</param>
-            
             <returns>The current <see cref="T:GodotUtils.NodeTweenProp"/> instance for chaining.</returns>
         </member>
         <member name="T:GodotUtils.ShaderTween">
