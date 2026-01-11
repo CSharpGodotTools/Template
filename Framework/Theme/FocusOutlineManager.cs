@@ -5,18 +5,22 @@ namespace __TEMPLATE__.UI;
 
 public partial class FocusOutlineManager(Node owner) : Component(owner)
 {
-    // Config
+    #region Config
     private float _flashSpeed = 4f;
     private float _minAlpha = 0.35f;
     private float _maxAlpha = 0.7f;
+    #endregion
 
+    #region Variables
     private NavigationMethod _lastNavigation = NavigationMethod.Mouse;
+    private Viewport _viewport;
     private Control _currentFocus;
     private Control _outline;
-    private float _time;
     private Node _owner = owner;
-    private Viewport _viewport;
+    private float _time;
+    #endregion
 
+    #region Godot Overrides
     public override void Ready()
     {
         _outline = _owner.GetNode<Control>("%CornerDashOutline");
@@ -67,7 +71,9 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
     {
         _viewport.GuiFocusChanged -= OnGuiFocusChanged;
     }
+    #endregion
 
+    #region API
     public void Focus(Control focus)
     {
         _currentFocus = focus;
@@ -82,7 +88,9 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         _currentFocus = null;
         SetProcess(false);
     }
+    #endregion
 
+    #region Subscribers
     private void OnGuiFocusChanged(Control newFocus)
     {
         _currentFocus = newFocus;
@@ -98,6 +106,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
             SetProcess(false);
         }
     }
+    #endregion
 
     private enum NavigationMethod
     {
