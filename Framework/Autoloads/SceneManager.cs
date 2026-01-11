@@ -100,6 +100,7 @@ public class SceneManager
         }
 
         PostSceneChanged?.Invoke();
+        Game.FocusOutline.ClearFocus();
     }
 
     private void SetupFields(BaseAutoloads autoloads, MenuScenes scenes)

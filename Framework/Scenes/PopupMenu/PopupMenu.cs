@@ -38,9 +38,9 @@ public partial class PopupMenu : Control
     public override void _Ready()
     {
         ProcessMode = ProcessModeEnum.Always;
+        Game.Services.Register(this);
         InitializeNodes();
         RegisterNodeEvents();
-        RegisterGlobalHandlers();
 
         CreateOptions();
         HideOptions();
@@ -71,11 +71,10 @@ public partial class PopupMenu : Control
     public override void _ExitTree()
     {
         UnregisterNodeEvents();
-        UnregisterGlobalHandlers();
     }
     #endregion
 
-    #region Initialization
+    #region Initialization Methods
     private void InitializeNodes()
     {
         _console = Game.Console;
@@ -106,17 +105,6 @@ public partial class PopupMenu : Control
         _mainMenuBtn.Pressed -= OnMainMenuPressed;
         _quitBtn.Pressed -= OnQuitPressed;
     }
-
-    private void RegisterGlobalHandlers()
-    {
-        Game.Services.Register(this);
-        Game.FocusOutline.RegisterPopupMenu(this);
-    }
-
-    private void UnregisterGlobalHandlers()
-    {
-        Game.FocusOutline.UnregisterPopupMenu(this);
-    }
     #endregion
 
     #region Popup Menu
@@ -138,6 +126,7 @@ public partial class PopupMenu : Control
         _options.ProcessMode = ProcessModeEnum.Disabled;
         _options.Hide();
         OptionsClosed?.Invoke();
+        Game.FocusOutline.ClearFocus();
         FocusResumeBtn();
     }
 
@@ -162,6 +151,7 @@ public partial class PopupMenu : Control
         Visible = false;
         GetTree().Paused = false;
         Closed?.Invoke();
+        Game.FocusOutline.ClearFocus();
     }
 
     private void FocusResumeBtn() => _resumeBtn.GrabFocus();
@@ -175,6 +165,7 @@ public partial class PopupMenu : Control
         Hide();
         GetTree().Paused = false;
         Closed?.Invoke();
+        Game.FocusOutline.ClearFocus();
     }
 
     private void OnRestartPressed()

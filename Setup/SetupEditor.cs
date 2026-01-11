@@ -1,5 +1,4 @@
 using Godot;
-using System;
 using System.Diagnostics;
 
 namespace __TEMPLATE__.Setup;

@@ -1,6 +1,5 @@
 using Godot;
 using GodotUtils;
-using System;
 
 namespace __TEMPLATE__.UI;
 
@@ -10,8 +9,6 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
     private float _flashSpeed = 4f;
     private float _minAlpha = 0.35f;
     private float _maxAlpha = 0.7f;
-    //private float _fadeDelay = 2f;
-    //private float _fadeSpeed = 2f;
 
     private NavigationMethod _lastNavigation = NavigationMethod.Mouse;
     private Control _currentFocus;
@@ -19,8 +16,6 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
     private float _time;
     private Node _owner = owner;
     private Viewport _viewport;
-    private PopupMenu _popupMenu;
-    //private float _lastInputTime;
 
     public override void Ready()
     {
@@ -28,7 +23,6 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         _outline.Hide();
         _viewport = _owner.GetViewport();
         _viewport.GuiFocusChanged += OnGuiFocusChanged;
-        Game.Scene.PostSceneChanged += OnPostSceneChanged;
 
         SetProcess(false);
         SetInput(true);
@@ -58,13 +52,6 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         float t = Mathf.Sin(_time * _flashSpeed) * 0.5f + 0.5f;
         float alpha = Mathf.Lerp(_minAlpha, _maxAlpha, t);
 
-        // Fade out if inactive
-        /*double currentTime = Time.GetTicksUsec() / 1_000_000.0; // seconds
-        float inactiveTime = (float)(currentTime - _lastInputTime);
-
-        if (inactiveTime > _fadeDelay)
-            alpha = Mathf.Lerp(alpha, 0f, (inactiveTime - _fadeDelay) * _fadeSpeed);*/
-
         // Modulate
         Color c = _outline.Modulate;
         c.A = alpha;
@@ -79,53 +66,9 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
     public override void Dispose()
     {
         _viewport.GuiFocusChanged -= OnGuiFocusChanged;
-        Game.Scene.PostSceneChanged -= OnPostSceneChanged;
     }
 
-    public void RegisterPopupMenu(PopupMenu popupMenu)
-    {
-        if (_popupMenu != null)
-            throw new InvalidOperationException("Popup menu was registered already.");
-
-        _popupMenu = popupMenu;
-        _popupMenu.Closed += OnPopupMenuClosed;
-        _popupMenu.OptionsClosed += OnOptionsClosed;
-    }
-
-    public void UnregisterPopupMenu(PopupMenu popupMenu)
-    {
-        if (_popupMenu == popupMenu)
-        {
-            _popupMenu.Closed -= OnPopupMenuClosed;
-            _popupMenu.OptionsClosed -= OnOptionsClosed;
-            _popupMenu = null;
-        }
-    }
-
-    private void OnPopupMenuClosed()
-    {
-        Disable();
-    }
-
-    private void OnOptionsClosed()
-    {
-        Disable();
-    }
-
-    /// <summary>
-    /// Focused on the targeted <paramref name="focus"/> control.
-    /// </summary>
     public void Focus(Control focus)
-    {
-        Enable(focus);
-    }
-
-    private void OnPostSceneChanged()
-    {
-        Disable();
-    }
-
-    private void Enable(Control focus)
     {
         _currentFocus = focus;
         _currentFocus.GrabFocus();
@@ -133,7 +76,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         SetProcess(true);
     }
 
-    private void Disable()
+    public void ClearFocus()
     {
         _outline.Hide();
         _currentFocus = null;
