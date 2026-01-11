@@ -1,19 +1,30 @@
 using Godot;
+using System;
 
 namespace __TEMPLATE__.UI;
 
-public partial class OptionsAudio
+public partial class OptionsAudio : IDisposable
 {
+    #region Fields
     private ResourceOptions _options;
-    private readonly Options options;
+    private readonly HSlider _musicSlider;
+    private readonly HSlider _sfxSlider;
+    #endregion
 
     public OptionsAudio(Options options)
     {
-        this.options = options;
+        _musicSlider = options.GetNode<HSlider>("%Music");
+        _sfxSlider = options.GetNode<HSlider>("%Sounds");
 
         GetOptions();
         SetupMusic();
         SetupSounds();
+    }
+
+    public void Dispose()
+    {
+        _musicSlider.ValueChanged -= OnMusicValueChanged;
+        _sfxSlider.ValueChanged -= OnSoundsValueChanged;
     }
 
     private void GetOptions()
@@ -23,16 +34,14 @@ public partial class OptionsAudio
 
     private void SetupMusic()
     {
-        HSlider slider = options.GetNode<HSlider>("%Music");
-        slider.Value = _options.MusicVolume;
-        slider.ValueChanged += OnMusicValueChanged;
+        _musicSlider.Value = _options.MusicVolume;
+        _musicSlider.ValueChanged += OnMusicValueChanged;
     }
 
     private void SetupSounds()
     {
-        HSlider slider = options.GetNode<HSlider>("%Sounds");
-        slider.Value = _options.SFXVolume;
-        slider.ValueChanged += OnSoundsValueChanged;
+        _sfxSlider.Value = _options.SFXVolume;
+        _sfxSlider.ValueChanged += OnSoundsValueChanged;
     }
 
     private void OnMusicValueChanged(double v)

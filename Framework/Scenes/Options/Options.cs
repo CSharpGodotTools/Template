@@ -1,9 +1,11 @@
 using Godot;
+using GodotUtils;
 
 namespace __TEMPLATE__.UI;
 
 public partial class Options : PanelContainer
 {
+    #region Fields
     private OptionsNav _optionsNav;
     private OptionsGeneral _optionsGeneral;
     private OptionsGameplay _optionsGameplay;
@@ -11,9 +13,13 @@ public partial class Options : PanelContainer
     private OptionsGraphics _optionsGraphics;
     private OptionsAudio _optionsAudio;
     private OptionsInput _optionsInput;
+    private Node _navNode;
+    #endregion
 
+    #region Godot Overrides
     public override void _Ready()
     {
+        _navNode = GetNode("%Nav");
         _optionsNav = new OptionsNav(this, GetNode<Label>("%Title"));
         _optionsGeneral = new OptionsGeneral(this, _optionsNav.GeneralButton);
         _optionsGameplay = new OptionsGameplay(this, _optionsNav.GameplayButton);
@@ -34,19 +40,30 @@ public partial class Options : PanelContainer
 
     public override void _ExitTree()
     {
+        _optionsNav.Dispose();
+        _optionsGeneral.Dispose();
+        _optionsGameplay.Dispose();
+        _optionsDisplay.Dispose();
+        _optionsGraphics.Dispose();
+        _optionsAudio.Dispose();
+        _optionsInput.Dispose();
+
         Game.Scene.PostSceneChanged -= OnPostSceneChanged;
         VisibilityChanged -= OnVisibilityChanged;
     }
+    #endregion
 
+    #region Subscribers
     private void OnPostSceneChanged()
     {
         if (Visible)
-            Game.FocusOutline.Focus(GetNode("%Nav").GetChild<Button>(0));
+            Game.FocusOutline.Focus(_navNode.GetChild<Button>(0));
     }
 
     private void OnVisibilityChanged()
     {
         if (Visible)
-            GetNode("%Nav").GetChild<Button>(0).GrabFocus();
+            _navNode.GetChild<Button>(0).GrabFocus();
     }
+    #endregion
 }

@@ -4,10 +4,15 @@ namespace __TEMPLATE__.UI;
 
 public partial class MainMenuNav : Node
 {
+    #region Exports
     [Export] private PackedScene _gameScene;
+    #endregion
 
+    #region Fields
     private SceneManager _scene;
+    #endregion
 
+    #region Godot Overrides
     public override void _Ready()
     {
         _scene = Game.Scene;
@@ -19,7 +24,9 @@ public partial class MainMenuNav : Node
     {
         Game.Scene.PostSceneChanged -= OnPostSceneChanged;
     }
+    #endregion
 
+    #region Subscribers
     private void _OnPlayPressed()
     {
         _scene.SwitchTo(_gameScene);
@@ -64,4 +71,5 @@ public partial class MainMenuNav : Node
     {
         Game.FocusOutline.Focus(GetNode<Button>("Play"));
     }
+    #endregion
 }

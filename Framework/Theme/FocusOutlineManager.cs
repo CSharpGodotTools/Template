@@ -1,40 +1,38 @@
 using Godot;
 using GodotUtils;
-using System;
 
 namespace __TEMPLATE__.UI;
 
 public partial class FocusOutlineManager(Node owner) : Component(owner)
 {
-    // Config
+    #region Config
     private float _flashSpeed = 4f;
     private float _minAlpha = 0.35f;
     private float _maxAlpha = 0.7f;
-    //private float _fadeDelay = 2f;
-    //private float _fadeSpeed = 2f;
+    #endregion
 
+    #region Variables
     private NavigationMethod _lastNavigation = NavigationMethod.Mouse;
+    private Viewport _viewport;
     private Control _currentFocus;
     private Control _outline;
-    private float _time;
     private Node _owner = owner;
-    private Viewport _viewport;
-    private PopupMenu _popupMenu;
-    //private float _lastInputTime;
+    private float _time;
+    #endregion
 
-    public override void Ready()
+    #region Godot Overrides
+    protected override void Ready()
     {
         _outline = _owner.GetNode<Control>("%CornerDashOutline");
         _outline.Hide();
         _viewport = _owner.GetViewport();
         _viewport.GuiFocusChanged += OnGuiFocusChanged;
-        Game.Scene.PostSceneChanged += OnPostSceneChanged;
 
         SetProcess(false);
         SetInput(true);
     }
 
-    public override void ProcessInput(InputEvent @event)
+    protected override void ProcessInput(InputEvent @event)
     {
         if (@event is InputEventMouse)
         {
@@ -47,23 +45,19 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         }
     }
 
-    public override void Process(double delta)
+    protected override void Process(double delta)
     {
-        if (_currentFocus == null)
+        if (_currentFocus == null || !GodotObject.IsInstanceValid(_currentFocus))
+        {
+            SetProcess(false);
             return;
+        }
 
         _time += (float)delta;
 
         // Alpha pulse
         float t = Mathf.Sin(_time * _flashSpeed) * 0.5f + 0.5f;
         float alpha = Mathf.Lerp(_minAlpha, _maxAlpha, t);
-
-        // Fade out if inactive
-        /*double currentTime = Time.GetTicksUsec() / 1_000_000.0; // seconds
-        float inactiveTime = (float)(currentTime - _lastInputTime);
-
-        if (inactiveTime > _fadeDelay)
-            alpha = Mathf.Lerp(alpha, 0f, (inactiveTime - _fadeDelay) * _fadeSpeed);*/
 
         // Modulate
         Color c = _outline.Modulate;
@@ -76,56 +70,14 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         _outline.Size = _currentFocus.Size + padding * 2;
     }
 
-    public override void Dispose()
+    protected override void Dispose()
     {
         _viewport.GuiFocusChanged -= OnGuiFocusChanged;
-        Game.Scene.PostSceneChanged -= OnPostSceneChanged;
     }
+    #endregion
 
-    public void RegisterPopupMenu(PopupMenu popupMenu)
-    {
-        if (_popupMenu != null)
-            throw new InvalidOperationException("Popup menu was registered already.");
-
-        _popupMenu = popupMenu;
-        _popupMenu.Closed += OnPopupMenuClosed;
-        _popupMenu.OptionsClosed += OnOptionsClosed;
-    }
-
-    public void UnregisterPopupMenu(PopupMenu popupMenu)
-    {
-        if (_popupMenu == popupMenu)
-        {
-            _popupMenu.Closed -= OnPopupMenuClosed;
-            _popupMenu.OptionsClosed -= OnOptionsClosed;
-            _popupMenu = null;
-        }
-    }
-
-    private void OnPopupMenuClosed()
-    {
-        Disable();
-    }
-
-    private void OnOptionsClosed()
-    {
-        Disable();
-    }
-
-    /// <summary>
-    /// Focused on the targeted <paramref name="focus"/> control.
-    /// </summary>
+    #region API
     public void Focus(Control focus)
-    {
-        Enable(focus);
-    }
-
-    private void OnPostSceneChanged()
-    {
-        Disable();
-    }
-
-    private void Enable(Control focus)
     {
         _currentFocus = focus;
         _currentFocus.GrabFocus();
@@ -133,13 +85,15 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         SetProcess(true);
     }
 
-    private void Disable()
+    public void ClearFocus()
     {
         _outline.Hide();
         _currentFocus = null;
         SetProcess(false);
     }
+    #endregion
 
+    #region Subscribers
     private void OnGuiFocusChanged(Control newFocus)
     {
         _currentFocus = newFocus;
@@ -155,6 +109,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
             SetProcess(false);
         }
     }
+    #endregion
 
     private enum NavigationMethod
     {
