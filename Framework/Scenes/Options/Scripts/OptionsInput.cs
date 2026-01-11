@@ -8,21 +8,23 @@ namespace __TEMPLATE__.UI;
 
 public partial class OptionsInput
 {
+    #region Constants
     private const string RemoveHotkeyAction = "remove_hotkey";
     private const string FullscreenAction = "fullscreen";
     private const string OptionsSceneName = "Options";
     private const string UiPrefix = "ui";
     private const string Ellipsis = "...";
-    private readonly Options options;
+    #endregion
+
+    #region Fields
     private VBoxContainer _content;
     private BtnInfo _btnNewInput; // The button currently waiting for new input
     private SceneManager _scene;
     private Button _inputNavBtn;
+    #endregion
 
     public OptionsInput(Options options, Button inputNavBtn)
     {
-        this.options = options;
-
         _scene = Game.Scene;
         _inputNavBtn = inputNavBtn;
 

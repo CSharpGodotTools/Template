@@ -4,8 +4,10 @@ namespace __TEMPLATE__.UI;
 
 public partial class OptionsAudio
 {
+    #region Fields
     private ResourceOptions _options;
     private readonly Options options;
+    #endregion
 
     public OptionsAudio(Options options)
     {

@@ -5,11 +5,15 @@ namespace __TEMPLATE__.UI;
 
 public class OptionsGameplay
 {
+    #region Events
     public event Action<float> OnMouseSensitivityChanged;
+    #endregion
 
+    #region Fields
     private ResourceOptions _options;
     private Button _gameplayBtn;
     private readonly Options options;
+    #endregion
 
     public OptionsGameplay(Options options, Button gameplayButton)
     {

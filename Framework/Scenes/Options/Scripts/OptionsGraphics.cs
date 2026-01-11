@@ -5,11 +5,15 @@ namespace __TEMPLATE__.UI;
 
 public class OptionsGraphics
 {
+    #region Events
     public event Action<int> AntialiasingChanged;
+    #endregion
 
+    #region Fields
     private ResourceOptions _options;
     private OptionButton _antialiasing;
     private readonly Options options;
+    #endregion
 
     public OptionsGraphics(Options options, Button graphicsBtn)
     {

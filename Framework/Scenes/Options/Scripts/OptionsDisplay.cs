@@ -9,8 +9,11 @@ namespace __TEMPLATE__.UI;
 
 public class OptionsDisplay
 {
+    #region Events
     public event Action<int> OnResolutionChanged;
+    #endregion
 
+    #region Fields
     private ResourceOptions _options;
 
     // Max FPS
@@ -22,6 +25,7 @@ public class OptionsDisplay
     private int _prevNumX, _prevNumY;
     private int _minResolution = 36;
     private readonly Options options;
+    #endregion
 
     public OptionsDisplay(Options options, Button displayBtn)
     {

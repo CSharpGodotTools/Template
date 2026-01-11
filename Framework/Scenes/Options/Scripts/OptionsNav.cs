@@ -5,6 +5,7 @@ namespace __TEMPLATE__.UI;
 
 public class OptionsNav
 {
+    #region Nodes
     public Button GeneralButton => _generalButton;
     public Button GameplayButton => _gameplayButton;
     public Button DisplayButton => _displayButton;
@@ -12,16 +13,19 @@ public class OptionsNav
     public Button AudioButton => _audioButton;
     public Button InputButton => _inputButton;
 
-    private readonly Dictionary<string, Control> _tabs = [];
-    private readonly Dictionary<string, Button> _buttons = [];
-    private readonly Options options;
-
     private Button _generalButton;
     private Button _gameplayButton;
     private Button _displayButton;
     private Button _graphicsButton;
     private Button _audioButton;
     private Button _inputButton;
+    #endregion
+
+    #region Fields
+    private readonly Dictionary<string, Control> _tabs = [];
+    private readonly Dictionary<string, Button> _buttons = [];
+    private readonly Options options;
+    #endregion
 
     public OptionsNav(Options options, Label titleLabel)
     {

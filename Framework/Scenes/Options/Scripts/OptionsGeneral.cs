@@ -1,17 +1,22 @@
 using Godot;
+using System;
 
 namespace __TEMPLATE__.UI;
 
-public class OptionsGeneral
+public class OptionsGeneral : IDisposable
 {
+    #region Fields
     private ResourceOptions _options;
     private Button _generalBtn;
     private readonly Options options;
+    private OptionButton _languageBtn;
+    #endregion
 
     public OptionsGeneral(Options options, Button generalBtn)
     {
         this.options = options;
         _generalBtn = generalBtn;
+        _languageBtn = options.GetNode<OptionButton>("%LanguageButton");
 
         GetOptions();
         SetupLanguage();
@@ -24,10 +29,9 @@ public class OptionsGeneral
 
     private void SetupLanguage()
     {
-        OptionButton languageBtn = options.GetNode<OptionButton>("%LanguageButton");
-        languageBtn.FocusNeighborLeft = _generalBtn.GetPath();
-        languageBtn.ItemSelected += OnLanguageItemSelected;
-        languageBtn.Select((int)_options.Language);
+        _languageBtn.FocusNeighborLeft = _generalBtn.GetPath();
+        _languageBtn.ItemSelected += OnLanguageItemSelected;
+        _languageBtn.Select((int)_options.Language);
     }
 
     private void OnLanguageItemSelected(long index)
@@ -37,6 +41,11 @@ public class OptionsGeneral
         TranslationServer.SetLocale(locale);
 
         _options.Language = (Language)index;
+    }
+
+    public void Dispose()
+    {
+        _languageBtn.ItemSelected -= OnLanguageItemSelected;
     }
 }
 

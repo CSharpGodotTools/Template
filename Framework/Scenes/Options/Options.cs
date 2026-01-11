@@ -34,6 +34,7 @@ public partial class Options : PanelContainer
 
     public override void _ExitTree()
     {
+        _optionsGeneral.Dispose();
         Game.Scene.PostSceneChanged -= OnPostSceneChanged;
         VisibilityChanged -= OnVisibilityChanged;
     }

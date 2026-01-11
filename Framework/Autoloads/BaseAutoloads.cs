@@ -17,12 +17,17 @@ namespace __TEMPLATE__;
 // Alternatively access through GetNode<Autoloads>("/root/Autoloads")
 public partial class BaseAutoloads : Node
 {
+    #region Exports
     [Export] private MenuScenes _scenes;
+    #endregion
 
+    #region Events
     public event Func<Task> PreQuit;
+    #endregion
 
     public static BaseAutoloads Instance { get; private set; }
 
+    #region Autoloads
     // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
     public GameComponentManager ComponentManager { get; private set; }
     public GameConsole          GameConsole      { get; private set; }
@@ -41,7 +46,9 @@ public partial class BaseAutoloads : Node
 #if DEBUG
     private VisualizeAutoload _visualizeAutoload;
 #endif
+    #endregion
 
+    #region Godot Overrides
     public override void _EnterTree()
     {
         if (Instance != null)
@@ -119,6 +126,7 @@ public partial class BaseAutoloads : Node
 
         Instance = null;
     }
+    #endregion
 
     // I'm pretty sure Deferred must be called from a script that extends from Node
     public void DeferredSwitchSceneProxy(string rawName, Variant transTypeVariant)

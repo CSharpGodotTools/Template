@@ -7,8 +7,11 @@ namespace __TEMPLATE__.UI.Console;
 
 public partial class GameConsole : Node
 {
+    #region Config
     private const int MaxTextFeed = 1000;
+    #endregion
 
+    #region Variables
     private List<ConsoleCommandInfo> _commands = [];
     private ConsoleHistory           _history = new();
     private PanelContainer           _mainContainer;
@@ -18,7 +21,9 @@ public partial class GameConsole : Node
     private LineEdit                 _input;
     private Button                   _settingsBtn;
     private bool                     _autoScroll = true;
+    #endregion
 
+    #region Godot Overrides
     public override void _Ready()
     {
         _feed          = GetNode<TextEdit>("%Output");
@@ -54,7 +59,9 @@ public partial class GameConsole : Node
         _settingsBtn.Pressed -= OnSettingsBtnPressed;
         _settingsAutoScroll.Toggled -= OnAutoScrollToggeled;
     }
+    #endregion
 
+    #region API
     public List<ConsoleCommandInfo> GetCommands()
     {
         return _commands;
@@ -114,7 +121,9 @@ public partial class GameConsole : Node
             Game.FocusOutline.ClearFocus();
         }
     }
+    #endregion
 
+    #region Private Methods
     private void ScrollDown()
     {
         if (_autoScroll)
@@ -236,8 +245,10 @@ public partial class GameConsole : Node
         _input.CallDeferred(Control.MethodName.GrabFocus);
         _input.CallDeferred(GodotObject.MethodName.Set, LineEdit.PropertyName.CaretColumn, pos);
     }
+    #endregion
 }
 
+#region Extensions
 public static class ConsoleCommandInfoExtensions
 {
     public static ConsoleCommandInfo WithAliases(this ConsoleCommandInfo cmdInfo, params string[] aliases)
@@ -246,3 +257,4 @@ public static class ConsoleCommandInfoExtensions
         return cmdInfo;
     }
 }
+#endregion

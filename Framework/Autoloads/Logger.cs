@@ -37,12 +37,7 @@ public class Logger : IDisposable
         DequeueMessages();
     }
 
-    public void Dispose()
-    {
-        if (_console != null)
-            MessageLogged -= _console.AddMessage;
-    }
-
+    #region API
     /// <summary>
     /// Log a message
     /// </summary>
@@ -135,7 +130,9 @@ public class Logger : IDisposable
     {
         return !_messages.IsEmpty;
     }
+    #endregion
 
+    #region Private Methods
     /// <summary>
     /// Dequeues all requested messages and logs them
     /// </summary>
@@ -211,7 +208,9 @@ public class Logger : IDisposable
         GD.PrintErr(v);
         GD.PushError(v);
     }
+    #endregion
 
+    #region Private Types
     private class LogInfo(LoggerOpcode opcode, LogMessage data, BBColor color = BBColor.Gray)
     {
         public LoggerOpcode Opcode { get; set; } = opcode;
@@ -236,5 +235,12 @@ public class Logger : IDisposable
         Message,
         Exception,
         Debug
+    }
+    #endregion
+
+    public void Dispose()
+    {
+        if (_console != null)
+            MessageLogged -= _console.AddMessage;
     }
 }
