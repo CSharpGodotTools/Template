@@ -47,8 +47,11 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
 
     protected override void Process(double delta)
     {
-        if (_currentFocus == null)
+        if (_currentFocus == null || !GodotObject.IsInstanceValid(_currentFocus))
+        {
+            SetProcess(false);
             return;
+        }
 
         _time += (float)delta;
 
