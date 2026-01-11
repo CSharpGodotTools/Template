@@ -108,6 +108,11 @@ public partial class GameConsole : Node
             _input.GrabFocus();
             CallDeferred(nameof(ScrollDown));
         }
+        else
+        {
+            // Console was closed
+            Game.FocusOutline.ClearFocus();
+        }
     }
 
     private void ScrollDown()
