@@ -17,11 +17,12 @@ public partial class OptionsInput : IDisposable
     #endregion
 
     #region Fields
+    private readonly Button _resetInputToDefaultsBtn;
     private VBoxContainer _content;
     private BtnInfo _btnNewInput; // The button currently waiting for new input
     private SceneManager _scene;
     private Button _inputNavBtn;
-    private readonly Button _resetInputToDefaultsBtn;
+    private bool _listeningOnPlusBtn;
     #endregion
 
     public OptionsInput(Options options, Button inputNavBtn)
@@ -60,7 +61,7 @@ public partial class OptionsInput : IDisposable
     private void HandleListeningInput(InputEvent @event)
     {
         // If the user pressed the dedicated remove-hotkey action, remove the binding.
-        if (Input.IsActionJustPressed(RemoveHotkeyAction))
+        if (Input.IsActionJustPressed(RemoveHotkeyAction) && !_listeningOnPlusBtn)
         {
             HandleRemoveHotkey();
             return;
@@ -126,6 +127,7 @@ public partial class OptionsInput : IDisposable
 
     private void ProcessCapturedInput(InputEvent @event)
     {
+        _listeningOnPlusBtn = false;
         Game.FocusOutline.ClearFocus();
 
         // Identify the action we are editing.
@@ -275,6 +277,7 @@ public partial class OptionsInput : IDisposable
             return;
 
         // Start listening and immediately create a new plus button for chaining.
+        _listeningOnPlusBtn = true;
         StartListening(info);
         CreateButtonPlus(info.Action, info.HBox);
     }
