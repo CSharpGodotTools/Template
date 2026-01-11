@@ -1,9 +1,10 @@
 using Godot;
+using GodotUtils;
 using System;
 
 namespace __TEMPLATE__.UI;
 
-public class OptionsGameplay
+public class OptionsGameplay : IDisposable
 {
     #region Events
     public event Action<float> OnMouseSensitivityChanged;
@@ -13,12 +14,16 @@ public class OptionsGameplay
     private ResourceOptions _options;
     private Button _gameplayBtn;
     private readonly Options options;
+    private readonly OptionButton _difficultyBtn;
+    private readonly HSlider _sensitivitySlider;
     #endregion
 
     public OptionsGameplay(Options options, Button gameplayButton)
     {
         this.options = options;
         _gameplayBtn = gameplayButton;
+        _difficultyBtn = options.GetNode<OptionButton>("%Difficulty");
+        _sensitivitySlider = options.GetNode<HSlider>("%Sensitivity");
 
         GetOptions();
         SetupDifficulty();
@@ -32,18 +37,16 @@ public class OptionsGameplay
 
     private void SetupDifficulty()
     {
-        OptionButton difficultyBtn = options.GetNode<OptionButton>("%Difficulty");
-        difficultyBtn.FocusNeighborLeft = _gameplayBtn.GetPath();
-        difficultyBtn.Select((int)_options.Difficulty);
-        difficultyBtn.ItemSelected += OnDifficultyItemSelected;
+        _difficultyBtn.FocusNeighborLeft = _gameplayBtn.GetPath();
+        _difficultyBtn.Select((int)_options.Difficulty);
+        _difficultyBtn.ItemSelected += OnDifficultyItemSelected;
     }
 
     private void SetupSensitivity()
     {
-        HSlider sensitivity = options.GetNode<HSlider>("%Sensitivity");
-        sensitivity.FocusNeighborLeft = _gameplayBtn.GetPath();
-        sensitivity.Value = _options.MouseSensitivity;
-        sensitivity.ValueChanged += OnSensitivityValueChanged;
+        _sensitivitySlider.FocusNeighborLeft = _gameplayBtn.GetPath();
+        _sensitivitySlider.Value = _options.MouseSensitivity;
+        _sensitivitySlider.ValueChanged += OnSensitivityValueChanged;
     }
 
     private void OnDifficultyItemSelected(long index)
@@ -56,6 +59,12 @@ public class OptionsGameplay
         float value = (float)v;
         _options.MouseSensitivity = value;
         OnMouseSensitivityChanged?.Invoke(value);
+    }
+
+    public void Dispose()
+    {
+        _difficultyBtn.ItemSelected -= OnDifficultyItemSelected;
+        _sensitivitySlider.ValueChanged -= OnSensitivityValueChanged;
     }
 }
 

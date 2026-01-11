@@ -3,7 +3,7 @@ using System;
 
 namespace __TEMPLATE__.UI;
 
-public class OptionsGraphics
+public class OptionsGraphics : IDisposable
 {
     #region Events
     public event Action<int> AntialiasingChanged;
@@ -13,15 +13,23 @@ public class OptionsGraphics
     private ResourceOptions _options;
     private OptionButton _antialiasing;
     private readonly Options options;
+    private readonly OptionButton _optionBtnQualityPreset;
     #endregion
 
     public OptionsGraphics(Options options, Button graphicsBtn)
     {
         this.options = options;
+        _optionBtnQualityPreset = options.GetNode<OptionButton>("%QualityMode");
 
         GetOptions();
         SetupQualityPreset(graphicsBtn);
         SetupAntialiasing(graphicsBtn);
+    }
+
+    public void Dispose()
+    {
+        _optionBtnQualityPreset.ItemSelected -= OnQualityModeItemSelected;
+        _antialiasing.ItemSelected -= OnAntialiasingItemSelected;
     }
 
     private void GetOptions()
@@ -31,10 +39,9 @@ public class OptionsGraphics
 
     private void SetupQualityPreset(Button graphicsBtn)
     {
-        OptionButton optionBtnQualityPreset = options.GetNode<OptionButton>("%QualityMode");
-        optionBtnQualityPreset.FocusNeighborLeft = graphicsBtn.GetPath();
-        optionBtnQualityPreset.Select((int)_options.QualityPreset);
-        optionBtnQualityPreset.ItemSelected += OnQualityModeItemSelected;
+        _optionBtnQualityPreset.FocusNeighborLeft = graphicsBtn.GetPath();
+        _optionBtnQualityPreset.Select((int)_options.QualityPreset);
+        _optionBtnQualityPreset.ItemSelected += OnQualityModeItemSelected;
     }
 
     private void SetupAntialiasing(Button graphicsBtn)

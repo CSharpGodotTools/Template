@@ -1,9 +1,11 @@
 using Godot;
+using GodotUtils;
+using System;
 using System.Collections.Generic;
 
 namespace __TEMPLATE__.UI;
 
-public class OptionsNav
+public class OptionsNav : IDisposable
 {
     #region Nodes
     public Button GeneralButton => _generalButton;
@@ -22,25 +24,33 @@ public class OptionsNav
     #endregion
 
     #region Fields
+    private readonly Godot.Collections.Array<Node> _navBtns;
     private readonly Dictionary<string, Control> _tabs = [];
     private readonly Dictionary<string, Button> _buttons = [];
-    private readonly Options options;
+    private readonly Dictionary<Button, Action> _focusEnteredHandlers = [];
+    private readonly Dictionary<Button, Action> _pressedHandlers = [];
+    private readonly Options _options;
+    private readonly Label _titleLabel;
     #endregion
 
     public OptionsNav(Options options, Label titleLabel)
     {
-        this.options = options;
+        _options = options;
+        _titleLabel = titleLabel;
+        _navBtns = options.GetNode("%Nav").GetChildren();
 
         SetupContent();
-        SubscribeToNavBtns(titleLabel);
+        SubscribeToNavBtns(_titleLabel);
+        SetButtonFields();
         FocusOnLastClickedNavBtn();
         HideAllTabs();
-        ShowCurrentTab(titleLabel);
+        ShowCurrentTab(_titleLabel);
     }
-
+    
+    #region Private Methods
     private void SetupContent()
     {
-        Node content = options.GetNode("%Content");
+        Node content = _options.GetNode("%Content");
 
         foreach (Control child in content.GetChildren())
         {
@@ -50,15 +60,37 @@ public class OptionsNav
 
     private void SubscribeToNavBtns(Label titleLabel)
     {
-        foreach (Button button in options.GetNode("%Nav").GetChildren())
+        foreach (Button button in _navBtns)
         {
             string btnName = button.Name;
-            button.FocusEntered += () => ShowTab(titleLabel, btnName);
-            button.Pressed += () => ShowTab(titleLabel, btnName);
-            
+
+            button.FocusEntered += FocusEntered;
+            button.Pressed += Pressed;
+
+            _focusEnteredHandlers[button] = FocusEntered;
+            _pressedHandlers[button] = Pressed;
+
             _buttons.Add(btnName, button);
+
+            void FocusEntered() => ShowTab(titleLabel, btnName);
+            void Pressed() => ShowTab(titleLabel, btnName);
+        }
+    }
+
+    private void UnsubscribeFromNavBtns()
+    {
+        foreach (Button button in _navBtns)
+        {
+            button.FocusEntered -= _focusEnteredHandlers[button];
+            button.Pressed -= _pressedHandlers[button];
         }
 
+        _focusEnteredHandlers.Clear();
+        _pressedHandlers.Clear();
+    }
+
+    private void SetButtonFields()
+    {
         _generalButton = _buttons["General"];
         _gameplayButton = _buttons["Gameplay"];
         _displayButton = _buttons["Display"];
@@ -91,5 +123,11 @@ public class OptionsNav
         {
             tab.Hide();
         }
+    }
+    #endregion
+
+    public void Dispose()
+    {
+        UnsubscribeFromNavBtns();
     }
 }

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace __TEMPLATE__.UI;
 
-public partial class OptionsInput
+public partial class OptionsInput : IDisposable
 {
     #region Constants
     private const string RemoveHotkeyAction = "remove_hotkey";
@@ -21,6 +21,7 @@ public partial class OptionsInput
     private BtnInfo _btnNewInput; // The button currently waiting for new input
     private SceneManager _scene;
     private Button _inputNavBtn;
+    private readonly Button _resetInputToDefaultsBtn;
     #endregion
 
     public OptionsInput(Options options, Button inputNavBtn)
@@ -34,7 +35,13 @@ public partial class OptionsInput
         // Build the UI for all hotkeys from saved options.
         CreateHotkeys();
 
-        options.GetNode<Button>("%ResetInputToDefaults").Pressed += OnResetToDefaultsPressed;
+        _resetInputToDefaultsBtn = options.GetNode<Button>("%ResetInputToDefaults");
+        _resetInputToDefaultsBtn.Pressed += OnResetToDefaultsPressed;
+    }
+
+    public void Dispose()
+    {
+        _resetInputToDefaultsBtn.Pressed -= OnResetToDefaultsPressed;
     }
 
     public void HandleInput(InputEvent @event)
@@ -83,6 +90,10 @@ public partial class OptionsInput
 
         // Remove the UI button representing that binding and stop listening.
         _btnNewInput.Btn.QueueFree();
+
+        // Focus the + button for this action (last child in HBox)
+        FocusOnPlusBtn();
+
         _btnNewInput = null;
     }
 
@@ -115,6 +126,8 @@ public partial class OptionsInput
 
     private void ProcessCapturedInput(InputEvent @event)
     {
+        Game.FocusOutline.ClearFocus();
+
         // Identify the action we are editing.
         StringName action = _btnNewInput.Action;
 
@@ -130,6 +143,9 @@ public partial class OptionsInput
 
         // Update both the options storage and the input map to reflect the new binding.
         UpdateOptionStorageAndInputMap(action, @event);
+
+        // Focus on the plus button
+        FocusOnPlusBtn();
 
         // Done listening.
         _btnNewInput = null;
@@ -168,6 +184,12 @@ public partial class OptionsInput
         InputMap.ActionAddEvent(action, @event);
     }
 
+    private void FocusOnPlusBtn()
+    {
+        Button plusBtn = _btnNewInput.HBox.GetChild<Button>(_btnNewInput.HBox.GetChildCount() - 1);
+        Game.FocusOutline.Focus(plusBtn);
+    }
+
     private HotkeyButton CreateButton(StringName action, InputEvent inputEvent, HBoxContainer hbox, bool isFirst)
     {
         // Create a readable label for the input (e.g. "A" or "Mouse 1").
@@ -198,6 +220,13 @@ public partial class OptionsInput
         // Handle hotkey pressed events
         btn.Info = info;
         btn.HotkeyPressed += OnHotkeyButtonPressed;
+        btn.TreeExited += ExitTree;
+
+        void ExitTree()
+        {
+            btn.HotkeyPressed -= OnHotkeyButtonPressed;
+            btn.TreeExited -= ExitTree;
+        }
 
         return btn;
     }
@@ -220,6 +249,13 @@ public partial class OptionsInput
 
         btn.Info = info;
         btn.HotkeyPressed += OnPlusButtonPressed;
+        btn.TreeExited += ExitTree;
+
+        void ExitTree()
+        {
+            btn.HotkeyPressed -= OnPlusButtonPressed;
+            btn.TreeExited -= ExitTree;
+        }
     }
 
     private void OnHotkeyButtonPressed(BtnInfo info)

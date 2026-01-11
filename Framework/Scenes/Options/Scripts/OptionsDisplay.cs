@@ -7,7 +7,7 @@ using WindowMode = GodotUtils.WindowMode;
 
 namespace __TEMPLATE__.UI;
 
-public class OptionsDisplay
+public class OptionsDisplay : IDisposable
 {
     #region Events
     public event Action<int> OnResolutionChanged;
@@ -15,21 +15,28 @@ public class OptionsDisplay
 
     #region Fields
     private ResourceOptions _options;
-
-    // Max FPS
-    private HSlider _sliderMaxFps;
-    private Label _labelMaxFpsFeedback;
+    private Action<WindowMode> _selectWindowModeAction;
 
     // Window Size
     private LineEdit _resX, _resY;
     private int _prevNumX, _prevNumY;
     private int _minResolution = 36;
     private readonly Options options;
+
+    // Nodes
+    private readonly HSlider _sliderMaxFps;
+    private readonly Label _labelMaxFpsFeedback;
+    private readonly HSlider _resolutionSlider;
+    private readonly OptionButton _vsyncMode;
     #endregion
 
     public OptionsDisplay(Options options, Button displayBtn)
     {
         this.options = options;
+        _sliderMaxFps = options.GetNode<HSlider>("%MaxFPS");
+        _labelMaxFpsFeedback = options.GetNode<Label>("%MaxFPSFeedback");
+        _resolutionSlider = options.GetNode<HSlider>("%Resolution");
+        _vsyncMode = options.GetNode<OptionButton>("%VSyncMode");
 
         GetOptions();
         SetupMaxFps(displayBtn);
@@ -39,6 +46,24 @@ public class OptionsDisplay
         SetupVSyncMode(displayBtn);
     }
 
+    public void Dispose()
+    {
+        _sliderMaxFps.ValueChanged -= OnMaxFpsValueChanged;
+        _sliderMaxFps.DragEnded -= OnMaxFpsDragEnded;
+
+        _resX.TextChanged -= OnWindowWidthTextChanged;
+        _resX.TextSubmitted -= OnWindowWidthTextSubmitted;
+
+        _resY.TextChanged -= OnWindowHeightTextChanged;
+        _resY.TextSubmitted -= OnWindowHeightTextSubmitted;
+
+        Game.Options.WindowModeChanged -= _selectWindowModeAction;
+
+        _resolutionSlider.ValueChanged -= OnResolutionValueChanged;
+
+        _vsyncMode.ItemSelected -= OnVSyncModeItemSelected;
+    }
+
     private void GetOptions()
     {
         _options = Game.Options.GetOptions();
@@ -46,18 +71,14 @@ public class OptionsDisplay
 
     private void SetupMaxFps(Button displayBtn)
     {
-        HSlider maxFps = options.GetNode<HSlider>("%MaxFPS");
-        maxFps.ValueChanged += OnMaxFpsValueChanged;
-        maxFps.DragEnded += OnMaxFpsDragEnded;
-        maxFps.FocusNeighborLeft = displayBtn.GetPath();
+        _sliderMaxFps.ValueChanged += OnMaxFpsValueChanged;
+        _sliderMaxFps.DragEnded += OnMaxFpsDragEnded;
+        _sliderMaxFps.FocusNeighborLeft = displayBtn.GetPath();
 
-        _labelMaxFpsFeedback = options.GetNode<Label>("%MaxFPSFeedback");
         _labelMaxFpsFeedback.Text = _options.MaxFPS == 0 ? "UNLIMITED" : _options.MaxFPS + "";
 
-        maxFps.Value = _options.MaxFPS;
-        maxFps.Editable = _options.VSyncMode == VSyncMode.Disabled;
-
-        _sliderMaxFps = maxFps;
+        _sliderMaxFps.Value = _options.MaxFPS;
+        _sliderMaxFps.Editable = _options.VSyncMode == VSyncMode.Disabled;
     }
 
     private void SetupWindowSize(Button displayBtn)
@@ -91,7 +112,11 @@ public class OptionsDisplay
         windowModeBtn.Select((int)_options.WindowMode);
         windowModeBtn.FocusNeighborLeft = displayBtn.GetPath();
 
-        Game.Options.WindowModeChanged += windowMode =>
+        _selectWindowModeAction = SelectWindowMode;
+
+        Game.Options.WindowModeChanged += _selectWindowModeAction;
+
+        void SelectWindowMode(WindowMode windowMode)
         {
             if (!GodotObject.IsInstanceValid(windowModeBtn))
                 return;
@@ -100,23 +125,21 @@ public class OptionsDisplay
             // here then we would be assuming that the user can only change fullscreen
             // when in the options screen but this is not the case.
             windowModeBtn.Select((int)windowMode);
-        };
+        }
     }
 
     private void SetupResolution(Button displayBtn)
     {
-        HSlider resolutionSlider = options.GetNode<HSlider>("%Resolution");
-        resolutionSlider.FocusNeighborLeft = displayBtn.GetPath();
-        resolutionSlider.Value = 1 + _minResolution - _options.Resolution;
-        resolutionSlider.ValueChanged += OnResolutionValueChanged;
+        _resolutionSlider.FocusNeighborLeft = displayBtn.GetPath();
+        _resolutionSlider.Value = 1 + _minResolution - _options.Resolution;
+        _resolutionSlider.ValueChanged += OnResolutionValueChanged;
     }
 
     private void SetupVSyncMode(Button displayBtn)
     {
-        OptionButton vsyncMode = options.GetNode<OptionButton>("%VSyncMode");
-        vsyncMode.FocusNeighborLeft = displayBtn.GetPath();
-        vsyncMode.Select((int)_options.VSyncMode);
-        vsyncMode.ItemSelected += OnVSyncModeItemSelected;
+        _vsyncMode.FocusNeighborLeft = displayBtn.GetPath();
+        _vsyncMode.Select((int)_options.VSyncMode);
+        _vsyncMode.ItemSelected += OnVSyncModeItemSelected;
     }
 
     private void ApplyWindowSize()
