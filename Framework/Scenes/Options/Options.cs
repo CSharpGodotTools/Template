@@ -57,13 +57,17 @@ public partial class Options : PanelContainer
     private void OnPostSceneChanged()
     {
         if (Visible)
-            Game.FocusOutline.Focus(_navNode.GetChild<Button>(0));
+        {
+            Game.FocusOutline.Focus(_navNode.GetNode<Button>(Game.Options.GetCurrentTab()));
+        }
     }
 
     private void OnVisibilityChanged()
     {
         if (Visible)
-            _navNode.GetChild<Button>(0).GrabFocus();
+        {
+            _navNode.GetNode<Button>(Game.Options.GetCurrentTab()).GrabFocus();
+        }
     }
     #endregion
 }
