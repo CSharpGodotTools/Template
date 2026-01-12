@@ -4,7 +4,7 @@
 // public static WorldManager World => Autoloads.Instance.WorldManager;
 //
 // WorldManager would need to be defined in Autoloads.cs. Then simply call Game.World.(...)
-public static partial class Game
+public partial class Game
 {
     
 }

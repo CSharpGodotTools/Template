@@ -67,10 +67,3 @@ public class OptionsGameplay : IDisposable
         _sensitivitySlider.ValueChanged -= OnSensitivityValueChanged;
     }
 }
-
-public enum Difficulty
-{
-    Easy,
-    Normal,
-    Hard
-}

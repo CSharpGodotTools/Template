@@ -49,10 +49,3 @@ public class OptionsGeneral : IDisposable
         _languageBtn.ItemSelected -= OnLanguageItemSelected;
     }
 }
-
-public enum Language
-{
-    English,
-    French,
-    Japanese
-}

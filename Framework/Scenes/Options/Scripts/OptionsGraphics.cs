@@ -1,4 +1,5 @@
 using Godot;
+using GodotUtils;
 using System;
 
 namespace __TEMPLATE__.UI;
@@ -62,11 +63,4 @@ public class OptionsGraphics : IDisposable
         _options.Antialiasing = (int)index;
         AntialiasingChanged?.Invoke((int)index);
     }
-}
-
-public enum QualityPreset
-{
-    Low,
-    Medium,
-    High
 }

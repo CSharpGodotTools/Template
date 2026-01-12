@@ -5,6 +5,7 @@ using Godot;
 using GodotUtils;
 using System;
 using System.Threading.Tasks;
+using GodotUtils.UI;
 
 #if DEBUG
 using GodotUtils.Debugging;
@@ -15,7 +16,7 @@ namespace __TEMPLATE__;
 // Autoload
 // Access the managers that live in here through through Game.(...)
 // Alternatively access through GetNode<Autoloads>("/root/Autoloads")
-public partial class BaseAutoloads : Node
+public partial class BaseAutoloads : Node, IBaseAutoloads
 {
     #region Exports
     [Export] private MenuScenes _scenes;
@@ -31,7 +32,7 @@ public partial class BaseAutoloads : Node
     // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
     public GameComponentManager ComponentManager { get; private set; }
     public GameConsole          GameConsole      { get; private set; }
-    public AudioManager         AudioManager     { get; private set; }
+    public AudioManager<Game>   AudioManager     { get; private set; }
     public OptionsManager       OptionsManager   { get; private set; }
     public Services             Services         { get; private set; }
     public MetricsOverlay       MetricsOverlay   { get; private set; }
@@ -73,8 +74,8 @@ public partial class BaseAutoloads : Node
         CommandLineArgs.Initialize();
         Commands.RegisterAll();
 
-        OptionsManager = new OptionsManager(this);
-        AudioManager = new AudioManager(this);
+        OptionsManager = new OptionsManager(this, InputActions.Fullscreen);
+        AudioManager = new AudioManager<Game>(this);
 
 #if DEBUG
         _visualizeAutoload = new VisualizeAutoload();

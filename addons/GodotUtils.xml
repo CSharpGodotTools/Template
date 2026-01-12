@@ -573,6 +573,61 @@
             <param name="particleScene">A PackedScene that instantiates to a GPUParticles2D.</param>
             <returns>The instantiated and configured GPUParticles2D.</returns>
         </member>
+        <member name="M:GodotUtils.AudioManager`1.#ctor(Godot.Node)">
+            <summary>
+            Initializes the AudioManager by attaching a music player to the given autoload node.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AudioManager`1.PlayMusic(Godot.AudioStream,System.Boolean,System.Double,System.Double)">
+            <summary>
+            Plays a music track, instantly or with optional fade between tracks. Music volume is in config scale (0-100).
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AudioManager`1.PlaySFX(Godot.AudioStream,Godot.Vector2,System.Single,System.Single)">
+            <summary>
+            Plays a sound effect at the specified global position with randomized pitch to reduce repetition. Volume is normalized (0-100).
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AudioManager`1.FadeOutSFX(System.Double)">
+            <summary>
+            Fades out all currently playing sound effects over the specified duration in seconds.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AudioManager`1.SetMusicVolume(System.Single)">
+            <summary>
+            Sets the music volume, affecting current playback. Volume is in config scale (0-100).
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AudioManager`1.SetSFXVolume(System.Single)">
+            <summary>
+            Sets the SFX volume for all active sound effect players. Volume is in config scale (0-100).
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AudioManager`1.GetRandomPitch(System.Single,System.Single)">
+            <summary>
+            Generates a random pitch between min and max, avoiding values too similar to the previous sound.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AudioManager`1.PlayAudio(Godot.AudioStreamPlayer,Godot.AudioStream,System.Single)">
+            <summary>
+            Instantly plays the given audio stream with the specified player and volume.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AudioManager`1.PlayAudioCrossfade(Godot.AudioStreamPlayer,Godot.AudioStream,System.Single,System.Double,System.Double)">
+            <summary>
+            Smoothly crossfades between songs by fading out the current and fading in the new one. Volume is in config scale (0-100).
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AudioManager`1.NormalizeConfigVolume(System.Single)">
+            <summary>
+            Maps a config volume value (0-100) to an AudioStreamPlayer VolumeDb value, returning mute if zero.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.AudioManager`1.Dispose">
+            <summary>
+            Frees all managed players and clears references for cleanup.
+            </summary>
+        </member>
         <member name="T:GodotUtils.CacheManager`2">
             <summary>
             A generic cache manager that stores and retrieves objects based on a key.
@@ -582,6 +637,128 @@
         <member name="M:GodotUtils.CacheManager`2.Get(`0,System.Func{`1})">
             <summary>
             Retrieves the cached object associated with the specified key, or creates and caches it if not present.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.UI.ResourceHotkeys.MethodName">
+            <summary>
+            Cached StringNames for the methods contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.UI.ResourceHotkeys.PropertyName">
+            <summary>
+            Cached StringNames for the properties and fields contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.UI.ResourceHotkeys.PropertyName.Actions">
+            <summary>
+            Cached name for the 'Actions' property.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ResourceHotkeys.SetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.UI.ResourceHotkeys.GetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.UI.ResourceHotkeys.GetGodotPropertyList">
+            <summary>
+            Get the property information for all the properties declared in this class.
+            This method is used by Godot to register the available properties in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ResourceHotkeys.GetGodotPropertyDefaultValues">
+            <summary>
+            Get the default values for all properties declared in this class.
+            This method is used by Godot to determine the value that will be
+            used by the inspector when resetting properties.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ResourceHotkeys.SaveGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.UI.ResourceHotkeys.RestoreGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GodotUtils.UI.ResourceHotkeys.SignalName">
+            <summary>
+            Cached StringNames for the signals contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.UI.ToolScriptHelpers.MethodName">
+            <summary>
+            Cached StringNames for the methods contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.UI.ToolScriptHelpers.MethodName.DeleteEmptyFolders">
+            <summary>
+            Cached name for the 'DeleteEmptyFolders' method.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.UI.ToolScriptHelpers.MethodName.DeleteOrphanedCSUIDFiles">
+            <summary>
+            Cached name for the 'DeleteOrphanedCSUIDFiles' method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.GetGodotMethodList">
+            <summary>
+            Get the method information for all the methods declared in this class.
+            This method is used by Godot to register the available methods in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.NativeVariantPtrArgs,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.HasGodotClassMethod(Godot.NativeInterop.godot_string_name@)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GodotUtils.UI.ToolScriptHelpers.PropertyName">
+            <summary>
+            Cached StringNames for the properties and fields contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.UI.ToolScriptHelpers.PropertyName.RemoveEmptyFolders">
+            <summary>
+            Cached name for the 'RemoveEmptyFolders' property.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.UI.ToolScriptHelpers.PropertyName.RemoveOrphanedCSUIDFiles">
+            <summary>
+            Cached name for the 'RemoveOrphanedCSUIDFiles' property.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.SetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.GetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.GetGodotPropertyList">
+            <summary>
+            Get the property information for all the properties declared in this class.
+            This method is used by Godot to register the available properties in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.GetGodotPropertyDefaultValues">
+            <summary>
+            Get the default values for all properties declared in this class.
+            This method is used by Godot to determine the value that will be
+            used by the inspector when resetting properties.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.SaveGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.UI.ToolScriptHelpers.RestoreGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GodotUtils.UI.ToolScriptHelpers.SignalName">
+            <summary>
+            Cached StringNames for the signals contained in this class, for fast lookup.
             </summary>
         </member>
         <member name="T:GodotUtils.SpriteShakeManager">
@@ -941,81 +1118,6 @@
             ○ Match if at the end of the string or if before an ending newline.<br/>
             </code>
             </remarks>
-        </member>
-        <member name="T:GodotUtils.UI.ToolScriptHelpers.MethodName">
-            <summary>
-            Cached StringNames for the methods contained in this class, for fast lookup.
-            </summary>
-        </member>
-        <member name="F:GodotUtils.UI.ToolScriptHelpers.MethodName.DeleteEmptyFolders">
-            <summary>
-            Cached name for the 'DeleteEmptyFolders' method.
-            </summary>
-        </member>
-        <member name="F:GodotUtils.UI.ToolScriptHelpers.MethodName.DeleteOrphanedCSUIDFiles">
-            <summary>
-            Cached name for the 'DeleteOrphanedCSUIDFiles' method.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.UI.ToolScriptHelpers.GetGodotMethodList">
-            <summary>
-            Get the method information for all the methods declared in this class.
-            This method is used by Godot to register the available methods in the editor.
-            Do not call this method.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.UI.ToolScriptHelpers.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.NativeVariantPtrArgs,Godot.NativeInterop.godot_variant@)">
-            <inheritdoc/>
-        </member>
-        <member name="M:GodotUtils.UI.ToolScriptHelpers.HasGodotClassMethod(Godot.NativeInterop.godot_string_name@)">
-            <inheritdoc/>
-        </member>
-        <member name="T:GodotUtils.UI.ToolScriptHelpers.PropertyName">
-            <summary>
-            Cached StringNames for the properties and fields contained in this class, for fast lookup.
-            </summary>
-        </member>
-        <member name="F:GodotUtils.UI.ToolScriptHelpers.PropertyName.RemoveEmptyFolders">
-            <summary>
-            Cached name for the 'RemoveEmptyFolders' property.
-            </summary>
-        </member>
-        <member name="F:GodotUtils.UI.ToolScriptHelpers.PropertyName.RemoveOrphanedCSUIDFiles">
-            <summary>
-            Cached name for the 'RemoveOrphanedCSUIDFiles' property.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.UI.ToolScriptHelpers.SetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
-            <inheritdoc/>
-        </member>
-        <member name="M:GodotUtils.UI.ToolScriptHelpers.GetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
-            <inheritdoc/>
-        </member>
-        <member name="M:GodotUtils.UI.ToolScriptHelpers.GetGodotPropertyList">
-            <summary>
-            Get the property information for all the properties declared in this class.
-            This method is used by Godot to register the available properties in the editor.
-            Do not call this method.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.UI.ToolScriptHelpers.GetGodotPropertyDefaultValues">
-            <summary>
-            Get the default values for all properties declared in this class.
-            This method is used by Godot to determine the value that will be
-            used by the inspector when resetting properties.
-            Do not call this method.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.UI.ToolScriptHelpers.SaveGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
-            <inheritdoc/>
-        </member>
-        <member name="M:GodotUtils.UI.ToolScriptHelpers.RestoreGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
-            <inheritdoc/>
-        </member>
-        <member name="T:GodotUtils.UI.ToolScriptHelpers.SignalName">
-            <summary>
-            Cached StringNames for the signals contained in this class, for fast lookup.
-            </summary>
         </member>
         <member name="T:GodotUtils.BaseTween`1">
             <summary>

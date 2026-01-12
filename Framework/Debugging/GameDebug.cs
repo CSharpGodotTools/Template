@@ -1,11 +1,13 @@
 ﻿using __TEMPLATE__.Debugging;
 using __TEMPLATE__.UI;
 using __TEMPLATE__.UI.Console;
+using GodotUtils;
+using GodotUtils.UI;
 using System;
 
 namespace __TEMPLATE__;
 
-public static partial class Game
+public partial class Game : IGame<Game>
 {
 #if DEBUG
     /// <summary>
@@ -37,7 +39,7 @@ public static partial class Game
     public static FocusOutlineManager FocusOutline => IsAutoloadsSetup(a => a.FocusOutline, nameof(FocusOutline));
     public static MetricsOverlay Metrics => IsAutoloadsSetup(a => a.MetricsOverlay, nameof(Metrics));
     public static OptionsManager Options => IsAutoloadsSetup(a => a.OptionsManager, nameof(Options));
-    public static AudioManager Audio => IsAutoloadsSetup(a => a.AudioManager, nameof(Audio));
+    public static AudioManager<Game> Audio => IsAutoloadsSetup(a => a.AudioManager, nameof(Audio));
     public static SceneManager Scene => IsAutoloadsSetup(a => a.SceneManager, nameof(Scene));
     public static GameConsole Console => IsAutoloadsSetup(a => a.GameConsole, nameof(Console));
     public static Profiler Profiler => IsAutoloadsSetup(a => a.Profiler, nameof(Profiler));
