@@ -189,7 +189,7 @@ public partial class PopupMenu : Control
 
     private void OnQuitPressed()
     {
-        BaseAutoloads.Instance.ExitGame().FireAndForget();
+        Autoloads.Instance.ExitGame().FireAndForget();
     }
     #endregion
 }

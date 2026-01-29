@@ -15,7 +15,7 @@ namespace __TEMPLATE__;
 // Autoload
 // Access the managers that live in here through through Game.(...)
 // Alternatively access through GetNode<Autoloads>("/root/Autoloads")
-public partial class BaseAutoloads : Node
+public partial class Autoloads : Node
 {
     #region Exports
     [Export] private MenuScenes _scenes;
@@ -25,7 +25,7 @@ public partial class BaseAutoloads : Node
     public event Func<Task> PreQuit;
     #endregion
 
-    public static BaseAutoloads Instance { get; private set; }
+    public static Autoloads Instance { get; private set; }
 
     #region Autoloads
     // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
@@ -49,7 +49,7 @@ public partial class BaseAutoloads : Node
     public override void _EnterTree()
     {
         if (Instance != null)
-            throw new InvalidOperationException($"{nameof(BaseAutoloads)} has been initialized already. Did you try to run the Autoloads scene by itself?");
+            throw new InvalidOperationException($"{nameof(Autoloads)} has been initialized already. Did you try to run the Autoloads scene by itself?");
 
         Instance = this;
         ComponentManager = GetNode<GameComponentManager>("ComponentManager");
@@ -117,7 +117,6 @@ public partial class BaseAutoloads : Node
     }
     #endregion
 
-    // I'm pretty sure Deferred must be called from a script that extends from Node
     public void DeferredSwitchSceneProxy(string rawName, Variant transTypeVariant)
     {
         SceneManager.DeferredSwitchScene(rawName, transTypeVariant);

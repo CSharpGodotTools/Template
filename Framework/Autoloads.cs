@@ -11,7 +11,7 @@ namespace __TEMPLATE__;
 // 
 // IMPORTANT: Make sure you call the base methods for every method override.
 // e.g. base._Ready(); base._PhysicsUpdate(delta); ...
-public partial class Autoloads : BaseAutoloads
+public partial class Autoloads
 {
     
 }
