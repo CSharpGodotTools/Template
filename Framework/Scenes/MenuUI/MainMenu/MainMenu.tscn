@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://d4a5xfmaulku1"]
+[gd_scene format=3 uid="uid://d4a5xfmaulku1"]
 
 [ext_resource type="PackedScene" uid="uid://djhd6uw7l1ok" path="res://Level.tscn" id="3_xo0to"]
 [ext_resource type="Script" uid="uid://bi551lrt82awu" path="res://Framework/Scenes/MainMenuNav.cs" id="5_sc4as"]
 
-[node name="Main Menu" type="PanelContainer"]
+[node name="Main Menu" type="PanelContainer" unique_id=1465991970]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_lock_ = true
 
-[node name="Nav" type="VBoxContainer" parent="."]
+[node name="Nav" type="VBoxContainer" parent="." unique_id=1441414086]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -19,53 +19,53 @@ alignment = 1
 script = ExtResource("5_sc4as")
 _gameScene = ExtResource("3_xo0to")
 
-[node name="Play" type="Button" parent="Nav"]
+[node name="Play" type="Button" parent="Nav" unique_id=1153500087]
 custom_minimum_size = Vector2(175, 60)
 layout_mode = 2
 text = "PLAY"
 
-[node name="Mods" type="Button" parent="Nav"]
+[node name="Mods" type="Button" parent="Nav" unique_id=1939930958]
 custom_minimum_size = Vector2(175, 60)
 layout_mode = 2
 text = "MODS"
 
-[node name="Options" type="Button" parent="Nav"]
+[node name="Options" type="Button" parent="Nav" unique_id=346448010]
 custom_minimum_size = Vector2(175, 60)
 layout_mode = 2
 text = "OPTIONS"
 
-[node name="Credits" type="Button" parent="Nav"]
+[node name="Credits" type="Button" parent="Nav" unique_id=2101763633]
 custom_minimum_size = Vector2(175, 60)
 layout_mode = 2
 text = "CREDITS"
 
-[node name="Quit" type="Button" parent="Nav"]
+[node name="Quit" type="Button" parent="Nav" unique_id=1110099527]
 custom_minimum_size = Vector2(175, 60)
 layout_mode = 2
 focus_neighbor_bottom = NodePath("../../Socials/HBox/Discord")
 text = "QUIT"
 
-[node name="Socials" type="MarginContainer" parent="."]
+[node name="Socials" type="MarginContainer" parent="." unique_id=706979436]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_bottom = 10
 
-[node name="HBox" type="HBoxContainer" parent="Socials"]
+[node name="HBox" type="HBoxContainer" parent="Socials" unique_id=1108159027]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
 theme_override_constants/separation = 15
 
-[node name="Discord" type="Button" parent="Socials/HBox"]
+[node name="Discord" type="Button" parent="Socials/HBox" unique_id=1082820652]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 text = "Discord"
 
-[node name="Github" type="Button" parent="Socials/HBox"]
+[node name="Github" type="Button" parent="Socials/HBox" unique_id=2013905718]
 custom_minimum_size = Vector2(100, 40)
 layout_mode = 2
 text = "GitHub"

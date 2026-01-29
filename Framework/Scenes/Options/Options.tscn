@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://7tfets4irkba"]
+[gd_scene format=3 uid="uid://7tfets4irkba"]
 
 [ext_resource type="Script" uid="uid://b88ck7eam4e70" path="res://Framework/Scenes/Options/Options.cs" id="1_xjg3i"]
 
@@ -6,7 +6,7 @@
 content_margin_left = 120.0
 content_margin_top = 15.0
 
-[node name="Options" type="PanelContainer"]
+[node name="Options" type="PanelContainer" unique_id=886581060]
 z_index = -4096
 anchors_preset = 15
 anchor_right = 1.0
@@ -16,23 +16,23 @@ grow_vertical = 2
 script = ExtResource("1_xjg3i")
 metadata/_edit_lock_ = true
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="Margin" type="MarginContainer" parent="." unique_id=127997831]
 layout_mode = 2
 theme_override_constants/margin_left = 50
 theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 50
 theme_override_constants/margin_bottom = 50
 
-[node name="HBox" type="HBoxContainer" parent="Margin"]
+[node name="HBox" type="HBoxContainer" parent="Margin" unique_id=405248333]
 layout_mode = 2
 
-[node name="Nav" type="VBoxContainer" parent="Margin/HBox"]
+[node name="Nav" type="VBoxContainer" parent="Margin/HBox" unique_id=432801639]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 0
 alignment = 1
 
-[node name="General" type="Button" parent="Margin/HBox/Nav"]
+[node name="General" type="Button" parent="Margin/HBox/Nav" unique_id=777027908]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_vertical = 3
@@ -42,72 +42,72 @@ focus_neighbor_right = NodePath("../../VBoxContainer/Content/General/Language/La
 focus_neighbor_bottom = NodePath("../Gameplay")
 text = "GENERAL"
 
-[node name="Gameplay" type="Button" parent="Margin/HBox/Nav"]
+[node name="Gameplay" type="Button" parent="Margin/HBox/Nav" unique_id=1961112805]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_vertical = 3
 focus_neighbor_right = NodePath("../../VBoxContainer/Content/Gameplay/Difficulty/Difficulty")
 text = "GAMEPLAY"
 
-[node name="Display" type="Button" parent="Margin/HBox/Nav"]
+[node name="Display" type="Button" parent="Margin/HBox/Nav" unique_id=1044657690]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_vertical = 3
 focus_neighbor_right = NodePath("../../VBoxContainer/Content/Display/WindowMode/WindowMode")
 text = "DISPLAY"
 
-[node name="Graphics" type="Button" parent="Margin/HBox/Nav"]
+[node name="Graphics" type="Button" parent="Margin/HBox/Nav" unique_id=1376521324]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_vertical = 3
 focus_neighbor_right = NodePath("../../VBoxContainer/Content/Graphics/QualityMode/QualityMode")
 text = "GRAPHICS"
 
-[node name="Audio" type="Button" parent="Margin/HBox/Nav"]
+[node name="Audio" type="Button" parent="Margin/HBox/Nav" unique_id=1158294436]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_vertical = 3
 focus_neighbor_right = NodePath("../../VBoxContainer/Content/Audio/Music/Music")
 text = "AUDIO"
 
-[node name="Input" type="Button" parent="Margin/HBox/Nav"]
+[node name="Input" type="Button" parent="Margin/HBox/Nav" unique_id=796383462]
 custom_minimum_size = Vector2(150, 60)
 layout_mode = 2
 size_flags_vertical = 3
 focus_neighbor_bottom = NodePath("../General")
 text = "INPUT"
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Margin/HBox"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Margin/HBox" unique_id=1883412296]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Title" type="Label" parent="Margin/HBox/VBoxContainer"]
+[node name="Title" type="Label" parent="Margin/HBox/VBoxContainer" unique_id=1030356441]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "General"
 horizontal_alignment = 1
 
-[node name="Content" type="PanelContainer" parent="Margin/HBox/VBoxContainer"]
+[node name="Content" type="PanelContainer" parent="Margin/HBox/VBoxContainer" unique_id=446494495]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxEmpty_ijcjj")
 
-[node name="General" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content"]
+[node name="General" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content" unique_id=20786451]
 visible = false
 layout_mode = 2
 
-[node name="Language" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/General"]
+[node name="Language" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/General" unique_id=1143724231]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/General/Language"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/General/Language" unique_id=65968004]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "LANGUAGE"
 
-[node name="LanguageButton" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/General/Language"]
+[node name="LanguageButton" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/General/Language" unique_id=91985562]
 unique_name_in_owner = true
 layout_mode = 2
 selected = 0
@@ -119,20 +119,20 @@ popup/item_1/id = 1
 popup/item_2/text = "Japanese"
 popup/item_2/id = 2
 
-[node name="Gameplay" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content"]
+[node name="Gameplay" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content" unique_id=2016804721]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[node name="Difficulty" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Gameplay"]
+[node name="Difficulty" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Gameplay" unique_id=1534119885]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Gameplay/Difficulty"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Gameplay/Difficulty" unique_id=1620811193]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "DIFFICULTY"
 
-[node name="Difficulty" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/Gameplay/Difficulty"]
+[node name="Difficulty" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/Gameplay/Difficulty" unique_id=1071972146]
 unique_name_in_owner = true
 layout_mode = 2
 selected = 0
@@ -144,15 +144,15 @@ popup/item_1/id = 1
 popup/item_2/text = "HARD"
 popup/item_2/id = 2
 
-[node name="Sensitivity" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Gameplay"]
+[node name="Sensitivity" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Gameplay" unique_id=203774995]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Gameplay/Sensitivity"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Gameplay/Sensitivity" unique_id=1355017102]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "MOUSE_SENSITIVITY"
 
-[node name="Sensitivity" type="HSlider" parent="Margin/HBox/VBoxContainer/Content/Gameplay/Sensitivity"]
+[node name="Sensitivity" type="HSlider" parent="Margin/HBox/VBoxContainer/Content/Gameplay/Sensitivity" unique_id=1088342665]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
@@ -160,21 +160,21 @@ min_value = 1.0
 max_value = 50.0
 value = 25.0
 
-[node name="Display" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content"]
+[node name="Display" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content" unique_id=338019469]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="WindowMode" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display"]
+[node name="WindowMode" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display" unique_id=1077385483]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/WindowMode"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/WindowMode" unique_id=1715032901]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "WINDOW_MODE"
 
-[node name="WindowMode" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/Display/WindowMode"]
+[node name="WindowMode" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/Display/WindowMode" unique_id=588823551]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
@@ -191,30 +191,30 @@ popup/item_1/id = 1
 popup/item_2/text = "FULLSCREEN"
 popup/item_2/id = 2
 
-[node name="WindowSize" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display"]
+[node name="WindowSize" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display" unique_id=56583569]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize" unique_id=1215414921]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "WINDOW_SIZE"
 
-[node name="HBox" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize"]
+[node name="HBox" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize" unique_id=97922018]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="WindowWidth" type="LineEdit" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox"]
+[node name="WindowWidth" type="LineEdit" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox" unique_id=1613445481]
 unique_name_in_owner = true
 layout_mode = 2
 focus_neighbor_right = NodePath("../WindowHeight")
 text = "2540"
 alignment = 1
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox" unique_id=1908575175]
 layout_mode = 2
 text = "x"
 
-[node name="WindowHeight" type="LineEdit" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox"]
+[node name="WindowHeight" type="LineEdit" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox" unique_id=1014675677]
 unique_name_in_owner = true
 layout_mode = 2
 focus_neighbor_left = NodePath("../WindowWidth")
@@ -222,21 +222,21 @@ focus_neighbor_right = NodePath("../WindowSizeApply")
 text = "1440"
 alignment = 1
 
-[node name="WindowSizeApply" type="Button" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox"]
+[node name="WindowSizeApply" type="Button" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox" unique_id=1001415164]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(75, 0)
 layout_mode = 2
 text = "APPLY"
 
-[node name="Resolution" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display"]
+[node name="Resolution" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display" unique_id=1894498543]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/Resolution"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/Resolution" unique_id=1720942744]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "RESOLUTION"
 
-[node name="Resolution" type="HSlider" parent="Margin/HBox/VBoxContainer/Content/Display/Resolution"]
+[node name="Resolution" type="HSlider" parent="Margin/HBox/VBoxContainer/Content/Display/Resolution" unique_id=462596600]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
@@ -245,15 +245,15 @@ min_value = 1.0
 max_value = 36.0
 value = 36.0
 
-[node name="VSyncMode" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display"]
+[node name="VSyncMode" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display" unique_id=2138127206]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/VSyncMode"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/VSyncMode" unique_id=1650427831]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "VSYNC_MODE"
 
-[node name="VSyncMode" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/Display/VSyncMode"]
+[node name="VSyncMode" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/Display/VSyncMode" unique_id=180810040]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
@@ -271,19 +271,19 @@ popup/item_1/id = 1
 popup/item_2/text = "ADAPTIVE"
 popup/item_2/id = 2
 
-[node name="MaxFPS" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display"]
+[node name="MaxFPS" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display" unique_id=731282362]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/MaxFPS"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/MaxFPS" unique_id=460116332]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "MAX_FPS"
 
-[node name="HBox" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display/MaxFPS"]
+[node name="HBox" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display/MaxFPS" unique_id=55446781]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="MaxFPS" type="HSlider" parent="Margin/HBox/VBoxContainer/Content/Display/MaxFPS/HBox"]
+[node name="MaxFPS" type="HSlider" parent="Margin/HBox/VBoxContainer/Content/Display/MaxFPS/HBox" unique_id=1946139355]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
@@ -292,33 +292,33 @@ focus_neighbor_bottom = NodePath(".")
 max_value = 180.0
 allow_greater = true
 
-[node name="Margin" type="MarginContainer" parent="Margin/HBox/VBoxContainer/Content/Display/MaxFPS/HBox"]
+[node name="Margin" type="MarginContainer" parent="Margin/HBox/VBoxContainer/Content/Display/MaxFPS/HBox" unique_id=799361016]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 5
 
-[node name="MaxFPSFeedback" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/MaxFPS/HBox/Margin"]
+[node name="MaxFPSFeedback" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/MaxFPS/HBox/Margin" unique_id=1140461257]
 unique_name_in_owner = true
 layout_mode = 2
 text = "UNLIMITED"
 vertical_alignment = 1
 
-[node name="Graphics" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content"]
+[node name="Graphics" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content" unique_id=1169115599]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[node name="QualityMode" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Graphics"]
+[node name="QualityMode" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Graphics" unique_id=524398733]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Graphics/QualityMode"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Graphics/QualityMode" unique_id=91577981]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "QUALITY_PRESET"
 
-[node name="QualityMode" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/Graphics/QualityMode"]
+[node name="QualityMode" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/Graphics/QualityMode" unique_id=1894281774]
 unique_name_in_owner = true
 layout_mode = 2
 selected = 0
@@ -330,15 +330,15 @@ popup/item_1/id = 1
 popup/item_2/text = "HIGH"
 popup/item_2/id = 2
 
-[node name="Anti-Aliasing" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Graphics"]
+[node name="Anti-Aliasing" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Graphics" unique_id=1270976884]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Graphics/Anti-Aliasing"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Graphics/Anti-Aliasing" unique_id=1622179384]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "ANTIALIASING"
 
-[node name="Antialiasing" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/Graphics/Anti-Aliasing"]
+[node name="Antialiasing" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/Graphics/Anti-Aliasing" unique_id=159384928]
 unique_name_in_owner = true
 layout_mode = 2
 selected = 0
@@ -352,20 +352,20 @@ popup/item_2/id = 2
 popup/item_3/text = "8x"
 popup/item_3/id = 3
 
-[node name="Audio" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content"]
+[node name="Audio" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content" unique_id=1711589092]
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="Music" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Audio"]
+[node name="Music" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Audio" unique_id=900446040]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Audio/Music"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Audio/Music" unique_id=1020178184]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "MUSIC"
 
-[node name="Music" type="HSlider" parent="Margin/HBox/VBoxContainer/Content/Audio/Music"]
+[node name="Music" type="HSlider" parent="Margin/HBox/VBoxContainer/Content/Audio/Music" unique_id=773681734]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -373,15 +373,15 @@ size_flags_vertical = 4
 focus_neighbor_top = NodePath("../../../../../Nav/Audio")
 value = 100.0
 
-[node name="Sounds" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Audio"]
+[node name="Sounds" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Audio" unique_id=1602372622]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Audio/Sounds"]
+[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Audio/Sounds" unique_id=632401608]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 text = "SOUNDS"
 
-[node name="Sounds" type="HSlider" parent="Margin/HBox/VBoxContainer/Content/Audio/Sounds"]
+[node name="Sounds" type="HSlider" parent="Margin/HBox/VBoxContainer/Content/Audio/Sounds" unique_id=1649852881]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
@@ -389,19 +389,19 @@ size_flags_vertical = 4
 focus_neighbor_bottom = NodePath("../../../../../Nav/Audio")
 value = 75.0
 
-[node name="Input" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content"]
+[node name="Input" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content" unique_id=183077516]
 visible = false
 layout_mode = 2
 
-[node name="Scroll" type="ScrollContainer" parent="Margin/HBox/VBoxContainer/Content/Input"]
+[node name="Scroll" type="ScrollContainer" parent="Margin/HBox/VBoxContainer/Content/Input" unique_id=749004667]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="InputContent" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Input/Scroll"]
+[node name="InputContent" type="VBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Input/Scroll" unique_id=863143699]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="ResetInputToDefaults" type="Button" parent="Margin/HBox/VBoxContainer/Content/Input"]
+[node name="ResetInputToDefaults" type="Button" parent="Margin/HBox/VBoxContainer/Content/Input" unique_id=120640195]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2

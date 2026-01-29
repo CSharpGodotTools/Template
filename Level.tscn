@@ -1,10 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://djhd6uw7l1ok"]
+[gd_scene format=3 uid="uid://djhd6uw7l1ok"]
 
 [ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://Framework/Scenes/PopupMenu/PopupMenu.tscn" id="1_bexhn"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=1406332586]
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=438482895]
 
-[node name="PopupMenu" parent="CanvasLayer" instance=ExtResource("1_bexhn")]
+[node name="PopupMenu" parent="CanvasLayer" unique_id=960446522 instance=ExtResource("1_bexhn")]
 visible = false

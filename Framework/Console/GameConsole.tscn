@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://jrjqky6ag6gg"]
+[gd_scene format=3 uid="uid://jrjqky6ag6gg"]
 
 [ext_resource type="Script" uid="uid://blp5ybyxnppar" path="res://Framework/Console/GameConsole.cs" id="1_gs4bw"]
 
@@ -10,10 +10,10 @@
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_32acl"]
 
-[node name="GameConsole" type="Node"]
+[node name="GameConsole" type="Node" unique_id=1545448423]
 script = ExtResource("1_gs4bw")
 
-[node name="MainContainer" type="PanelContainer" parent="."]
+[node name="MainContainer" type="PanelContainer" parent="." unique_id=1948769426]
 unique_name_in_owner = true
 anchors_preset = 15
 anchor_right = 1.0
@@ -22,18 +22,18 @@ grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_lock_ = true
 
-[node name="Margin" type="MarginContainer" parent="MainContainer"]
+[node name="Margin" type="MarginContainer" parent="MainContainer" unique_id=1361926932]
 layout_mode = 2
 theme_override_constants/margin_left = 15
 theme_override_constants/margin_top = 5
 theme_override_constants/margin_right = 15
 theme_override_constants/margin_bottom = 10
 
-[node name="VBox" type="VBoxContainer" parent="MainContainer/Margin"]
+[node name="VBox" type="VBoxContainer" parent="MainContainer/Margin" unique_id=940760627]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="Output" type="TextEdit" parent="MainContainer/Margin/VBox"]
+[node name="Output" type="TextEdit" parent="MainContainer/Margin/VBox" unique_id=1922523684]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
@@ -43,19 +43,19 @@ theme_override_styles/focus = SubResource("StyleBoxEmpty_pd54f")
 theme_override_styles/read_only = SubResource("StyleBoxEmpty_1b47e")
 editable = false
 
-[node name="Padding" type="Control" parent="MainContainer/Margin/VBox"]
+[node name="Padding" type="Control" parent="MainContainer/Margin/VBox" unique_id=711582680]
 custom_minimum_size = Vector2(0, 5)
 layout_mode = 2
 
-[node name="HBox" type="HBoxContainer" parent="MainContainer/Margin/VBox"]
+[node name="HBox" type="HBoxContainer" parent="MainContainer/Margin/VBox" unique_id=1412006507]
 layout_mode = 2
 
-[node name="CmdsInput" type="LineEdit" parent="MainContainer/Margin/VBox/HBox"]
+[node name="CmdsInput" type="LineEdit" parent="MainContainer/Margin/VBox/HBox" unique_id=296850180]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Settings" type="Button" parent="MainContainer/Margin/VBox/HBox"]
+[node name="Settings" type="Button" parent="MainContainer/Margin/VBox/HBox" unique_id=927901519]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_styles/focus = SubResource("StyleBoxEmpty_32acl")
@@ -63,14 +63,14 @@ action_mode = 0
 text = "Settings"
 flat = true
 
-[node name="PopupPanel" type="PopupPanel" parent="MainContainer"]
+[node name="PopupPanel" type="PopupPanel" parent="MainContainer" unique_id=123302256]
 unique_name_in_owner = true
 title = "Settings"
 initial_position = 1
 size = Vector2i(300, 100)
 borderless = false
 
-[node name="Margin" type="MarginContainer" parent="MainContainer/PopupPanel"]
+[node name="Margin" type="MarginContainer" parent="MainContainer/PopupPanel" unique_id=123593807]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -85,11 +85,11 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="PopupVBox" type="VBoxContainer" parent="MainContainer/PopupPanel/Margin"]
+[node name="PopupVBox" type="VBoxContainer" parent="MainContainer/PopupPanel/Margin" unique_id=1949156145]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="PopupAutoScroll" type="CheckBox" parent="MainContainer/PopupPanel/Margin/PopupVBox"]
+[node name="PopupAutoScroll" type="CheckBox" parent="MainContainer/PopupPanel/Margin/PopupVBox" unique_id=1414818680]
 unique_name_in_owner = true
 layout_mode = 2
 text = "Autoscroll"
