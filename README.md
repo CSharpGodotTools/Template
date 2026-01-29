@@ -9,15 +9,8 @@
     <a href="https://discord.gg/j8HQZZ76r8"><img src="https://img.shields.io/discord/955956101554266132?label=discord&style=flat&color=3399FF&labelColor=1a1a1a" alt="Discord" /></a>
 </div>
 
-## Highlights
-- **[Cat Lips Source Generators](https://github.com/CSharpGodotTools/Template/wiki/Source-Generators)**
-- **[Component Manager](https://github.com/CSharpGodotTools/Template/wiki/Component-Manager)**
-- **[Debugging Tools](https://github.com/CSharpGodotTools/Template/wiki/In%E2%80%90Game-Debugging)**
-- **[ENet Multiplayer Framework](https://github.com/CSharpGodotTools/Template/wiki/Multiplayer)**
-- **[Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)**
-- **[Menu UI](https://github.com/CSharpGodotTools/Template/wiki/Menu-UI)**
-- **[Services](https://github.com/CSharpGodotTools/Template/wiki/Services)**
-- **[Simplified Tweens](https://github.com/CSharpGodotTools/Template/wiki/Simplified-Tweens)**
+## Features
+See the [wiki](https://github.com/CSharpGodotTools/Template/wiki) for a list of all features.
 
 ## Prerequisites
 - [.NET SDK](https://dotnet.microsoft.com/download) is at least `8.0.400`. Check with `dotnet --version`.
@@ -30,6 +23,10 @@
 3. Click apply changes and Godot will restart with your template ready to go.
 
 ![SetupPreview](https://github.com/user-attachments/assets/b43f59bb-34b4-414c-a979-705d9a31d91b)
+![MainMenuPreview](https://github.com/user-attachments/assets/e2cf3c4f-ea22-4b26-85df-a953383a9b99)  
+![OptionsPreview](https://github.com/user-attachments/assets/7d744362-7c70-4f17-9262-c5e77182e942)  
+![MainScenePreview](https://github.com/user-attachments/assets/817f1cda-68ff-4d9c-bda5-6628e2d501b6)  
+![TweensPreview](https://github.com/user-attachments/assets/38b352bc-a8f6-49f9-ad9a-d0e85a55e081)
 
 ## Thank You
 [Brian Shao](https://github.com/cydq)  
@@ -37,8 +34,3 @@
 [Vaggelismsxp](https://github.com/vaggelismsxp)  
 
 New contributors please read [this](https://github.com/CSharpGodotTools/Template/wiki/Contributing).
-
-![MainMenuPreview](https://github.com/user-attachments/assets/e2cf3c4f-ea22-4b26-85df-a953383a9b99)  
-![OptionsPreview](https://github.com/user-attachments/assets/7d744362-7c70-4f17-9262-c5e77182e942)  
-![MainScenePreview](https://github.com/user-attachments/assets/817f1cda-68ff-4d9c-bda5-6628e2d501b6)  
-![TweensPreview](https://github.com/user-attachments/assets/38b352bc-a8f6-49f9-ad9a-d0e85a55e081)
