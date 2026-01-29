@@ -139,6 +139,7 @@ public static class SetupUtils
                 case "addons":
                 case "godotutils":
                 case "mods":
+                case "framework":
                     return TraverseResult.SkipDir;
             }
 
