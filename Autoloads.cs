@@ -1,4 +1,6 @@
-namespace Framework;
+using Framework;
+
+namespace __TEMPLATE__;
 
 // Define managers here. For example:
 // public WorldManager WorldManager { get; private set; }
@@ -11,7 +13,7 @@ namespace Framework;
 // 
 // IMPORTANT: Make sure you call the base methods for every method override.
 // e.g. base._Ready(); base._PhysicsUpdate(delta); ...
-public partial class Autoloads
+public partial class Autoloads : AutoloadsFramework
 {
     
 }
