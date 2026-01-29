@@ -2,10 +2,8 @@
 .godot/*
 Exported/*
 .import/
-**/*.import
 export.cfg
 export_presets.cfg
-*.translation
 
 # Addons
 addons/**/*.template_debug.x86_64.dll
@@ -29,7 +27,7 @@ Properties/*
 # Rider
 .idea/*
 
-# enet custom
+# ENet
 ENet-CSharp.dll
 
 libenet.so
@@ -38,7 +36,7 @@ enet.so
 libenet.dylib
 enet.dylib
 
-# os files
+# Mac OS Files
 .DS_Store
 
 # Include these files
