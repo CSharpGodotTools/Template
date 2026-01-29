@@ -2,7 +2,7 @@ using Godot;
 using GodotUtils;
 using System.IO;
 
-namespace __TEMPLATE__.Setup;
+namespace Framework.Setup;
 
 public partial class SetupUI : Node
 {

@@ -4,7 +4,7 @@ using GodotUtils.RegEx;
 using System;
 using System.IO;
 
-namespace __TEMPLATE__.Setup;
+namespace Framework.Setup;
 
 public static class SetupUtils
 {
