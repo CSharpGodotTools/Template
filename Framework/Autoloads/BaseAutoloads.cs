@@ -38,10 +38,7 @@ public partial class BaseAutoloads : Node
     public SceneManager         SceneManager     { get; private set; }
     public Profiler             Profiler         { get; private set; }
     public FocusOutlineManager  FocusOutline     { get; private set; }
-
-#if NETCODE_ENABLED
     public Logger Logger { get; private set; }
-#endif
 
 #if DEBUG
     private VisualizeAutoload _visualizeAutoload;
@@ -62,10 +59,7 @@ public partial class BaseAutoloads : Node
         Profiler = new Profiler();
         GameConsole = GetNode<GameConsole>("%Console");
         FocusOutline = new FocusOutlineManager(this);
-
-#if NETCODE_ENABLED
         Logger = new Logger(GameConsole);
-#endif
     }
 
     public override void _Ready()
@@ -90,9 +84,7 @@ public partial class BaseAutoloads : Node
         _visualizeAutoload.Update();
 #endif
 
-#if NETCODE_ENABLED
         Logger.Update();
-#endif
     }
 
     public override void _PhysicsProcess(double delta)
@@ -118,10 +110,7 @@ public partial class BaseAutoloads : Node
         _visualizeAutoload.Dispose();
 #endif
 
-#if NETCODE_ENABLED
         Logger.Dispose();
-#endif
-
         Profiler.Dispose();
 
         Instance = null;

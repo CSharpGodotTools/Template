@@ -21,13 +21,12 @@ public static partial class Game
         {
             string errMsg = $"Game.{propertyName} was accessed before _EnterTree or _Ready.";
 
-#if NETCODE_ENABLED
             // Show a friendly optional error message if netcode is enabled.
             // Since Autoloads is null we can make our own temporary Logger.
             Logger logger = new();
             logger.LogDebug(errMsg + " (see exception in errors for stack trace)");
             logger.Update();
-#endif
+
             throw new InvalidOperationException(errMsg);
         }
 

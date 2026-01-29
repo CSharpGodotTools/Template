@@ -14,7 +14,7 @@
     <!-- IDE0290: Use primary constructor. -->
     <NoWarn>CS0108;IDE0290</NoWarn>
     <!-- We use $(DefineConstants); so we do not remove all existing constants -->
-    <DefineConstants>$(DefineConstants);NETCODE_ENABLED</DefineConstants>
+    <!-- <DefineConstants>$(DefineConstants);NETCODE_ENABLED</DefineConstants> -->
   </PropertyGroup>
 
   <!-- NuGet Packages -->
