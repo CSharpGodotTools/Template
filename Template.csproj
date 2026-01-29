@@ -35,12 +35,12 @@
 
 	<!-- GodotUtils reference -->
 	<Reference Include="GodotUtils">
-		<HintPath>addons/GodotUtils.dll</HintPath>
+		<HintPath>Framework/Libraries/GodotUtils.dll</HintPath>
 	</Reference>
 	  
 	<!-- Visualize reference -->
 	<Reference Include="Visualize">
-		<HintPath>addons/Visualize.dll</HintPath>
+		<HintPath>Framework/Libraries/Visualize.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <!-- Exclude obj and bin directories from subfolders -->
