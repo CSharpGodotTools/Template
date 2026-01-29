@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://jrjqky6ag6gg" path="res://Framework/Console/GameConsole.tscn" id="4_8po21"]
 [ext_resource type="PackedScene" uid="uid://7tfets4irkba" path="res://Framework/Scenes/Options/Options.tscn" id="5_6wcni"]
 [ext_resource type="Script" uid="uid://17yxgcswri77" path="res://Framework/Scenes/MenuScenes.cs" id="6_dq8n5"]
-[ext_resource type="Script" uid="uid://du8dqqccpsvrf" path="res://Framework/Autoloads/GameComponentManager.cs" id="7_3cpyl"]
+[ext_resource type="Script" uid="uid://du8dqqccpsvrf" path="res://Framework/Managers/GameComponentManager.cs" id="7_3cpyl"]
 [ext_resource type="Texture2D" uid="uid://d3di84q21vp35" path="res://Framework/Theme/CornerDashOutline.png" id="9_3cpyl"]
 
 [sub_resource type="Resource" id="Resource_yre3b"]
