@@ -12,14 +12,14 @@ config_version=5
 
 config/name="Template"
 run/main_scene="uid://dnmu3cujgayk2"
-config/features=PackedStringArray("4.5", "C#", "Forward Plus")
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 boot_splash/show_image=false
-config/icon="res://Framework/Icon.svg"
+config/icon="res://Icon.svg"
 
 [autoload]
 
 Autoloads="*res://Framework/Autoloads/Autoloads.tscn"
-ImGuiRoot="*res://addons/imgui-godot/data/ImGuiRoot.tscn"
+ImGuiRoot="*uid://dugmpnsxaagba"
 
 [display]
 

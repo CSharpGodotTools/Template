@@ -6,14 +6,13 @@ namespace __TEMPLATE__.Setup;
 
 public partial class SetupUI : Node
 {
-    #region Fields
+    // Fields
     private string _prevGameName = string.Empty;
     private LineEdit _gameNameLineEdit;
     private RichTextLabel _namePreviewLabel;
     private PopupPanel _popupPanel;
-    #endregion
 
-    #region Godot Overrides
+    // Godot Overrides
     public override void _Ready()
     {
         _gameNameLineEdit = GetNode<LineEdit>("%GameName");
@@ -22,9 +21,8 @@ public partial class SetupUI : Node
 
         SetupUtils.DisplayGameNamePreview("Undefined", _namePreviewLabel);
     }
-    #endregion
 
-    #region Subscribers
+    // Subscribers
     private void _OnYesPressed()
     {
         string rawGameName = _gameNameLineEdit.Text;
@@ -87,5 +85,4 @@ public partial class SetupUI : Node
 
         _popupPanel.PopupCentered();
     }
-    #endregion
 }
