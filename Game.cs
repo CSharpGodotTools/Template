@@ -2,11 +2,9 @@
 
 namespace __TEMPLATE__;
 
-// Add references to managers here. For example:
-// public static WorldManager World => Autoloads.Instance.WorldManager;
-//
-// WorldManager would need to be defined in Autoloads.cs. Then simply call Game.World.(...)
+// Anything added here will need to be added in Autoloads.cs as well
 public partial class Game : GameFramework
 {
-    
+    // For example:
+    // public static WorldManager World => Autoloads.Instance.WorldManager;
 }
