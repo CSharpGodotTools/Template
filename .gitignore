@@ -1,15 +1,7 @@
 # Godot
 .godot/*
-Exported/*
-.import/
 export.cfg
 export_presets.cfg
-
-# Addons
-addons/**/*.template_debug.x86_64.dll
-
-# GdUnit4
-TestResults/
 
 # Mono-specific
 .mono/
@@ -29,10 +21,8 @@ Properties/*
 
 # ENet
 ENet-CSharp.dll
-
 libenet.so
 enet.so
-
 libenet.dylib
 enet.dylib
 
@@ -41,8 +31,5 @@ enet.dylib
 
 # Include these files
 !**/*.gdignore
-!.vscode/settings.json
-!.vscode/extensions.json
-
 # Make sure this file is ignored
 .godot/.gdignore
