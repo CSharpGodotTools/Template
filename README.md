@@ -17,7 +17,6 @@
 
 ![MainMenuPreview](https://github.com/user-attachments/assets/e2cf3c4f-ea22-4b26-85df-a953383a9b99)  
 ![OptionsPreview](https://github.com/user-attachments/assets/7d744362-7c70-4f17-9262-c5e77182e942)  
-![MainScenePreview](https://github.com/user-attachments/assets/817f1cda-68ff-4d9c-bda5-6628e2d501b6)  
 
 ## Thank You
 [Brian Shao](https://github.com/cydq)  
