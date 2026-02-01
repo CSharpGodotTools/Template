@@ -1,55 +1,39 @@
 ﻿<Project Sdk="Godot.NET.Sdk/4.6.0">
-  <!-- Project Settings -->
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <!--Required for ImGui-->
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <EnableDynamicLoading>true</EnableDynamicLoading>
-    <ImplicitUsings>false</ImplicitUsings>
-    <!--Prevent use of the global usings feature-->
-    <RootNamespace>Template</RootNamespace>
-    <Nullable>disable</Nullable>
-    <!-- CS0108: 'X' hides inherited member 'Y'. Use the new keyword if hiding was intended. Consider the scenario where you want [OnInstantiate] for both derived and inherited types. -->
-    <!-- IDE0290: Use primary constructor. -->
-    <NoWarn>CS0108;IDE0290</NoWarn>
-    <!-- We use $(DefineConstants); so we do not remove all existing constants -->
-    <!-- <DefineConstants>$(DefineConstants);NETCODE_ENABLED</DefineConstants> -->
-  </PropertyGroup>
+    <!-- Project Settings -->
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <!--Required for ImGui-->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <!--Prevent use of the global usings feature-->
+        <ImplicitUsings>false</ImplicitUsings>
+        <RootNamespace>Template</RootNamespace>
+        <Nullable>disable</Nullable>
+        <!-- Disable warnings -->
+        <!-- CS0108: 'X' hides inherited member 'Y'. Use the new keyword if hiding was intended. Consider the scenario where you want [OnInstantiate] for both derived and inherited types. -->
+        <!-- IDE0290: Use primary constructor. -->
+        <NoWarn>CS0108;IDE0290</NoWarn>
+    </PropertyGroup>
 
-  <!-- NuGet Packages -->
-  <ItemGroup>
-    <!-- Condition="!Exists('ENet-CSharp.dll')" is required for other platforms -->
-    <PackageReference Include="ENet-CSharp" Version="2.4.8" Condition="!Exists('ENet-CSharp.dll')" />
-    <PackageReference Include="ImGui.NET" Version="1.91.6.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-	<!-- https://github.com/Cat-Lips/GodotSharp.SourceGenerators -->
-    <PackageReference Include="GodotSharp.SourceGenerators" Version="2.6.0" />
-	<PackageReference Include="System.Collections.Immutable" Version="9.0.0" />
-  </ItemGroup>
-  <!-- Local Packages -->
-  <ItemGroup>
-	<!-- This is required for other platforms where the ENet NuGet package is not enough -->
-    <Reference Include="ENet-CSharp" Condition="Exists('ENet-CSharp.dll')">
-      <HintPath>ENet-CSharp.dll</HintPath>
-    </Reference>
+    <ItemGroup>
+        <!-- Package References -->
+        <!-- Condition="!Exists('ENet-CSharp.dll')" is required for other platforms -->
+        <PackageReference Include="ENet-CSharp" Version="2.4.8" Condition="!Exists('ENet-CSharp.dll')" />
+        <PackageReference Include="ImGui.NET" Version="1.91.6.1" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <!-- https://github.com/Cat-Lips/GodotSharp.SourceGenerators -->
+        <PackageReference Include="GodotSharp.SourceGenerators" Version="2.6.0" />
+        <PackageReference Include="PacketGen" Version="*" />
 
-	<!-- GodotUtils reference -->
-	<Reference Include="GodotUtils">
-		<HintPath>Framework/Libraries/GodotUtils.dll</HintPath>
-	</Reference>
-	  
-	<!-- Visualize reference -->
-	<Reference Include="Visualize">
-		<HintPath>Framework/Libraries/Visualize.dll</HintPath>
-	</Reference>
+        <!-- References -->
+        <!-- This is required for other platforms where the ENet NuGet package is not enough -->
+        <Reference Include="ENet-CSharp.dll" Condition="Exists('ENet-CSharp.dll')" />
+        <Reference Include="Framework/Libraries/GodotUtils.dll" />
+        <Reference Include="Framework/Libraries/Visualize.dll" />
 
-	<!-- PacketGen reference -->
-	<Analyzer Include="Framework/Libraries/PacketGen.dll" />
-  </ItemGroup>
-  <!-- Exclude obj and bin directories from subfolders -->
-  <ItemGroup>
-    <Compile Remove="**\obj\**" />
-    <Compile Remove="**\bin\**" />
-  </ItemGroup>
+        <!-- Exclude obj and bin directories from subfolders -->
+        <Compile Remove="**\obj\**" />
+        <Compile Remove="**\bin\**" />
+    </ItemGroup>
 </Project>
