@@ -11,7 +11,7 @@
 
 <div align="center">
     <h1>
-        <a href="https://github.com/CSharpGodotTools/Template/wiki/Setup">Setup Guide</a>
+        <a href="https://github.com/CSharpGodotTools/Template/wiki/Setup">Setup & Feature Overview</a>
     </h1>
 </div>
 
