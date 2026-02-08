@@ -7,11 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: Debug repo layout
         run: |
           echo "Current dir: $(pwd)"
-          find . -type d | grep Libraries || echo "No Libraries dir found"
+          find . -type d | grep Framework/Libraries || echo "No Framework/Libraries dir found"
       
       - name: Add local NuGet source
         run: |
