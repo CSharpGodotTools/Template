@@ -19,11 +19,9 @@ public class Tests
     }
 
     [TestCase]
+    [RequireGodotRuntime]
     public static async Task ServerClientConnects()
     {
-        Logger.UseGodotBackend = false;
-        GameFramework.UseLoggerForTests(new Logger());
-
         GameServer server = new();
         GameClient client = new();
 
@@ -54,7 +52,6 @@ public class Tests
             client.Stop();
             server.Stop();
             await connectTask;
-            GameFramework.ClearLoggerOverride();
         }
     }
 }
