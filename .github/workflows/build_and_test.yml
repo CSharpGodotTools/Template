@@ -8,6 +8,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Debug local NuGet source
+        run: |
+          dotnet nuget list source
+          ls -R "$GITHUB_WORKSPACE/Framework/Libraries"
+      
       - name: Add local NuGet source
         run: |
           dotnet nuget add source "$GITHUB_WORKSPACE/Framework/Libraries" --name LocalNugets
