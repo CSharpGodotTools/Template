@@ -8,10 +8,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Debug local NuGet source
+      - name: Debug repo layout
         run: |
-          dotnet nuget list source
-          ls -R "$GITHUB_WORKSPACE/Framework/Libraries"
+          echo "Current dir: $(pwd)"
+          find . -type d | grep Libraries || echo "No Libraries dir found"
       
       - name: Add local NuGet source
         run: |
