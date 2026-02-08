@@ -9,6 +9,11 @@ data_*/
 mono_crash.*.json
 *.DotSettings.user
 
+# gdUnit4
+.runsettings
+TestResults/*
+!TestResults/.gdignore
+
 # Visual Studio
 .vs/*
 Properties/*
