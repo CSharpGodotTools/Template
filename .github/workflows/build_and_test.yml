@@ -12,7 +12,8 @@ jobs:
           
       - name: Find Godot executable
         run: |
-          find $HOME -type f -name "Godot*4.6*mono*"
+          echo "Searching workspace for Godot..."
+          find $GITHUB_WORKSPACE -type f -name "Godot*mono*"
           
       - uses: godot-gdunit-labs/gdUnit4-action@v1
         with:
