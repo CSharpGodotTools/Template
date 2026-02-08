@@ -10,11 +10,6 @@ jobs:
         with:
           submodules: recursive
           
-      - name: Find Godot executable
-        run: |
-          echo "Searching workspace for Godot..."
-          find $GITHUB_WORKSPACE -type f -name "Godot*mono*"
-          
       - uses: godot-gdunit-labs/gdUnit4-action@v1
         with:
           godot-version: '4.6'
