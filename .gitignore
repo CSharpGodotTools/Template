@@ -13,6 +13,7 @@ mono_crash.*.json
 TestResults/*
 !TestResults/.gdignore
 gdunit4_testadapter_v5/
+.runsettings
 
 # Visual Studio
 .vs/*
