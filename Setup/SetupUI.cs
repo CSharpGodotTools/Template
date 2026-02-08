@@ -23,6 +23,7 @@ public partial class SetupUI : Node
     }
 
     // Subscribers
+#pragma warning disable IDE1006 // Naming Styles
     private void _OnYesPressed()
     {
         string rawGameName = _gameNameLineEdit.Text;
@@ -85,4 +86,5 @@ public partial class SetupUI : Node
 
         _popupPanel.PopupCentered();
     }
+#pragma warning restore IDE1006 // Naming Styles
 }
