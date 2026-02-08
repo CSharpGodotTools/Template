@@ -17,3 +17,6 @@ jobs:
           godot-net: true
           paths: 'res://Setup/Testing'
           console-verbosity: 'normal'
+          publish-report: false
+          upload-report: true
+          report-name: test-report.xml
