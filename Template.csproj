@@ -24,7 +24,7 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <!-- https://github.com/Cat-Lips/GodotSharp.SourceGenerators -->
         <PackageReference Include="GodotSharp.SourceGenerators" Version="2.6.0" />
-        <PackageReference Include="PacketGen" Version="*" />
+        <PackageReference Include="PacketGen" Version="1.1.2" />
 
         <!-- References -->
         <!-- This is required for other platforms where the ENet NuGet package is not enough -->
