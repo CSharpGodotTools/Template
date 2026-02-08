@@ -10,7 +10,6 @@ mono_crash.*.json
 *.DotSettings.user
 
 # gdUnit4
-.runsettings
 TestResults/*
 !TestResults/.gdignore
 gdunit4_testadapter_v5/
