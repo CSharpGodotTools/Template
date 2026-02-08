@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Godot.NET.Sdk/4.6.0">
     <!-- Project Settings -->
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <LangVersion>13.0</LangVersion>
+        <TargetFramework>net8.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
         <!--Required for ImGui-->
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <EnableDynamicLoading>true</EnableDynamicLoading>
