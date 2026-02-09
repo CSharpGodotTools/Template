@@ -53,10 +53,7 @@ public class ENetTests
 
         TestServer server = new((packet, _) =>
         {
-            dataMatches =
-                AreEqual.Lists(expected.IntValues, packet.IntValues) &&
-                AreEqual.Lists(expected.StringValues, packet.StringValues) &&
-                AreEqual.Lists(expected.FloatValues, packet.FloatValues);
+            dataMatches = expected.Equals(packet);
 
             receivedTcs.TrySetResult(true);
         });
