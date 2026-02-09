@@ -12,6 +12,7 @@
 ## Features
 - Multiplayer
   - [Minimal setup required](https://github.com/CSharpGodotTools/Template/wiki/Multiplayer)
+  - [Minimal packet data sent over the network](https://github.com/CSharpGodotTools/Template/wiki/Multiplayer#minimal-packet-data-sent)
   - [Packets automatically create their `Write`, `Read` methods for you](https://github.com/CSharpGodotTools/Template/wiki/Packets)
 - Performance
   - [Centralized Component Scripts](https://github.com/CSharpGodotTools/Template/wiki/Component-Scripts)
