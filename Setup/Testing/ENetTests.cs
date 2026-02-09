@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Template.Setup.Testing;
@@ -12,7 +13,7 @@ namespace Template.Setup.Testing;
 public class ENetTests
 {
     private static readonly TimeSpan ConnectTimeout = TimeSpan.FromSeconds(5);
-    private static readonly TimeSpan PacketTimeout = TimeSpan.FromSeconds(60);
+    private static readonly TimeSpan PacketTimeout = TimeSpan.FromSeconds(10);
 
     [TestCase]
     [RequireGodotRuntime]
@@ -42,11 +43,23 @@ public class ENetTests
     private static async Task RunPacketRoundTripAsync(CPacketNestedCollections expected)
     {
         PacketCapture<CPacketNestedCollections> capture = new();
+        Stopwatch sendWatch = new();
+        long receiveMs = -1;
 
-        await using ENetTestHarness harness = new((packet, _) => capture.Set(packet));
+        await using ENetTestHarness harness = new((packet, _) =>
+        {
+            if (sendWatch.IsRunning)
+            {
+                long elapsed = sendWatch.ElapsedMilliseconds;
+                Interlocked.CompareExchange(ref receiveMs, elapsed, -1);
+            }
+
+            capture.Set(packet);
+        });
         bool connected = await harness.ConnectAsync(ConnectTimeout);
         AssertBool(connected).IsTrue();
 
+        sendWatch.Start();
         harness.Send(expected);
 
         Console.WriteLine("[Test] Waiting for packet capture...");
@@ -60,6 +73,11 @@ public class ENetTests
 
         if (waitDiagnostics.Received)
         {
+            if (receiveMs >= 0)
+            {
+                Console.WriteLine($"[Test] Packet received in {receiveMs} ms");
+            }
+
             string diff = PacketDiff.FindFirstDiff(expected, capture.Packet);
             if (diff != null)
             {
