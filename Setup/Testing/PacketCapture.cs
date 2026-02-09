@@ -9,10 +9,12 @@ public sealed class PacketCapture<T>
         new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     public T Packet { get; private set; }
+    public bool IsSet => _tcs.Task.IsCompleted;
 
     public void Set(T packet)
     {
         Packet = packet;
+        Console.WriteLine($"[Test] Packet captured: {typeof(T).Name}");
         _tcs.TrySetResult(true);
     }
 
