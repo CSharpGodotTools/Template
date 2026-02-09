@@ -35,6 +35,8 @@ This is an on-going project I've been working on. I know how hard it is to actua
 
 ### [Wiki](https://github.com/CSharpGodotTools/Template/wiki)  
 
+### [Contributing](https://github.com/CSharpGodotTools/Template/wiki/Contributing)  
+
 ![MainMenuPreview](https://github.com/user-attachments/assets/e2cf3c4f-ea22-4b26-85df-a953383a9b99)  
 ![OptionsPreview](https://github.com/user-attachments/assets/7d744362-7c70-4f17-9262-c5e77182e942)  
 
