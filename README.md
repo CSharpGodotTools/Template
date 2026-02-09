@@ -9,6 +9,8 @@
     <a href="https://discord.gg/j8HQZZ76r8"><img src="https://img.shields.io/discord/955956101554266132?label=discord&style=flat&color=000000&labelColor=1a1a1a" alt="Discord" /></a>
 </div>
 
+This is an on-going project I've been working on. I know how hard it is to actually finish a game and I hope by making this, game development will be just a little bit easier.
+
 ## Features
 - Multiplayer
   - [Minimal setup required](https://github.com/CSharpGodotTools/Template/wiki/Multiplayer)
@@ -22,10 +24,11 @@
   - [Console Commands](https://github.com/CSharpGodotTools/Template/wiki/Console-Commands)
   - [Custom Main Run Args](https://github.com/CSharpGodotTools/Template/wiki/Custom-Main-Run-Args)
   - [GDUnit4 Testing](https://github.com/CSharpGodotTools/Template/wiki/GDUnit-Testing)
-- [Cat Lips Source Generators](https://github.com/CSharpGodotTools/Template/wiki/Cat-Lips-Source-Generators)
-- [Simplified Tweens](https://github.com/CSharpGodotTools/Template/wiki/Simplified-Tweens)
-- [Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)
-- [Services](https://github.com/CSharpGodotTools/Template/wiki/Services)
+- Utilities
+  - [Cat Lips Source Generators](https://github.com/CSharpGodotTools/Template/wiki/Cat-Lips-Source-Generators)
+  - [Simplified Tweens](https://github.com/CSharpGodotTools/Template/wiki/Simplified-Tweens)
+  - [Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)
+  - [Services](https://github.com/CSharpGodotTools/Template/wiki/Services)
 
 ## Getting Started
 ### [Setup Guide](https://github.com/CSharpGodotTools/Template/wiki/Setup)  
