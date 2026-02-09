@@ -1,141 +1,54 @@
-using ENet;
-using Framework.Netcode;
-using Framework.Netcode.Client;
-using Framework.Netcode.Server;
 using GdUnit4;
 using static GdUnit4.Assertions;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace Template.Setup.Testing;
 
 [TestSuite]
 public class ENetTests
 {
-    private const ushort Port = 25565;
-    private const int MaxClients = 100;
-
     [TestCase]
     [RequireGodotRuntime]
     public static async Task ServerClientConnects()
     {
-        TestServer server = new((_, _) => { });
-        TestClient client = new();
-
-        Task connectTask = await StartServerAndClientAsync(server, client);
-
-        try
-        {
-        }
-        finally
-        {
-            client.Stop();
-            server.Stop();
-            await connectTask;
-        }
+        await using ENetTestHarness harness = new((_, _) => { });
+        bool connected = await harness.ConnectAsync(TimeSpan.FromSeconds(2));
+        AssertBool(connected).IsTrue();
     }
 
     [TestCase]
     [RequireGodotRuntime]
-    public static async Task ClientSendsPacketListsToServer()
+    public static async Task ClientSendsPacketNestedCollectionsToServer()
     {
-        CPacketLists expected = new()
-        {
-            IntValues = [1, 2, 3],
-            StringValues = ["Alpha", "Beta", "Gamma"],
-            FloatValues = [1.5f, 2.5f, 3.5f]
-        };
-
-        bool dataMatches = false;
-        TaskCompletionSource<bool> receivedTcs = new(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        TestServer server = new((packet, _) =>
-        {
-            dataMatches = expected.Equals(packet);
-
-            receivedTcs.TrySetResult(true);
-        });
-
-        TestClient client = new();
-        Task connectTask = await StartServerAndClientAsync(server, client);
-
-        try
-        {
-            client.Send(expected);
-
-            bool received = await WaitForTaskAsync(receivedTcs.Task, TimeSpan.FromSeconds(2));
-            AssertBool(received).IsTrue();
-
-            if (received)
-            {
-                AssertBool(dataMatches).IsTrue();
-            }
-        }
-        finally
-        {
-            client.Stop();
-            server.Stop();
-            await connectTask;
-        }
+        CPacketNestedCollections expected = PacketNestedCollectionsFactory.CreateSample();
+        await RunPacketRoundTripAsync(expected);
     }
 
-    private static async Task<Task> StartServerAndClientAsync(GodotServer server, GodotClient client)
+    [TestCase]
+    [RequireGodotRuntime]
+    public static async Task ClientSendsPacketNestedCollectionsToServer_Deep()
     {
-        server.Start(Port, MaxClients, new ENetOptions());
+        CPacketNestedCollections expected = PacketNestedCollectionsFactory.CreateDeepSample();
+        await RunPacketRoundTripAsync(expected);
+    }
 
-        Task connectTask = client.Connect("127.0.0.1", Port, new ENetOptions());
+    private static async Task RunPacketRoundTripAsync(CPacketNestedCollections expected)
+    {
+        PacketCapture<CPacketNestedCollections> capture = new();
 
-        bool connected = await WaitForConnectedAsync(client, TimeSpan.FromSeconds(2));
+        await using ENetTestHarness harness = new((packet, _) => capture.Set(packet));
+        bool connected = await harness.ConnectAsync(TimeSpan.FromSeconds(2));
         AssertBool(connected).IsTrue();
 
-        return connectTask;
-    }
+        harness.Send(expected);
 
-    private static async Task<bool> WaitForConnectedAsync(GodotClient client, TimeSpan timeout)
-    {
-        Stopwatch stopwatch = Stopwatch.StartNew();
+        bool received = await capture.WaitAsync(TimeSpan.FromSeconds(2));
+        AssertBool(received).IsTrue();
 
-        while (stopwatch.Elapsed < timeout)
+        if (received)
         {
-            if (client.IsConnected)
-            {
-                return true;
-            }
-
-            await Task.Delay(10);
+            AssertBool(expected.Equals(capture.Packet)).IsTrue();
         }
-
-        return false;
-    }
-
-    private static async Task<bool> WaitForTaskAsync(Task task, TimeSpan timeout)
-    {
-        Task completed = await Task.WhenAny(task, Task.Delay(timeout));
-        return completed == task;
-    }
-
-    private sealed class TestServer : GodotServer
-    {
-        private readonly Action<CPacketLists, Peer> _onPacket;
-
-        public TestServer(Action<CPacketLists, Peer> onPacket)
-        {
-            _onPacket = onPacket;
-            if (_onPacket != null)
-            {
-                RegisterPacketHandler<CPacketLists>(HandlePacket);
-            }
-        }
-
-        private void HandlePacket(CPacketLists packet, Peer peer)
-        {
-            _onPacket(packet, peer);
-        }
-    }
-
-    private sealed class TestClient : GodotClient
-    {
     }
 }
