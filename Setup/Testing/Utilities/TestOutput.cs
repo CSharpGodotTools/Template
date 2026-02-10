@@ -31,11 +31,11 @@ public static class TestOutput
 
     public static void Timing(string label, long ms)
     {
-        Console.WriteLine($"{label}: {AnsiColors.Orange}{ms} ms{AnsiColors.Reset}");
+        Console.WriteLine($"{label}: {ms} ms");
     }
 
     public static void WriteMsInParens(long ms)
     {
-        Console.Write($" ({AnsiColors.Orange}{ms} ms{AnsiColors.Reset})");
+        Console.Write($" ({ms} ms)");
     }
 }
