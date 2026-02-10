@@ -27,7 +27,7 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <!-- https://github.com/Cat-Lips/GodotSharp.SourceGenerators -->
         <PackageReference Include="GodotSharp.SourceGenerators" Version="2.6.0" />
-        <PackageReference Include="PacketGen" Version="1.1.2" />
+        <PackageReference Include="PacketGen" Version="1.1.7" />
 
         <!-- gdUnit4 package dependencies -->
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
