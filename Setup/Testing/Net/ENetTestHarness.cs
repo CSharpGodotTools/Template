@@ -7,23 +7,24 @@ using System.Threading.Tasks;
 
 namespace Template.Setup.Testing;
 
-public sealed class ENetTestHarness : IAsyncDisposable
+public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
+    where TPacket : ClientPacket
 {
     private const ushort Port = 25565;
     private const int MaxClients = 100;
     private const int ShutdownPollIntervalMs = 25;
     private static readonly TimeSpan _shutdownTimeout = TimeSpan.FromSeconds(5);
 
-    public TestServer Server { get; }
+    public TestServer<TPacket> Server { get; }
     public TestClient Client { get; }
     public Task ConnectTask { get; private set; }
 
     private static int _enetRefCount;
 
-    public ENetTestHarness(Action<CPacketNestedCollections, ENet.Peer> onPacket)
+    public ENetTestHarness(Action<TPacket, ENet.Peer> onPacket)
     {
         AddEnetRef();
-        Server = new TestServer(onPacket);
+        Server = new TestServer<TPacket>(onPacket);
         Client = new TestClient();
     }
 
@@ -49,7 +50,7 @@ public sealed class ENetTestHarness : IAsyncDisposable
         return connected;
     }
 
-    public void Send(ClientPacket packet)
+    public void Send(TPacket packet)
     {
         Console.WriteLine($"[Test] Sending packet {packet.GetType().Name}...");
         Client.Send(packet);
