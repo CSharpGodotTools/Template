@@ -4,8 +4,7 @@ namespace Template.Setup.Testing;
 
 public static class TestOutput
 {
-    private const string AnsiOrange = "\u001b[38;2;255;165;0m";
-    private const string AnsiReset = "\u001b[0m";
+    
     private const int MinHeaderWidth = 40;
     private const int HeaderSideDashes = 10;
 
@@ -25,10 +24,6 @@ public static class TestOutput
         Console.WriteLine(bar);
     }
 
-    public static void Footer()
-    {
-    }
-
     public static void Step(string message)
     {
         Console.WriteLine($"  - {message}");
@@ -36,11 +31,11 @@ public static class TestOutput
 
     public static void Timing(string label, long ms)
     {
-        Console.WriteLine($"{label}: {AnsiOrange}{ms} ms{AnsiReset}");
+        Console.WriteLine($"{label}: {AnsiColors.Orange}{ms} ms{AnsiColors.Reset}");
     }
 
     public static void WriteMsInParens(long ms)
     {
-        Console.Write($" ({AnsiOrange}{ms} ms{AnsiReset})");
+        Console.Write($" ({AnsiColors.Orange}{ms} ms{AnsiColors.Reset})");
     }
 }

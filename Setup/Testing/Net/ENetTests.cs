@@ -16,80 +16,50 @@ public class ENetTests
     public static async Task ServerClientConnects()
     {
         TestOutput.Header(nameof(ServerClientConnects));
-        try
-        {
-            await using ENetTestHarness<CPacketNestedCollections> harness = new((_, _) => { });
-            TestOutput.Step("Connecting client/server");
-            bool connected = await harness.ConnectAsync(_connectTimeout);
-            AssertBool(connected).IsTrue();
-        }
-        finally
-        {
-            TestOutput.Footer();
-        }
+
+        await using ENetTestHarness<CPacketNestedCollections> harness = new((_, _) => { });
+        TestOutput.Step("Connecting client/server");
+        bool connected = await harness.ConnectAsync(_connectTimeout);
+        AssertBool(connected).IsTrue();
     }
 
     [TestCase]
     [RequireGodotRuntime]
-    public static async Task ClientSendsPacketNestedCollectionsToServer()
+    public static async Task Client_Sends_PacketNestedCollections_To_Server()
     {
-        TestOutput.Header(nameof(ClientSendsPacketNestedCollectionsToServer));
-        try
-        {
-            CPacketNestedCollections expected = PacketNestedCollectionsFactory.CreateSample();
-            await PacketRoundTripRunner.RunAsync(expected, _connectTimeout, _packetTimeout);
-        }
-        finally
-        {
-            TestOutput.Footer();
-        }
+        TestOutput.Header(nameof(Client_Sends_PacketNestedCollections_To_Server));
+
+        CPacketNestedCollections expected = PacketNestedCollectionsFactory.CreateSample();
+        await PacketRoundTripRunner.RunAsync(expected, _connectTimeout, _packetTimeout);
     }
 
     [TestCase]
     [RequireGodotRuntime]
-    public static async Task ClientSendsPacketNestedCollectionsToServer_Deep()
+    public static async Task Client_Sends_PacketNestedCollections_To_Server_Deep()
     {
-        TestOutput.Header(nameof(ClientSendsPacketNestedCollectionsToServer_Deep));
-        try
-        {
-            CPacketNestedCollections expected = PacketNestedCollectionsFactory.CreateDeepSample();
-            await PacketRoundTripRunner.RunAsync(expected, _connectTimeout, _packetTimeout);
-        }
-        finally
-        {
-            TestOutput.Footer();
-        }
+        TestOutput.Header(nameof(Client_Sends_PacketNestedCollections_To_Server_Deep));
+
+        CPacketNestedCollections expected = PacketNestedCollectionsFactory.CreateDeepSample();
+        await PacketRoundTripRunner.RunAsync(expected, _connectTimeout, _packetTimeout);
     }
 
     [TestCase]
     [RequireGodotRuntime]
-    public static async Task ClientSendsPacketPrimitivesToServer()
+    public static async Task Client_Sends_PacketPrimitives_To_Server()
     {
-        TestOutput.Header(nameof(ClientSendsPacketPrimitivesToServer));
-        try
-        {
-            CPacketPrimitives expected = PacketPrimitivesFactory.CreateSample();
-            await PacketRoundTripRunner.RunAsync(expected, _connectTimeout, _packetTimeout);
-        }
-        finally
-        {
-            TestOutput.Footer();
-        }
+        TestOutput.Header(nameof(Client_Sends_PacketPrimitives_To_Server));
+
+        CPacketPrimitives expected = PacketPrimitivesFactory.CreateSample();
+        await PacketRoundTripRunner.RunAsync(expected, _connectTimeout, _packetTimeout);
     }
 
     [TestCase]
     [RequireGodotRuntime]
-    public static async Task ClientSendsPacketPrimitivesToServer_Deep()
+    public static async Task Client_Sends_PacketPrimitives_To_Server_Deep()
     {
-        TestOutput.Header(nameof(ClientSendsPacketPrimitivesToServer_Deep));
-        try
-        {
-            CPacketPrimitives expected = PacketPrimitivesFactory.CreateDeepSample();
-            await PacketRoundTripRunner.RunAsync(expected, _connectTimeout, _packetTimeout);
-        }
-        finally
-        {
-            TestOutput.Footer();
-        }
+        TestOutput.Header(nameof(Client_Sends_PacketPrimitives_To_Server_Deep));
+
+        CPacketPrimitives expected = PacketPrimitivesFactory.CreateDeepSample();
+        await PacketRoundTripRunner.RunAsync(expected, _connectTimeout, _packetTimeout);
     }
 }
