@@ -9,6 +9,14 @@ public class Tests
     [TestCase]
     public static void StringToLower()
     {
-        AssertString("AbcD".ToLower()).IsEqual("abcd");
+        TestOutput.Header(nameof(StringToLower));
+        try
+        {
+            AssertString("AbcD".ToLower()).IsEqual("abcd");
+        }
+        finally
+        {
+            TestOutput.Footer();
+        }
     }
 }

@@ -19,25 +19,50 @@ public class ENetTests
     [RequireGodotRuntime]
     public static async Task ServerClientConnects()
     {
-        await using ENetTestHarness harness = new((_, _) => { });
-        bool connected = await harness.ConnectAsync(ConnectTimeout);
-        AssertBool(connected).IsTrue();
+        TestOutput.Header(nameof(ServerClientConnects));
+        try
+        {
+            await using ENetTestHarness harness = new((_, _) => { });
+            TestOutput.Step("Connecting client/server");
+            bool connected = await harness.ConnectAsync(ConnectTimeout);
+            AssertBool(connected).IsTrue();
+        }
+        finally
+        {
+            TestOutput.Footer();
+        }
     }
 
     [TestCase]
     [RequireGodotRuntime]
     public static async Task ClientSendsPacketNestedCollectionsToServer()
     {
-        CPacketNestedCollections expected = PacketNestedCollectionsFactory.CreateSample();
-        await RunPacketRoundTripAsync(expected);
+        TestOutput.Header(nameof(ClientSendsPacketNestedCollectionsToServer));
+        try
+        {
+            CPacketNestedCollections expected = PacketNestedCollectionsFactory.CreateSample();
+            await RunPacketRoundTripAsync(expected);
+        }
+        finally
+        {
+            TestOutput.Footer();
+        }
     }
 
     [TestCase]
     [RequireGodotRuntime]
     public static async Task ClientSendsPacketNestedCollectionsToServer_Deep()
     {
-        CPacketNestedCollections expected = PacketNestedCollectionsFactory.CreateDeepSample();
-        await RunPacketRoundTripAsync(expected);
+        TestOutput.Header(nameof(ClientSendsPacketNestedCollectionsToServer_Deep));
+        try
+        {
+            CPacketNestedCollections expected = PacketNestedCollectionsFactory.CreateDeepSample();
+            await RunPacketRoundTripAsync(expected);
+        }
+        finally
+        {
+            TestOutput.Footer();
+        }
     }
 
     private static async Task RunPacketRoundTripAsync(CPacketNestedCollections expected)
@@ -56,9 +81,11 @@ public class ENetTests
 
             capture.Set(packet);
         });
+        TestOutput.Step("Connecting client/server");
         bool connected = await harness.ConnectAsync(ConnectTimeout);
         AssertBool(connected).IsTrue();
 
+        TestOutput.Step($"Sending packet {expected.GetType().Name}");
         sendWatch.Start();
         harness.Send(expected);
 
@@ -75,7 +102,7 @@ public class ENetTests
         {
             if (receiveMs >= 0)
             {
-                Console.WriteLine($"[Test] Packet received in {receiveMs} ms");
+                TestOutput.Timing("Packet received", receiveMs);
             }
 
             string diff = PacketDiff.FindFirstDiff(expected, capture.Packet);

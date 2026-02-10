@@ -39,9 +39,13 @@ public sealed class ENetTestHarness : IAsyncDisposable
         }
 
         Console.WriteLine("[Test] Starting client...");
+        Stopwatch connectWatch = Stopwatch.StartNew();
         ConnectTask = Client.Connect("127.0.0.1", Port, new ENetOptions());
         bool connected = await WaitForConnectedAsync(Client, timeout);
-        Console.WriteLine($"[Test] Client connected: {connected}");
+        connectWatch.Stop();
+        Console.Write($"[Test] Client connected: {connected}");
+        TestOutput.WriteMsInParens(connectWatch.ElapsedMilliseconds);
+        Console.WriteLine();
         return connected;
     }
 
