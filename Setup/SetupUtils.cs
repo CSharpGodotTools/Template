@@ -46,10 +46,10 @@ public static class SetupUtils
             if (entry.FileName.Equals(name + ".cs", StringComparison.OrdinalIgnoreCase))
             {
                 namespaceSameAsClassName = true;
-                return TraverseResult.Stop;
+                return TraverseDecision.Stop;
             }
 
-            return TraverseResult.Continue;
+            return TraverseDecision.Continue;
         });
 
         return namespaceSameAsClassName;
@@ -140,12 +140,12 @@ public static class SetupUtils
                 case "godotutils":
                 case "mods":
                 case "framework":
-                    return TraverseResult.SkipDir;
+                    return TraverseDecision.SkipChildren;
             }
 
             // Prevent modifying the currently executing setup script
             if (entry.FileName.EndsWith($"{nameof(SetupUI)}.cs"))
-                return TraverseResult.Continue;
+                return TraverseDecision.Continue;
 
             // Modify all scripts
             if (entry.FileName.EndsWith(".cs"))
@@ -159,7 +159,7 @@ public static class SetupUtils
                 File.WriteAllText(entry.FullPath, text);
             }
 
-            return TraverseResult.Continue;
+            return TraverseDecision.Continue;
         });
     }
 
