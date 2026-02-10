@@ -28,10 +28,11 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
         Client = new TestClient();
     }
 
-    public async Task<bool> ConnectAsync(TimeSpan timeout)
+    public async Task<bool> ConnectAsync(TimeSpan timeout, ENetOptions options = null)
     {
+        options ??= new ENetOptions();
         Console.WriteLine("[Test] Starting server...");
-        Server.Start(Port, MaxClients, new ENetOptions());
+        Server.Start(Port, MaxClients, options);
         bool serverRunning = await WaitForRunningAsync(Server, timeout);
         Console.WriteLine($"[Test] Server running: {serverRunning}");
         if (!serverRunning)
@@ -41,7 +42,7 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
 
         Console.WriteLine("[Test] Starting client...");
         Stopwatch connectWatch = Stopwatch.StartNew();
-        ConnectTask = Client.Connect("127.0.0.1", Port, new ENetOptions());
+        ConnectTask = Client.Connect("127.0.0.1", Port, options);
         bool connected = await WaitForConnectedAsync(Client, timeout);
         connectWatch.Stop();
         Console.Write($"[Test] Client connected: {connected}");
@@ -50,9 +51,12 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
         return connected;
     }
 
-    public void Send(TPacket packet)
+    public void Send(TPacket packet, bool log = true)
     {
-        Console.WriteLine($"[Test] Sending packet {packet.GetType().Name}...");
+        if (log)
+        {
+            Console.WriteLine($"[Test] Sending packet {packet.GetType().Name}...");
+        }
         Client.Send(packet);
     }
 

@@ -14,7 +14,8 @@ public static class PacketBatchRunner
         Func<TPacket> createPacket,
         int count,
         TimeSpan connectTimeout,
-        TimeSpan batchTimeout)
+        TimeSpan batchTimeout,
+        bool suppressLogs)
         where TPacket : ClientPacket
     {
         if (count <= 0)
@@ -43,13 +44,14 @@ public static class PacketBatchRunner
         });
 
         TestOutput.Step("Connecting client/server");
-        bool connected = await harness.ConnectAsync(connectTimeout);
+        ENetOptions options = suppressLogs ? CreateQuietOptions() : new ENetOptions();
+        bool connected = await harness.ConnectAsync(connectTimeout, options);
         AssertBool(connected).IsTrue();
 
         TestOutput.Step($"Sending {count}x {typeof(TPacket).Name}");
         for (int i = 0; i < count; i++)
         {
-            harness.Send(createPacket());
+            harness.Send(createPacket(), log: !suppressLogs);
         }
 
         Stopwatch stopwatch = Stopwatch.StartNew();
@@ -74,5 +76,16 @@ public static class PacketBatchRunner
         throw new TimeoutException(
             $"Timed out after {batchTimeout.TotalSeconds:0.##}s waiting for {count} " +
             $"{typeof(TPacket).Name} packets; received {received}.");
+    }
+
+    private static ENetOptions CreateQuietOptions()
+    {
+        return new ENetOptions
+        {
+            PrintPacketData = false,
+            PrintPacketByteSize = false,
+            PrintPacketReceived = false,
+            PrintPacketSent = false
+        };
     }
 }
