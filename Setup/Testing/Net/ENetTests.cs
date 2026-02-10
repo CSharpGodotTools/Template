@@ -10,6 +10,7 @@ public class ENetTests
 {
     private static readonly TimeSpan _connectTimeout = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan _packetTimeout = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan _batchTimeout = TimeSpan.FromSeconds(10);
 
     [TestCase]
     [RequireGodotRuntime]
@@ -61,5 +62,24 @@ public class ENetTests
 
         CPacketPrimitives expected = PacketPrimitivesFactory.CreateDeepSample();
         await PacketRoundTripRunner.RunAsync(expected, _connectTimeout, _packetTimeout);
+    }
+
+    [TestCase]
+    [RequireGodotRuntime]
+    public static async Task Client_Sends_Packet_Batches()
+    {
+        TestOutput.Header(nameof(Client_Sends_Packet_Batches));
+
+        await PacketBatchRunner.RunAsync(
+            PacketPrimitivesFactory.CreateSample,
+            100,
+            _connectTimeout,
+            _batchTimeout);
+
+        await PacketBatchRunner.RunAsync(
+            PacketNestedCollectionsFactory.CreateSample,
+            20,
+            _connectTimeout,
+            _batchTimeout);
     }
 }

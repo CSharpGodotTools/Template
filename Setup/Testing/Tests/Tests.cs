@@ -10,13 +10,6 @@ public class Tests
     public static void StringToLower()
     {
         TestOutput.Header(nameof(StringToLower));
-        try
-        {
-            AssertString("AbcD".ToLower()).IsEqual("abcd");
-        }
-        finally
-        {
-            TestOutput.Footer();
-        }
+        AssertString("AbcD".ToLower()).IsEqual("abcd");
     }
 }
