@@ -43,5 +43,6 @@ This is an on-going project I've been working on. I know how hard it is to actua
 ## Thank You
 [Brian Shao](https://github.com/cydq)  
 [Cat Lips](https://github.com/Cat-Lips)  
+[Onryigit](https://github.com/onryigit)  
 [Piep Matz](https://github.com/riffy)  
 [Vaggelismsxp](https://github.com/vaggelismsxp)  
