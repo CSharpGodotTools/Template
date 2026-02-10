@@ -11,7 +11,7 @@ public class ENetTests
     private static readonly TimeSpan _connectTimeout = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan _packetTimeout = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan _batchTimeout = TimeSpan.FromSeconds(10);
-    private const bool _suppressBatchLogs = true;
+    private const bool SuppressBatchLogs = true;
 
     [TestCase]
     [RequireGodotRuntime]
@@ -76,13 +76,13 @@ public class ENetTests
             100,
             _connectTimeout,
             _batchTimeout,
-            suppressLogs: _suppressBatchLogs);
+            suppressLogs: SuppressBatchLogs);
 
         await PacketBatchRunner.RunAsync(
             PacketNestedCollectionsFactory.CreateSample,
             20,
             _connectTimeout,
             _batchTimeout,
-            suppressLogs: _suppressBatchLogs);
+            suppressLogs: SuppressBatchLogs);
     }
 }
