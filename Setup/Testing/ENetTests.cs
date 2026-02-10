@@ -12,8 +12,8 @@ namespace Template.Setup.Testing;
 [TestSuite]
 public class ENetTests
 {
-    private static readonly TimeSpan ConnectTimeout = TimeSpan.FromSeconds(5);
-    private static readonly TimeSpan PacketTimeout = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan _connectTimeout = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan _packetTimeout = TimeSpan.FromSeconds(10);
 
     [TestCase]
     [RequireGodotRuntime]
@@ -24,7 +24,7 @@ public class ENetTests
         {
             await using ENetTestHarness harness = new((_, _) => { });
             TestOutput.Step("Connecting client/server");
-            bool connected = await harness.ConnectAsync(ConnectTimeout);
+            bool connected = await harness.ConnectAsync(_connectTimeout);
             AssertBool(connected).IsTrue();
         }
         finally
@@ -82,7 +82,7 @@ public class ENetTests
             capture.Set(packet);
         });
         TestOutput.Step("Connecting client/server");
-        bool connected = await harness.ConnectAsync(ConnectTimeout);
+        bool connected = await harness.ConnectAsync(_connectTimeout);
         AssertBool(connected).IsTrue();
 
         TestOutput.Step($"Sending packet {expected.GetType().Name}");
@@ -90,7 +90,7 @@ public class ENetTests
         harness.Send(expected);
 
         Console.WriteLine("[Test] Waiting for packet capture...");
-        PacketWaitDiagnostics waitDiagnostics = await WaitForPacketAsync(capture, harness, PacketTimeout);
+        PacketWaitDiagnostics waitDiagnostics = await WaitForPacketAsync(capture, harness, _packetTimeout);
         if (!waitDiagnostics.Received)
         {
             string diagnostic = BuildTimeoutDiagnostics(expected, harness, waitDiagnostics);
@@ -177,7 +177,7 @@ public class ENetTests
         string registryInfo = GetPacketRegistryInfo(typeof(CPacketNestedCollections));
 
         return
-            $"Timed out after {PacketTimeout.TotalSeconds:0.##}s waiting for packet capture " +
+            $"Timed out after {_packetTimeout.TotalSeconds:0.##}s waiting for packet capture " +
             $"({nameof(CPacketNestedCollections)}). " +
             $"ClientRunning={waitDiagnostics.ClientRunning}, " +
             $"ClientConnected={waitDiagnostics.ClientConnected}, " +

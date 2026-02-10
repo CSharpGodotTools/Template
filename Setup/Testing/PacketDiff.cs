@@ -60,8 +60,8 @@ public static class PacketDiff
 
         if (expected is IEnumerable expectedEnumerable && actual is IEnumerable actualEnumerable)
         {
-            List<object> expectedItems = expectedEnumerable.Cast<object>().ToList();
-            List<object> actualItems = actualEnumerable.Cast<object>().ToList();
+            List<object> expectedItems = [.. expectedEnumerable.Cast<object>()];
+            List<object> actualItems = [.. actualEnumerable.Cast<object>()];
 
             if (expectedItems.Count != actualItems.Count)
             {
@@ -80,11 +80,10 @@ public static class PacketDiff
             return null;
         }
 
-        PropertyInfo[] properties = expectedType
+        PropertyInfo[] properties = [.. expectedType
             .GetProperties(BindingFlags.Public | BindingFlags.Instance)
             .Where(p => p.CanRead && p.GetIndexParameters().Length == 0)
-            .OrderBy(p => p.Name, StringComparer.Ordinal)
-            .ToArray();
+            .OrderBy(p => p.Name, StringComparer.Ordinal)];
 
         foreach (PropertyInfo property in properties)
         {

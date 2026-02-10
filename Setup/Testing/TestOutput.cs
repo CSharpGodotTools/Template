@@ -17,7 +17,7 @@ public static class TestOutput
         int leftDashes = HeaderSideDashes + (extra / 2);
         int rightDashes = HeaderSideDashes + (extra - (extra / 2));
 
-        string bar = new string('-', width);
+        string bar = new('-', width);
         string middle = $"{new string('-', leftDashes)} {testName} {new string('-', rightDashes)}";
 
         Console.WriteLine(bar);

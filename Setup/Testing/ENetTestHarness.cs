@@ -12,7 +12,7 @@ public sealed class ENetTestHarness : IAsyncDisposable
     private const ushort Port = 25565;
     private const int MaxClients = 100;
     private const int ShutdownPollIntervalMs = 25;
-    private static readonly TimeSpan ShutdownTimeout = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan _shutdownTimeout = TimeSpan.FromSeconds(5);
 
     public TestServer Server { get; }
     public TestClient Client { get; }
@@ -72,8 +72,8 @@ public sealed class ENetTestHarness : IAsyncDisposable
             await ConnectTask;
         }
 
-        await WaitForStoppedAsync("client", () => Client.IsRunning, ShutdownTimeout);
-        await WaitForStoppedAsync("server", () => Server.IsRunning, ShutdownTimeout);
+        await WaitForStoppedAsync("client", () => Client.IsRunning, _shutdownTimeout);
+        await WaitForStoppedAsync("server", () => Server.IsRunning, _shutdownTimeout);
         ReleaseEnetRef();
     }
 
