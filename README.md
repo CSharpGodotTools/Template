@@ -11,6 +11,8 @@
 
 This is an on-going project I've been working on. I know how hard it is to actually finish a game and I hope by making this, game development will be just a little bit easier.
 
+### [Setup Guide](https://github.com/CSharpGodotTools/Template/wiki/Setup)  
+
 ## Features
 - Multiplayer
   - [Minimal setup required](https://github.com/CSharpGodotTools/Template/wiki/Multiplayer)
@@ -29,13 +31,6 @@ This is an on-going project I've been working on. I know how hard it is to actua
   - [Simplified Tweens](https://github.com/CSharpGodotTools/Template/wiki/Simplified-Tweens)
   - [Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)
   - [Services](https://github.com/CSharpGodotTools/Template/wiki/Services)
-
-## Getting Started
-### [Setup Guide](https://github.com/CSharpGodotTools/Template/wiki/Setup)  
-
-### [Wiki](https://github.com/CSharpGodotTools/Template/wiki)  
-
-### [Contributing](https://github.com/CSharpGodotTools/Template/wiki/Contributing)  
 
 ![MainMenuPreview](https://github.com/user-attachments/assets/e2cf3c4f-ea22-4b26-85df-a953383a9b99)  
 ![OptionsPreview](https://github.com/user-attachments/assets/7d744362-7c70-4f17-9262-c5e77182e942)  
