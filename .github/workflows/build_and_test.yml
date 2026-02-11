@@ -10,6 +10,7 @@ on:
       - '**/*.import'
       - '**/*.csproj'
       - '**/*.sln'
+      - '**/*.yml'
       - 'NuGet.config'
       - 'project.godot'
 
