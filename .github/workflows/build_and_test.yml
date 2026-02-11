@@ -1,6 +1,19 @@
 # https://github.com/marketplace/actions/gdunit4-test-runner-action
 name: GdUnit4 Tests
-on: [push, pull_request]
+on:
+  push: &project_change_filter
+    paths:
+      - '**/*.cs'
+      - '**/*.gd'
+      - '**/*.tscn'
+      - '**/*.tres'
+      - '**/*.import'
+      - '**/*.csproj'
+      - '**/*.sln'
+      - 'NuGet.config'
+      - 'project.godot'
+
+  pull_request: *project_change_filter
 
 jobs:
   test:
