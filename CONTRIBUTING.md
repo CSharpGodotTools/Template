@@ -14,6 +14,9 @@ This template will be as lightweight as possible so it will not include any game
 > [!IMPORTANT]
 > Normally, when setting up a new project using this template, you would run the main scene and click 'Apply changes', but doing so modifies and deletes several files. So we should avoid doing this because we don't want to commit files changed by the setup.
 
+> [!IMPORTANT]
+> If you are contributing to the [Framework](https://github.com/CSharpGodotTools/Framework) submodule, make sure you are on the `main` branch and not one like `debaebc`.
+
 Ready to start contributing? Start by looking to see if there are any [good first issues](https://github.com/CSharpGodotTools/Template/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22), these issues will always be beginner friendly.
 
 ### Contact
