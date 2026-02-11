@@ -8,7 +8,7 @@ Have a brief look at the projects [Code Style Document](https://github.com/Valks
 ### Scope
 The current scope of this project is to provide a full multiplayer solution, extensive debugging tools and scripts to streamline game development. 
 
-This template will be as lightweight as possible so it will not include any game assets. For example an FPS scene with 4K textures is too large and as such would be developed in a separate repository. Such repositories will be mentioned in the [README.md](https://github.com/CSharpGodotTools/Template/blob/main/README.md) if any exist.
+This template will be as lightweight as possible so it will not include any game assets. For example an FPS scene with 4K textures is too large and as such would be developed in a separate repository. Such repositories if any exist will be mentioned in the [README.md](https://github.com/CSharpGodotTools/Template/blob/main/README.md).
 
 ### Contributing
 > [!IMPORTANT]
