@@ -98,7 +98,7 @@ public partial class TemplateSetupDock : VBoxContainer
             return;
         }
 
-        _gameNamePreview.Text = gameName;
+        _gameNamePreview.Text = SetupUtils.FormatGameName(gameName);
         _prevGameName = gameName;
         return;
 
