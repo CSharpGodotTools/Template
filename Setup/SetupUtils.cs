@@ -13,6 +13,37 @@ public static class SetupUtils
     private const string TemplateMainSceneUid = "uid://dnmu3cujgayk2";
 
     /// <summary>
+    /// GDUnit4 addon creates 2 folders that I do not want showing up in the git root.
+    /// Instead of committing the .gdignore files to git creating folder spam, we create them
+    /// after the setup. The .gdignore files ensure these files are not visible in the editor.
+    /// </summary>
+    /// <param name="projectRoot"></param>
+    public static void EnsureGDIgnoreFilesInGDUnitTestFolders(string projectRoot)
+    {
+        string[] folders =
+        [
+            "TestResults",
+            "gdunit4_testadapter_v5"
+        ];
+
+        foreach (string folder in folders)
+        {
+            string fullPath = Path.Combine(projectRoot, folder);
+
+            // Create the folder if it does not exist
+            Directory.CreateDirectory(fullPath);
+
+            // Create .gdignore so Godot hides the folder in the editor
+            string gdIgnorePath = Path.Combine(fullPath, ".gdignore");
+
+            if (!File.Exists(gdIgnorePath))
+            {
+                File.WriteAllText(gdIgnorePath, string.Empty);
+            }
+        }
+    }
+
+    /// <summary>
     /// Verifies the game name is not using the raw template namespace and not any existing class name in the project.
     /// </summary>
     public static bool IsGameNameBad(string name)
@@ -56,36 +87,36 @@ public static class SetupUtils
     }
 
     /// <summary>
-    /// Changes the 'run/main_scene' to <paramref name="sceneName"/> in the project.godot file at <paramref name="path"/>.
+    /// Changes the 'run/main_scene' to <paramref name="sceneName"/> in the project.godot file at <paramref name="projectRoot"/>.
     /// </summary>
-    public static void SetMainScene(string path, string sceneName)
+    public static void SetMainScene(string projectRoot, string sceneName)
     {
-        string text = File.ReadAllText(Path.Combine(path, "project.godot"));
+        string text = File.ReadAllText(Path.Combine(projectRoot, "project.godot"));
 
         text = text.Replace(
            $"run/main_scene=\"{TemplateMainSceneUid}\"",
-           $"run/main_scene=\"{GetUIdFromSceneFile(Path.Combine(path, $"{sceneName}.tscn"))}\"");
+           $"run/main_scene=\"{GetUIdFromSceneFile(Path.Combine(projectRoot, $"{sceneName}.tscn"))}\"");
 
-        File.WriteAllText(Path.Combine(path, "project.godot"), text);
+        File.WriteAllText(Path.Combine(projectRoot, "project.godot"), text);
     }
 
     /// <summary>
     /// Replaces all instances of the keyword "Template" with the new
     /// specified game name in several project files.
     /// </summary>
-    public static void RenameProjectFiles(string path, string name)
+    public static void RenameProjectFiles(string projectRoot, string name)
     {
-        RenameCSProjFile(path, name);
-        RenameSolutionFile(path, name);
-        RenameProjectGodotFile(path, name);
+        RenameCSProjFile(projectRoot, name);
+        RenameSolutionFile(projectRoot, name);
+        RenameProjectGodotFile(projectRoot, name);
     }
 
     /// <summary>
-    /// Renames 'project/assembly_name' and 'config/name' to <paramref name="name"/> in the project.godot at <paramref name="path"/>.
+    /// Renames 'project/assembly_name' and 'config/name' to <paramref name="name"/> in the project.godot at <paramref name="projectRoot"/>.
     /// </summary>
-    private static void RenameProjectGodotFile(string path, string name)
+    private static void RenameProjectGodotFile(string projectRoot, string name)
     {
-        string fullPath = Path.Combine(path, "project.godot");
+        string fullPath = Path.Combine(projectRoot, "project.godot");
         string text = File.ReadAllText(fullPath);
 
         text = text.Replace(
@@ -101,36 +132,36 @@ public static class SetupUtils
     }
 
     /// <summary>
-    /// Renames the .sln file at <paramref name="path"/> to <paramref name="name"/> and replaces all occurences of "Template" in the .sln with <paramref name="name"/>.
+    /// Renames the .sln file at <paramref name="projectRoot"/> to <paramref name="name"/> and replaces all occurences of "Template" in the .sln with <paramref name="name"/>.
     /// </summary>
-    private static void RenameSolutionFile(string path, string name)
+    private static void RenameSolutionFile(string projectRoot, string name)
     {
-        string fullPath = Path.Combine(path, $"{TemplateName}.sln");
+        string fullPath = Path.Combine(projectRoot, $"{TemplateName}.sln");
         string text = File.ReadAllText(fullPath);
         text = text.Replace(TemplateName, name);
         File.Delete(fullPath);
-        File.WriteAllText(Path.Combine(path, name + ".sln"), text);
+        File.WriteAllText(Path.Combine(projectRoot, name + ".sln"), text);
     }
 
     /// <summary>
-    /// Renames the .csproj file at <paramref name="path"/> to <paramref name="name"/> and replaces the RootNamespace option with <paramref name="name"/>.
+    /// Renames the .csproj file at <paramref name="projectRoot"/> to <paramref name="name"/> and replaces the RootNamespace option with <paramref name="name"/>.
     /// </summary>
-    private static void RenameCSProjFile(string path, string name)
+    private static void RenameCSProjFile(string projectRoot, string name)
     {
-        string fullPath = Path.Combine(path, $"{TemplateName}.csproj");
+        string fullPath = Path.Combine(projectRoot, $"{TemplateName}.csproj");
         string text = File.ReadAllText(fullPath);
         text = text.Replace($"<RootNamespace>{TemplateName}</RootNamespace>", $"<RootNamespace>{name}</RootNamespace>");
         File.Delete(fullPath);
-        File.WriteAllText(Path.Combine(path, name + ".csproj"), text);
+        File.WriteAllText(Path.Combine(projectRoot, name + ".csproj"), text);
     }
 
     /// <summary>
     /// Renames the default "__TEMPLATE__" namespace to the new specified game name in all scripts.
     /// Note that this assumes no one will use the namespace name "__TEMPLATE__".
     /// </summary>
-    public static void RenameAllNamespaces(string path, string newNamespaceName)
+    public static void RenameAllNamespaces(string projectRoot, string newNamespaceName)
     {
-        DirectoryUtils.Traverse(path, entry =>
+        DirectoryUtils.Traverse(projectRoot, entry =>
         {
             // Ignore these directories
             switch (entry.FileName.ToLower())
@@ -164,13 +195,13 @@ public static class SetupUtils
     }
 
     /// <summary>
-    /// Retrieves the Uid string from a .tscn scene file at <paramref name="path"/>.
+    /// Retrieves the Uid string from a .tscn scene file at <paramref name="projectRoot"/>.
     /// </summary>
-    public static string GetUIdFromSceneFile(string path)
+    public static string GetUIdFromSceneFile(string projectRoot)
     {
         string uid;
 
-        using StreamReader reader = new(path);
+        using StreamReader reader = new(projectRoot);
 
         // Assuming the scene uid is on the first line in the file
         string line = reader.ReadLine();

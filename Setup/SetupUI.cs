@@ -28,23 +28,24 @@ public partial class SetupUI : Node
     {
         string rawGameName = _gameNameLineEdit.Text;
         string formattedGameName = SetupUtils.FormatGameName(rawGameName);
-        string path = ProjectSettings.GlobalizePath("res://");
+        string projectRoot = ProjectSettings.GlobalizePath("res://");
 
         if (SetupUtils.IsGameNameBad(rawGameName))
             return;
 
         // The IO functions ran below will break if empty folders exist
-        DirectoryUtils.DeleteEmptyDirectories(path);
+        DirectoryUtils.DeleteEmptyDirectories(projectRoot);
 
-        SetupUtils.SetMainScene(path, "Level");
-        SetupUtils.RenameProjectFiles(path, formattedGameName);
-        SetupUtils.RenameAllNamespaces(path, formattedGameName);
+        SetupUtils.SetMainScene(projectRoot, "Level");
+        SetupUtils.RenameProjectFiles(projectRoot, formattedGameName);
+        SetupUtils.RenameAllNamespaces(projectRoot, formattedGameName);
+        SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(projectRoot);
 
         // Delete the "res://Setup" directory
-        Directory.Delete(Path.Combine(path, "Setup"), recursive: true);
+        Directory.Delete(Path.Combine(projectRoot, "Setup"), recursive: true);
 
         // Ensure all empty folders are deleted when finished
-        DirectoryUtils.DeleteEmptyDirectories(path);
+        DirectoryUtils.DeleteEmptyDirectories(projectRoot);
 
         SetupEditor.Restart();
         GetTree().Quit();
