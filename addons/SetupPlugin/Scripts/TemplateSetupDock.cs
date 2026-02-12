@@ -14,8 +14,11 @@ public partial class TemplateSetupDock : VBoxContainer
     private const string MainSceneName = "Level";
 
     private ConfirmationDialog _confirmRestartDialog;
-    private LineEdit _projectNameEdit;
     private Button _applyButton;
+
+    private GameNameValidator _gameNameValidator;
+    private ProjectSetup _projectSetup;
+    private LineEdit _gameNameLineEdit;
     private Label _gameNamePreview;
     private Timer _feedbackResetTimer;
     private string _prevGameName = "";
@@ -50,13 +53,13 @@ public partial class TemplateSetupDock : VBoxContainer
 
         hbox.AddChild(new Label { Text = "Project Name:" });
 
-        hbox.AddChild(_projectNameEdit = new()
+        hbox.AddChild(_gameNameLineEdit = new()
         {
             SizeFlagsHorizontal = SizeFlags.ShrinkBegin,
             CustomMinimumSize = new Vector2(200, 0)
         });
 
-        _projectNameEdit.TextChanged += OnProjectNameChanged;
+        _gameNameLineEdit.TextChanged += OnProjectNameChanged;
 
         vbox.AddChild(hbox);
 
@@ -73,32 +76,9 @@ public partial class TemplateSetupDock : VBoxContainer
 
         _applyButton.Pressed += OnApplyPressed;
         AddChild(_applyButton);
-    }
 
-    private void OnConfirmed()
-    {
-        string formattedGameName = SetupUtils.FormatGameName(_projectNameEdit.Text);
-        string projectRoot = ProjectSettings.GlobalizePath("res://");
-
-        // The IO functions ran below will break if empty folders exist
-        DirectoryUtils.DeleteEmptyDirectories(projectRoot);
-
-        // Run the setup process
-        SetupUtils.SetMainScene(projectRoot, MainSceneName);
-        SetupUtils.RenameProjectFiles(projectRoot, formattedGameName);
-        SetupUtils.RenameAllNamespaces(projectRoot, formattedGameName);
-        SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(projectRoot);
-
-        // Restart the editor
-        // After restart the following warnings and errors will appear in logs. These can safely be ignored.
-        /*
-         * WARNING: editor/editor_node.cpp:4320 - Addon 'res://addons/SetupPlugin/plugin.cfg' failed to load. No directory found. Removing from enabled plugins.
-         * ERROR: Cannot navigate to 'res://addons/SetupPlugin/' as it has not been found in the file system!
-         */
-        EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
-        Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName), recursive: true);
-        EditorInterface.Singleton.SaveScene(); // SaveScene works and SaveAllScenes does not work
-        EditorInterface.Singleton.RestartEditor(save: false);
+        _gameNameValidator = new GameNameValidator(_gameNamePreview, _feedbackResetTimer, _gameNameLineEdit);
+        _projectSetup = new ProjectSetup();
     }
 
     public override void _ExitTree()
@@ -108,6 +88,11 @@ public partial class TemplateSetupDock : VBoxContainer
         _confirmRestartDialog.Confirmed -= OnConfirmed;
     }
 
+    private void OnConfirmed()
+    {
+        _projectSetup.Run(SetupUtils.FormatGameName(_gameNameLineEdit.Text));
+    }
+
     private void OnFeedbackResetTimerTimeout()
     {
         _gameNamePreview.Text = _prevGameName;
@@ -115,48 +100,103 @@ public partial class TemplateSetupDock : VBoxContainer
 
     private void OnProjectNameChanged(string gameName)
     {
-        _feedbackResetTimer.Stop();
-
-        if (string.IsNullOrWhiteSpace(gameName))
-        {
-            _gameNamePreview.Text = "";
-            _prevGameName = "";
-            return;
-        }
-
-        if (char.IsNumber(gameName.Trim()[0]))
-        {
-            _gameNamePreview.Text = "The first character cannot be a number";
-            _feedbackResetTimer.Start(FeedbackResetTime);
-            ResetNameEdit();
-            return;
-        }
-
-        if (!SetupUtils.IsAlphaNumericAndAllowSpaces(gameName))
-        {
-            _gameNamePreview.Text = "Special characters are not allowed";
-            _feedbackResetTimer.Start(FeedbackResetTime);
-            ResetNameEdit();
-            return;
-        }
-
-        _gameNamePreview.Text = SetupUtils.FormatGameName(gameName);
-        _prevGameName = gameName;
-        return;
-
-        void ResetNameEdit()
-        {
-            _projectNameEdit.Text = _prevGameName;
-            _projectNameEdit.CaretColumn = _prevGameName.Length;
-        }
+        _gameNameValidator.Validate(gameName);
     }
 
     private void OnApplyPressed()
     {
-        if (SetupUtils.IsGameNameBad(_projectNameEdit.Text))
+        if (SetupUtils.IsGameNameBad(_gameNameLineEdit.Text))
             return;
 
         _confirmRestartDialog.PopupCentered();
+    }
+
+    private class ProjectSetup
+    {
+        private readonly string _projectRoot;
+
+        public ProjectSetup()
+        {
+            _projectRoot = ProjectSettings.GlobalizePath("res://");
+        }
+
+        public void Run(string formattedGameName)
+        {
+            // The IO functions ran below will break if empty folders exist
+            DirectoryUtils.DeleteEmptyDirectories(_projectRoot);
+
+            // Run the setup process
+            SetupUtils.SetMainScene(_projectRoot, MainSceneName);
+            SetupUtils.RenameProjectFiles(_projectRoot, formattedGameName);
+            SetupUtils.RenameAllNamespaces(_projectRoot, formattedGameName);
+            SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(_projectRoot);
+
+            // After the editor restarts the following errors and warnigns will appear and can safely be ignored:
+            // WARNING: editor/editor_node.cpp:4320 - Addon 'res://addons/SetupPlugin/plugin.cfg' failed to load. No directory found. Removing from enabled plugins.
+            // ERROR: Cannot navigate to 'res://addons/SetupPlugin/' as it has not been found in the file system!
+            DeleteSetupPlugin();
+            SaveActiveScene();
+            RestartEditor();
+        }
+
+        private void DeleteSetupPlugin()
+        {
+            EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
+            Directory.Delete(Path.Combine(_projectRoot, "addons", SetupPluginName), recursive: true);
+        }
+
+        private void SaveActiveScene()
+        {
+            EditorInterface.Singleton.SaveScene(); // SaveScene works and SaveAllScenes does not work
+        }
+
+        private void RestartEditor()
+        {
+            EditorInterface.Singleton.RestartEditor(save: false);
+        }
+    }
+
+    private class GameNameValidator(Label gameNamePreview, Timer feedbackResetTimer, LineEdit projectNameEdit)
+    {
+        private string _prevGameName = "";
+
+        public void Validate(string gameName)
+        {
+            feedbackResetTimer.Stop();
+
+            if (string.IsNullOrWhiteSpace(gameName))
+            {
+                gameNamePreview.Text = "";
+                _prevGameName = "";
+                return;
+            }
+
+            if (char.IsNumber(gameName.Trim()[0]))
+            {
+                gameNamePreview.Text = "The first character cannot be a number";
+                feedbackResetTimer.Start(FeedbackResetTime);
+                ResetNameEdit();
+                return;
+            }
+
+            if (!SetupUtils.IsAlphaNumericAndAllowSpaces(gameName))
+            {
+                gameNamePreview.Text = "Special characters are not allowed";
+                feedbackResetTimer.Start(FeedbackResetTime);
+                ResetNameEdit();
+                return;
+            }
+
+            gameNamePreview.Text = SetupUtils.FormatGameName(gameName);
+            _prevGameName = gameName;
+            return;
+
+            void ResetNameEdit()
+            {
+                projectNameEdit.Text = _prevGameName;
+                projectNameEdit.CaretColumn = _prevGameName.Length;
+            }
+        }
     }
 }
 #endif
