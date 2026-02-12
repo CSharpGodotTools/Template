@@ -12,6 +12,7 @@ public partial class TemplateSetupDock : VBoxContainer
     private const double FeedbackResetTime = 2.0;
     private const string SetupPluginName = "SetupPlugin";
 
+    private ConfirmationDialog _confirmDialog;
     private LineEdit _projectNameEdit;
     private Button _applyButton;
     private Label _gameNamePreview;
@@ -20,6 +21,18 @@ public partial class TemplateSetupDock : VBoxContainer
 
     public override void _Ready()
     {
+        _confirmDialog = new ConfirmationDialog
+        {
+            Title = "Setup Confirmation",
+            DialogText = "Godot will restart with your changes. This cannot be undone",
+            OkButtonText = "Yes",
+            CancelButtonText = "No"
+        };
+
+        _confirmDialog.Confirmed += OnConfirmed;
+
+        EditorInterface.Singleton.GetEditorMainScreen().AddChild(_confirmDialog);
+
         AddChild(_feedbackResetTimer = new Timer());
         _feedbackResetTimer.Timeout += OnFeedbackResetTimerTimeout;
 
@@ -61,10 +74,39 @@ public partial class TemplateSetupDock : VBoxContainer
         AddChild(_applyButton);
     }
 
+    private void OnConfirmed()
+    {
+        string rawGameName = _projectNameEdit.Text;
+        string formattedGameName = SetupUtils.FormatGameName(rawGameName);
+        string projectRoot = ProjectSettings.GlobalizePath("res://");
+
+        if (SetupUtils.IsGameNameBad(rawGameName))
+            return;
+
+        // The IO functions ran below will break if empty folders exist
+        DirectoryUtils.DeleteEmptyDirectories(projectRoot);
+
+        SetupUtils.SetMainScene(projectRoot, "Level");
+        SetupUtils.RenameProjectFiles(projectRoot, formattedGameName);
+        SetupUtils.RenameAllNamespaces(projectRoot, formattedGameName);
+        SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(projectRoot);
+
+        // Delete the "res://Setup" directory
+        Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName), recursive: true);
+
+        // Ensure all empty folders are deleted when finished
+        DirectoryUtils.DeleteEmptyDirectories(projectRoot);
+
+        EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
+        EditorInterface.Singleton.SaveAllScenes();
+        EditorInterface.Singleton.RestartEditor(save: false);
+    }
+
     public override void _ExitTree()
     {
         _feedbackResetTimer.Timeout -= OnFeedbackResetTimerTimeout;
         _applyButton.Pressed -= OnApplyPressed;
+        _confirmDialog.Confirmed -= OnConfirmed;
     }
 
     private void OnFeedbackResetTimerTimeout()
@@ -112,30 +154,7 @@ public partial class TemplateSetupDock : VBoxContainer
 
     private void OnApplyPressed()
     {
-        string rawGameName = _projectNameEdit.Text;
-        string formattedGameName = SetupUtils.FormatGameName(rawGameName);
-        string projectRoot = ProjectSettings.GlobalizePath("res://");
-
-        if (SetupUtils.IsGameNameBad(rawGameName))
-            return;
-
-        // The IO functions ran below will break if empty folders exist
-        DirectoryUtils.DeleteEmptyDirectories(projectRoot);
-
-        SetupUtils.SetMainScene(projectRoot, "Level");
-        SetupUtils.RenameProjectFiles(projectRoot, formattedGameName);
-        SetupUtils.RenameAllNamespaces(projectRoot, formattedGameName);
-        SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(projectRoot);
-
-        // Delete the "res://Setup" directory
-        Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName), recursive: true);
-
-        // Ensure all empty folders are deleted when finished
-        DirectoryUtils.DeleteEmptyDirectories(projectRoot);
-
-        EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
-        EditorInterface.Singleton.SaveAllScenes();
-        EditorInterface.Singleton.RestartEditor(save: false);
+        _confirmDialog.PopupCentered();
     }
 }
 #endif
