@@ -96,6 +96,9 @@ public partial class TemplateSetupDock : VBoxContainer
         // Ensure all empty folders are deleted when finished
         DirectoryUtils.DeleteEmptyDirectories(projectRoot);
 
+        // Delete the temp folder
+        Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName, "Temp"), recursive: true);
+
         // Restart the editor
         EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
         EditorInterface.Singleton.SaveAllScenes();
