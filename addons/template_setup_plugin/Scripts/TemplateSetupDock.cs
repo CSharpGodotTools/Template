@@ -2,6 +2,7 @@
 using Framework.Setup;
 using Godot;
 using GodotUtils;
+using System.IO;
 
 [Tool]
 public partial class TemplateSetupDock : VBoxContainer
@@ -108,9 +109,28 @@ public partial class TemplateSetupDock : VBoxContainer
 
     private void OnApplyPressed()
     {
-        string projectName = _projectNameEdit.Text;
+        string rawGameName = _projectNameEdit.Text;
+        string formattedGameName = SetupUtils.FormatGameName(rawGameName);
+        string projectRoot = ProjectSettings.GlobalizePath("res://");
 
-        GD.Print(projectName);
+        if (SetupUtils.IsGameNameBad(rawGameName))
+            return;
+
+        // The IO functions ran below will break if empty folders exist
+        DirectoryUtils.DeleteEmptyDirectories(projectRoot);
+
+        SetupUtils.SetMainScene(projectRoot, "Level");
+        SetupUtils.RenameProjectFiles(projectRoot, formattedGameName);
+        SetupUtils.RenameAllNamespaces(projectRoot, formattedGameName);
+        SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(projectRoot);
+
+        // Delete the "res://Setup" directory
+        Directory.Delete(Path.Combine(projectRoot, "Setup"), recursive: true);
+
+        // Ensure all empty folders are deleted when finished
+        DirectoryUtils.DeleteEmptyDirectories(projectRoot);
+
+        EditorInterface.Singleton.RestartEditor(save: false);
     }
 }
 #endif
