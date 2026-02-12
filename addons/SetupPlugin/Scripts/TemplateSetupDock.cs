@@ -127,7 +127,7 @@ public partial class TemplateSetupDock : VBoxContainer
         SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(projectRoot);
 
         // Delete the "res://Setup" directory
-        Directory.Delete(Path.Combine(projectRoot, "Setup"), recursive: true);
+        Directory.Delete(Path.Combine(projectRoot, "addons", "SetupPlugin"), recursive: true);
 
         // Ensure all empty folders are deleted when finished
         DirectoryUtils.DeleteEmptyDirectories(projectRoot);
