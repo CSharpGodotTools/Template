@@ -12,7 +12,8 @@ mono_crash.*.json
 # gdUnit4
 TestResults/*
 !TestResults/.gdignore
-gdunit4_testadapter_v5/
+gdunit4_testadapter_v5/*
+!gdunit4_testadapter_v5/.gdignore
 .runsettings
 
 # Visual Studio
