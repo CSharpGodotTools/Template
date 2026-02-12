@@ -27,13 +27,13 @@ public partial class TemplateSetupDock : VBoxContainer
         string text = File.ReadAllText(fullPath);
 
         // The setup process has finished and the editor has restarted
-        if (!text.Contains("assembly_name=\"Template\""))
-        {
-            // Disable and delete the setup plugin
-            EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
-            Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName), recursive: true);
-            return;
-        }
+        //if (!text.Contains("assembly_name=\"Template\""))
+        //{
+        //    // Disable and delete the setup plugin
+        //    EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
+        //    Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName), recursive: true);
+        //    return;
+        //}
 
         _confirmRestartDialog = new ConfirmationDialog
         {
@@ -90,12 +90,8 @@ public partial class TemplateSetupDock : VBoxContainer
 
     private void OnConfirmed()
     {
-        string rawGameName = _projectNameEdit.Text;
-        string formattedGameName = SetupUtils.FormatGameName(rawGameName);
+        string formattedGameName = SetupUtils.FormatGameName(_projectNameEdit.Text);
         string projectRoot = ProjectSettings.GlobalizePath("res://");
-
-        if (SetupUtils.IsGameNameBad(rawGameName))
-            return;
 
         // The IO functions ran below will break if empty folders exist
         DirectoryUtils.DeleteEmptyDirectories(projectRoot);
@@ -106,14 +102,8 @@ public partial class TemplateSetupDock : VBoxContainer
         SetupUtils.RenameAllNamespaces(projectRoot, formattedGameName);
         SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(projectRoot);
 
-        // Ensure all empty folders are deleted when finished
-        DirectoryUtils.DeleteEmptyDirectories(projectRoot);
-
-        // Delete the temp folder
-        Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName, "Temp"), recursive: true);
-
         // Restart the editor
-        EditorInterface.Singleton.SaveAllScenes();
+        EditorInterface.Singleton.SaveScene(); // SaveAllScenes does not work but SaveScene does work
         EditorInterface.Singleton.RestartEditor(save: false);
     }
 
@@ -169,6 +159,9 @@ public partial class TemplateSetupDock : VBoxContainer
 
     private void OnApplyPressed()
     {
+        if (SetupUtils.IsGameNameBad(_projectNameEdit.Text))
+            return;
+
         _confirmRestartDialog.PopupCentered();
     }
 }
