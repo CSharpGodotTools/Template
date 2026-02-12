@@ -134,6 +134,7 @@ public partial class TemplateSetupDock : VBoxContainer
         DirectoryUtils.DeleteEmptyDirectories(projectRoot);
 
         EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
+        EditorInterface.Singleton.SaveAllScenes();
         EditorInterface.Singleton.RestartEditor(save: false);
     }
 }
