@@ -10,6 +10,7 @@ namespace Framework.Setup;
 public partial class TemplateSetupDock : VBoxContainer
 {
     private const double FeedbackResetTime = 2.0;
+    private const string SetupPluginName = "SetupPlugin";
 
     private LineEdit _projectNameEdit;
     private Button _applyButton;
@@ -127,11 +128,12 @@ public partial class TemplateSetupDock : VBoxContainer
         SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(projectRoot);
 
         // Delete the "res://Setup" directory
-        Directory.Delete(Path.Combine(projectRoot, "addons", "SetupPlugin"), recursive: true);
+        Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName), recursive: true);
 
         // Ensure all empty folders are deleted when finished
         DirectoryUtils.DeleteEmptyDirectories(projectRoot);
 
+        EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
         EditorInterface.Singleton.RestartEditor(save: false);
     }
 }

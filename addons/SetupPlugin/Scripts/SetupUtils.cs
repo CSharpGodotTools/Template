@@ -136,11 +136,6 @@ public static class SetupUtils
             $"config/name=\"{name}\""
             );
 
-        // Remove SetupPlugin addon
-        text = text.Replace(
-            "\"res://addons/SetupPlugin/plugin.cfg\", ",
-            "");
-
         File.WriteAllText(fullPath, text);
     }
 
