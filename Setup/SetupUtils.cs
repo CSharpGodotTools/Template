@@ -48,6 +48,12 @@ public static class SetupUtils
     /// </summary>
     public static bool IsGameNameBad(string name)
     {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            GD.PrintErr("The game name cannot be empty.");
+            return true;
+        }
+
         // Prevent game name being the same as the reserved raw template namespace name
         if (name.Equals(RawTemplateNamespace, System.StringComparison.OrdinalIgnoreCase))
         {
