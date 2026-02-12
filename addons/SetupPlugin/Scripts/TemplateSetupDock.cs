@@ -13,7 +13,7 @@ public partial class TemplateSetupDock : VBoxContainer
     private const string SetupPluginName = "SetupPlugin";
     private const string MainSceneName = "Level";
 
-    private ConfirmationDialog _confirmDialog;
+    private ConfirmationDialog _confirmRestartDialog;
     private LineEdit _projectNameEdit;
     private Button _applyButton;
     private Label _gameNamePreview;
@@ -22,7 +22,20 @@ public partial class TemplateSetupDock : VBoxContainer
 
     public override void _Ready()
     {
-        _confirmDialog = new ConfirmationDialog
+        string projectRoot = ProjectSettings.GlobalizePath("res://");
+        string fullPath = Path.Combine(projectRoot, "project.godot");
+        string text = File.ReadAllText(fullPath);
+
+        // The setup process has finished and the editor has restarted
+        if (!text.Contains("assembly_name=\"Template\""))
+        {
+            // Disable and delete the setup plugin
+            EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
+            Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName), recursive: true);
+            return;
+        }
+
+        _confirmRestartDialog = new ConfirmationDialog
         {
             Title = "Setup Confirmation",
             DialogText = "Godot will restart with your changes. This cannot be undone",
@@ -30,9 +43,9 @@ public partial class TemplateSetupDock : VBoxContainer
             CancelButtonText = "No"
         };
 
-        _confirmDialog.Confirmed += OnConfirmed;
+        _confirmRestartDialog.Confirmed += OnConfirmed;
 
-        EditorInterface.Singleton.GetEditorMainScreen().AddChild(_confirmDialog);
+        EditorInterface.Singleton.GetEditorMainScreen().AddChild(_confirmRestartDialog);
 
         AddChild(_feedbackResetTimer = new Timer());
         _feedbackResetTimer.Timeout += OnFeedbackResetTimerTimeout;
@@ -100,7 +113,6 @@ public partial class TemplateSetupDock : VBoxContainer
         Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName, "Temp"), recursive: true);
 
         // Restart the editor
-        EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
         EditorInterface.Singleton.SaveAllScenes();
         EditorInterface.Singleton.RestartEditor(save: false);
     }
@@ -109,7 +121,7 @@ public partial class TemplateSetupDock : VBoxContainer
     {
         _feedbackResetTimer.Timeout -= OnFeedbackResetTimerTimeout;
         _applyButton.Pressed -= OnApplyPressed;
-        _confirmDialog.Confirmed -= OnConfirmed;
+        _confirmRestartDialog.Confirmed -= OnConfirmed;
     }
 
     private void OnFeedbackResetTimerTimeout()
@@ -157,7 +169,7 @@ public partial class TemplateSetupDock : VBoxContainer
 
     private void OnApplyPressed()
     {
-        _confirmDialog.PopupCentered();
+        _confirmRestartDialog.PopupCentered();
     }
 }
 #endif
