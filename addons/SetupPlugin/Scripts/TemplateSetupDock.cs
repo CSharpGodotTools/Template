@@ -11,6 +11,7 @@ public partial class TemplateSetupDock : VBoxContainer
 {
     private const double FeedbackResetTime = 2.0;
     private const string SetupPluginName = "SetupPlugin";
+    private const string MainSceneName = "Level";
 
     private ConfirmationDialog _confirmDialog;
     private LineEdit _projectNameEdit;
@@ -86,17 +87,16 @@ public partial class TemplateSetupDock : VBoxContainer
         // The IO functions ran below will break if empty folders exist
         DirectoryUtils.DeleteEmptyDirectories(projectRoot);
 
-        SetupUtils.SetMainScene(projectRoot, "Level");
+        // Run the setup process
+        SetupUtils.SetMainScene(projectRoot, MainSceneName);
         SetupUtils.RenameProjectFiles(projectRoot, formattedGameName);
         SetupUtils.RenameAllNamespaces(projectRoot, formattedGameName);
         SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(projectRoot);
 
-        // Delete the "res://Setup" directory
-        Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName), recursive: true);
-
         // Ensure all empty folders are deleted when finished
         DirectoryUtils.DeleteEmptyDirectories(projectRoot);
 
+        // Restart the editor
         EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
         EditorInterface.Singleton.SaveAllScenes();
         EditorInterface.Singleton.RestartEditor(save: false);
