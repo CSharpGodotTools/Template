@@ -90,9 +90,11 @@ public partial class TemplateSetupDock : VBoxContainer
         SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(projectRoot);
 
         // Restart the editor
-        // Godot will try to find the setup plugin on startup and show a popup, this happens because
-        // the assembly name is being changed in the project.godot file. There is no known fix around
-        // this.
+        // After restart the following warnings and errors will appear in logs. These can safely be ignored.
+        /*
+         * WARNING: editor/editor_node.cpp:4320 - Addon 'res://addons/SetupPlugin/plugin.cfg' failed to load. No directory found. Removing from enabled plugins.
+         * ERROR: Cannot navigate to 'res://addons/SetupPlugin/' as it has not been found in the file system!
+         */
         EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
         Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName), recursive: true);
         EditorInterface.Singleton.SaveScene(); // SaveScene works and SaveAllScenes does not work
