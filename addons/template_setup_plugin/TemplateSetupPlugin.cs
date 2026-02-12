@@ -2,7 +2,7 @@
 using Godot;
 using System;
 
-namespace Template.Setup;
+namespace Framework.Setup;
 
 [Tool]
 public partial class TemplateSetupPlugin : EditorPlugin

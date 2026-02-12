@@ -4,6 +4,8 @@ using Godot;
 using GodotUtils;
 using System.IO;
 
+namespace Framework.Setup;
+
 [Tool]
 public partial class TemplateSetupDock : VBoxContainer
 {
