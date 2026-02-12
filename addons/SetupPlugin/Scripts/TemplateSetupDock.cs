@@ -22,19 +22,6 @@ public partial class TemplateSetupDock : VBoxContainer
 
     public override void _Ready()
     {
-        string projectRoot = ProjectSettings.GlobalizePath("res://");
-        string fullPath = Path.Combine(projectRoot, "project.godot");
-        string text = File.ReadAllText(fullPath);
-
-        // The setup process has finished and the editor has restarted
-        //if (!text.Contains("assembly_name=\"Template\""))
-        //{
-        //    // Disable and delete the setup plugin
-        //    EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
-        //    Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName), recursive: true);
-        //    return;
-        //}
-
         _confirmRestartDialog = new ConfirmationDialog
         {
             Title = "Setup Confirmation",
@@ -103,7 +90,12 @@ public partial class TemplateSetupDock : VBoxContainer
         SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(projectRoot);
 
         // Restart the editor
-        EditorInterface.Singleton.SaveScene(); // SaveAllScenes does not work but SaveScene does work
+        // Godot will try to find the setup plugin on startup and show a popup, this happens because
+        // the assembly name is being changed in the project.godot file. There is no known fix around
+        // this.
+        EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
+        Directory.Delete(Path.Combine(projectRoot, "addons", SetupPluginName), recursive: true);
+        EditorInterface.Singleton.SaveScene(); // SaveScene works and SaveAllScenes does not work
         EditorInterface.Singleton.RestartEditor(save: false);
     }
 
