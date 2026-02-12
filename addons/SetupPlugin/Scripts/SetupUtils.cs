@@ -125,14 +125,21 @@ public static class SetupUtils
         string fullPath = Path.Combine(projectRoot, "project.godot");
         string text = File.ReadAllText(fullPath);
 
+        // Change assembly name
         text = text.Replace(
             $"project/assembly_name=\"{TemplateName}\"",
             $"project/assembly_name=\"{name}\"");
 
+        // Change config name
         text = text.Replace(
             $"config/name=\"{TemplateName}\"",
             $"config/name=\"{name}\""
             );
+
+        // Remove SetupPlugin addon
+        text = text.Replace(
+            "\"res://addons/SetupPlugin/plugin.cfg\", ",
+            "");
 
         File.WriteAllText(fullPath, text);
     }
