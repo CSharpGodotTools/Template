@@ -25,6 +25,7 @@ public partial class TemplateSetupDock : VBoxContainer
 
     public override void _Ready()
     {
+        // Restart dialog
         _confirmRestartDialog = new ConfirmationDialog
         {
             Title = "Setup Confirmation",
@@ -32,60 +33,59 @@ public partial class TemplateSetupDock : VBoxContainer
             OkButtonText = "Yes",
             CancelButtonText = "No"
         };
-
         _confirmRestartDialog.Confirmed += OnConfirmed;
 
-        EditorInterface.Singleton.GetEditorMainScreen().AddChild(_confirmRestartDialog);
-
-        AddChild(_feedbackResetTimer = new Timer());
+        // Feedback reset timer
+        _feedbackResetTimer = new Timer();
         _feedbackResetTimer.Timeout += OnFeedbackResetTimerTimeout;
 
-        MarginContainer margin = MarginContainerFactory.Create(30);
-
-        VBoxContainer vbox = new();
-
-        vbox.AddChild(_gameNamePreview = new()
+        // Game name preview
+        _gameNamePreview = new()
         {
             SizeFlagsHorizontal = SizeFlags.ShrinkCenter
-        });
+        };
 
-        HBoxContainer hbox = new();
-
-        hbox.AddChild(new Label { Text = "Project Name:" });
-
-        hbox.AddChild(_gameNameLineEdit = new()
+        // Game name line edit
+        _gameNameLineEdit = new()
         {
             SizeFlagsHorizontal = SizeFlags.ShrinkBegin,
             CustomMinimumSize = new Vector2(200, 0)
-        });
-
+        };
         _gameNameLineEdit.TextChanged += OnProjectNameChanged;
 
-        vbox.AddChild(hbox);
-
-        margin.AddChild(vbox);
-
-        AddChild(margin);
-
+        // Apply button
         _applyButton = new Button()
         {
             Text = "Apply Setup",
             SizeFlagsHorizontal = SizeFlags.ShrinkCenter,
             CustomMinimumSize = new Vector2(200, 0)
         };
-
         _applyButton.Pressed += OnApplyPressed;
-        AddChild(_applyButton);
 
+        // Validator and Setup
         _gameNameValidator = new GameNameValidator(_gameNamePreview, _feedbackResetTimer, _gameNameLineEdit);
         _projectSetup = new ProjectSetup();
-    }
 
-    public override void _ExitTree()
-    {
-        _feedbackResetTimer.Timeout -= OnFeedbackResetTimerTimeout;
-        _applyButton.Pressed -= OnApplyPressed;
-        _confirmRestartDialog.Confirmed -= OnConfirmed;
+        // Layout
+        MarginContainer margin = MarginContainerFactory.Create(30);
+        VBoxContainer vbox = new();
+        HBoxContainer hbox = new();
+
+        AddChild(_feedbackResetTimer);
+
+        vbox.AddChild(_gameNamePreview);
+
+        hbox.AddChild(new Label { Text = "Project Name:" });
+        hbox.AddChild(_gameNameLineEdit);
+
+        vbox.AddChild(hbox);
+
+        margin.AddChild(vbox);
+
+        AddChild(margin);
+        AddChild(_applyButton);
+
+        EditorInterface.Singleton.GetEditorMainScreen().AddChild(_confirmRestartDialog);
     }
 
     private void OnConfirmed()
