@@ -12,15 +12,13 @@ public partial class TemplateSetupDock : VBoxContainer
     private const double FeedbackResetTime = 2.0;
     private const string SetupPluginName = "SetupPlugin";
     private const string MainSceneName = "Level";
+    private const string DefaultClearColorPath = "rendering/environment/defaults/default_clear_color";
 
     private ConfirmationDialog _confirmRestartDialog;
-    private Button _applyButton;
-
     private GameNameValidator _gameNameValidator;
     private ProjectSetup _projectSetup;
     private LineEdit _gameNameLineEdit;
     private Label _gameNamePreview;
-    private Timer _feedbackResetTimer;
     private string _prevGameName = "";
 
     public override void _Ready()
@@ -36,8 +34,8 @@ public partial class TemplateSetupDock : VBoxContainer
         _confirmRestartDialog.Confirmed += OnConfirmed;
 
         // Feedback reset timer
-        _feedbackResetTimer = new Timer();
-        _feedbackResetTimer.Timeout += OnFeedbackResetTimerTimeout;
+        Timer feedbackResetTimer = new Timer();
+        feedbackResetTimer.Timeout += OnFeedbackResetTimerTimeout;
 
         // Game name preview
         _gameNamePreview = new()
@@ -53,39 +51,56 @@ public partial class TemplateSetupDock : VBoxContainer
         };
         _gameNameLineEdit.TextChanged += OnProjectNameChanged;
 
-        // Apply button
-        _applyButton = new Button()
+        // Default clear color
+        ColorPickerButton defaultClearColorPicker = new()
         {
-            Text = "Apply Setup",
+            CustomMinimumSize = new Vector2(75, 35),
+            Color = ProjectSettings.GetSetting(DefaultClearColorPath).AsColor()
+        };
+        defaultClearColorPicker.ColorChanged += OnDefaultClearColorChanged;
+
+        // Apply button
+        Button applyButton = new Button()
+        {
+            Text = "Run Setup",
             SizeFlagsHorizontal = SizeFlags.ShrinkCenter,
             CustomMinimumSize = new Vector2(200, 0)
         };
-        _applyButton.Pressed += OnApplyPressed;
+        applyButton.Pressed += OnApplyPressed;
 
         // Validator and Setup
-        _gameNameValidator = new GameNameValidator(_gameNamePreview, _feedbackResetTimer, _gameNameLineEdit);
+        _gameNameValidator = new GameNameValidator(_gameNamePreview, feedbackResetTimer, _gameNameLineEdit);
         _projectSetup = new ProjectSetup();
 
         // Layout
         MarginContainer margin = MarginContainerFactory.Create(30);
         VBoxContainer vbox = new();
-        HBoxContainer hbox = new();
+        HBoxContainer defaultClearColorHbox = new();
+        HBoxContainer gameNameHbox = new();
 
-        AddChild(_feedbackResetTimer);
+        AddChild(feedbackResetTimer);
 
         vbox.AddChild(_gameNamePreview);
 
-        hbox.AddChild(new Label { Text = "Project Name:" });
-        hbox.AddChild(_gameNameLineEdit);
+        gameNameHbox.AddChild(new Label { Text = "Project Name:" });
+        gameNameHbox.AddChild(_gameNameLineEdit);
+        vbox.AddChild(gameNameHbox);
 
-        vbox.AddChild(hbox);
+        defaultClearColorHbox.AddChild(new Label { Text = "Default Clear Color" });
+        defaultClearColorHbox.AddChild(defaultClearColorPicker);
+        vbox.AddChild(defaultClearColorHbox);
 
         margin.AddChild(vbox);
 
         AddChild(margin);
-        AddChild(_applyButton);
+        AddChild(applyButton);
 
         EditorInterface.Singleton.GetEditorMainScreen().AddChild(_confirmRestartDialog);
+    }
+
+    private void OnDefaultClearColorChanged(Color color)
+    {
+        ProjectSettings.SetSetting(DefaultClearColorPath, color);
     }
 
     private void OnConfirmed()
