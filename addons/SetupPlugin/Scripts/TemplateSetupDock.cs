@@ -101,6 +101,7 @@ public partial class TemplateSetupDock : VBoxContainer
     private void OnDefaultClearColorChanged(Color color)
     {
         ProjectSettings.SetSetting(DefaultClearColorPath, color);
+        ProjectSettings.Save();
     }
 
     private void OnConfirmed()
