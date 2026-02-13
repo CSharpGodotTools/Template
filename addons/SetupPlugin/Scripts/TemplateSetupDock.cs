@@ -126,7 +126,6 @@ public partial class TemplateSetupDock : VBoxContainer
             DirectoryUtils.DeleteEmptyDirectories(_projectRoot);
 
             // Run the setup process
-            SetupUtils.SetMainScene(_projectRoot, MainSceneName);
             SetupUtils.RenameProjectFiles(_projectRoot, formattedGameName);
             SetupUtils.RenameAllNamespaces(_projectRoot, formattedGameName);
             SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(_projectRoot);

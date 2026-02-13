@@ -93,20 +93,6 @@ public static class SetupUtils
     }
 
     /// <summary>
-    /// Changes the 'run/main_scene' to <paramref name="sceneName"/> in the project.godot file at <paramref name="projectRoot"/>.
-    /// </summary>
-    public static void SetMainScene(string projectRoot, string sceneName)
-    {
-        string text = File.ReadAllText(Path.Combine(projectRoot, "project.godot"));
-
-        text = text.Replace(
-           $"run/main_scene=\"{TemplateMainSceneUid}\"",
-           $"run/main_scene=\"{GetUIdFromSceneFile(Path.Combine(projectRoot, $"{sceneName}.tscn"))}\"");
-
-        File.WriteAllText(Path.Combine(projectRoot, "project.godot"), text);
-    }
-
-    /// <summary>
     /// Replaces all instances of the keyword "Template" with the new
     /// specified game name in several project files.
     /// </summary>
