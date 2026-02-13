@@ -6,6 +6,10 @@ using System.IO;
 
 namespace Framework.Setup;
 
+/// <summary>
+/// Signals are used instead of events in this tool script because EditorPlugin hates C# events. You'll notice unsub errors
+/// with events when you disable / enable the plugin.
+/// </summary>
 [Tool]
 public partial class TemplateSetupDock : VBoxContainer
 {
@@ -31,11 +35,11 @@ public partial class TemplateSetupDock : VBoxContainer
             OkButtonText = "Yes",
             CancelButtonText = "No"
         };
-        _confirmRestartDialog.Confirmed += OnConfirmed;
+        _confirmRestartDialog.Connect(ConfirmationDialog.SignalName.Confirmed, new Callable(this, nameof(OnConfirmed)));
 
         // Feedback reset timer
         Timer feedbackResetTimer = new Timer();
-        feedbackResetTimer.Timeout += OnFeedbackResetTimerTimeout;
+        feedbackResetTimer.Connect(Timer.SignalName.Timeout, new Callable(this, nameof(OnFeedbackResetTimerTimeout)));
 
         // Game name preview
         _gameNamePreview = new()
@@ -49,7 +53,7 @@ public partial class TemplateSetupDock : VBoxContainer
             SizeFlagsHorizontal = SizeFlags.ShrinkBegin,
             CustomMinimumSize = new Vector2(200, 0)
         };
-        _gameNameLineEdit.TextChanged += OnProjectNameChanged;
+        _gameNameLineEdit.Connect(LineEdit.SignalName.TextChanged, new Callable(this, nameof(OnProjectNameChanged)));
 
         // Default clear color
         ColorPickerButton defaultClearColorPicker = new()
@@ -57,7 +61,7 @@ public partial class TemplateSetupDock : VBoxContainer
             CustomMinimumSize = new Vector2(75, 35),
             Color = ProjectSettings.GetSetting(DefaultClearColorPath).AsColor()
         };
-        defaultClearColorPicker.ColorChanged += OnDefaultClearColorChanged;
+        defaultClearColorPicker.Connect(ColorPickerButton.SignalName.ColorChanged, new Callable(this, nameof(OnDefaultClearColorChanged)));
 
         // Apply button
         Button applyButton = new Button()
@@ -66,7 +70,7 @@ public partial class TemplateSetupDock : VBoxContainer
             SizeFlagsHorizontal = SizeFlags.ShrinkCenter,
             CustomMinimumSize = new Vector2(200, 0)
         };
-        applyButton.Pressed += OnApplyPressed;
+        applyButton.Connect(Button.SignalName.Pressed, new Callable(this, nameof(OnApplyPressed)));
 
         // Validator and Setup
         _gameNameValidator = new GameNameValidator(_gameNamePreview, feedbackResetTimer, _gameNameLineEdit);
