@@ -6,10 +6,6 @@ using System.IO;
 
 namespace Framework.Setup;
 
-/// <summary>
-/// Signals are used instead of events in this tool script because EditorPlugin hates C# events. You'll notice unsub errors
-/// with events when you disable / enable the plugin.
-/// </summary>
 [Tool]
 public partial class TemplateSetupDock : VBoxContainer
 {
@@ -35,7 +31,10 @@ public partial class TemplateSetupDock : VBoxContainer
             OkButtonText = "Yes",
             CancelButtonText = "No"
         };
-        _confirmRestartDialog.Connect(ConfirmationDialog.SignalName.Confirmed, new Callable(this, nameof(OnConfirmed)));
+
+        // Check if signal is actually connected. (Godot will show error on re-enabling this plugin if this check is not here)
+        if (!_confirmRestartDialog.IsConnected(ConfirmationDialog.SignalName.Confirmed, new Callable(this, nameof(OnConfirmed))))
+            _confirmRestartDialog.Connect(ConfirmationDialog.SignalName.Confirmed, new Callable(this, nameof(OnConfirmed)));
 
         // Feedback reset timer
         Timer feedbackResetTimer = new Timer();
