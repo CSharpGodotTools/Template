@@ -2,6 +2,7 @@
 using Framework.Setup;
 using Godot;
 using GodotUtils;
+using System;
 using System.IO;
 
 namespace Framework.Setup;
@@ -13,102 +14,161 @@ public partial class TemplateSetupDock : VBoxContainer
     private const string SetupPluginName = "SetupPlugin";
     private const string MainSceneName = "Level";
 
-    private ConfirmationDialog _confirmRestartDialog;
-    private Button _applyButton;
-
-    private GameNameValidator _gameNameValidator;
+    private SetupConfirmationDialog _confirmRestartDialog;
+    private GameNamePreview _gameNamePreview;
+    private GameNameControl _gameNameControl;
     private ProjectSetup _projectSetup;
-    private LineEdit _gameNameLineEdit;
-    private Label _gameNamePreview;
-    private Timer _feedbackResetTimer;
-    private string _prevGameName = "";
+    private ApplyButton _applyButton;
+    private bool _initialized;
 
     public override void _Ready()
     {
-        _confirmRestartDialog = new ConfirmationDialog
-        {
-            Title = "Setup Confirmation",
-            DialogText = "Godot will restart with your changes. This cannot be undone",
-            OkButtonText = "Yes",
-            CancelButtonText = "No"
-        };
+        if (_initialized) // Sanity check (tool scripts are something else..)
+            return;
 
-        _confirmRestartDialog.Confirmed += OnConfirmed;
-
-        EditorInterface.Singleton.GetEditorMainScreen().AddChild(_confirmRestartDialog);
-
-        AddChild(_feedbackResetTimer = new Timer());
-        _feedbackResetTimer.Timeout += OnFeedbackResetTimerTimeout;
+        _initialized = true;
+        _gameNamePreview = new GameNamePreview();
+        _gameNameControl = new GameNameControl(_gameNamePreview);
+        _projectSetup = new ProjectSetup();
+        _confirmRestartDialog = new SetupConfirmationDialog(_projectSetup, _gameNameControl);
+        _applyButton = new ApplyButton();
+        _applyButton.Init(_gameNameControl, _confirmRestartDialog);
 
         MarginContainer margin = MarginContainerFactory.Create(30);
-
         VBoxContainer vbox = new();
 
-        vbox.AddChild(_gameNamePreview = new()
-        {
-            SizeFlagsHorizontal = SizeFlags.ShrinkCenter
-        });
-
-        HBoxContainer hbox = new();
-
-        hbox.AddChild(new Label { Text = "Project Name:" });
-
-        hbox.AddChild(_gameNameLineEdit = new()
-        {
-            SizeFlagsHorizontal = SizeFlags.ShrinkBegin,
-            CustomMinimumSize = new Vector2(200, 0)
-        });
-
-        _gameNameLineEdit.TextChanged += OnProjectNameChanged;
-
-        vbox.AddChild(hbox);
+        vbox.AddChild(_gameNamePreview);
+        vbox.AddChild(_gameNameControl);
 
         margin.AddChild(vbox);
 
         AddChild(margin);
-
-        _applyButton = new Button()
-        {
-            Text = "Apply Setup",
-            SizeFlagsHorizontal = SizeFlags.ShrinkCenter,
-            CustomMinimumSize = new Vector2(200, 0)
-        };
-
-        _applyButton.Pressed += OnApplyPressed;
         AddChild(_applyButton);
 
-        _gameNameValidator = new GameNameValidator(_gameNamePreview, _feedbackResetTimer, _gameNameLineEdit);
-        _projectSetup = new ProjectSetup();
+        EditorInterface.Singleton.GetEditorMainScreen().AddChild(_confirmRestartDialog);
     }
 
-    public override void _ExitTree()
+    private class ApplyButton : Button
     {
-        _feedbackResetTimer.Timeout -= OnFeedbackResetTimerTimeout;
-        _applyButton.Pressed -= OnApplyPressed;
-        _confirmRestartDialog.Confirmed -= OnConfirmed;
+        private GameNameControl _projectNameContorl;
+        private SetupConfirmationDialog _confirmRestartDialog;
+
+        public void Init(GameNameControl projectNameControl, SetupConfirmationDialog confirmRestartDialog)
+        {
+            _projectNameContorl = projectNameControl;
+            _confirmRestartDialog = confirmRestartDialog;
+            SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
+            CustomMinimumSize = new Vector2(200, 0);
+            Pressed += OnPressed;
+        }
+
+        public override void _Ready()
+        {
+            base._Ready();
+            GD.Print("REDY");
+            Text = "Apply Setup";
+        }
+
+        public override void _ExitTree()
+        {
+            GD.Print("EXT TREE");
+            Pressed -= OnPressed;
+        }
+
+        private void OnPressed()
+        {
+            if (SetupUtils.IsGameNameBad(_projectNameContorl.LineEdit.Text))
+                return;
+
+            _confirmRestartDialog.PopupCentered();
+        }
     }
 
-    private void OnConfirmed()
+    private class FeedbackResetTimer(GameNamePreview gameNamePreview, Func<string> getPrevGameName) : Timer
     {
-        _projectSetup.Run(SetupUtils.FormatGameName(_gameNameLineEdit.Text));
+        public override void _Ready()
+        {
+            Timeout += OnTimeout;
+        }
+
+        public override void _ExitTree()
+        {
+            Timeout -= OnTimeout;
+        }
+
+        private void OnTimeout()
+        {
+            gameNamePreview.Text = getPrevGameName();
+        }
     }
 
-    private void OnFeedbackResetTimerTimeout()
+    private class GameNamePreview : Label
     {
-        _gameNamePreview.Text = _prevGameName;
+        public override void _Ready()
+        {
+            SizeFlagsHorizontal = SizeFlags.ShrinkCenter;
+        }
     }
 
-    private void OnProjectNameChanged(string gameName)
+    private class SetupConfirmationDialog(ProjectSetup projectSetup, GameNameControl projectNameControl) : ConfirmationDialog
     {
-        _gameNameValidator.Validate(gameName);
+        public override void _Ready()
+        {
+            Title = "Setup Confirmation";
+            DialogText = "Godot will restart with your changes. This cannot be undone";
+            OkButtonText = "Yes";
+            CancelButtonText = "No";
+            Confirmed += OnConfirmed;
+        }
+
+        public override void _ExitTree()
+        {
+            Confirmed -= OnConfirmed;
+        }
+
+        private void OnConfirmed()
+        {
+            projectSetup.Run(SetupUtils.FormatGameName(projectNameControl.LineEdit.Text));
+        }
     }
 
-    private void OnApplyPressed()
+    private class GameNameControl : HBoxContainer
     {
-        if (SetupUtils.IsGameNameBad(_gameNameLineEdit.Text))
-            return;
+        public GameNameValidator Validator { get; private set; }
+        public LineEdit LineEdit { get; private set; }
 
-        _confirmRestartDialog.PopupCentered();
+        private readonly GameNamePreview _gameNamePreview;
+
+        public GameNameControl(GameNamePreview gameNamePreview)
+        {
+            _gameNamePreview = gameNamePreview;
+        }
+
+        public override void _Ready()
+        {
+            Validator = new GameNameValidator(_gameNamePreview, LineEdit);
+            LineEdit = new LineEdit
+            {
+                SizeFlagsHorizontal = SizeFlags.ShrinkBegin,
+                CustomMinimumSize = new Vector2(200, 0)
+            };
+
+            LineEdit.TextChanged += OnGameNameChanged;
+
+            AddChild(new Label { Text = "Project Name:" });
+            AddChild(LineEdit);
+            AddChild(Validator.FeedbackResetTimer);
+        }
+
+        public override void _ExitTree()
+        {
+            LineEdit.TextChanged -= OnGameNameChanged;
+        }
+
+        private void OnGameNameChanged(string newText)
+        {
+            Validator.Validate(LineEdit.Text);
+        }
     }
 
     private class ProjectSetup
@@ -156,45 +216,56 @@ public partial class TemplateSetupDock : VBoxContainer
         }
     }
 
-    private class GameNameValidator(Label gameNamePreview, Timer feedbackResetTimer, LineEdit projectNameEdit)
+    private class GameNameValidator
     {
+        public FeedbackResetTimer FeedbackResetTimer { get; private init; }
+
+        private readonly GameNamePreview _gameNamePreview;
+        private readonly LineEdit _gameNameLineEdit;
         private string _prevGameName = "";
+
+        public GameNameValidator(GameNamePreview gameNamePreview, LineEdit gameNameLineEdit)
+        {
+            _gameNamePreview = gameNamePreview;
+            _gameNameLineEdit = gameNameLineEdit;
+            FeedbackResetTimer = new FeedbackResetTimer(gameNamePreview, () => _prevGameName);
+        }
 
         public void Validate(string gameName)
         {
-            feedbackResetTimer.Stop();
+            FeedbackResetTimer.Stop();
 
             if (string.IsNullOrWhiteSpace(gameName))
             {
-                gameNamePreview.Text = "";
+                _gameNamePreview.Text = "";
                 _prevGameName = "";
                 return;
             }
 
             if (char.IsNumber(gameName.Trim()[0]))
             {
-                gameNamePreview.Text = "The first character cannot be a number";
-                feedbackResetTimer.Start(FeedbackResetTime);
+                _gameNamePreview.Text = "The first character cannot be a number";
+                FeedbackResetTimer.Start(FeedbackResetTime);
                 ResetNameEdit();
                 return;
             }
 
             if (!SetupUtils.IsAlphaNumericAndAllowSpaces(gameName))
             {
-                gameNamePreview.Text = "Special characters are not allowed";
-                feedbackResetTimer.Start(FeedbackResetTime);
+                _gameNamePreview.Text = "Special characters are not allowed";
+                FeedbackResetTimer.Start(FeedbackResetTime);
                 ResetNameEdit();
                 return;
             }
 
-            gameNamePreview.Text = SetupUtils.FormatGameName(gameName);
+            _gameNamePreview.Text = SetupUtils.FormatGameName(gameName);
             _prevGameName = gameName;
             return;
 
             void ResetNameEdit()
             {
-                projectNameEdit.Text = _prevGameName;
-                projectNameEdit.CaretColumn = _prevGameName.Length;
+                _gameNameLineEdit.Text = _prevGameName;
+                _gameNameLineEdit.CaretColumn = _prevGameName.Length;
             }
         }
     }
