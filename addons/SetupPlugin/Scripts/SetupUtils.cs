@@ -48,6 +48,12 @@ public static class SetupUtils
     /// </summary>
     public static bool IsGameNameBad(string name)
     {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            GD.PrintErr("The game name cannot be empty.");
+            return true;
+        }
+
         // Prevent game name being the same as the reserved raw template namespace name
         if (name.Equals(RawTemplateNamespace, System.StringComparison.OrdinalIgnoreCase))
         {
@@ -87,20 +93,6 @@ public static class SetupUtils
     }
 
     /// <summary>
-    /// Changes the 'run/main_scene' to <paramref name="sceneName"/> in the project.godot file at <paramref name="projectRoot"/>.
-    /// </summary>
-    public static void SetMainScene(string projectRoot, string sceneName)
-    {
-        string text = File.ReadAllText(Path.Combine(projectRoot, "project.godot"));
-
-        text = text.Replace(
-           $"run/main_scene=\"{TemplateMainSceneUid}\"",
-           $"run/main_scene=\"{GetUIdFromSceneFile(Path.Combine(projectRoot, $"{sceneName}.tscn"))}\"");
-
-        File.WriteAllText(Path.Combine(projectRoot, "project.godot"), text);
-    }
-
-    /// <summary>
     /// Replaces all instances of the keyword "Template" with the new
     /// specified game name in several project files.
     /// </summary>
@@ -119,10 +111,12 @@ public static class SetupUtils
         string fullPath = Path.Combine(projectRoot, "project.godot");
         string text = File.ReadAllText(fullPath);
 
+        // Change assembly name
         text = text.Replace(
             $"project/assembly_name=\"{TemplateName}\"",
             $"project/assembly_name=\"{name}\"");
 
+        // Change config name
         text = text.Replace(
             $"config/name=\"{TemplateName}\"",
             $"config/name=\"{name}\""
@@ -174,10 +168,6 @@ public static class SetupUtils
                     return TraverseDecision.SkipChildren;
             }
 
-            // Prevent modifying the currently executing setup script
-            if (entry.FileName.EndsWith($"{nameof(SetupUI)}.cs"))
-                return TraverseDecision.Continue;
-
             // Modify all scripts
             if (entry.FileName.EndsWith(".cs"))
             {
@@ -217,14 +207,6 @@ public static class SetupUtils
     }
 
     /// <summary>
-    /// Formats the <paramref name="text"/> to have a wave effect for BBCode.
-    /// </summary>
-    public static string Highlight(string text)
-    {
-        return $"[wave amp=20.0 freq=2.0 connected=1][color=white]{text}[/color][/wave]";
-    }
-
-    /// <summary>
     /// Formats <paramref name="name"/> by trimming, ensuring first char is uppercase and removing all spaces
     /// </summary>
     public static string FormatGameName(string name)
@@ -238,19 +220,5 @@ public static class SetupUtils
     public static bool IsAlphaNumericAndAllowSpaces(string str)
     {
         return RegexUtils.AlphaNumericAndSpaces().IsMatch(str);
-    }
-
-    /// <summary>
-    /// Displays the game name preview on <paramref name="gameNamePreview"/> using <paramref name="inputName"/>.
-    /// </summary>
-    public static void DisplayGameNamePreview(string inputName, RichTextLabel gameNamePreview)
-    {
-        string name = FormatGameName(inputName);
-
-        string text = $"[color=gray]The name of the project will be {Highlight(name)}. " +
-              $"The root namespace for all scripts will be {Highlight(name)}. " +
-              $"Please ensure the name is in PascalFormat.[/color]";
-
-        gameNamePreview.Text = text;
     }
 }
