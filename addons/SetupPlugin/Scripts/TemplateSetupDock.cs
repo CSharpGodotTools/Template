@@ -228,6 +228,7 @@ public partial class TemplateSetupDock : VBoxContainer
             });
 
             ProjectSettings.SetSetting("application/run/main_scene", "res://Level.tscn");
+            ProjectSettings.Save();
 
             // After the editor restarts the following errors and warnigns will appear and can safely be ignored:
             // WARNING: editor/editor_node.cpp:4320 - Addon 'res://addons/SetupPlugin/plugin.cfg' failed to load. No directory found. Removing from enabled plugins.
