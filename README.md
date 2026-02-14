@@ -11,7 +11,7 @@
 
 This is an on-going project I've been working on. I know how hard it is to actually finish a game and I hope by making this, game development will be just a little bit easier.
 
-### [Setup Guide](https://github.com/CSharpGodotTools/Template/wiki/Setup)  
+# [Setup Guide](https://github.com/CSharpGodotTools/Template/wiki/Setup)  
 
 ## Features
 - Multiplayer
