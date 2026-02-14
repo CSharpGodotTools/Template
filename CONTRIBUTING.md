@@ -17,7 +17,7 @@ This template will be as lightweight as possible so it will not include any game
 > [!IMPORTANT]
 > If you are contributing to the [Framework](https://github.com/CSharpGodotTools/Framework) submodule, make sure you are on the `main` branch and not one like `debaebc`.
 
-Ready to start contributing? Start by looking to see if there are any [good first issues](https://github.com/CSharpGodotTools/Template/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22), these issues will always be beginner friendly.
+Ready to start contributing? Start by looking to see if there are any [good first issues](https://github.com/CSharpGodotTools/Template/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22), these issues will always be beginner friendly. You can also have a look at the [discussions](https://github.com/CSharpGodotTools/Template/discussions).
 
 ### Contact
 If you have any questions, my Discord is `valky5`.
