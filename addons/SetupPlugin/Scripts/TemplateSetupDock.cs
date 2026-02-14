@@ -242,8 +242,9 @@ public partial class TemplateSetupDock : VBoxContainer
 
                 if (entry.IsDirectory)
                     Directory.CreateDirectory(dest);
+                else
+                    File.Move(entry.FullPath, dest);
 
-                File.Move(entry.FullPath, dest);
                 return TraverseDecision.Continue;
             });
 
