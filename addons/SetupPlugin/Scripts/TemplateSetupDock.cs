@@ -2,6 +2,7 @@
 using Framework.Setup;
 using Godot;
 using GodotUtils;
+using System;
 using System.IO;
 
 namespace Framework.Setup;
@@ -13,13 +14,18 @@ public partial class TemplateSetupDock : VBoxContainer
     private const string SetupPluginName = "SetupPlugin";
     private const string MainSceneName = "Level";
     private const string DefaultClearColorPath = "rendering/environment/defaults/default_clear_color";
+    private const int Padding = 120;
 
     private ConfirmationDialog _confirmRestartDialog;
     private GameNameValidator _gameNameValidator;
     private ProjectSetup _projectSetup;
+    private OptionButton _templateType;
+    private OptionButton _projectType;
     private LineEdit _gameNameLineEdit;
     private Label _gameNamePreview;
     private string _prevGameName = "";
+    private string _projectTypeStr;
+    private string _templateTypeStr;
 
     public override void _Ready()
     {
@@ -41,18 +47,32 @@ public partial class TemplateSetupDock : VBoxContainer
         feedbackResetTimer.Connect(Timer.SignalName.Timeout, new Callable(this, nameof(OnFeedbackResetTimerTimeout)));
 
         // Game name preview
-        _gameNamePreview = new()
+        _gameNamePreview = new Label()
         {
-            SizeFlagsHorizontal = SizeFlags.ShrinkCenter
+            SizeFlagsHorizontal = SizeFlags.ShrinkCenter,
+            CustomMinimumSize = new Vector2(200, 0)
         };
 
         // Game name line edit
-        _gameNameLineEdit = new()
+        _gameNameLineEdit = new LineEdit()
         {
             SizeFlagsHorizontal = SizeFlags.ShrinkBegin,
             CustomMinimumSize = new Vector2(200, 0)
         };
         _gameNameLineEdit.Connect(LineEdit.SignalName.TextChanged, new Callable(this, nameof(OnProjectNameChanged)));
+
+        _projectType = new();
+        _projectType.AddItem("2D");
+        _projectType.AddItem("3D");
+        _projectType.Select(0);
+        _projectType.ItemSelected += OnProjectTypeSelected;
+        _projectTypeStr = "2D";
+
+        _templateType = new OptionButton();
+        _templateType.AddItem("Minimal");
+        _templateType.Select(0);
+        _templateType.ItemSelected += OnTemplateTypeSelected;
+        _templateTypeStr = "Minimal";
 
         // Default clear color
         ColorPickerButton defaultClearColorPicker = new()
@@ -73,23 +93,45 @@ public partial class TemplateSetupDock : VBoxContainer
 
         // Validator and Setup
         _gameNameValidator = new GameNameValidator(_gameNamePreview, feedbackResetTimer, _gameNameLineEdit);
-        _projectSetup = new ProjectSetup();
+        _projectSetup = new ProjectSetup(_projectTypeStr, _templateTypeStr);
 
         // Layout
         MarginContainer margin = MarginContainerFactory.Create(30);
         VBoxContainer vbox = new();
         HBoxContainer defaultClearColorHbox = new();
         HBoxContainer gameNameHbox = new();
+        HBoxContainer projectTypeHbox = new();
+        HBoxContainer templateTypeHbox = new();
 
         AddChild(feedbackResetTimer);
 
         vbox.AddChild(_gameNamePreview);
 
-        gameNameHbox.AddChild(new Label { Text = "Project Name:" });
+        gameNameHbox.AddChild(new Label { 
+            Text = "Project Name:", 
+            HorizontalAlignment = HorizontalAlignment.Right, 
+            CustomMinimumSize = new Vector2(Padding, 0) });
         gameNameHbox.AddChild(_gameNameLineEdit);
         vbox.AddChild(gameNameHbox);
 
-        defaultClearColorHbox.AddChild(new Label { Text = "Default Clear Color" });
+        projectTypeHbox.AddChild(new Label { 
+            Text = "Project:",
+            HorizontalAlignment = HorizontalAlignment.Right,
+            CustomMinimumSize = new Vector2(Padding, 0) });
+        projectTypeHbox.AddChild(_projectType);
+        vbox.AddChild(projectTypeHbox);
+
+        templateTypeHbox.AddChild(new Label { 
+            Text = "Template:",
+            HorizontalAlignment = HorizontalAlignment.Right,
+            CustomMinimumSize = new Vector2(Padding, 0) });
+        templateTypeHbox.AddChild(_templateType);
+        vbox.AddChild(templateTypeHbox);
+
+        defaultClearColorHbox.AddChild(new Label { 
+            Text = "Clear Color:",
+            HorizontalAlignment = HorizontalAlignment.Right,
+            CustomMinimumSize = new Vector2(Padding, 0) });
         defaultClearColorHbox.AddChild(defaultClearColorPicker);
         vbox.AddChild(defaultClearColorHbox);
 
@@ -99,6 +141,27 @@ public partial class TemplateSetupDock : VBoxContainer
         AddChild(applyButton);
 
         EditorInterface.Singleton.GetEditorMainScreen().AddChild(_confirmRestartDialog);
+    }
+
+    private void OnProjectTypeSelected(long index)
+    {
+        _templateType.Clear();
+
+        switch (_projectType.GetItemText((int)index))
+        {
+            case "2D":
+                _templateType.AddItem("Minimal");
+                break;
+            case "3D":
+                _templateType.AddItem("Minimal");
+                _templateType.AddItem("FPS");
+                break;
+        }
+    }
+
+    private void OnTemplateTypeSelected(long index)
+    {
+        _templateTypeStr = _templateType.GetItemText((int)index);
     }
 
     private void OnDefaultClearColorChanged(Color color)
@@ -133,10 +196,14 @@ public partial class TemplateSetupDock : VBoxContainer
     private class ProjectSetup
     {
         private readonly string _projectRoot;
+        private readonly string _projectType;
+        private readonly string _templateType;
 
-        public ProjectSetup()
+        public ProjectSetup(string projectType, string templateType)
         {
             _projectRoot = ProjectSettings.GlobalizePath("res://");
+            _projectType = projectType;
+            _templateType = templateType;
         }
 
         public void Run(string formattedGameName)
@@ -148,6 +215,8 @@ public partial class TemplateSetupDock : VBoxContainer
             SetupUtils.RenameProjectFiles(_projectRoot, formattedGameName);
             SetupUtils.RenameAllNamespaces(_projectRoot, formattedGameName);
             SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(_projectRoot);
+
+            // TODO: Move appropriate scene file to root
 
             // After the editor restarts the following errors and warnigns will appear and can safely be ignored:
             // WARNING: editor/editor_node.cpp:4320 - Addon 'res://addons/SetupPlugin/plugin.cfg' failed to load. No directory found. Removing from enabled plugins.
