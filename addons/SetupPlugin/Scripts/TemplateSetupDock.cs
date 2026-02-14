@@ -236,14 +236,18 @@ public partial class TemplateSetupDock : VBoxContainer
 
             DirectoryUtils.Traverse(templateFolder, entry =>
             {
-                string dest = Path.Combine(_projectRoot, entry.FileName);
+                string relativePath = Path.GetRelativePath(templateFolder, entry.FullPath);
+                string dest = Path.Combine(_projectRoot, relativePath);
 
                 Console.WriteLine($"Copying from {entry.FullPath} to {dest}");
 
                 if (entry.IsDirectory)
                     Directory.CreateDirectory(dest);
                 else
-                    File.Move(entry.FullPath, dest);
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(dest));
+                    File.Copy(entry.FullPath, dest, overwrite: true);
+                }
 
                 return TraverseDecision.Continue;
             });
