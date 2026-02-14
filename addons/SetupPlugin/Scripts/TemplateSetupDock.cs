@@ -228,22 +228,22 @@ public partial class TemplateSetupDock : VBoxContainer
             SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(_projectRoot);
 
             // Move the appropriate template files to root
-            string templateFolder = Path.Combine("addons", "SetupPlugin", "MainScenes", projectType, templateType);
-            string fullPath = Path.Combine(_projectRoot, templateFolder);
+            string templateFolder = Path.Combine(_projectRoot, "addons", "SetupPlugin", "MainScenes", projectType, templateType);
 
             Console.WriteLine("Setup ran with following settings:");
             Console.WriteLine(projectType);
             Console.WriteLine(templateType);
 
-            DirectoryUtils.Traverse(fullPath, entry =>
+            DirectoryUtils.Traverse(templateFolder, entry =>
             {
-                string relativePath = Path.GetRelativePath(fullPath, entry.FullPath);
-                string destPath = Path.Combine(_projectRoot, relativePath);
+                string dest = Path.Combine(_projectRoot, entry.FileName);
 
-                // Ensure destination folder exists
-                Directory.CreateDirectory(Path.GetDirectoryName(destPath));
+                Console.WriteLine($"Copying from {entry.FullPath} to {dest}");
 
-                File.Move(entry.FullPath, destPath);
+                if (entry.IsDirectory)
+                    Directory.CreateDirectory(dest);
+
+                File.Move(entry.FullPath, dest);
                 return TraverseDecision.Continue;
             });
 
