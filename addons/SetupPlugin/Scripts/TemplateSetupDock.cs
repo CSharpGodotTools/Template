@@ -229,7 +229,12 @@ public partial class TemplateSetupDock : VBoxContainer
 
             DirectoryUtils.Traverse(fullPath, entry =>
             {
-                string destPath = Path.Combine(_projectRoot, Path.GetFileName(entry.FullPath));
+                string relativePath = Path.GetRelativePath(fullPath, entry.FullPath);
+                string destPath = Path.Combine(_projectRoot, relativePath);
+
+                // Ensure destination folder exists
+                Directory.CreateDirectory(Path.GetDirectoryName(destPath));
+
                 File.Move(entry.FullPath, destPath);
                 return TraverseDecision.Continue;
             });
