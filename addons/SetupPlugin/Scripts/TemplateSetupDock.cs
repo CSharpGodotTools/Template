@@ -227,6 +227,9 @@ public partial class TemplateSetupDock : VBoxContainer
             string templateFolder = Path.Combine("addons", "SetupPlugin", "MainScenes", _projectType, _templateType);
             string fullPath = Path.Combine(_projectRoot, templateFolder);
 
+            Console.WriteLine(_projectType);
+            Console.WriteLine(_templateType);
+
             DirectoryUtils.Traverse(fullPath, entry =>
             {
                 string relativePath = Path.GetRelativePath(fullPath, entry.FullPath);
