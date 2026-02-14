@@ -18,7 +18,7 @@ public partial class TemplateSetupDock : VBoxContainer
     private const int Padding = 120;
     private const string MainScenesPath = "res://addons/SetupPlugin/MainScenes/";
 
-    Dictionary<string, List<string>> _setupFolderPaths = new();
+    Dictionary<string, List<string>> _sceneTypes = new();
     private ConfirmationDialog _confirmRestartDialog;
     private GameNameValidator _gameNameValidator;
     private ProjectSetup _projectSetup;
@@ -69,12 +69,12 @@ public partial class TemplateSetupDock : VBoxContainer
 
         DirectoryUtils.Traverse(ProjectSettings.GlobalizePath(MainScenesPath), templateTypeEntry =>
         {
-            _setupFolderPaths[templateTypeEntry.FileName] = new List<string>();
+            _sceneTypes[templateTypeEntry.FileName] = new List<string>();
 
             DirectoryUtils.Traverse(ProjectSettings.GlobalizePath(Path.Combine(MainScenesPath, templateTypeEntry.FileName)), entry =>
             {
                 // Add specific template types "Minimal" and "FPS"
-                _setupFolderPaths[templateTypeEntry.FileName].Add(entry.FileName);
+                _sceneTypes[templateTypeEntry.FileName].Add(entry.FileName);
                 return TraverseDecision.SkipChildren;
             });
 
@@ -83,7 +83,7 @@ public partial class TemplateSetupDock : VBoxContainer
             return TraverseDecision.SkipChildren;
         });
 
-        var firstSetupType = _setupFolderPaths.First();
+        var firstSetupType = _sceneTypes.First();
         _projectTypeStr = firstSetupType.Key; // e.g. "3D"
         _templateTypeStr = firstSetupType.Value[0]; // e.g. ["Minimal", "FPS"]
 
@@ -117,7 +117,7 @@ public partial class TemplateSetupDock : VBoxContainer
 
         // Validator and Setup
         _gameNameValidator = new GameNameValidator(_gameNamePreview, feedbackResetTimer, _gameNameLineEdit);
-        _projectSetup = new ProjectSetup(_projectTypeStr, _templateTypeStr);
+        _projectSetup = new ProjectSetup();
 
         // Layout
         MarginContainer margin = MarginContainerFactory.Create(30);
@@ -157,10 +157,10 @@ public partial class TemplateSetupDock : VBoxContainer
     {
         _templateType.Clear();
 
-        string type = _projectType.GetItemText((int)index);
-        _projectTypeStr = type;
+        string projectType = _projectType.GetItemText((int)index);
+        _projectTypeStr = projectType;
 
-        foreach (string templateType in _setupFolderPaths[type])
+        foreach (string templateType in _sceneTypes[projectType])
         {
             _templateType.AddItem(templateType);
         }
@@ -179,7 +179,7 @@ public partial class TemplateSetupDock : VBoxContainer
 
     private void OnConfirmed()
     {
-        _projectSetup.Run(SetupUtils.FormatGameName(_gameNameLineEdit.Text));
+        _projectSetup.Run(SetupUtils.FormatGameName(_gameNameLineEdit.Text), _projectTypeStr, _templateTypeStr);
     }
 
     private void OnFeedbackResetTimerTimeout()
@@ -203,17 +203,13 @@ public partial class TemplateSetupDock : VBoxContainer
     private class ProjectSetup
     {
         private readonly string _projectRoot;
-        private readonly string _projectType;
-        private readonly string _templateType;
 
-        public ProjectSetup(string projectType, string templateType)
+        public ProjectSetup()
         {
             _projectRoot = ProjectSettings.GlobalizePath("res://");
-            _projectType = projectType;
-            _templateType = templateType;
         }
 
-        public void Run(string formattedGameName)
+        public void Run(string formattedGameName, string projectType, string templateType)
         {
             // The IO functions ran below will break if empty folders exist
             DirectoryUtils.DeleteEmptyDirectories(_projectRoot);
@@ -224,11 +220,11 @@ public partial class TemplateSetupDock : VBoxContainer
             SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(_projectRoot);
 
             // Move the appropriate template files to root
-            string templateFolder = Path.Combine("addons", "SetupPlugin", "MainScenes", _projectType, _templateType);
+            string templateFolder = Path.Combine("addons", "SetupPlugin", "MainScenes", projectType, templateType);
             string fullPath = Path.Combine(_projectRoot, templateFolder);
 
-            Console.WriteLine(_projectType);
-            Console.WriteLine(_templateType);
+            Console.WriteLine(projectType);
+            Console.WriteLine(templateType);
 
             DirectoryUtils.Traverse(fullPath, entry =>
             {
