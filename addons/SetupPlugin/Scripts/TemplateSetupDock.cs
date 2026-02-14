@@ -87,8 +87,8 @@ public partial class TemplateSetupDock : VBoxContainer
         _projectTypeStr = firstSetupType.Key; // e.g. "3D"
         _templateTypeStr = firstSetupType.Value[0]; // e.g. ["Minimal", "FPS"]
 
-        GD.Print("Project type is initially set to " + _projectTypeStr);
-        GD.Print("Template type is initially set to " + _templateTypeStr);
+        //GD.Print("Project type is initially set to " + _projectTypeStr);
+        //GD.Print("Template type is initially set to " + _templateTypeStr);
 
         _projectType.Select(0);
         _projectType.ItemSelected += OnProjectTypeSelected;
@@ -162,7 +162,7 @@ public partial class TemplateSetupDock : VBoxContainer
 
         string projectType = _projectType.GetItemText((int)index);
         _projectTypeStr = projectType;
-        GD.Print("Project type was changed to " + projectType);
+        //GD.Print("Project type was changed to " + projectType);
 
         foreach (string templateType in _sceneTypes[projectType])
         {
@@ -170,13 +170,13 @@ public partial class TemplateSetupDock : VBoxContainer
         }
 
         _templateTypeStr = _templateType.GetItemText(0);
-        GD.Print("Template type was changed to " + _templateTypeStr);
+        //GD.Print("Template type was changed to " + _templateTypeStr);
     }
 
     private void OnTemplateTypeSelected(long index)
     {
         _templateTypeStr = _templateType.GetItemText((int)index);
-        GD.Print("Template type was changed to " + _templateTypeStr);
+        //GD.Print("Template type was changed to " + _templateTypeStr);
     }
 
     private void OnDefaultClearColorChanged(Color color)
@@ -225,16 +225,16 @@ public partial class TemplateSetupDock : VBoxContainer
             // Move the appropriate template files to root
             string templateFolder = Path.Combine(_projectRoot, "addons", "SetupPlugin", "MainScenes", projectType, templateType);
 
-            Console.WriteLine("Setup ran with following settings:");
-            Console.WriteLine(projectType);
-            Console.WriteLine(templateType);
+            //Console.WriteLine("Setup ran with following settings:");
+            //Console.WriteLine(projectType);
+            //Console.WriteLine(templateType);
 
             DirectoryUtils.Traverse(templateFolder, entry =>
             {
                 string relativePath = Path.GetRelativePath(templateFolder, entry.FullPath);
                 string dest = Path.Combine(_projectRoot, relativePath);
 
-                Console.WriteLine($"Copying from {entry.FullPath} to {dest}");
+                //Console.WriteLine($"Copying from {entry.FullPath} to {dest}");
 
                 if (entry.IsDirectory)
                     Directory.CreateDirectory(dest);
