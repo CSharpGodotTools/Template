@@ -1,0 +1,85 @@
+[gd_scene format=3 uid="uid://cndqgr17i6ruy"]
+
+[ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://Framework/Scenes/PopupMenu/PopupMenu.tscn" id="1_k54qk"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_k54qk"]
+sky_top_color = Color(1, 1, 1, 1)
+sky_horizon_color = Color(0.6822697, 0.860087, 1, 1)
+ground_bottom_color = Color(0.68235296, 0.85882354, 1, 1)
+ground_horizon_color = Color(0.68235296, 0.85882354, 1, 1)
+
+[sub_resource type="Sky" id="Sky_bhv70"]
+sky_material = SubResource("ProceduralSkyMaterial_k54qk")
+
+[sub_resource type="Environment" id="Environment_th6ky"]
+background_mode = 2
+sky = SubResource("Sky_bhv70")
+ambient_light_source = 3
+reflected_light_source = 2
+tonemap_mode = 3
+ssr_enabled = true
+ssao_enabled = true
+ssil_enabled = true
+glow_enabled = true
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_k54qk"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_k54qk"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_k54qk"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_bhv70"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_k54qk"]
+left_to_right = 0.0
+size = Vector3(4.585, 1, 1)
+
+[node name="Main" type="Node3D" unique_id=1826491119]
+metadata/_edit_lock_ = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=438482895]
+
+[node name="PopupMenu" parent="CanvasLayer" unique_id=960446522 instance=ExtResource("1_k54qk")]
+visible = false
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1400673264]
+environment = SubResource("Environment_th6ky")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1928399920]
+transform = Transform3D(0.64278764, 0.58682406, 0.4924039, 0, -0.64278764, 0.76604444, 0.76604444, -0.4924039, -0.41317594, 0, 100, 0)
+metadata/_edit_lock_ = true
+
+[node name="Player" type="CharacterBody3D" parent="." unique_id=321834285]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=1813375761]
+shape = SubResource("CapsuleShape3D_k54qk")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player/CollisionShape3D" unique_id=171120870]
+mesh = SubResource("CapsuleMesh_k54qk")
+
+[node name="Meshes" type="Node3D" parent="." unique_id=415170542]
+
+[node name="Floor" type="MeshInstance3D" parent="Meshes" unique_id=205664890]
+transform = Transform3D(8, 0, 0, 0, 8, 0, 0, 0, 8, 0, 0, 0)
+mesh = SubResource("PlaneMesh_k54qk")
+
+[node name="Wall_South" type="MeshInstance3D" parent="Meshes" unique_id=457576923]
+transform = Transform3D(16, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1, -7.5)
+mesh = SubResource("BoxMesh_bhv70")
+
+[node name="Wall_North" type="MeshInstance3D" parent="Meshes" unique_id=1512287716]
+transform = Transform3D(16, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1, 7.5)
+mesh = SubResource("BoxMesh_bhv70")
+
+[node name="Wall_West" type="MeshInstance3D" parent="Meshes" unique_id=1786080060]
+transform = Transform3D(-6.119594e-07, 0, -1, 0, 2, 0, 14, 0, -4.371139e-08, 7.5, 1, 0)
+mesh = SubResource("BoxMesh_bhv70")
+
+[node name="Wall_East" type="MeshInstance3D" parent="Meshes" unique_id=372161950]
+transform = Transform3D(-6.119594e-07, 0, -1, 0, 2, 0, 14, 0, -4.371139e-08, -7.5, 1, 0)
+mesh = SubResource("BoxMesh_bhv70")
+
+[node name="Ramp" type="CSGMesh3D" parent="Meshes" unique_id=983033016]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.5, 4)
+mesh = SubResource("PrismMesh_k54qk")
