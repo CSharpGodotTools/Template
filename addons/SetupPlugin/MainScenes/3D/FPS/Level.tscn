@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://Framework/Scenes/PopupMenu/PopupMenu.tscn" id="1_k54qk"]
 [ext_resource type="Script" uid="uid://bmctcduu1fcih" path="res://addons/SetupPlugin/MainScenes/3D/FPS/Scripts/Player.cs" id="2_71hwj"]
+[ext_resource type="Script" uid="uid://cnhpctr13d48d" path="res://addons/SetupPlugin/MainScenes/3D/FPS/Scripts/PlayerMovementConfig.cs" id="3_g43ns"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_k54qk"]
 sky_top_color = Color(1, 1, 1, 1)
@@ -22,6 +23,10 @@ ssr_enabled = true
 ssao_enabled = true
 ssil_enabled = true
 glow_enabled = true
+
+[sub_resource type="Resource" id="Resource_ugmif"]
+script = ExtResource("3_g43ns")
+metadata/_custom_type_script = "uid://cnhpctr13d48d"
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_k54qk"]
 
@@ -69,6 +74,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("2_71hwj")
 _camera = NodePath("Camera3D")
 _popupMenu = NodePath("../CanvasLayer/PopupMenu")
+_movementConfig = SubResource("Resource_ugmif")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=1813375761]
 shape = SubResource("CapsuleShape3D_k54qk")
