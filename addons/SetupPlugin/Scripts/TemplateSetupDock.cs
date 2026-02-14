@@ -3,7 +3,9 @@ using Framework.Setup;
 using Godot;
 using GodotUtils;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Framework.Setup;
 
@@ -15,13 +17,16 @@ public partial class TemplateSetupDock : VBoxContainer
     private const string MainSceneName = "Level";
     private const string DefaultClearColorPath = "rendering/environment/defaults/default_clear_color";
     private const int Padding = 120;
+    private const string MainScenesPath = "res://addons/SetupPlugin/MainScenes/";
 
+    Dictionary<string, List<string>> _setupFolderPaths = new();
     private ConfirmationDialog _confirmRestartDialog;
     private GameNameValidator _gameNameValidator;
     private ProjectSetup _projectSetup;
     private OptionButton _templateType;
     private OptionButton _projectType;
     private LineEdit _gameNameLineEdit;
+    private VBoxContainer _vbox;
     private Label _gameNamePreview;
     private string _prevGameName = "";
     private string _projectTypeStr;
@@ -62,17 +67,37 @@ public partial class TemplateSetupDock : VBoxContainer
         _gameNameLineEdit.Connect(LineEdit.SignalName.TextChanged, new Callable(this, nameof(OnProjectNameChanged)));
 
         _projectType = new();
-        _projectType.AddItem("2D");
-        _projectType.AddItem("3D");
+
+        DirectoryUtils.Traverse(ProjectSettings.GlobalizePath(MainScenesPath), templateTypeEntry =>
+        {
+            _setupFolderPaths[templateTypeEntry.FileName] = new List<string>();
+
+            DirectoryUtils.Traverse(ProjectSettings.GlobalizePath(Path.Combine(MainScenesPath, templateTypeEntry.FileName)), entry =>
+            {
+                // Add specific template types "Minimal" and "FPS"
+                _setupFolderPaths[templateTypeEntry.FileName].Add(entry.FileName);
+                return TraverseDecision.SkipChildren;
+            });
+
+            // Add project types "2D" and "3D"
+            _projectType.AddItem(templateTypeEntry.FileName);
+            return TraverseDecision.SkipChildren;
+        });
+
+        var firstSetupType = _setupFolderPaths.First();
+        _projectTypeStr = firstSetupType.Key; // e.g. "3D"
+        _templateTypeStr = firstSetupType.Value[0]; // e.g. ["Minimal", "FPS"]
+
         _projectType.Select(0);
         _projectType.ItemSelected += OnProjectTypeSelected;
-        _projectTypeStr = "2D";
 
         _templateType = new OptionButton();
-        _templateType.AddItem("Minimal");
+
+        foreach (string templateType in firstSetupType.Value)
+            _templateType.AddItem(templateType);
+
         _templateType.Select(0);
         _templateType.ItemSelected += OnTemplateTypeSelected;
-        _templateTypeStr = "Minimal";
 
         // Default clear color
         ColorPickerButton defaultClearColorPicker = new()
@@ -97,45 +122,18 @@ public partial class TemplateSetupDock : VBoxContainer
 
         // Layout
         MarginContainer margin = MarginContainerFactory.Create(30);
-        VBoxContainer vbox = new();
-        HBoxContainer defaultClearColorHbox = new();
-        HBoxContainer gameNameHbox = new();
-        HBoxContainer projectTypeHbox = new();
-        HBoxContainer templateTypeHbox = new();
+        _vbox = new VBoxContainer();
 
         AddChild(feedbackResetTimer);
 
-        vbox.AddChild(_gameNamePreview);
+        _vbox.AddChild(_gameNamePreview);
 
-        gameNameHbox.AddChild(new Label { 
-            Text = "Project Name:", 
-            HorizontalAlignment = HorizontalAlignment.Right, 
-            CustomMinimumSize = new Vector2(Padding, 0) });
-        gameNameHbox.AddChild(_gameNameLineEdit);
-        vbox.AddChild(gameNameHbox);
+        AddLabelH("Project Name", _gameNameLineEdit);
+        AddLabelH("Project", _projectType);
+        AddLabelH("Template", _templateType);
+        AddLabelH("Clear Color", defaultClearColorPicker);
 
-        projectTypeHbox.AddChild(new Label { 
-            Text = "Project:",
-            HorizontalAlignment = HorizontalAlignment.Right,
-            CustomMinimumSize = new Vector2(Padding, 0) });
-        projectTypeHbox.AddChild(_projectType);
-        vbox.AddChild(projectTypeHbox);
-
-        templateTypeHbox.AddChild(new Label { 
-            Text = "Template:",
-            HorizontalAlignment = HorizontalAlignment.Right,
-            CustomMinimumSize = new Vector2(Padding, 0) });
-        templateTypeHbox.AddChild(_templateType);
-        vbox.AddChild(templateTypeHbox);
-
-        defaultClearColorHbox.AddChild(new Label { 
-            Text = "Clear Color:",
-            HorizontalAlignment = HorizontalAlignment.Right,
-            CustomMinimumSize = new Vector2(Padding, 0) });
-        defaultClearColorHbox.AddChild(defaultClearColorPicker);
-        vbox.AddChild(defaultClearColorHbox);
-
-        margin.AddChild(vbox);
+        margin.AddChild(_vbox);
 
         AddChild(margin);
         AddChild(applyButton);
@@ -143,19 +141,28 @@ public partial class TemplateSetupDock : VBoxContainer
         EditorInterface.Singleton.GetEditorMainScreen().AddChild(_confirmRestartDialog);
     }
 
+    private void AddLabelH(string text, Control control)
+    {
+        HBoxContainer hbox = new();
+        hbox.AddChild(new Label
+        {
+            Text = $"{text}:",
+            HorizontalAlignment = HorizontalAlignment.Right,
+            CustomMinimumSize = new Vector2(Padding, 0)
+        });
+        hbox.AddChild(control);
+        _vbox.AddChild(hbox);
+    }
+
     private void OnProjectTypeSelected(long index)
     {
         _templateType.Clear();
 
-        switch (_projectType.GetItemText((int)index))
+        string type = _projectType.GetItemText((int)index);
+
+        foreach (string templateType in _setupFolderPaths[type])
         {
-            case "2D":
-                _templateType.AddItem("Minimal");
-                break;
-            case "3D":
-                _templateType.AddItem("Minimal");
-                _templateType.AddItem("FPS");
-                break;
+            _templateType.AddItem(templateType);
         }
     }
 
