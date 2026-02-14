@@ -87,6 +87,9 @@ public partial class TemplateSetupDock : VBoxContainer
         _projectTypeStr = firstSetupType.Key; // e.g. "3D"
         _templateTypeStr = firstSetupType.Value[0]; // e.g. ["Minimal", "FPS"]
 
+        GD.Print("Project type is initially set to " + _projectTypeStr);
+        GD.Print("Template type is initially set to " + _templateTypeStr);
+
         _projectType.Select(0);
         _projectType.ItemSelected += OnProjectTypeSelected;
 
@@ -159,16 +162,21 @@ public partial class TemplateSetupDock : VBoxContainer
 
         string projectType = _projectType.GetItemText((int)index);
         _projectTypeStr = projectType;
+        GD.Print("Project type was changed to " + projectType);
 
         foreach (string templateType in _sceneTypes[projectType])
         {
             _templateType.AddItem(templateType);
         }
+
+        _templateTypeStr = _templateType.GetItemText(0);
+        GD.Print("Template type was changed to " + _templateTypeStr);
     }
 
     private void OnTemplateTypeSelected(long index)
     {
         _templateTypeStr = _templateType.GetItemText((int)index);
+        GD.Print("Template type was changed to " + _templateTypeStr);
     }
 
     private void OnDefaultClearColorChanged(Color color)
@@ -223,6 +231,7 @@ public partial class TemplateSetupDock : VBoxContainer
             string templateFolder = Path.Combine("addons", "SetupPlugin", "MainScenes", projectType, templateType);
             string fullPath = Path.Combine(_projectRoot, templateFolder);
 
+            Console.WriteLine("Setup ran with following settings:");
             Console.WriteLine(projectType);
             Console.WriteLine(templateType);
 
