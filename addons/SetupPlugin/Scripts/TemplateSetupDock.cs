@@ -220,12 +220,10 @@ public partial class TemplateSetupDock : VBoxContainer
             string templateFolder = Path.Combine("addons", "SetupPlugin", "MainScenes", _projectType, _templateType);
             string fullPath = Path.Combine(_projectRoot, templateFolder);
 
-            GD.Print($"Searching {fullPath}");
-            GD.Print($"Project root: {_projectRoot}");
             DirectoryUtils.Traverse(fullPath, entry =>
             {
-                GD.Print(entry.FullPath);
-                File.Move(entry.FullPath, _projectRoot);
+                string destPath = Path.Combine(_projectRoot, Path.GetFileName(entry.FullPath));
+                File.Move(entry.FullPath, destPath);
                 return TraverseDecision.Continue;
             });
 
