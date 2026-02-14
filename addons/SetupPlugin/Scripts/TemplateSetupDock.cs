@@ -222,11 +222,6 @@ public partial class TemplateSetupDock : VBoxContainer
             // The IO functions ran below will break if empty folders exist
             DirectoryUtils.DeleteEmptyDirectories(_projectRoot);
 
-            // Run the setup process
-            SetupUtils.RenameProjectFiles(_projectRoot, formattedGameName);
-            SetupUtils.RenameAllNamespaces(_projectRoot, formattedGameName);
-            SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(_projectRoot);
-
             // Move the appropriate template files to root
             string templateFolder = Path.Combine(_projectRoot, "addons", "SetupPlugin", "MainScenes", projectType, templateType);
 
@@ -254,6 +249,10 @@ public partial class TemplateSetupDock : VBoxContainer
 
             ProjectSettings.SetSetting("application/run/main_scene", "res://Level.tscn");
             ProjectSettings.Save();
+
+            SetupUtils.RenameProjectFiles(_projectRoot, formattedGameName);
+            SetupUtils.RenameAllNamespaces(_projectRoot, formattedGameName);
+            SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(_projectRoot);
 
             // After the editor restarts the following errors and warnigns will appear and can safely be ignored:
             // WARNING: editor/editor_node.cpp:4320 - Addon 'res://addons/SetupPlugin/plugin.cfg' failed to load. No directory found. Removing from enabled plugins.
