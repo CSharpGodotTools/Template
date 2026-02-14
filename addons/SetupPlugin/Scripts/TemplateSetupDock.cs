@@ -159,6 +159,7 @@ public partial class TemplateSetupDock : VBoxContainer
         _templateType.Clear();
 
         string type = _projectType.GetItemText((int)index);
+        _projectTypeStr = type;
 
         foreach (string templateType in _setupFolderPaths[type])
         {
