@@ -216,7 +216,17 @@ public partial class TemplateSetupDock : VBoxContainer
             SetupUtils.RenameAllNamespaces(_projectRoot, formattedGameName);
             SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(_projectRoot);
 
-            // TODO: Move appropriate scene file to root
+            // Move the appropriate template files to root
+            string templateFolder = Path.Combine("addons", "SetupPlugin", "MainScenes", _projectType, _templateType);
+            string fullPath = Path.Combine(_projectRoot, templateFolder);
+
+            DirectoryUtils.Traverse(fullPath, entry =>
+            {
+                File.Move(entry.FullPath, _projectRoot);
+                return TraverseDecision.Continue;
+            });
+
+            ProjectSettings.SetSetting("application/run/main_scene", "res://Level.tscn");
 
             // After the editor restarts the following errors and warnigns will appear and can safely be ignored:
             // WARNING: editor/editor_node.cpp:4320 - Addon 'res://addons/SetupPlugin/plugin.cfg' failed to load. No directory found. Removing from enabled plugins.
