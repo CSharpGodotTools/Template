@@ -15,7 +15,9 @@ gdunit4_testadapter_v5/
 .runsettings
 
 # Visual Studio
-.vs/*
+**/.vs/*
+**/bin/*
+**/obj/*
 Properties/*
 *.csproj.user
 

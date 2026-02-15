@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>false</ImplicitUsings>
+    <AssemblyName>Mod</AssemblyName>
+    <RootNamespace>ExampleMod</RootNamespace>
+
+    <!--
+      Modders can override these paths in shipped builds:
+      dotnet build ExampleMod.csproj -c Release -p:TemplateAssemblyPath="C:\Game\Template.dll" -p:GodotSharpAssemblyPath="C:\Game\GodotSharp.dll"
+    -->
+    <TemplateAssemblyPath Condition="'$(TemplateAssemblyPath)' == ''">..\..\.godot\mono\temp\bin\Debug\Template.dll</TemplateAssemblyPath>
+    <GodotSharpAssemblyPath Condition="'$(GodotSharpAssemblyPath)' == ''">..\..\.godot\mono\temp\bin\Debug\GodotSharp.dll</GodotSharpAssemblyPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Template">
+      <HintPath>$(TemplateAssemblyPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(GodotSharpAssemblyPath)</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <Target Name="ValidateModReferences" BeforeTargets="ResolveReferences">
+    <Error Condition="!Exists('$(TemplateAssemblyPath)')" Text="Template assembly not found at '$(TemplateAssemblyPath)'. Set -p:TemplateAssemblyPath=... when building the mod." />
+    <Error Condition="!Exists('$(GodotSharpAssemblyPath)')" Text="GodotSharp assembly not found at '$(GodotSharpAssemblyPath)'. Set -p:GodotSharpAssemblyPath=... when building the mod." />
+  </Target>
+</Project>
