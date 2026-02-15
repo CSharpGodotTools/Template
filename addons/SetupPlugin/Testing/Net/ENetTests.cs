@@ -67,6 +67,26 @@ public class ENetTests
 
     [TestCase]
     [RequireGodotRuntime]
+    public static async Task Client_Sends_PacketStructTypes_To_Server()
+    {
+        TestOutput.Header(nameof(Client_Sends_PacketStructTypes_To_Server));
+
+        CPacketStructTypes expected = PacketStructTypesFactory.CreateSample();
+        await PacketRoundTripRunner.RunAsync(expected, _connectTimeout, _packetTimeout);
+    }
+
+    [TestCase]
+    [RequireGodotRuntime]
+    public static async Task Client_Sends_PacketClassTypes_To_Server()
+    {
+        TestOutput.Header(nameof(Client_Sends_PacketClassTypes_To_Server));
+
+        CPacketClassTypes expected = PacketClassTypesFactory.CreateSample();
+        await PacketRoundTripRunner.RunAsync(expected, _connectTimeout, _packetTimeout);
+    }
+
+    [TestCase]
+    [RequireGodotRuntime]
     public static async Task Client_Sends_Packet_Batches()
     {
         TestOutput.Header(nameof(Client_Sends_Packet_Batches));

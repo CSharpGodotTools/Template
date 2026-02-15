@@ -1,4 +1,4 @@
-﻿<Project Sdk="Godot.NET.Sdk/4.6.0">
+<Project Sdk="Godot.NET.Sdk/4.6.0">
     <!-- Project Settings -->
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -27,7 +27,7 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <!-- https://github.com/Cat-Lips/GodotSharp.SourceGenerators -->
         <PackageReference Include="GodotSharp.SourceGenerators" Version="2.7.0-260208-1601.Release" />
-        <PackageReference Include="PacketGen" Version="1.1.7" />
+        <PackageReference Include="PacketGen" Version="1.1.8" />
 
         <!-- gdUnit4 package dependencies -->
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
