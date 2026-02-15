@@ -1,6 +1,5 @@
 #if TOOLS
 using Godot;
-using System;
 
 namespace Framework.Setup;
 
@@ -8,6 +7,7 @@ namespace Framework.Setup;
 public partial class TemplateSetupPlugin : EditorPlugin
 {
     private EditorDock _dock;
+    private TemplateSetupDock _content;
 
     public override void _EnterTree()
     {
@@ -17,16 +17,35 @@ public partial class TemplateSetupPlugin : EditorPlugin
             DefaultSlot = EditorDock.DockSlot.RightBl
         };
 
-        TemplateSetupDock content = new();
-        _dock.AddChild(content);
+        _content = new TemplateSetupDock();
+        _dock.AddChild(_content);
 
         AddDock(_dock);
     }
 
     public override void _ExitTree()
     {
+        if (_dock == null)
+        {
+            return;
+        }
+
+        if (!GodotObject.IsInstanceValid(_dock))
+        {
+            _content = null;
+            _dock = null;
+            return;
+        }
+
+        if (_content != null && GodotObject.IsInstanceValid(_content))
+        {
+            _content.PrepareForPluginDisable();
+        }
+
         RemoveDock(_dock);
         _dock.QueueFree();
+        _content = null;
+        _dock = null;
     }
 }
 #endif

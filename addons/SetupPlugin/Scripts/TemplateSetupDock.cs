@@ -1,45 +1,80 @@
 #if TOOLS
-using Framework.Setup;
 using Godot;
-using GodotUtils;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Framework.Setup;
 
 [Tool]
 public partial class TemplateSetupDock : VBoxContainer
 {
-    private const string SetupPluginName = "SetupPlugin";
-    private const string MainSceneName = "Level";
     private const string DefaultClearColorPath = "rendering/environment/defaults/default_clear_color";
-    private const string MainScenePath = "application/run/main_scene";
-    private const int Padding = 120;
-    private const string MainScenesPath = "res://addons/SetupPlugin/MainScenes/";
+    private const string MainScenesPath = "res://addons/SetupPlugin/MainScenes";
+    private const string ProjectRootPath = "res://";
+    private const string RebuildInstruction = "Rebuild the project, then disable and re-enable the Setup Plugin.";
+    private const int LabelPadding = 120;
+    private const int MarginPadding = 30;
 
-    // Not really sure what to call this. The key can be either "2D" or "3D" and the list can be like ["Minimal"] or ["Minimal", "FPS"]
-    // Also these fields are kind of clumped together. Maybe need to group / organize them.
-    Dictionary<string, List<string>> _sceneTypes = new();
     private ConfirmationDialog _confirmRestartDialog;
+    private Timer _feedbackResetTimer;
     private GameNameValidator _gameNameValidator;
-    private ProjectSetup _projectSetup;
+    private ProjectSetupRunner _projectSetupRunner;
+    private SetupRuntimeStateValidator _runtimeStateValidator;
+    private SetupTemplateCatalog _templateCatalog;
+
     private OptionButton _templateType;
     private OptionButton _projectType;
     private LineEdit _gameNameLineEdit;
-    private VBoxContainer _vbox;
+    private ColorPickerButton _defaultClearColorPicker;
+    private Button _applyButton;
+    private VBoxContainer _contentContainer;
     private Label _gameNamePreview;
-    private string _prevGameName = "";
-    private string _projectTypeStr; // not really sure what to call this
-    private string _templateTypeStr; // not really sure what to call this
+    private Label _statusLabel;
+
+    private string _selectedProjectType = string.Empty;
+    private string _selectedTemplateType = string.Empty;
+    private string _runtimeStateError = string.Empty;
+    private bool _isRuntimeStateValid;
+    private bool _eventsRegistered;
+    private bool _isDisposed;
 
     public override void _Ready()
     {
-        // There is a lot going on in this _Ready() method and I'm not really sure what kind of OOP should be done here
-        // without making it too hard to expand on later
+        InitializeServices();
+        CreateControls();
+        BuildLayout();
+        ValidateAndInitializeState();
+        RegisterEvents();
+    }
 
-        // Restart dialog
+    public override void _ExitTree()
+    {
+        PrepareForPluginDisable();
+    }
+
+    public void PrepareForPluginDisable()
+    {
+        if (_isDisposed)
+        {
+            return;
+        }
+
+        _isDisposed = true;
+        UnregisterEvents();
+        ReleaseRestartDialog();
+    }
+
+    private void InitializeServices()
+    {
+        string projectRoot = ProjectSettings.GlobalizePath(ProjectRootPath);
+        string mainScenesRoot = ProjectSettings.GlobalizePath(MainScenesPath);
+
+        _runtimeStateValidator = new SetupRuntimeStateValidator(projectRoot, mainScenesRoot);
+        _projectSetupRunner = new ProjectSetupRunner(projectRoot, mainScenesRoot);
+    }
+
+    private void CreateControls()
+    {
         _confirmRestartDialog = new ConfirmationDialog
         {
             Title = "Setup Confirmation",
@@ -48,259 +83,436 @@ public partial class TemplateSetupDock : VBoxContainer
             CancelButtonText = "No"
         };
 
-        // Check if signal is actually connected. (Godot will show error on re-enabling this plugin if this check is not here)
-        if (!_confirmRestartDialog.IsConnected(ConfirmationDialog.SignalName.Confirmed, new Callable(this, nameof(OnConfirmed))))
-            _confirmRestartDialog.Connect(ConfirmationDialog.SignalName.Confirmed, new Callable(this, nameof(OnConfirmed)));
+        _feedbackResetTimer = new Timer();
 
-        // Feedback reset timer
-        Timer feedbackResetTimer = new Timer();
-        feedbackResetTimer.Connect(Timer.SignalName.Timeout, new Callable(this, nameof(OnFeedbackResetTimerTimeout)));
+        _statusLabel = new Label
+        {
+            AutowrapMode = TextServer.AutowrapMode.WordSmart,
+            Visible = false,
+            Modulate = new Color(1.0f, 0.4f, 0.4f)
+        };
 
-        // Game name preview
-        _gameNamePreview = new Label()
+        _gameNamePreview = new Label
         {
             SizeFlagsHorizontal = SizeFlags.ShrinkCenter,
             CustomMinimumSize = new Vector2(200, 0)
         };
 
-        // Game name line edit
-        _gameNameLineEdit = new LineEdit()
+        _gameNameLineEdit = new LineEdit
         {
             SizeFlagsHorizontal = SizeFlags.ShrinkBegin,
             CustomMinimumSize = new Vector2(200, 0)
         };
-        _gameNameLineEdit.Connect(LineEdit.SignalName.TextChanged, new Callable(this, nameof(OnProjectNameChanged)));
 
-        _projectType = new();
-
-        // Traverse the specific folders "2D" and "3D" (more could be added in the future like "VR" as an example I guess idk
-        DirectoryUtils.Traverse(ProjectSettings.GlobalizePath(MainScenesPath), templateTypeEntry =>
-        {
-            _sceneTypes[templateTypeEntry.FileName] = new List<string>();
-
-            // Traverse the specific template folder types
-            DirectoryUtils.Traverse(ProjectSettings.GlobalizePath(Path.Combine(MainScenesPath, templateTypeEntry.FileName)), entry =>
-            {
-                // Add specific template types "Minimal" and "FPS"
-                _sceneTypes[templateTypeEntry.FileName].Add(entry.FileName);
-                return TraverseDecision.SkipChildren;
-            });
-
-            // Add project types "2D" and "3D"
-            _projectType.AddItem(templateTypeEntry.FileName);
-            return TraverseDecision.SkipChildren;
-        });
-
-        var firstSetupType = _sceneTypes.First();
-        _projectTypeStr = firstSetupType.Key; // e.g. "3D"
-        _templateTypeStr = firstSetupType.Value[0]; // e.g. ["Minimal", "FPS"]
-
-        //GD.Print("Project type is initially set to " + _projectTypeStr);
-        //GD.Print("Template type is initially set to " + _templateTypeStr);
-
-        _projectType.Select(0);
-        _projectType.ItemSelected += OnProjectTypeSelected;
-
+        _projectType = new OptionButton();
         _templateType = new OptionButton();
 
-        foreach (string templateType in firstSetupType.Value)
-            _templateType.AddItem(templateType);
-
-        _templateType.Select(0);
-        _templateType.ItemSelected += OnTemplateTypeSelected;
-
-        // Default clear color
-        ColorPickerButton defaultClearColorPicker = new()
+        _defaultClearColorPicker = new ColorPickerButton
         {
             CustomMinimumSize = new Vector2(75, 35),
             Color = ProjectSettings.GetSetting(DefaultClearColorPath).AsColor()
         };
-        defaultClearColorPicker.Connect(ColorPickerButton.SignalName.ColorChanged, new Callable(this, nameof(OnDefaultClearColorChanged)));
 
-        // Apply button
-        Button applyButton = new Button()
+        _applyButton = new Button
         {
             Text = "Run Setup",
             SizeFlagsHorizontal = SizeFlags.ShrinkCenter,
             CustomMinimumSize = new Vector2(200, 0)
         };
-        applyButton.Connect(Button.SignalName.Pressed, new Callable(this, nameof(OnApplyPressed)));
 
-        // Validator and Setup
-        _gameNameValidator = new GameNameValidator(_gameNamePreview, feedbackResetTimer, _gameNameLineEdit);
-        _projectSetup = new ProjectSetup();
+        _gameNameValidator = new GameNameValidator(_gameNamePreview, _feedbackResetTimer, _gameNameLineEdit);
 
-        // Layout
-        MarginContainer margin = MarginContainerFactory.Create(30);
-        _vbox = new VBoxContainer();
+        Node editorMainScreen = EditorInterface.Singleton.GetEditorMainScreen();
+        editorMainScreen.AddChild(_confirmRestartDialog);
 
-        // Actually start adding stuff to the tree now
-        AddChild(feedbackResetTimer);
-
-        _vbox.AddChild(_gameNamePreview);
-
-        AddLabelH("Project Name", _gameNameLineEdit);
-        AddLabelH("Project", _projectType);
-        AddLabelH("Template", _templateType);
-        AddLabelH("Clear Color", defaultClearColorPicker);
-
-        margin.AddChild(_vbox);
-
-        AddChild(margin);
-        AddChild(applyButton);
-
-        EditorInterface.Singleton.GetEditorMainScreen().AddChild(_confirmRestartDialog);
+        SetControlsEnabled(enabled: false);
     }
 
-    /// <summary>
-    /// Pairs a label with <paramref name="text"/> next to a <paramref name="control"/> using a specific padding and right alignment.
-    /// </summary>
-    private void AddLabelH(string text, Control control)
+    private void BuildLayout()
     {
-        HBoxContainer hbox = new();
-        hbox.AddChild(new Label
+        _contentContainer = new VBoxContainer();
+        _contentContainer.AddChild(_statusLabel);
+        _contentContainer.AddChild(_gameNamePreview);
+
+        AddLabeledControl("Project Name", _gameNameLineEdit);
+        AddLabeledControl("Project", _projectType);
+        AddLabeledControl("Template", _templateType);
+        AddLabeledControl("Clear Color", _defaultClearColorPicker);
+
+        MarginContainer marginContainer = new MarginContainer();
+        marginContainer.AddThemeConstantOverride("margin_left", MarginPadding);
+        marginContainer.AddThemeConstantOverride("margin_top", MarginPadding);
+        marginContainer.AddThemeConstantOverride("margin_right", MarginPadding);
+        marginContainer.AddThemeConstantOverride("margin_bottom", MarginPadding);
+
+        marginContainer.AddChild(_contentContainer);
+
+        AddChild(_feedbackResetTimer);
+        AddChild(marginContainer);
+        AddChild(_applyButton);
+    }
+
+    private void RegisterEvents()
+    {
+        if (_eventsRegistered)
         {
-            Text = $"{text}:",
-            HorizontalAlignment = HorizontalAlignment.Right,
-            CustomMinimumSize = new Vector2(Padding, 0)
-        });
-        hbox.AddChild(control);
-        _vbox.AddChild(hbox);
+            return;
+        }
+
+        _confirmRestartDialog.Confirmed += OnConfirmed;
+        _feedbackResetTimer.Timeout += OnFeedbackResetTimerTimeout;
+        _gameNameLineEdit.TextChanged += OnProjectNameChanged;
+        _projectType.ItemSelected += OnProjectTypeSelected;
+        _templateType.ItemSelected += OnTemplateTypeSelected;
+        _defaultClearColorPicker.ColorChanged += OnDefaultClearColorChanged;
+        _applyButton.Pressed += OnApplyPressed;
+        _eventsRegistered = true;
     }
 
-    /// <summary>
-    /// The project type that was selected ("2D" / "3D")
-    /// </summary>
-    private void OnProjectTypeSelected(long index)
+    private void UnregisterEvents()
     {
-        // Clear template types
+        if (!_eventsRegistered)
+        {
+            return;
+        }
+
+        _eventsRegistered = false;
+
+        if (HasSignalConnection(_confirmRestartDialog, ConfirmationDialog.SignalName.Confirmed, Callable.From(OnConfirmed)))
+        {
+            _confirmRestartDialog.Confirmed -= OnConfirmed;
+        }
+
+        if (HasSignalConnection(_feedbackResetTimer, Timer.SignalName.Timeout, Callable.From(OnFeedbackResetTimerTimeout)))
+        {
+            _feedbackResetTimer.Timeout -= OnFeedbackResetTimerTimeout;
+        }
+
+        if (HasSignalConnection(_gameNameLineEdit, LineEdit.SignalName.TextChanged, Callable.From<string>(OnProjectNameChanged)))
+        {
+            _gameNameLineEdit.TextChanged -= OnProjectNameChanged;
+        }
+
+        if (HasSignalConnection(_projectType, OptionButton.SignalName.ItemSelected, Callable.From<long>(OnProjectTypeSelected)))
+        {
+            _projectType.ItemSelected -= OnProjectTypeSelected;
+        }
+
+        if (HasSignalConnection(_templateType, OptionButton.SignalName.ItemSelected, Callable.From<long>(OnTemplateTypeSelected)))
+        {
+            _templateType.ItemSelected -= OnTemplateTypeSelected;
+        }
+
+        if (HasSignalConnection(_defaultClearColorPicker, ColorPickerButton.SignalName.ColorChanged, Callable.From<Color>(OnDefaultClearColorChanged)))
+        {
+            _defaultClearColorPicker.ColorChanged -= OnDefaultClearColorChanged;
+        }
+
+        if (HasSignalConnection(_applyButton, Button.SignalName.Pressed, Callable.From(OnApplyPressed)))
+        {
+            _applyButton.Pressed -= OnApplyPressed;
+        }
+    }
+
+    private static bool HasSignalConnection(GodotObject source, StringName signalName, Callable callable)
+    {
+        // Godot can auto-disconnect managed delegates during plugin unload/reload
+        // before _ExitTree executes, so we guard each -= to avoid disconnect errors.
+        if (source == null)
+        {
+            return false;
+        }
+
+        if (!GodotObject.IsInstanceValid(source))
+        {
+            return false;
+        }
+
+        return source.IsConnected(signalName, callable);
+    }
+
+    private void ReleaseRestartDialog()
+    {
+        if (_confirmRestartDialog == null)
+        {
+            return;
+        }
+
+        if (!GodotObject.IsInstanceValid(_confirmRestartDialog))
+        {
+            _confirmRestartDialog = null;
+            return;
+        }
+
+        Node parent = _confirmRestartDialog.GetParent();
+        if (parent != null)
+        {
+            parent.RemoveChild(_confirmRestartDialog);
+        }
+
+        _confirmRestartDialog.QueueFree();
+        _confirmRestartDialog = null;
+    }
+
+    private void ValidateAndInitializeState()
+    {
+        if (!_runtimeStateValidator.TryValidate(out string runtimeFailure))
+        {
+            MarkRuntimeStateInvalid(runtimeFailure, null);
+            return;
+        }
+
+        string mainScenesRoot = ProjectSettings.GlobalizePath(MainScenesPath);
+        if (!SetupTemplateCatalog.TryLoad(mainScenesRoot, out SetupTemplateCatalog templateCatalog, out string catalogFailure))
+        {
+            MarkRuntimeStateInvalid(catalogFailure, null);
+            return;
+        }
+
+        _templateCatalog = templateCatalog;
+
+        if (!_templateCatalog.TryGetFirstSelection(out string projectType, out string templateType))
+        {
+            MarkRuntimeStateInvalid("No setup template options are available.", null);
+            return;
+        }
+
+        PopulateProjectTypeOptions();
+        _selectedProjectType = projectType;
+        PopulateTemplateTypeOptions(_selectedProjectType);
+        _selectedTemplateType = templateType;
+
+        _projectType.Select(0);
+        _templateType.Select(0);
+
+        _isRuntimeStateValid = true;
+        _runtimeStateError = string.Empty;
+        SetControlsEnabled(enabled: true);
+        SetStatus("Setup plugin is ready.", isError: false);
+    }
+
+    private void PopulateProjectTypeOptions()
+    {
+        _projectType.Clear();
+
+        IEnumerable<string> projectTypes = _templateCatalog.ProjectTypes;
+        foreach (string projectType in projectTypes)
+        {
+            _projectType.AddItem(projectType);
+        }
+    }
+
+    private void PopulateTemplateTypeOptions(string projectType)
+    {
         _templateType.Clear();
 
-        string projectType = _projectType.GetItemText((int)index);
-        _projectTypeStr = projectType;
-        //GD.Print("Project type was changed to " + projectType);
+        if (!_templateCatalog.TryGetTemplates(projectType, out IReadOnlyList<string> templateTypes))
+        {
+            _selectedTemplateType = string.Empty;
+            return;
+        }
 
-        // Re-populate template types depending on what project type was selected
-        foreach (string templateType in _sceneTypes[projectType])
+        foreach (string templateType in templateTypes)
         {
             _templateType.AddItem(templateType);
         }
 
-        _templateTypeStr = _templateType.GetItemText(0);
-        //GD.Print("Template type was changed to " + _templateTypeStr);
+        if (_templateType.ItemCount == 0)
+        {
+            _selectedTemplateType = string.Empty;
+            return;
+        }
+
+        _templateType.Select(0);
+        _selectedTemplateType = _templateType.GetItemText(0);
     }
 
-    /// <summary>
-    /// The template type that was selected ("Minimal", "FPS")
-    /// </summary>
+    private void AddLabeledControl(string labelText, Control control)
+    {
+        HBoxContainer row = new HBoxContainer();
+        row.AddChild(new Label
+        {
+            Text = $"{labelText}:",
+            HorizontalAlignment = HorizontalAlignment.Right,
+            CustomMinimumSize = new Vector2(LabelPadding, 0)
+        });
+
+        row.AddChild(control);
+        _contentContainer.AddChild(row);
+    }
+
+    private void SetControlsEnabled(bool enabled)
+    {
+        _gameNameLineEdit.Editable = enabled;
+        _projectType.Disabled = !enabled;
+        _templateType.Disabled = !enabled;
+        _defaultClearColorPicker.Disabled = !enabled;
+        _applyButton.Disabled = !enabled;
+    }
+
+    private void SetStatus(string text, bool isError)
+    {
+        _statusLabel.Text = text;
+        _statusLabel.Visible = !string.IsNullOrWhiteSpace(text);
+        _statusLabel.Modulate = isError
+            ? new Color(1.0f, 0.4f, 0.4f)
+            : new Color(0.6f, 0.95f, 0.6f);
+    }
+
+    private bool EnsureRuntimeStateValid(string operationName)
+    {
+        if (_isRuntimeStateValid)
+        {
+            return true;
+        }
+
+        string message = _runtimeStateError;
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            message = RebuildInstruction;
+        }
+
+        SetStatus(message, isError: true);
+        GD.PrintErr($"Setup operation blocked ({operationName}). {message}");
+        return false;
+    }
+
+    private void MarkRuntimeStateInvalid(string reason, Exception exception)
+    {
+        _isRuntimeStateValid = false;
+        _runtimeStateError = $"{reason} {RebuildInstruction}";
+        SetControlsEnabled(enabled: false);
+        SetStatus(_runtimeStateError, isError: true);
+
+        GD.PrintErr(_runtimeStateError);
+
+        if (exception == null)
+        {
+            return;
+        }
+
+        GD.PrintErr(exception.ToString());
+    }
+
+    private void ReportUserError(string message)
+    {
+        _gameNamePreview.Text = message;
+        SetStatus(message, isError: true);
+        GD.PrintErr(message);
+    }
+
+    private void OnProjectTypeSelected(long index)
+    {
+        if (!EnsureRuntimeStateValid("ProjectTypeSelected"))
+        {
+            return;
+        }
+
+        int selectedIndex = (int)index;
+        if (selectedIndex < 0 || selectedIndex >= _projectType.ItemCount)
+        {
+            ReportUserError("Selected project type is out of range.");
+            return;
+        }
+
+        _selectedProjectType = _projectType.GetItemText(selectedIndex);
+        PopulateTemplateTypeOptions(_selectedProjectType);
+    }
+
     private void OnTemplateTypeSelected(long index)
     {
-        _templateTypeStr = _templateType.GetItemText((int)index);
-        //GD.Print("Template type was changed to " + _templateTypeStr);
+        if (!EnsureRuntimeStateValid("TemplateTypeSelected"))
+        {
+            return;
+        }
+
+        int selectedIndex = (int)index;
+        if (selectedIndex < 0 || selectedIndex >= _templateType.ItemCount)
+        {
+            ReportUserError("Selected template type is out of range.");
+            return;
+        }
+
+        _selectedTemplateType = _templateType.GetItemText(selectedIndex);
     }
 
     private void OnDefaultClearColorChanged(Color color)
     {
-        ProjectSettings.SetSetting(DefaultClearColorPath, color);
-        ProjectSettings.Save();
+        if (!EnsureRuntimeStateValid("DefaultClearColorChanged"))
+        {
+            return;
+        }
+
+        try
+        {
+            ProjectSettings.SetSetting(DefaultClearColorPath, color);
+            ProjectSettings.Save();
+        }
+        catch (Exception exception)
+        {
+            MarkRuntimeStateInvalid("Failed to save clear color setting.", exception);
+        }
     }
 
     private void OnConfirmed()
     {
-        _projectSetup.Run(SetupUtils.FormatGameName(_gameNameLineEdit.Text), _projectTypeStr, _templateTypeStr);
+        if (!EnsureRuntimeStateValid("Confirmed"))
+        {
+            return;
+        }
+
+        try
+        {
+            string formattedGameName = GameNameRules.FormatGameName(_gameNameLineEdit.Text);
+            _projectSetupRunner.Run(formattedGameName, _selectedProjectType, _selectedTemplateType);
+        }
+        catch (Exception exception)
+        {
+            MarkRuntimeStateInvalid("Setup execution failed because required artifacts are missing or stale.", exception);
+        }
     }
 
     private void OnFeedbackResetTimerTimeout()
     {
-        _gameNamePreview.Text = _prevGameName;
+        if (_gameNameValidator == null)
+        {
+            return;
+        }
+
+        _gameNameValidator.RestorePreviousGameNamePreview();
     }
 
     private void OnProjectNameChanged(string gameName)
     {
-        _gameNameValidator.Validate(gameName);
+        if (!EnsureRuntimeStateValid("ProjectNameChanged"))
+        {
+            return;
+        }
+
+        try
+        {
+            _gameNameValidator.Validate(gameName);
+        }
+        catch (Exception exception)
+        {
+            MarkRuntimeStateInvalid("Game name validation failed because setup state is not ready.", exception);
+        }
     }
 
     private void OnApplyPressed()
     {
-        if (SetupUtils.IsGameNameBad(_gameNameLineEdit.Text))
+        if (!EnsureRuntimeStateValid("ApplyPressed"))
+        {
             return;
+        }
+
+        if (!GameNameRules.TryValidateForSetup(_gameNameLineEdit.Text, out string validationError))
+        {
+            ReportUserError(validationError);
+            return;
+        }
 
         _confirmRestartDialog.PopupCentered();
-    }
-
-    // This should probably go in its own file
-    private class ProjectSetup
-    {
-        private readonly string _projectRoot;
-
-        public ProjectSetup()
-        {
-            _projectRoot = ProjectSettings.GlobalizePath("res://");
-        }
-
-        public void Run(string formattedGameName, string projectType, string templateType)
-        {
-            // The IO functions ran below will break if empty folders exist
-            DirectoryUtils.DeleteEmptyDirectories(_projectRoot);
-
-            // Move the appropriate template files to root
-            // This Path.Combine is really long but I'm afraid to do a/b/c because I remember doing this broke on linux systems (but works fine on windows)
-            string templateFolder = Path.Combine(_projectRoot, "addons", "SetupPlugin", "MainScenes", projectType, templateType);
-
-            //Console.WriteLine("Setup ran with following settings:");
-            //Console.WriteLine(projectType);
-            //Console.WriteLine(templateType);
-
-            // Copy all files and folders from the respective template folder to root
-            // Maybe DirectoryUtils could have a method that copies files from one folder to another that preserves file structure like 
-            // what is being done here, but what would such a method be called?
-            DirectoryUtils.Traverse(templateFolder, entry =>
-            {
-                string relativePath = Path.GetRelativePath(templateFolder, entry.FullPath);
-                string dest = Path.Combine(_projectRoot, relativePath);
-
-                //Console.WriteLine($"Copying from {entry.FullPath} to {dest}");
-
-                if (entry.IsDirectory)
-                    Directory.CreateDirectory(dest);
-                else
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(dest));
-                    File.Copy(entry.FullPath, dest, overwrite: true);
-                }
-
-                return TraverseDecision.Continue;
-            });
-
-            ProjectSettings.SetSetting(MainScenePath, "res://Level.tscn");
-            ProjectSettings.Save(); // This has to be set before SetupUtils.RenameProjectFiles(...) or assembly wont get set for some reason
-
-            SetupUtils.RenameProjectFiles(_projectRoot, formattedGameName); // This needs to be set after ProjectSettings.Save() or assembly wont get set for some reason
-            SetupUtils.RenameAllNamespaces(_projectRoot, formattedGameName); // We rename all namespaces after all files have been moved / copied
-            SetupUtils.EnsureGDIgnoreFilesInGDUnitTestFolders(_projectRoot);
-
-            // After the editor restarts the following errors and warnigns will appear and can safely be ignored:
-            // WARNING: editor/editor_node.cpp:4320 - Addon 'res://addons/SetupPlugin/plugin.cfg' failed to load. No directory found. Removing from enabled plugins.
-            DeleteSetupPlugin();
-            SaveActiveScene();
-            RestartEditor();
-        }
-
-        private void DeleteSetupPlugin()
-        {
-            EditorInterface.Singleton.SetPluginEnabled(SetupPluginName, false);
-            Directory.Delete(Path.Combine(_projectRoot, "addons", SetupPluginName), recursive: true);
-        }
-
-        private void SaveActiveScene()
-        {
-            EditorInterface.Singleton.SaveScene(); // SaveScene works and SaveAllScenes does not work
-        }
-
-        private void RestartEditor()
-        {
-            EditorInterface.Singleton.RestartEditor(save: false);
-        }
     }
 }
 #endif
