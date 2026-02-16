@@ -1,15 +1,6 @@
 <div align="center">
     <h1>PacketGen</h1>
-    <a href="https://github.com/CSharpGodotTools/PacketGen/actions/workflows/build-and-test.yml"><img src="https://img.shields.io/github/actions/workflow/status/CSharpGodotTools/PacketGen/build-and-test.yml?label=.NET&style=flat&color=000000&labelColor=1a1a1a" alt=".NET Build & Test" /></a>
-    <a href="https://github.com/CSharpGodotTools/PacketGen/stargazers"><img src="https://img.shields.io/github/stars/CSharpGodotTools/PacketGen?style=flat&labelColor=1a1a1a&color=000000" alt="GitHub stars" /></a>
-    <a href="https://github.com/CSharpGodotTools/PacketGen/network"><img src="https://img.shields.io/github/forks/CSharpGodotTools/PacketGen?style=flat&labelColor=1a1a1a&color=000000" alt="GitHub forks" /></a>
-    <a href="https://github.com/CSharpGodotTools/PacketGen/blob/main/LICENSE"><img src="https://img.shields.io/github/license/CSharpGodotTools/PacketGen?style=flat&labelColor=1a1a1a&color=000000" alt="License" /></a>
-    <a href="https://github.com/CSharpGodotTools/PacketGen/commits/main"><img src="https://img.shields.io/github/last-commit/CSharpGodotTools/PacketGen?style=flat&labelColor=1a1a1a&color=000000" alt="Last commit" /></a>
-    <a href="https://github.com/CSharpGodotTools/PacketGen/graphs/contributors"><img src="https://img.shields.io/github/contributors/CSharpGodotTools/PacketGen?style=flat&labelColor=1a1a1a&color=000000" alt="Contributors" /></a>
-    <a href="https://github.com/CSharpGodotTools/PacketGen/watchers"><img src="https://img.shields.io/github/watchers/CSharpGodotTools/PacketGen?style=flat&labelColor=1a1a1a&color=000000" alt="Watchers" /></a>
-    <a href="https://discord.gg/j8HQZZ76r8"><img src="https://img.shields.io/discord/955956101554266132?label=discord&style=flat&color=000000&labelColor=1a1a1a" alt="Discord" /></a>
 </div>
-<br>
 
 PacketGen generates packet boilerplate at compile time so packet types in [Template](https://github.com/CSharpGodotTools/Template) stay short and explicit.
 
