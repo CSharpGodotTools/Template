@@ -1,5 +1,7 @@
 ### Prerequisites
-First complete the [setup](https://github.com/CSharpGodotTools/Template/wiki/Setup).
+Normally, when setting up a new project using this template, you would run the setup, but doing so modifies and deletes several files. So we should avoid doing this because we don't want to commit files changed by the setup.
+
+Follow the [projects setup](https://github.com/CSharpGodotTools/Template/wiki/Setup) but instead of downloading the latest release, click [here](https://github.com/new?template_name=Template) to create a new repository with this template and clone it with `git clone --recursive <your-repo-url>`. 
 
 Check out these setup guides I've made for [Visual Studio](https://github.com/CSharpGodotTools/Template/wiki/Setup-Visual-Studio) and [GitHub Desktop App](https://github.com/CSharpGodotTools/Template/wiki/Working-with-GitHub-Desktop).
 
@@ -11,9 +13,6 @@ The current scope of this project is to provide a full multiplayer solution, ext
 This template will be as lightweight as possible so it will not include any game assets. For example an FPS scene with 4K textures is too large and as such would be developed in a separate repository. Such repositories if any exist will be mentioned in the projects [README.md](https://github.com/CSharpGodotTools/Template/blob/main/README.md).
 
 ### Contributing
-> [!IMPORTANT]
-> Normally, when setting up a new project using this template, you would run the main scene and click 'Apply changes', but doing so modifies and deletes several files. So we should avoid doing this because we don't want to commit files changed by the setup.
-
 > [!IMPORTANT]
 > If you are contributing to the [Framework](https://github.com/CSharpGodotTools/Framework) submodule, make sure you are on the `main` branch and not one like `debaebc`.
 
