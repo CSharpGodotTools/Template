@@ -35,6 +35,12 @@ public sealed class SetupRuntimeStateValidator
             return false;
         }
 
+        if (!File.Exists(Path.Combine(_projectRoot, $"{TemplateProjectName}.sln")))
+        {
+            failureReason = $"{TemplateProjectName}.sln was not found.";
+            return false;
+        }
+
         if (!Directory.Exists(_mainScenesRoot))
         {
             failureReason = $"Setup templates directory was not found: {_mainScenesRoot}";
