@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+  <CodeSnippet Format="1.0.0">
+    <Header>
+      <Title>Godot Resource</Title>
+      <Shortcut>resource</Shortcut>
+      <Description>Creates a Godot Resource class with placeholders for export properties.</Description>
+    </Header>
+    <Snippet>
+      <Code Language="CSharp">
+        <![CDATA[[GlobalClass]
+public partial class $ResourceName$ : Resource
+{
+    [Export] public $Type$ $Name$ { get; private set; }
+}]]>
+      </Code>
+      <Declarations>
+        <Literal>
+          <ID>ResourceName</ID>
+          <ToolTip>Enter the name of the resource class.</ToolTip>
+          <Default>ResourceName</Default>
+        </Literal>
+        <Literal>
+          <ID>Type</ID>
+          <ToolTip>Enter the type of the export property.</ToolTip>
+          <Default>Type</Default>
+        </Literal>
+        <Literal>
+          <ID>Name</ID>
+          <ToolTip>Enter the name of the export property.</ToolTip>
+          <Default>Name</Default>
+        </Literal>
+      </Declarations>
+    </Snippet>
+  </CodeSnippet>
+</CodeSnippets>
