@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://boogbcw84i03u"]
+
+[ext_resource type="Script" uid="uid://cxu15drts2cma" path="res://Framework/GodotUtils/Utils/ToolScriptHelpers.cs" id="1_1mnpi"]
+
+[node name="ToolScriptHelpers" type="Node"]
+script = ExtResource("1_1mnpi")

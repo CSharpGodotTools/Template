@@ -1,0 +1,45 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute next version
+        id: version
+        run: |
+          set -e
+          latest_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          version=${latest_tag#v}
+          IFS='.' read -r major minor patch <<< "$version"
+          next_tag="v$major.$minor.$((patch+1))"
+          zip_name="Template_$next_tag.zip"
+
+          echo "next_tag=$next_tag" >> $GITHUB_OUTPUT
+          echo "zip_name=$zip_name" >> $GITHUB_OUTPUT
+
+      - name: Create zip
+        run: |
+          cd Template
+          zip -r "../${{ steps.version.outputs.zip_name }}" . \
+            -x ".godot/*" ".vs/*" "Template.sln"
+
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.version.outputs.next_tag }}" \
+            "${{ steps.version.outputs.zip_name }}" \
+            --title "${{ steps.version.outputs.next_tag }}" \
+            --generate-notes \
+            --draft

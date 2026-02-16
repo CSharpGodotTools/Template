@@ -1,6 +1,6 @@
-[submodule "addons/imgui-godot"]
-	path = addons/imgui-godot
+[submodule "Template/addons/imgui-godot"]
+	path = Template/addons/imgui-godot
 	url = https://github.com/CSharpGodotTools/imgui-godot-csharp
-[submodule "Framework"]
-	path = Framework
+[submodule "Template/Framework"]
+	path = Template/Framework
 	url = https://github.com/CSharpGodotTools/Framework
