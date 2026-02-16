@@ -11,13 +11,18 @@
 
 This is an on-going project I've been working on. I know how hard it is to actually finish a game and I hope by making this, game development will be just a little bit easier.
 
-# [Setup Guide](https://github.com/CSharpGodotTools/Template/wiki/Setup)  
+![MainMenuPreview](https://github.com/user-attachments/assets/e2cf3c4f-ea22-4b26-85df-a953383a9b99)  
+![OptionsPreview](https://github.com/user-attachments/assets/7d744362-7c70-4f17-9262-c5e77182e942)  
 
 ## Features
 - Multiplayer
   - [Minimal setup required](https://github.com/CSharpGodotTools/Template/wiki/Multiplayer)
   - [Minimal packet data sent over the network](https://github.com/CSharpGodotTools/Template/wiki/Multiplayer#minimal-packet-data-sent)
   - [Packets automatically create their `Write`, `Read` methods for you](https://github.com/CSharpGodotTools/Template/wiki/Packets)
+- Templates
+  - Minimal 2D scene
+  - Minimal 3D scene
+  - [FPS scene](https://github.com/CSharpGodotTools/Template/wiki/FPS-Template)
 - Performance
   - [Centralized Component Scripts](https://github.com/CSharpGodotTools/Template/wiki/Component-Scripts)
 - Debugging
@@ -31,9 +36,30 @@ This is an on-going project I've been working on. I know how hard it is to actua
   - [Simplified Tweens](https://github.com/CSharpGodotTools/Template/wiki/Simplified-Tweens)
   - [Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)
   - [Services](https://github.com/CSharpGodotTools/Template/wiki/Services)
+ 
+## Prerequisites
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Latest Godot C# Release](https://godotengine.org/)
+- [Custom ENet build](https://github.com/CSharpGodotTools/Template/wiki/Custom-ENet-Builds) may be required if using Mac or Linux
 
-![MainMenuPreview](https://github.com/user-attachments/assets/e2cf3c4f-ea22-4b26-85df-a953383a9b99)  
-![OptionsPreview](https://github.com/user-attachments/assets/7d744362-7c70-4f17-9262-c5e77182e942)  
+## Install  
+Download the [latest release](https://github.com/CSharpGodotTools/Template/releases/latest) and open `project.godot`.
+
+> [!TIP]
+> After extracting the `.zip`, delete the `Framework` and `addons/imgui-godot` folders and run the following command.
+> ```
+> git init && git submodule add https://github.com/CSharpGodotTools/Framework Framework && git submodule add https://github.com/CSharpGodotTools/imgui-godot-csharp addons/imgui-godot
+> ```
+> This will allow you to fetch updates without having to re-clone.
+
+<img width="602" height="212" alt="image" src="https://github.com/user-attachments/assets/8411cb31-7a15-4f16-a265-0ee28412f052" />
+
+Ignore the warning about an addon failing to load and build the game with
+<img width="27" height="25" alt="image" src="https://github.com/user-attachments/assets/ecb5dba4-22d7-4bef-8e86-726908390318" /> and then enable the addon `Setup Plugin` in `Project > Project Settings > Plugins`
+
+<img width="501" height="344" alt="image" src="https://github.com/user-attachments/assets/9a0e7e22-2bfa-4cdc-8b5a-d92d209242b8" />
+
+Click `Run Setup` to restart Godot with your template ready to go.
 
 ## Thank You
 [Brian Shao](https://github.com/cydq)  
