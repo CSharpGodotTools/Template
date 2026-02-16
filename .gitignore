@@ -1,0 +1,43 @@
+# Godot
+**/*.godot/*
+**/export.cfg
+**/export_presets.cfg
+
+# Mono-specific
+**/.mono/
+**/data_*/
+**/mono_crash.*.json
+**/*.DotSettings.user
+
+# GDUnit4
+**/TestResults/
+**/gdunit4_testadapter_v5/
+**/.runsettings
+
+# Visual Studio
+**/.vs/*
+**/bin/*
+**/obj/*
+**/Properties/*
+**/*.csproj.user
+
+# Visual Studio Code
+**/.vscode/*
+
+# Rider
+**/.idea/*
+
+# ENet
+**/ENet-CSharp.dll
+**/libenet.so
+**/enet.so
+**/libenet.dylib
+**/enet.dylib
+
+# Mac OS Files
+**/.DS_Store
+
+# Include these files
+!**/*.gdignore
+# Make sure this file is ignored
+**/.godot/.gdignore
