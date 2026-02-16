@@ -1,0 +1,10 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# C# specific ignores
+.vs/
+bin/
+
+# Msc
+Directory.Build.targets

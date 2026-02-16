@@ -1,0 +1,30 @@
+﻿<Project Sdk="Godot.NET.Sdk/4.6.0">
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
+		<EnableDynamicLoading>true</EnableDynamicLoading>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<!-- CS1591: Ignore missing XML comment warnings -->
+		<!-- IDE0130: Ignore invalid namespace name warnings -->
+		<NoWarn>CS1591;IDE0130</NoWarn>
+	</PropertyGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="EyeClosed.png" />
+	  <EmbeddedResource Include="EyeOpen.png" />
+	  <EmbeddedResource Include="Wrench.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="ENet-CSharp" Version="2.4.8" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="ImGui.NET" Version="1.91.6.1" />
+		<PackageReference Include="GodotSharp.SourceGenerators" Version="2.4.0" />
+
+		<Reference Include="GodotUtils">
+			<HintPath>Framework\Libraries\GodotUtils.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+</Project>
