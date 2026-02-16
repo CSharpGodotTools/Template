@@ -1,0 +1,11 @@
+[gd_resource type="StyleBoxTexture" format=3 uid="uid://bb5d4xfkdayi8"]
+
+[ext_resource type="Texture2D" uid="uid://d3di84q21vp35" path="res://Framework/Theme/CornerDashOutline.png" id="1_h1p6h"]
+
+[resource]
+texture = ExtResource("1_h1p6h")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+draw_center = false

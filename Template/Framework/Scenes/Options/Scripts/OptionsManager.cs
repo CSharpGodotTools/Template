@@ -1,0 +1,364 @@
+using Godot;
+using Godot.Collections;
+using GodotUtils;
+using GodotUtils.RegEx;
+using System;
+using System.IO;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using FileAccess = Godot.FileAccess;
+
+namespace Framework.UI;
+
+// Autoload
+public partial class OptionsManager : IDisposable
+{
+    // Events
+    public event Action<WindowMode> WindowModeChanged;
+
+    // Constants
+    private const string PathOptions = "user://options.json";
+    private const string PathHotkeys = "user://hotkeys.tres";
+
+    // Fields
+    private Dictionary<StringName, Array<InputEvent>> _defaultHotkeys;
+    private readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+    private ResourceOptions _options;
+    private ResourceHotkeys _hotkeys;
+    private string _currentOptionsTab = "General";
+    private AutoloadsFramework _autoloads;
+
+    public OptionsManager(AutoloadsFramework autoloads)
+    {
+        SetupAutoloads(autoloads);
+
+        LoadOptions();
+
+        GetDefaultHotkeys();
+        LoadHotkeys();
+
+        SetWindowMode();
+        SetVSyncMode();
+        SetWinSize();
+        SetMaxFPS();
+        SetLanguage();
+        SetAntialiasing();
+    }
+
+    private void SetupAutoloads(AutoloadsFramework autoloads)
+    {
+        _autoloads = autoloads;
+        _autoloads.PreQuit += SaveSettingsOnQuit;
+    }
+
+    public void Update()
+    {
+        if (Input.IsActionJustPressed(InputActions.Fullscreen))
+        {
+            ToggleFullscreen();
+        }
+    }
+
+    public void Dispose()
+    {
+        _autoloads.PreQuit -= SaveSettingsOnQuit;
+        GC.SuppressFinalize(this);
+    }
+
+    public string GetCurrentTab()
+    {
+        return _currentOptionsTab;
+    }
+
+    public void SetCurrentTab(string tab)
+    {
+        _currentOptionsTab = tab;
+    }
+
+    public ResourceOptions GetOptions()
+    {
+        return _options;
+    }
+
+    public ResourceHotkeys GetHotkeys()
+    {
+        return _hotkeys;
+    }
+
+    private void ToggleFullscreen()
+    {
+        if (DisplayServer.WindowGetMode() == DisplayServer.WindowMode.Windowed)
+        {
+            SwitchToFullscreen();
+        }
+        else
+        {
+            SwitchToWindow();
+        }
+    }
+
+    private void SaveOptions()
+    {
+        string json = JsonSerializer.Serialize(_options, _jsonOptions);
+        using FileAccess file = FileAccess.Open(PathOptions, FileAccess.ModeFlags.Write);
+        file.StoreString(json);
+    }
+
+    private void SaveHotkeys()
+    {
+        Error error = ResourceSaver.Save(_hotkeys, PathHotkeys);
+
+        if (error != Error.Ok)
+        {
+            GD.Print($"Failed to save hotkeys: {error}");
+        }
+    }
+
+    public void ResetHotkeys()
+    {
+        // Deep clone default hotkeys over
+        _hotkeys.Actions = [];
+
+        foreach (System.Collections.Generic.KeyValuePair<StringName, Array<InputEvent>> element in _defaultHotkeys)
+        {
+            Array<InputEvent> arr = [];
+
+            foreach (InputEvent item in _defaultHotkeys[element.Key])
+            {
+                arr.Add((InputEvent)item.Duplicate());
+            }
+
+            _hotkeys.Actions.Add(element.Key, arr);
+        }
+
+        // Set input map
+        LoadInputMap(_defaultHotkeys);
+    }
+
+    private void LoadOptions()
+    {
+        if (FileAccess.FileExists(PathOptions))
+        {
+            using FileAccess file = FileAccess.Open(PathOptions, FileAccess.ModeFlags.Read);
+            _options = JsonSerializer.Deserialize<ResourceOptions>(file.GetAsText())!;
+        }
+        else
+        {
+            _options = new();
+        }
+    }
+
+    private static void LoadInputMap(Dictionary<StringName, Array<InputEvent>> hotkeys)
+    {
+        Array<StringName> actions = InputMap.GetActions();
+
+        foreach (StringName action in actions)
+        {
+            InputMap.EraseAction(action);
+        }
+
+        foreach (StringName action in hotkeys.Keys)
+        {
+            InputMap.AddAction(action);
+
+            foreach (InputEvent @event in hotkeys[action])
+            {
+                InputMap.ActionAddEvent(action, @event);
+            }
+        }
+    }
+
+    private void GetDefaultHotkeys()
+    {
+        // Get all the default actions defined in the input map
+        Dictionary<StringName, Array<InputEvent>> actions = [];
+
+        foreach (StringName action in InputMap.GetActions())
+        {
+            actions.Add(action, []);
+
+            foreach (InputEvent actionEvent in InputMap.ActionGetEvents(action))
+            {
+                actions[action].Add(actionEvent);
+            }
+        }
+
+        _defaultHotkeys = actions;
+    }
+
+    private void LoadHotkeys()
+    {
+        if (FileAccess.FileExists(PathHotkeys))
+        {
+            string localResPath = ProjectSettings.LocalizePath(DirectoryUtils.FindFile("res://", "ResourceHotkeys.cs"));
+            ValidateResourceFile(PathHotkeys, localResPath);
+            _hotkeys = GD.Load<ResourceHotkeys>(PathHotkeys);
+
+            // InputMap in project settings has changed so reset all saved hotkeys
+            if (!ActionsAreEqual(_defaultHotkeys, _hotkeys.Actions))
+            {
+                _hotkeys = new();
+                ResetHotkeys();
+            }
+
+            LoadInputMap(_hotkeys.Actions);
+        }
+        else
+        {
+            _hotkeys = new();
+            ResetHotkeys();
+        }
+    }
+
+    // *.tres files store the path to their script in res:// and as a result if that script is moved then the
+    // path in *.tres will point to an invalid path and so this function corrects the path again.
+    private static void ValidateResourceFile(string localUserPath, string localResPath)
+    {
+        string userGlobalPath = ProjectSettings.GlobalizePath(localUserPath);
+        string content = File.ReadAllText(userGlobalPath);
+
+        // Find current path in the resource file
+        Match match = RegexUtils.ScriptPath().Match(content);
+
+        if (!match.Success)
+        {
+            GD.PrintErr($"Script path not found in {localUserPath}");
+            return;
+        }
+
+        string currentPath = match.Value;
+
+        if (currentPath == localResPath)
+            return; // Resource path is correct. No update needed.
+
+        // Path is incorrect, proceed to rewrite.
+        string updatedContent = RegexUtils.ScriptPath().Replace(content, localResPath);
+
+        File.WriteAllText(userGlobalPath, updatedContent);
+
+        GD.Print($"Script path in {Path.GetFileName(userGlobalPath)} was invalid and has been readjusted to the proper path: {localResPath}");
+    }
+
+    private static bool ActionsAreEqual(Dictionary<StringName, Array<InputEvent>> dict1, Dictionary<StringName, Array<InputEvent>> dict2)
+    {
+        if (dict1.Count != dict2.Count)
+        {
+            return false;
+        }
+
+        foreach (System.Collections.Generic.KeyValuePair<StringName, Array<InputEvent>> pair in dict1)
+        {
+            if (!dict2.TryGetValue(pair.Key, out Array<InputEvent> dict2Events))
+            {
+                return false;
+            }
+
+            if (!InputEventsAreEqual(pair.Value, dict2Events))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool InputEventsAreEqual(Array<InputEvent> events1, Array<InputEvent> events2)
+    {
+        if (events1.Count != events2.Count)
+        {
+            return false;
+        }
+
+        for (int index = 0; index < events1.Count; index++)
+        {
+            string event1 = events1[index].AsText();
+            string event2 = events2[index].AsText();
+            if (!event1.Equals(event2, StringComparison.Ordinal))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void SetWindowMode()
+    {
+        switch (_options.WindowMode)
+        {
+            case WindowMode.Windowed:
+                DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
+                break;
+            case WindowMode.Borderless:
+                DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
+                break;
+            case WindowMode.Fullscreen:
+                DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
+                break;
+        }
+    }
+
+    private void SwitchToFullscreen()
+    {
+        DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
+        _options.WindowMode = WindowMode.Fullscreen;
+        WindowModeChanged?.Invoke(WindowMode.Fullscreen);
+    }
+
+    private void SwitchToWindow()
+    {
+        DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
+        _options.WindowMode = WindowMode.Windowed;
+        WindowModeChanged?.Invoke(WindowMode.Windowed);
+    }
+
+    private void SetVSyncMode()
+    {
+        DisplayServer.WindowSetVsyncMode(_options.VSyncMode);
+    }
+
+    private void SetWinSize()
+    {
+        Vector2I windowSize = new(_options.WindowWidth, _options.WindowHeight);
+
+        if (windowSize != Vector2I.Zero)
+        {
+            DisplayServer.WindowSetSize(windowSize);
+
+            // center window
+            Vector2I screenSize = DisplayServer.ScreenGetSize();
+            Vector2I winSize = DisplayServer.WindowGetSize();
+            DisplayServer.WindowSetPosition(screenSize / 2 - winSize / 2);
+        }
+    }
+
+    private void SetMaxFPS()
+    {
+        if (DisplayServer.WindowGetVsyncMode() == DisplayServer.VSyncMode.Disabled)
+        {
+            Engine.MaxFps = _options.MaxFPS;
+        }
+    }
+
+    private void SetLanguage()
+    {
+        TranslationServer.SetLocale(
+        _options.Language.ToString()[..2].ToLower());
+    }
+
+    private void SetAntialiasing()
+    {
+        // Set both 2D and 3D settings to the same value
+        ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_2d", _options.Antialiasing);
+        ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_3d", _options.Antialiasing);
+    }
+
+    private Task SaveSettingsOnQuit()
+    {
+        SaveOptions();
+        SaveHotkeys();
+
+        return Task.CompletedTask;
+    }
+}
