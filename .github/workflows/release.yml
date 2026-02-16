@@ -34,7 +34,7 @@ jobs:
         run: |
           cd Template
           zip -r "../${{ steps.version.outputs.zip_name }}" . \
-            -x ".godot/*" ".vs/*" "Template.sln"
+            -x ".godot/*" ".vs/*"
 
       - name: Create draft release
         env:
