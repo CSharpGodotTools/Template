@@ -15,7 +15,7 @@ public class PlayerMouseCapture(Player player, PopupMenu popupMenu) : Component(
         popupMenu.Closed += OnPopupMenuClosed;
     }
 
-    protected override void OnDispose()
+    protected override void ExitTree()
     {
         popupMenu.Opened -= OnPopupMenuOpened;
         popupMenu.Closed -= OnPopupMenuClosed;

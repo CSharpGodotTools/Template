@@ -61,7 +61,7 @@ public class Component : IDisposable
     /// <summary>
     /// Called when the owner node exits the tree.
     /// </summary>
-    protected internal virtual void OnDispose() { }
+    protected internal virtual void ExitTree() { }
 
     /// <summary>
     /// Enables or disables all processing callbacks for this component.
@@ -157,7 +157,7 @@ public class Component : IDisposable
 
         try
         {
-            OnDispose();
+            ExitTree();
         }
         finally
         {
