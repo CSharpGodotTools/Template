@@ -9,7 +9,6 @@
 **/data_*/
 **/mono_crash.*.json
 **/*.DotSettings.user
-**/Directory.Build.targets
 
 # GDUnit4
 **/TestResults/

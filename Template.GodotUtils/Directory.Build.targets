@@ -1,0 +1,19 @@
+<Project>
+  <PropertyGroup>
+    <EnableGodotUtilsPostBuild>true</EnableGodotUtilsPostBuild>
+    <GodotUtilsRoot>$(MSBuildThisFileDirectory)</GodotUtilsRoot>
+    <GodotTemplateLibs>$(GodotUtilsRoot)..\Template\Framework\Libraries</GodotTemplateLibs>
+  </PropertyGroup>
+
+  <Target Name="CopyGodotOutputs"
+          AfterTargets="PostBuildEvent"
+          Condition="'$(EnableGodotUtilsPostBuild)'=='true'">
+    <MakeDir Directories="$(GodotTemplateLibs)" />
+    <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll"
+          DestinationFolder="$(GodotTemplateLibs)"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(TargetDir)$(AssemblyName).xml"
+          DestinationFolder="$(GodotTemplateLibs)"
+          SkipUnchangedFiles="true" />
+  </Target>
+</Project>
