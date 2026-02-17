@@ -7,7 +7,7 @@ namespace GodotUtils.Debugging;
 
 internal sealed class VisualNodeManager
 {
-    private static readonly Vector2 DefaultOffset = new(100, 100);
+    private static readonly Vector2 _defaultOffset = new(100, 100);
     private readonly Dictionary<ulong, VisualNodeInfo> _nodeTrackers = [];
 
     public void Register(Node node, params string[] readonlyMembers)
@@ -25,12 +25,12 @@ internal sealed class VisualNodeManager
 
             if (positionalNode == null)
             {
-                PrintUtils.Warning($"[Visualize] No positional parent node could be found for {node.Name} so its visual panel will be created at position {DefaultOffset}");
+                PrintUtils.Warning($"[Visualize] No positional parent node could be found for {node.Name} so its visual panel will be created at position {_defaultOffset}");
             }
 
             if (!TryGetGlobalPosition(positionalNode, out Vector2 initialPosition))
             {
-                initialPosition = DefaultOffset;
+                initialPosition = _defaultOffset;
             }
 
             visualPanel.GlobalPosition = initialPosition;

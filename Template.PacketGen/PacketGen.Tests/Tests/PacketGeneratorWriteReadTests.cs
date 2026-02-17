@@ -10,6 +10,35 @@ namespace PacketGen.Tests;
 [TestFixture]
 internal sealed class PacketGeneratorWriteReadTests
 {
+    private static readonly byte[] _bytes1234 = [1, 2, 3, 4];
+    private static readonly byte[] _bytes56 = [5, 6];
+    private static readonly sbyte[] _sbytesMinus1_2 = [-1, 2];
+    private static readonly char[] _charsAb = ['a', 'b'];
+    private static readonly string[] _stringsOneTwo = ["one", "two"];
+    private static readonly bool[] _boolsTrueFalseTrue = [true, false, true];
+    private static readonly short[] _shortsMinus2_3 = [-2, 3];
+    private static readonly ushort[] _ushorts1_2 = [1, 2];
+    private static readonly int[] _ints123 = [1, 2, 3];
+    private static readonly uint[] _uints1_2 = [1u, 2u];
+    private static readonly float[] _floats1_1_2_2 = [1.1f, 2.2f];
+    private static readonly double[] _doubles1_1_2_2 = [1.1, 2.2];
+    private static readonly decimal[] _decimals1_1_2_2 = [1.1m, 2.2m];
+    private static readonly long[] _longsMinus1_2 = [-1L, 2L];
+    private static readonly ulong[] _ulongs1_2 = [1UL, 2UL];
+    private static readonly Vector2[] _vector2Pair = [new Vector2(1f, 1f), new Vector2(2f, 2f)];
+    private static readonly Vector3[] _vector3Pair = [new Vector3(1f, 2f, 3f), new Vector3(4f, 5f, 6f)];
+    private static readonly byte[] _bytes78 = [7, 8];
+    private static readonly byte[] _bytes9 = [9];
+
+    private static readonly int[] _ints12 = [1, 2];
+    private static readonly int[] _ints3 = [3];
+    private static readonly int[] _ints4 = [4];
+    private static readonly int[] _ints1 = [1];
+    private static readonly int[] _ints23 = [2, 3];
+    private static readonly int[] _ints45 = [4, 5];
+    private static readonly string[] _stringsX = ["x"];
+    private static readonly string[] _stringsYZ = ["y", "z"];
+
     [TestCaseSource(nameof(GetRoundTripCases))]
     public void WriteRead_RoundTrip(RoundTripCase roundTripCase)
     {
@@ -25,7 +54,7 @@ internal sealed class PacketGeneratorWriteReadTests
 
         PacketReflectionHelper.InvokeWrite(packet, writer);
 
-        object reader = harness.CreateReader(harness.GetWriterValues(writer));
+        object reader = harness.CreateReader(GeneratedAssemblyHarness.GetWriterValues(writer));
         object roundTripPacket = PacketReflectionHelper.CreatePacketInstance(packetType);
         PacketReflectionHelper.InvokeRead(roundTripPacket, reader);
 
@@ -189,10 +218,10 @@ internal sealed class PacketGeneratorWriteReadTests
         """;
     }
 
-    private static IReadOnlyList<PropertyCase> BuildPrimitiveArrayCases()
+    private static List<PropertyCase> BuildPrimitiveArrayCases()
     {
-        return new List<PropertyCase>
-        {
+        return
+        [
             new("ByteValue", (byte)42),
             new("SByteValue", (sbyte)-42),
             new("CharValue", 'Z'),
@@ -207,103 +236,110 @@ internal sealed class PacketGeneratorWriteReadTests
             new("DecimalValue", 123.456m),
             new("LongValue", -9876543210L),
             new("ULongValue", 9876543210UL),
-            new("BytesValue", new byte[] { 1, 2, 3, 4 }),
+            new("BytesValue", CloneArray(_bytes1234)),
             new("Vector2Value", new Vector2(1.5f, -2.5f)),
             new("Vector3Value", new Vector3(1f, 2f, 3f)),
 
-            new("ByteArray", new byte[] { 5, 6 }),
-            new("SByteArray", new sbyte[] { -1, 2 }),
-            new("CharArray", new[] { 'a', 'b' }),
-            new("StringArray", new[] { "one", "two" }),
-            new("BoolArray", new[] { true, false, true }),
-            new("ShortArray", new short[] { -2, 3 }),
-            new("UShortArray", new ushort[] { 1, 2 }),
-            new("IntArray", new[] { 1, 2, 3 }),
-            new("UIntArray", new uint[] { 1u, 2u }),
-            new("FloatArray", new[] { 1.1f, 2.2f }),
-            new("DoubleArray", new[] { 1.1, 2.2 }),
-            new("DecimalArray", new[] { 1.1m, 2.2m }),
-            new("LongArray", new long[] { -1L, 2L }),
-            new("ULongArray", new ulong[] { 1UL, 2UL }),
-            new("Vector2Array", new[] { new Vector2(1f, 1f), new Vector2(2f, 2f) }),
-            new("Vector3Array", new[] { new Vector3(1f, 2f, 3f), new Vector3(4f, 5f, 6f) }),
-            new("ByteArrayArray", new[] { new byte[] { 7, 8 }, new byte[] { 9 } })
-        };
+            new("ByteArray", CloneArray(_bytes56)),
+            new("SByteArray", CloneArray(_sbytesMinus1_2)),
+            new("CharArray", CloneArray(_charsAb)),
+            new("StringArray", CloneArray(_stringsOneTwo)),
+            new("BoolArray", CloneArray(_boolsTrueFalseTrue)),
+            new("ShortArray", CloneArray(_shortsMinus2_3)),
+            new("UShortArray", CloneArray(_ushorts1_2)),
+            new("IntArray", CloneArray(_ints123)),
+            new("UIntArray", CloneArray(_uints1_2)),
+            new("FloatArray", CloneArray(_floats1_1_2_2)),
+            new("DoubleArray", CloneArray(_doubles1_1_2_2)),
+            new("DecimalArray", CloneArray(_decimals1_1_2_2)),
+            new("LongArray", CloneArray(_longsMinus1_2)),
+            new("ULongArray", CloneArray(_ulongs1_2)),
+            new("Vector2Array", CloneArray(_vector2Pair)),
+            new("Vector3Array", CloneArray(_vector3Pair)),
+            new("ByteArrayArray", new byte[][]
+            {
+                CloneArray(_bytes78),
+                CloneArray(_bytes9)
+            })
+        ];
     }
 
-    private static IReadOnlyList<PropertyCase> BuildGenericCases()
+    private static List<PropertyCase> BuildGenericCases()
     {
-        return new List<PropertyCase>
-        {
+        return
+        [
             new("IntList", new List<int> { 1, 2, 3 }),
             new("StringList", new List<string> { "a", "b" }),
-            new("Vector3List", new List<Vector3> { new Vector3(1f, 0f, 0f), new Vector3(0f, 1f, 0f) }),
-            new("IntArrayList", new List<int[]> { new[] { 1, 2 }, new[] { 3 } }),
+            new("Vector3List", new List<Vector3> { new(1f, 0f, 0f), new(0f, 1f, 0f) }),
+            new("IntArrayList", new List<int[]> { CloneArray(_ints12), CloneArray(_ints3) }),
             new("ListOfJaggedArrays", new List<int[][]>
             {
-                new[] { new[] { 1, 2 }, new[] { 3 } },
-                new[] { new[] { 4 } }
+                new int[][] { CloneArray(_ints12), CloneArray(_ints3) },
+                new int[][] { CloneArray(_ints4) }
             }),
             new("ArrayOfListOfArrays", new List<int[]>[]
             {
-                new List<int[]> { new[] { 1, 2 }, new[] { 3 } },
-                new List<int[]> { new[] { 4 } }
+                [CloneArray(_ints12), CloneArray(_ints3)],
+                [CloneArray(_ints4)]
             }),
             new("ArrayOfListOfListOfArrays", new List<List<int[]>>[]
             {
-                new List<List<int[]>>
-                {
-                    new List<int[]> { new[] { 1 }, new[] { 2, 3 } }
-                }
+                [
+                    [CloneArray(_ints1), CloneArray(_ints23)]
+                ]
             }),
 
             new("IntStringDict", new Dictionary<int, string> { { 1, "one" }, { 2, "two" } }),
             new("StringIntDict", new Dictionary<string, int> { { "a", 1 }, { "b", 2 } }),
             new("IntVector2Dict", new Dictionary<int, Vector2> { { 1, new Vector2(1f, 2f) }, { 2, new Vector2(3f, 4f) } }),
-            new("StringIntArrayDict", new Dictionary<string, int[]> { { "x", new[] { 1, 2 } }, { "y", new[] { 3 } } }),
+            new("StringIntArrayDict", new Dictionary<string, int[]>
+            {
+                { "x", CloneArray(_ints12) },
+                { "y", CloneArray(_ints3) }
+            }),
 
             new("ListDict", new List<Dictionary<int, string>>
             {
-                new Dictionary<int, string> { { 1, "a" } },
-                new Dictionary<int, string> { { 2, "b" } }
+                new() { { 1, "a" } },
+                new() { { 2, "b" } }
             }),
 
             new("DictListArray", new Dictionary<int, List<string[]>>
             {
-                { 1, new List<string[]> { new[] { "x" }, new[] { "y", "z" } } }
+                { 1, new List<string[]> { CloneArray(_stringsX), CloneArray(_stringsYZ) } }
             }),
 
             new("ComplexListDict", new List<Dictionary<int, List<int[]>>>
             {
-                new Dictionary<int, List<int[]>> { { 1, new List<int[]> { new[] { 1, 2 }, new[] { 3 } } } },
-                new Dictionary<int, List<int[]>> { { 2, new List<int[]> { new[] { 4, 5 } } } }
+                new() { { 1, new List<int[]> { CloneArray(_ints12), CloneArray(_ints3) } } },
+                new() { { 2, new List<int[]> { CloneArray(_ints45) } } }
             }),
 
             new("ComplexDict", new Dictionary<string, List<Dictionary<int, int[]>>>
             {
                 { "alpha", new List<Dictionary<int, int[]>>
                     {
-                        new Dictionary<int, int[]> { { 1, new[] { 1 } }, { 2, new[] { 2, 3 } } }
+                        new() { { 1, CloneArray(_ints1) }, { 2, CloneArray(_ints23) } }
                     }
                 },
                 { "beta", new List<Dictionary<int, int[]>>
                     {
-                        new Dictionary<int, int[]> { { 3, new[] { 4 } } }
+                        new() { { 3, CloneArray(_ints4) } }
                     }
                 }
             })
-        };
+        ];
     }
 
     private static IReadOnlyList<PropertyCase> BuildEmptyCollectionCases()
     {
-        return new List<PropertyCase>
-        {
+        return
+        [
             new("IntArray", Array.Empty<int>()),
             new("Names", new List<string>()),
             new("IndexedValues", new Dictionary<int, int[]>()),
             new("Nested", new List<Dictionary<int, List<int[]>>>()),
-        };
+        ];
     }
 
     internal sealed class RoundTripCase(string source, string generatedFile, string packetTypeName, IReadOnlyList<PropertyCase> properties)
@@ -312,5 +348,10 @@ internal sealed class PacketGeneratorWriteReadTests
         public string GeneratedFile { get; } = generatedFile;
         public string PacketTypeName { get; } = packetTypeName;
         public IReadOnlyList<PropertyCase> Properties { get; } = properties;
+    }
+
+    private static T[] CloneArray<T>(T[] source)
+    {
+        return (T[])source.Clone();
     }
 }

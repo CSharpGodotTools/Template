@@ -14,18 +14,11 @@ internal interface IReadGenerator
     void Generate(GenerationContext ctx, string targetExpression, string indent);
 }
 
-internal readonly struct EqualityLine
+internal readonly struct EqualityLine(string comment, string expression, bool usesDeepEquality)
 {
-    public EqualityLine(string comment, string expression, bool usesDeepEquality)
-    {
-        Comment = comment;
-        Expression = expression;
-        UsesDeepEquality = usesDeepEquality;
-    }
-
-    public string Comment { get; }
-    public string Expression { get; }
-    public bool UsesDeepEquality { get; }
+    public string Comment { get; } = comment;
+    public string Expression { get; } = expression;
+    public bool UsesDeepEquality { get; } = usesDeepEquality;
 }
 
 internal interface IEqualityGenerator
@@ -33,16 +26,10 @@ internal interface IEqualityGenerator
     void Generate(List<EqualityLine> equalsLines, IPropertySymbol property);
 }
 
-internal readonly struct HashLine
+internal readonly struct HashLine(string expression, bool usesDeepHash)
 {
-    public HashLine(string expression, bool usesDeepHash)
-    {
-        Expression = expression;
-        UsesDeepHash = usesDeepHash;
-    }
-
-    public string Expression { get; }
-    public bool UsesDeepHash { get; }
+    public string Expression { get; } = expression;
+    public bool UsesDeepHash { get; } = usesDeepHash;
 }
 
 internal interface IHashGenerator

@@ -21,20 +21,20 @@ internal sealed class PacketGeneratorComplexTypeTests
         object entryA = CreateEntry(entryType, 11, 4);
         object entryB = CreateEntry(entryType, 22, 7);
         object stats = CreateStats(statsType, 70, new Vector2(10f, 15f));
-        object primary = CreateProfile(profileType, entryType, stats, "Alpha", new object[] { entryA, entryB });
-        object secondary = CreateProfile(profileType, entryType, stats, "Beta", new object[] { entryB });
+        object primary = CreateProfile(profileType, entryType, stats, "Alpha", [entryA, entryB]);
+        object secondary = CreateProfile(profileType, entryType, stats, "Beta", [entryB]);
 
         object packet = PacketReflectionHelper.CreatePacketInstance(packetType);
         PacketReflectionHelper.SetProperty(packet, "Primary", primary);
         PacketReflectionHelper.SetProperty(packet, "Secondary", null);
         PacketReflectionHelper.SetProperty(packet, "OptionalStats", CreateNullable(statsType, stats));
-        PacketReflectionHelper.SetProperty(packet, "Profiles", CreateList(profileType, new object?[] { primary, secondary, null }));
-        PacketReflectionHelper.SetProperty(packet, "ProfileById", CreateDictionary(typeof(int), profileType, new object?[] { 1, primary, 2, secondary }));
+        PacketReflectionHelper.SetProperty(packet, "Profiles", CreateList(profileType, [primary, secondary, null]));
+        PacketReflectionHelper.SetProperty(packet, "ProfileById", CreateDictionary(typeof(int), profileType, [1, primary, 2, secondary]));
 
         object writer = harness.CreateWriter();
         PacketReflectionHelper.InvokeWrite(packet, writer);
 
-        object reader = harness.CreateReader(harness.GetWriterValues(writer));
+        object reader = harness.CreateReader(GeneratedAssemblyHarness.GetWriterValues(writer));
         object roundTripPacket = PacketReflectionHelper.CreatePacketInstance(packetType);
         PacketReflectionHelper.InvokeRead(roundTripPacket, reader);
 
@@ -43,8 +43,8 @@ internal sealed class PacketGeneratorComplexTypeTests
             DeepAssert.AreEqual(primary, PacketReflectionHelper.GetProperty(roundTripPacket, "Primary"), "Primary");
             DeepAssert.AreEqual(null, PacketReflectionHelper.GetProperty(roundTripPacket, "Secondary"), "Secondary");
             DeepAssert.AreEqual(CreateNullable(statsType, stats), PacketReflectionHelper.GetProperty(roundTripPacket, "OptionalStats"), "OptionalStats");
-            DeepAssert.AreEqual(CreateList(profileType, new object?[] { primary, secondary, null }), PacketReflectionHelper.GetProperty(roundTripPacket, "Profiles"), "Profiles");
-            DeepAssert.AreEqual(CreateDictionary(typeof(int), profileType, new object?[] { 1, primary, 2, secondary }), PacketReflectionHelper.GetProperty(roundTripPacket, "ProfileById"), "ProfileById");
+            DeepAssert.AreEqual(CreateList(profileType, [primary, secondary, null]), PacketReflectionHelper.GetProperty(roundTripPacket, "Profiles"), "Profiles");
+            DeepAssert.AreEqual(CreateDictionary(typeof(int), profileType, [1, primary, 2, secondary]), PacketReflectionHelper.GetProperty(roundTripPacket, "ProfileById"), "ProfileById");
         }
     }
 
@@ -87,11 +87,11 @@ internal sealed class PacketGeneratorComplexTypeTests
         PacketReflectionHelper.SetProperty(profile, "Stats", stats);
         PacketReflectionHelper.SetProperty(profile, "Inventory", CreateArray(entryType, entries));
         PacketReflectionHelper.SetProperty(profile, "Backpack", CreateList(entryType, entries));
-        PacketReflectionHelper.SetProperty(profile, "SlotMap", CreateDictionary(typeof(int), entryType, new object?[] { 1, entries[0], 2, entries[^1] }));
+        PacketReflectionHelper.SetProperty(profile, "SlotMap", CreateDictionary(typeof(int), entryType, [1, entries[0], 2, entries[^1]]));
         return profile;
     }
 
-    private static object CreateArray(Type elementType, object[] values)
+    private static Array CreateArray(Type elementType, object[] values)
     {
         Array array = Array.CreateInstance(elementType, values.Length);
         for (int i = 0; i < values.Length; i++)

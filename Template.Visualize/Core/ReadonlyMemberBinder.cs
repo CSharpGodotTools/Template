@@ -108,8 +108,10 @@ internal sealed class ReadonlyMemberBinder
             visualControlInfo.VisualControl.SetValue(accessor.GetValue(node));
         });
 
-        HBoxContainer hbox = new();
-        hbox.Name = accessor.Name;
+        HBoxContainer hbox = new()
+        {
+            Name = accessor.Name
+        };
 
         hbox.AddChild(new Label { Text = accessor.Name });
         hbox.AddChild(visualControlInfo.VisualControl.Control);
@@ -117,18 +119,11 @@ internal sealed class ReadonlyMemberBinder
         readonlyMembers.AddChild(hbox);
     }
 
-    private sealed class MemberAccessor
+    private sealed class MemberAccessor(string name, MemberInfo member, Type memberType)
     {
-        public MemberAccessor(string name, MemberInfo member, Type memberType)
-        {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
-            Member = member ?? throw new ArgumentNullException(nameof(member));
-            MemberType = memberType ?? throw new ArgumentNullException(nameof(memberType));
-        }
-
-        public string Name { get; }
-        public MemberInfo Member { get; }
-        public Type MemberType { get; }
+        public string Name { get; } = name ?? throw new ArgumentNullException(nameof(name));
+        public MemberInfo Member { get; } = member ?? throw new ArgumentNullException(nameof(member));
+        public Type MemberType { get; } = memberType ?? throw new ArgumentNullException(nameof(memberType));
 
         public object GetValue(Node node) => VisualHandler.GetMemberValue(Member, node);
     }

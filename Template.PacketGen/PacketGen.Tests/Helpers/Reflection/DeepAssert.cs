@@ -29,7 +29,7 @@ internal static class DeepAssert
 
         if (expected is Array expectedArray && actual is Array actualArray)
         {
-            Assert.That(actualArray.Length, Is.EqualTo(expectedArray.Length), $"{path} length mismatch. Expected {expectedArray.Length}, got {actualArray.Length}.");
+            Assert.That(actualArray, Has.Length.EqualTo(expectedArray.Length), $"{path} length mismatch. Expected {expectedArray.Length}, got {actualArray.Length}.");
 
             for (int i = 0; i < expectedArray.Length; i++)
             {
@@ -43,7 +43,7 @@ internal static class DeepAssert
 
         if (expected is IDictionary expectedDictionary && actual is IDictionary actualDictionary)
         {
-            Assert.That(actualDictionary.Count, Is.EqualTo(expectedDictionary.Count), $"{path} count mismatch. Expected {expectedDictionary.Count}, got {actualDictionary.Count}.");
+            Assert.That(actualDictionary, Has.Count.EqualTo(expectedDictionary.Count), $"{path} count mismatch. Expected {expectedDictionary.Count}, got {actualDictionary.Count}.");
 
             foreach (DictionaryEntry entry in expectedDictionary)
             {
@@ -68,7 +68,7 @@ internal static class DeepAssert
 
         if (expected is IList expectedList && actual is IList actualList)
         {
-            Assert.That(actualList.Count, Is.EqualTo(expectedList.Count), $"{path} count mismatch. Expected {expectedList.Count}, got {actualList.Count}.");
+            Assert.That(actualList, Has.Count.EqualTo(expectedList.Count), $"{path} count mismatch. Expected {expectedList.Count}, got {actualList.Count}.");
 
             for (int i = 0; i < expectedList.Count; i++)
             {
@@ -82,10 +82,9 @@ internal static class DeepAssert
         Type actualType = actual.GetType();
         Assert.That(actualType, Is.EqualTo(expectedType), $"{path} type mismatch. Expected <{expectedType.FullName}>, got <{actualType.FullName}>.");
 
-        PropertyInfo[] comparableProperties = expectedType
+        PropertyInfo[] comparableProperties = [.. expectedType
             .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(static property => property.CanRead && property.GetIndexParameters().Length == 0)
-            .ToArray();
+            .Where(static property => property.CanRead && property.GetIndexParameters().Length == 0)];
 
         if (comparableProperties.Length > 0)
         {

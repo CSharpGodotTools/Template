@@ -54,7 +54,7 @@ public sealed class VisualizeAutoload : IDisposable
         _visualNodesWithoutAttribute.Remove(node);
     }
 
-    public void Update()
+    public static void Update()
     {
         Visualize.Update();
     }

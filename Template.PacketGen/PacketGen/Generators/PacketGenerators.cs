@@ -5,10 +5,10 @@ namespace PacketGen;
 
 internal static class PacketGenerators
 {
-    private static readonly PacketGenerationOrchestrator Orchestrator = new();
+    private static readonly PacketGenerationOrchestrator _orchestrator = new();
 
     public static string? GetSource(Compilation compilation, INamedTypeSymbol symbol)
     {
-        return Orchestrator.GenerateSource(compilation, symbol);
+        return _orchestrator.GenerateSource(compilation, symbol);
     }
 }

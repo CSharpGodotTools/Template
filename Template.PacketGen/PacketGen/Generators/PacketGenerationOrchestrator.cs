@@ -268,6 +268,7 @@ public partial class {{model.ClassName}}
         DictionaryTypeHandler dictionaries = new(registry);
         ComplexTypeHandler complexTypes = new(registry);
 
+#pragma warning disable IDE0300 // Simplify collection initialization
         registry.SetHandlers(new ITypeHandler[]
         {
             primitives,
@@ -276,6 +277,7 @@ public partial class {{model.ClassName}}
             dictionaries,
             complexTypes
         });
+#pragma warning restore IDE0300 // Simplify collection initialization
 
         return registry;
     }

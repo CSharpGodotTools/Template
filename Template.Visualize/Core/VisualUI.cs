@@ -44,8 +44,10 @@ internal static class VisualUI
         // Methods
         VisualMethods.AddMethodInfoElements(mutableMembersVbox, visualData.Methods, node);
 
-        VBoxContainer vboxLogs = new();
-        vboxLogs.Name = "Logs";
+        VBoxContainer vboxLogs = new()
+        {
+            Name = "Logs"
+        };
         mutableMembersVbox.AddChild(vboxLogs);
 
         VisualizeAutoload.Instance?.RegisterLogContainer(node, vboxLogs);

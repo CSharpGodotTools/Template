@@ -48,16 +48,15 @@ internal static partial class VisualControlTypes
             AllowGreater = false,
             MinValue = int.MinValue,
             MaxValue = int.MaxValue,
-            Alignment = HorizontalAlignment.Center
-        };
-
-        spinBox.Step = type switch
-        {
-            _ when type == typeof(float) => 0.1,
-            _ when type == typeof(double) => 0.1,
-            _ when type == typeof(decimal) => 0.01,
-            _ when type == typeof(int) => 1,
-            _ => 1
+            Alignment = HorizontalAlignment.Center,
+            Step = type switch
+            {
+                _ when type == typeof(float) => 0.1,
+                _ when type == typeof(double) => 0.1,
+                _ when type == typeof(decimal) => 0.01,
+                _ when type == typeof(int) => 1,
+                _ => 1
+            }
         };
 
         return spinBox;

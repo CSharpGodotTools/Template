@@ -3,25 +3,16 @@ using System.Collections.Immutable;
 
 namespace PacketGen.Generators.PacketGeneration;
 
-internal sealed class PacketGenerationModel
+internal sealed class PacketGenerationModel(
+    INamedTypeSymbol packetSymbol,
+    ImmutableArray<IPropertySymbol> properties,
+    bool hasWriteReadMethods,
+    string namespaceName,
+    string className)
 {
-    public PacketGenerationModel(
-        INamedTypeSymbol packetSymbol,
-        ImmutableArray<IPropertySymbol> properties,
-        bool hasWriteReadMethods,
-        string namespaceName,
-        string className)
-    {
-        PacketSymbol = packetSymbol;
-        Properties = properties;
-        HasWriteReadMethods = hasWriteReadMethods;
-        NamespaceName = namespaceName;
-        ClassName = className;
-    }
-
-    public INamedTypeSymbol PacketSymbol { get; }
-    public ImmutableArray<IPropertySymbol> Properties { get; }
-    public bool HasWriteReadMethods { get; }
-    public string NamespaceName { get; }
-    public string ClassName { get; }
+    public INamedTypeSymbol PacketSymbol { get; } = packetSymbol;
+    public ImmutableArray<IPropertySymbol> Properties { get; } = properties;
+    public bool HasWriteReadMethods { get; } = hasWriteReadMethods;
+    public string NamespaceName { get; } = namespaceName;
+    public string ClassName { get; } = className;
 }

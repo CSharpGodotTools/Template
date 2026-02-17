@@ -30,7 +30,7 @@ internal sealed class GeneratedAssemblyHarness
 
         Assert.That(result, Is.Not.Null, $"{generatedFile} failed to generate.");
 
-        IGeneratedFileStore fileStore = new GeneratedFileStore();
+        GeneratedFileStore fileStore = new();
         fileStore.Write(result.GeneratedFile, result.GeneratedSource);
 
         Assembly assembly = GeneratedAssemblyCompiler.Compile(result, fileStore);
@@ -45,7 +45,7 @@ internal sealed class GeneratedAssemblyHarness
         return type!;
     }
 
-    public object CreateInstance(Type type)
+    public static object CreateInstance(Type type)
     {
         object? instance = Activator.CreateInstance(type);
         Assert.That(instance, Is.Not.Null, $"Failed to create instance of '{type.FullName}'.");
@@ -58,7 +58,7 @@ internal sealed class GeneratedAssemblyHarness
         return CreateInstance(writerType);
     }
 
-    public IReadOnlyList<object?> GetWriterValues(object writer)
+    public static IReadOnlyList<object?> GetWriterValues(object writer)
     {
         var prop = writer.GetType().GetProperty("Values", BindingFlags.Public | BindingFlags.Instance);
         Assert.That(prop, Is.Not.Null, "PacketWriter.Values property was not found.");
@@ -72,7 +72,7 @@ internal sealed class GeneratedAssemblyHarness
     public object CreateReader(IEnumerable<object?> values)
     {
         Type readerType = GetTypeOrFail("Framework.Netcode.PacketReader");
-        object? reader = Activator.CreateInstance(readerType, new object?[] { values });
+        object? reader = Activator.CreateInstance(readerType, [values]);
         Assert.That(reader, Is.Not.Null, "Failed to create PacketReader with provided values.");
         return reader!;
     }

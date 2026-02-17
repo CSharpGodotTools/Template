@@ -7,6 +7,18 @@ namespace PacketGen.Tests;
 [TestFixture]
 internal sealed class GeneratorEqualityTests
 {
+    private static readonly int[] _initialInts = [1, 2, 3];
+    private static readonly string[] _initialStrings = ["alpha", "beta"];
+    private static readonly byte[] _initialBytesOneTwo = [1, 2];
+    private static readonly byte[] _initialBytesThree = [3];
+    private static readonly int[] _changedInts = [100, 200, 300];
+    private static readonly int[] _changedNestedSingle = [7];
+    private static readonly int[] _changedNestedPair = [8, 9];
+    private static readonly int[] _nestedOneTwo = [1, 2];
+    private static readonly int[] _nestedThree = [3];
+    private static readonly int[] _nestedOne = [1];
+    private static readonly int[] _nestedTwoThree = [2, 3];
+
     [Test]
     public void EqualsAndHashCode_StructuralCollectionsAndArrays()
     {
@@ -20,18 +32,19 @@ internal sealed class GeneratorEqualityTests
 
         AssignEqualityValues(left);
         AssignEqualityValues(right);
+        object sameAsLeft = left;
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(object.Equals(left, left), Is.True, "Packet equality should be reflexive.");
-            Assert.That(object.Equals(left, right), Is.True, "Packets with matching structural values should be equal.");
-            Assert.That(object.Equals(right, left), Is.True, "Packet equality should be symmetric.");
+            Assert.That(left, Is.EqualTo(sameAsLeft), "Packet equality should be reflexive.");
+            Assert.That(left, Is.EqualTo(right), "Packets with matching structural values should be equal.");
+            Assert.That(right, Is.EqualTo(left), "Packet equality should be symmetric.");
             Assert.That(left.GetHashCode(), Is.EqualTo(right.GetHashCode()), "Equal packets must produce equal hash codes.");
-            Assert.That(object.Equals(left, null), Is.False, "Packet should not be equal to null.");
+            Assert.That(left, Is.Not.Null, "Packet should not be equal to null.");
         }
 
-        PacketReflectionHelper.SetProperty(right, "Ints", new[] { 100, 200, 300 });
-        Assert.That(object.Equals(left, right), Is.False, "Changing nested collection content should break equality.");
+        PacketReflectionHelper.SetProperty(right, "Ints", (int[])_changedInts.Clone());
+        Assert.That(left, Is.Not.EqualTo(right), "Changing nested collection content should break equality.");
     }
 
     [Test]
@@ -53,18 +66,18 @@ internal sealed class GeneratorEqualityTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(object.Equals(left, right), Is.True, "Nested structural collections should compare equal when values match.");
+            Assert.That(left, Is.EqualTo(right), "Nested structural collections should compare equal when values match.");
             Assert.That(leftHashBefore, Is.EqualTo(rightHashBefore), "Equal packets should share the same hash code.");
         }
 
         PacketReflectionHelper.SetProperty(right, "DictListArray", new Dictionary<string, List<int[]>>
         {
-            { "a", new List<int[]> { new[] { 7 }, new[] { 8, 9 } } }
+            { "a", new List<int[]> { (int[])_changedNestedSingle.Clone(), (int[])_changedNestedPair.Clone() } }
         });
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(object.Equals(left, right), Is.False, "Changing deep dictionary/list values should break equality.");
+            Assert.That(left, Is.Not.EqualTo(right), "Changing deep dictionary/list values should break equality.");
             Assert.That(right.GetHashCode(), Is.Not.EqualTo(leftHashBefore), "Hash code should reflect deep value changes.");
         }
     }
@@ -114,9 +127,13 @@ internal sealed class GeneratorEqualityTests
     private static void AssignEqualityValues(object packet)
     {
         PacketReflectionHelper.SetProperty(packet, "Id", 42);
-        PacketReflectionHelper.SetProperty(packet, "Ints", new[] { 1, 2, 3 });
-        PacketReflectionHelper.SetProperty(packet, "Strings", new[] { "alpha", "beta" });
-        PacketReflectionHelper.SetProperty(packet, "BytesJagged", new[] { new byte[] { 1, 2 }, new byte[] { 3 } });
+        PacketReflectionHelper.SetProperty(packet, "Ints", (int[])_initialInts.Clone());
+        PacketReflectionHelper.SetProperty(packet, "Strings", (string[])_initialStrings.Clone());
+        PacketReflectionHelper.SetProperty(packet, "BytesJagged", new byte[][]
+        {
+            (byte[])_initialBytesOneTwo.Clone(),
+            (byte[])_initialBytesThree.Clone()
+        });
         PacketReflectionHelper.SetProperty(packet, "IntList", new List<int> { 1, 2, 3 });
         PacketReflectionHelper.SetProperty(packet, "StringList", new List<string> { "one", "two" });
         PacketReflectionHelper.SetProperty(packet, "StringIntDict", new Dictionary<string, int> { { "a", 1 }, { "b", 2 } });
@@ -127,37 +144,34 @@ internal sealed class GeneratorEqualityTests
     {
         PacketReflectionHelper.SetProperty(packet, "IntListOfArrays", new List<int[]>
         {
-            new[] { 1, 2 },
-            new[] { 3 }
+            (int[])_nestedOneTwo.Clone(),
+            (int[])_nestedThree.Clone()
         });
         PacketReflectionHelper.SetProperty(packet, "IntListOfLists", new List<List<int>>
         {
-            new List<int> { 1, 2 },
-            new List<int> { 3 }
+            new() { 1, 2 },
+            new() { 3 }
         });
         PacketReflectionHelper.SetProperty(packet, "IntListOfListOfArrays", new List<List<int[]>>
         {
-            new List<int[]>
-            {
-                new[] { 1 },
-                new[] { 2, 3 }
+            new() {
+                (int[])_nestedOne.Clone(),
+                (int[])_nestedTwoThree.Clone()
             }
         });
         PacketReflectionHelper.SetProperty(packet, "ArrayOfListOfArrays", new List<int[]>[]
         {
-            new List<int[]>
-            {
-                new[] { 1 },
-                new[] { 2, 3 }
-            }
+            [
+                (int[])_nestedOne.Clone(),
+                (int[])_nestedTwoThree.Clone()
+            ]
         });
         PacketReflectionHelper.SetProperty(packet, "IntJagged3", new int[][][]
         {
-            new[]
-            {
-                new[] { 1, 2 },
-                new[] { 3 }
-            }
+            [
+                (int[])_nestedOneTwo.Clone(),
+                (int[])_nestedThree.Clone()
+            ]
         });
         PacketReflectionHelper.SetProperty(packet, "DictListArray", new Dictionary<string, List<int[]>>
         {
@@ -165,8 +179,8 @@ internal sealed class GeneratorEqualityTests
                 "a",
                 new List<int[]>
                 {
-                    new[] { 1 },
-                    new[] { 2, 3 }
+                    (int[])_nestedOne.Clone(),
+                    (int[])_nestedTwoThree.Clone()
                 }
             }
         });

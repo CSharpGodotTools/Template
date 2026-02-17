@@ -42,9 +42,7 @@ internal static partial class VisualControlTypes
     private static IEnumerable<MemberDescriptor> CollectFieldMembers(Type type, BindingFlags flags)
     {
         string[] propNames = [.. type.GetProperties(flags).Select(p => p.Name)];
-        HashSet<string> backingFieldNames = new(
-            propNames.Select(n => "_" + char.ToLowerInvariant(n[0]) + n.Substring(1))
-        );
+        HashSet<string> backingFieldNames = [.. propNames.Select(n => "_" + char.ToLowerInvariant(n[0]) + n[1..])];
 
         FieldInfo[] fields = [.. type
             .GetFields(flags)
@@ -63,7 +61,7 @@ internal static partial class VisualControlTypes
         }
     }
 
-    private static IEnumerable<MemberControlBinding> AddMembers(Control vbox, VisualControlContext context, IEnumerable<MemberDescriptor> members)
+    private static List<MemberControlBinding> AddMembers(Control vbox, VisualControlContext context, IEnumerable<MemberDescriptor> members)
     {
         List<MemberControlBinding> bindings = [];
 
@@ -154,8 +152,11 @@ internal static partial class VisualControlTypes
 
     private static HBoxContainer CreateHBoxForMember(string memberName, Control control)
     {
-        Label label = new() { Text = VisualText.ToDisplayName(memberName) };
-        label.CustomMinimumSize = new Vector2(200, 0);
+        Label label = new()
+        {
+            Text = VisualText.ToDisplayName(memberName),
+            CustomMinimumSize = new Vector2(200, 0)
+        };
 
         HBoxContainer hbox = new();
         hbox.AddChild(label);

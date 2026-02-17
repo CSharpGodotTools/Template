@@ -49,8 +49,8 @@ internal sealed class PacketRegistryTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(clientInfo.Count, Is.EqualTo(3));
-            Assert.That(serverInfo.Count, Is.EqualTo(2));
+            Assert.That(clientInfo, Has.Count.EqualTo(3));
+            Assert.That(serverInfo, Has.Count.EqualTo(2));
         }
 
         AssertOpcode(clientInfo, "Framework.Netcode.CPacketAlpha", 0);
