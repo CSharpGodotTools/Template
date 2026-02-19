@@ -4,18 +4,15 @@ using GodotUtils;
 
 namespace __TEMPLATE__.FPS;
 
-public class PlayerMovement(Player player, PlayerMovementConfig config, Camera3D camera) : Component(player)
+public class PlayerMovement(Player player, PlayerMovementConfig config, PlayerRotation playerRotation) : Component(player)
 {
-    private const float HalfPi = Mathf.Pi * 0.5f;
-
     private Vector3 _gravityVec;
     private float _yaw;
-    private float _pitch;
 
     protected override void Ready()
     {
+        playerRotation.YawChanged += OnYawChanged;
         SetPhysicsProcess(true);
-        SetInput(true);
     }
 
     protected override void PhysicsProcess(double d)
@@ -46,27 +43,15 @@ public class PlayerMovement(Player player, PlayerMovementConfig config, Camera3D
         player.Velocity += _gravityVec;
 
         player.MoveAndSlide();
-
-        // Rotate camera
-        Quaternion yawQuat = new(Vector3.Up, _yaw);
-        Quaternion pitchQuat = new(Vector3.Right, _pitch);
-
-        camera.Transform = new Transform3D(new Basis(yawQuat * pitchQuat), camera.Transform.Origin);
     }
 
-    protected override void ProcessInput(InputEvent @event)
+    protected override void ExitTree()
     {
-        if (Input.MouseMode != Input.MouseModeEnum.Captured)
-            return;
+        playerRotation.YawChanged -= OnYawChanged;
+    }
 
-        if (@event is InputEventMouseMotion motion)
-        {
-            float sensitivity = config.MouseSensitivity * 0.01f;
-
-            _yaw -= motion.Relative.X * sensitivity;
-            _pitch -= motion.Relative.Y * sensitivity;
-
-            _pitch = Mathf.Clamp(_pitch, -HalfPi, HalfPi);
-        }
+    private void OnYawChanged(float yaw)
+    {
+        _yaw = yaw;
     }
 }

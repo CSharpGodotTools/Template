@@ -31,6 +31,6 @@ public class PlayerMouseCapture(Player player, PopupMenu popupMenu) : Component(
         ShowCursor();
     }
 
-    private void CaptureCursor() => Input.MouseMode = Input.MouseModeEnum.Captured;
-    private void ShowCursor() => Input.MouseMode = Input.MouseModeEnum.Visible;
+    private static void CaptureCursor() => Input.MouseMode = Input.MouseModeEnum.Captured;
+    private static void ShowCursor() => Input.MouseMode = Input.MouseModeEnum.Visible;
 }
