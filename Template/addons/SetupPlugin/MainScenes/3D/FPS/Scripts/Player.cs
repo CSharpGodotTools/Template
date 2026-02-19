@@ -12,11 +12,14 @@ public partial class Player : CharacterBody3D
     [Export] private PopupMenu _popupMenu;
     [Export] private PlayerMovementConfig _movementConfig;
 
-    private ComponentHost _components = new();
+    private readonly ComponentHost _components = new();
 
     public override void _Ready()
     {
-        _components.Add(new PlayerMovement(this, _movementConfig, _camera));
+        PlayerRotation rotationComponent = new(this, _movementConfig, _camera);
+
+        _components.Add(rotationComponent);
+        _components.Add(new PlayerMovement(this, _movementConfig, rotationComponent));
         _components.Add(new PlayerMouseCapture(this, _popupMenu));
     }
 }
