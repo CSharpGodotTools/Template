@@ -3,6 +3,8 @@
 [ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://Framework/Scenes/PopupMenu/PopupMenu.tscn" id="1_k54qk"]
 [ext_resource type="Script" uid="uid://bmctcduu1fcih" path="res://addons/SetupPlugin/MainScenes/3D/FPS/Scripts/Player.cs" id="2_71hwj"]
 [ext_resource type="Script" uid="uid://cnhpctr13d48d" path="res://addons/SetupPlugin/MainScenes/3D/FPS/Scripts/PlayerMovementConfig.cs" id="3_g43ns"]
+[ext_resource type="Material" uid="uid://cowswyx8te6mx" path="res://addons/SetupPlugin/MainScenes/3D/FPS/Materials/Floor.tres" id="4_tjjk3"]
+[ext_resource type="Material" uid="uid://djvia6twnqhxk" path="res://addons/SetupPlugin/MainScenes/3D/FPS/Materials/Obstacle.tres" id="5_s838p"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_k54qk"]
 sky_top_color = Color(1, 1, 1, 1)
@@ -94,6 +96,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.70000005, 0)
 
 [node name="Floor" type="MeshInstance3D" parent="Environment" unique_id=205664890]
 transform = Transform3D(8, 0, 0, 0, 8, 0, 0, 0, 8, 0, 0, 0)
+material_override = ExtResource("4_tjjk3")
 mesh = SubResource("PlaneMesh_k54qk")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Environment/Floor" unique_id=136850970]
@@ -103,6 +106,7 @@ shape = SubResource("ConvexPolygonShape3D_71hwj")
 
 [node name="Wall_South" type="MeshInstance3D" parent="Environment" unique_id=457576923]
 transform = Transform3D(16, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1, -7.5)
+material_override = ExtResource("5_s838p")
 mesh = SubResource("BoxMesh_bhv70")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Environment/Wall_South" unique_id=693706613]
@@ -112,6 +116,7 @@ shape = SubResource("BoxShape3D_71hwj")
 
 [node name="Wall_North" type="MeshInstance3D" parent="Environment" unique_id=1512287716]
 transform = Transform3D(16, 0, 0, 0, 2, 0, 0, 0, 1, 0, 1, 7.5)
+material_override = ExtResource("5_s838p")
 mesh = SubResource("BoxMesh_bhv70")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Environment/Wall_North" unique_id=754760730]
@@ -121,6 +126,7 @@ shape = SubResource("BoxShape3D_g43ns")
 
 [node name="Wall_West" type="MeshInstance3D" parent="Environment" unique_id=1786080060]
 transform = Transform3D(-6.119594e-07, 0, -1, 0, 2, 0, 14, 0, -4.371139e-08, 7.5, 1, 0)
+material_override = ExtResource("5_s838p")
 mesh = SubResource("BoxMesh_bhv70")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Environment/Wall_West" unique_id=28124410]
@@ -130,6 +136,7 @@ shape = SubResource("BoxShape3D_ugmif")
 
 [node name="Wall_East" type="MeshInstance3D" parent="Environment" unique_id=372161950]
 transform = Transform3D(-6.119594e-07, 0, -1, 0, 2, 0, 14, 0, -4.371139e-08, -7.5, 1, 0)
+material_override = ExtResource("5_s838p")
 mesh = SubResource("BoxMesh_bhv70")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Environment/Wall_East" unique_id=1981431840]
@@ -139,6 +146,7 @@ shape = SubResource("BoxShape3D_tjjk3")
 
 [node name="Ramp" type="CSGMesh3D" parent="Environment" unique_id=983033016]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0.5, 4)
+material_override = ExtResource("5_s838p")
 mesh = SubResource("PrismMesh_k54qk")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Environment/Ramp" unique_id=1215875405]
