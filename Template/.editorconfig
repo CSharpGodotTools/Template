@@ -8,8 +8,8 @@
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
-# Exclude addons from intellisense
-[**/addons/**/*.cs]
+# Exclude imgui-godot from IntelliSense diagnostics
+[addons/imgui-godot/**/*.cs]
 generated_code = true
 dotnet_analyzer_diagnostic.severity = none
 

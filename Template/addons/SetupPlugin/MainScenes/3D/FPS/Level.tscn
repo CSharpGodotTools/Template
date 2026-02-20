@@ -32,7 +32,6 @@ GravityForce = 4.0
 JumpForce = 60.0
 MoveSpeed = 5.0
 MoveDampening = 7.5
-MouseSensitivity = 0.15
 metadata/_custom_type_script = "uid://cnhpctr13d48d"
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_k54qk"]

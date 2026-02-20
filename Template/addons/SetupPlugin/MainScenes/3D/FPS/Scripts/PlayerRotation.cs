@@ -1,10 +1,11 @@
-﻿using Godot;
+using Framework;
+using Godot;
 using GodotUtils;
 using System;
 
 namespace __TEMPLATE__.FPS;
 
-public class PlayerRotation(Player player, PlayerMovementConfig config, Camera3D camera) : Component(player)
+public class PlayerRotation(Player player, Camera3D camera) : Component(player)
 {
     public event Action<float> YawChanged;
 
@@ -34,7 +35,7 @@ public class PlayerRotation(Player player, PlayerMovementConfig config, Camera3D
 
         if (@event is InputEventMouseMotion motion)
         {
-            float sensitivity = config.MouseSensitivity * 0.01f;
+            float sensitivity = GameFramework.Settings.MouseSensitivity * 0.001f;
 
             _yaw -= motion.Relative.X * sensitivity;
             _pitch -= motion.Relative.Y * sensitivity;
@@ -45,3 +46,4 @@ public class PlayerRotation(Player player, PlayerMovementConfig config, Camera3D
         }
     }
 }
+

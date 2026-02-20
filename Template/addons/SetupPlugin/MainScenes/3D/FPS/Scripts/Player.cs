@@ -1,7 +1,6 @@
 using Framework;
 using Godot;
 using GodotUtils;
-using System;
 using PopupMenu = Framework.UI.PopupMenu;
 
 namespace __TEMPLATE__.FPS;
@@ -16,10 +15,13 @@ public partial class Player : CharacterBody3D
 
     public override void _Ready()
     {
-        PlayerRotation rotationComponent = new(this, _movementConfig, _camera);
+        FpsOptions.Register();
+
+        PlayerRotation rotationComponent = new(this, _camera);
 
         _components.Add(rotationComponent);
         _components.Add(new PlayerMovement(this, _movementConfig, rotationComponent));
         _components.Add(new PlayerMouseCapture(this, _popupMenu));
     }
 }
+
