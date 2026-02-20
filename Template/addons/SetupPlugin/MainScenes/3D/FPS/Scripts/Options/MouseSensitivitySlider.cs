@@ -11,7 +11,6 @@ public sealed class MouseSensitivitySlider : SliderOptionDefinition
     public override double MaxValue => 2.0;
     public override double Step => 0.01;
     public override float DefaultValue => 0.85f;
-    public override bool SaveInCustomValues => false;
 
     public override float GetValue()
     {
