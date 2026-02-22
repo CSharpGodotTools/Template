@@ -3,7 +3,7 @@ class_name TemplateSetupDock
 extends VBoxContainer
 
 const DEFAULT_CLEAR_COLOR_PATH: String = "rendering/environment/defaults/default_clear_color"
-const MAIN_SCENES_PATH: String = "res://addons/SetupPlugin/MainScenes"
+const MAIN_SCENES_PATH: String = "res://MainScenes"
 const PROJECT_ROOT_PATH: String = "res://"
 const REBUILD_INSTRUCTION: String = "Rebuild the project, then disable and re-enable the Setup Plugin."
 const LABEL_PADDING: int = 120
