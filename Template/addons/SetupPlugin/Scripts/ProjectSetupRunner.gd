@@ -24,7 +24,7 @@ func run(formatted_game_name: String, project_type: String, template_type: Strin
 	SetupFileSystem.ensure_gdignore_files_in_gdunit_test_folders(_project_root)
 	
 	EditorInterface.save_scene()
-	disable_and_delete_setup_plugin()
+	DirAccess.remove_absolute(_main_scenes_root)
 	EditorInterface.restart_editor(false)
 
 func copy_template_to_project_root(template_folder: String) -> void:
@@ -70,12 +70,3 @@ func _copy_directory_recursive(dir: DirAccess, source_path: String, dest_path: S
 					dest_file_access.close()
 
 		file_name = dir.get_next()
-
-func disable_and_delete_setup_plugin() -> void:
-	EditorInterface.set_plugin_enabled(SETUP_PLUGIN_NAME, false)
-	
-	var setup_plugin_path: String = _project_root.path_join("addons").path_join(SETUP_PLUGIN_NAME)
-	if not DirAccess.dir_exists_absolute(setup_plugin_path):
-		return
-	
-	DirAccess.remove_absolute(setup_plugin_path)
