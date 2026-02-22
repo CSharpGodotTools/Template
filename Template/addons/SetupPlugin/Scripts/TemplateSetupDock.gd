@@ -176,9 +176,9 @@ func _release_restart_dialog() -> void:
 	_confirm_restart_dialog = null
 
 func _validate_and_initialize_state() -> void:
-	var runtime_failure: String
-	if not _runtime_state_validator.try_validate(runtime_failure):
-		_mark_runtime_state_invalid(runtime_failure, null)
+	var validation := _runtime_state_validator.try_validate()
+	if not validation["valid"]:
+		_mark_runtime_state_invalid(validation["reason"], null)
 		return
 
 	var main_scenes_root: String = ProjectSettings.globalize_path(MAIN_SCENES_PATH)
@@ -268,6 +268,7 @@ func _ensure_runtime_state_valid(operation_name: String) -> bool:
 func _mark_runtime_state_invalid(reason: String, exception: Variant = null) -> void:
 	_is_runtime_state_valid = false
 	_runtime_state_error = "%s %s" % [reason, REBUILD_INSTRUCTION]
+	
 	_set_controls_enabled(false)
 	_set_status(_runtime_state_error, true)
 
