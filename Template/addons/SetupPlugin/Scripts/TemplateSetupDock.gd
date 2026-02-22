@@ -3,6 +3,8 @@ class_name TemplateSetupDock
 extends VBoxContainer
 
 const DEFAULT_CLEAR_COLOR_PATH: String = "rendering/environment/defaults/default_clear_color"
+const ANTI_ALIASING_PATH_2D: String = "rendering/anti_aliasing/quality/msaa_2d"
+const ANTI_ALIASING_PATH_3D: String = "rendering/anti_aliasing/quality/msaa_3d"
 const MAIN_SCENES_PATH: String = "res://MainScenes"
 const PROJECT_ROOT_PATH: String = "res://"
 const REBUILD_INSTRUCTION: String = "Rebuild the project, then disable and re-enable the Setup Plugin."
@@ -20,6 +22,7 @@ var _template_type: OptionButton
 var _project_type: OptionButton
 var _game_name_line_edit: LineEdit
 var _default_clear_color_picker: ColorPickerButton
+var _anti_aliasing_options: OptionButton
 var _apply_button: Button
 var _content_container: VBoxContainer
 var _game_name_preview: Label
@@ -27,6 +30,7 @@ var _status_label: Label
 
 var _selected_project_type: String = ""
 var _selected_template_type: String = ""
+var _selected_anti_aliasing_type: int = 0
 var _runtime_state_error: String = ""
 var _is_runtime_state_valid: bool
 var _events_registered: bool
@@ -86,6 +90,12 @@ func _create_controls() -> void:
 	_default_clear_color_picker = ColorPickerButton.new()
 	_default_clear_color_picker.custom_minimum_size = Vector2(75, 35)
 	_default_clear_color_picker.color = ProjectSettings.get_setting(DEFAULT_CLEAR_COLOR_PATH)
+	
+	_anti_aliasing_options = OptionButton.new()
+	_anti_aliasing_options.add_item("Disabled (Fastest)")
+	_anti_aliasing_options.add_item("2x (Average)")
+	_anti_aliasing_options.add_item("4x (Slow)")
+	_anti_aliasing_options.add_item("8x (Slowest)")
 
 	_apply_button = Button.new()
 	_apply_button.text = "Run Setup"
@@ -107,6 +117,7 @@ func _build_layout() -> void:
 	_add_labeled_control("Project Name", _game_name_line_edit)
 	_add_labeled_control("Project", _project_type)
 	_add_labeled_control("Template", _template_type)
+	_add_labeled_control("Anti Aliasing", _anti_aliasing_options)
 	_add_labeled_control("Clear Color", _default_clear_color_picker)
 
 	var margin_container: MarginContainer = MarginContainer.new()
@@ -131,6 +142,7 @@ func _register_events() -> void:
 	_project_type.item_selected.connect(_on_project_type_selected)
 	_template_type.item_selected.connect(_on_template_type_selected)
 	_default_clear_color_picker.color_changed.connect(_on_default_clear_color_changed)
+	_anti_aliasing_options.item_selected.connect(_on_anti_aliasing_item_selected)
 	_apply_button.pressed.connect(_on_apply_pressed)
 	_events_registered = true
 	
@@ -157,6 +169,9 @@ func _unregister_events() -> void:
 
 	if _default_clear_color_picker.is_connected("color_changed", Callable(self, "_on_default_clear_color_changed")):
 		_default_clear_color_picker.color_changed.disconnect(Callable(self, "_on_default_clear_color_changed"))
+
+	if _anti_aliasing_options.is_connected("item_selected", Callable(self, "_on_anti_aliasing_item_selected")):
+		_anti_aliasing_options.item_selected.disconnect(Callable(self, "_on_anti_aliasing_item_selected"))
 
 	if _apply_button.is_connected("pressed", Callable(self, "_on_apply_pressed")):
 		_apply_button.pressed.disconnect(Callable(self, "_on_apply_pressed"))
@@ -248,6 +263,19 @@ func _set_controls_enabled(enabled: bool) -> void:
 	_template_type.disabled = not enabled
 	_default_clear_color_picker.disabled = not enabled
 	_apply_button.disabled = not enabled
+	
+func _set_anti_aliasing_type(type: int) -> void:
+	if _selected_project_type == "2D":
+		_selected_anti_aliasing_type = type
+		ProjectSettings.set_setting(ANTI_ALIASING_PATH_2D, type)
+		return
+		
+	if _selected_project_type == "3D":
+		_selected_anti_aliasing_type = type
+		ProjectSettings.set_setting(ANTI_ALIASING_PATH_3D, type)
+		return
+		
+	printerr("Cannot set anti aliasing setting: Unknown project type: ", _selected_project_type)
 
 func _set_status(text: String, is_error: bool) -> void:
 	_status_label.text = text
@@ -312,10 +340,15 @@ func _on_default_clear_color_changed(color: Color) -> void:
 
 	ProjectSettings.set_setting(DEFAULT_CLEAR_COLOR_PATH, color)
 	ProjectSettings.save()
+	
+func _on_anti_aliasing_item_selected(index: int) -> void:
+	_set_anti_aliasing_type(index)
 
 func _on_confirmed() -> void:
 	if not _ensure_runtime_state_valid("Confirmed"):
 		return
+
+	_set_anti_aliasing_type(_selected_anti_aliasing_type)
 
 	var formatted_game_name: String = GameNameRules.format_game_name(_game_name_line_edit.text)
 	_project_setup_runner.run(formatted_game_name, _selected_project_type, _selected_template_type)
