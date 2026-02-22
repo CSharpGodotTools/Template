@@ -49,11 +49,11 @@ Download the [latest release](https://github.com/CSharpGodotTools/Template/relea
 
 Click `Run Setup` to restart Godot with your template ready to go.
 
-> [!TIP]
-> Delete the `Framework` and `addons/imgui-godot` folders and initialize them as submodules to fetch updates without having to re-clone this template.
-> ```
-> git init && git submodule add https://github.com/CSharpGodotTools/Framework Framework && git submodule add https://github.com/CSharpGodotTools/imgui-godot-csharp addons/imgui-godot
-> ```
+## Updates
+Delete `Framework` and `addons/imgui-godot` folders and initialize them as submodules to fetch updates.
+```
+git init && git submodule add https://github.com/CSharpGodotTools/Framework Framework && git submodule add https://github.com/CSharpGodotTools/imgui-godot-csharp addons/imgui-godot
+```
 
 ## Thank You
 [Brian Shao](https://github.com/cydq)  
