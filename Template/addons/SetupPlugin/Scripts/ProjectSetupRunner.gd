@@ -24,7 +24,7 @@ func run(formatted_game_name: String, project_type: String, template_type: Strin
 	SetupFileSystem.ensure_gdignore_files_in_gdunit_test_folders(_project_root)
 	
 	EditorInterface.save_scene()
-	DirAccess.remove_absolute(_main_scenes_root)
+	delete_directory_recursive(_main_scenes_root)
 	EditorInterface.restart_editor(false)
 
 func copy_template_to_project_root(template_folder: String) -> void:
@@ -37,6 +37,23 @@ func copy_template_to_project_root(template_folder: String) -> void:
 		return
 	
 	_copy_directory_recursive(dir, template_folder, _project_root)
+	
+func delete_directory_recursive(path: String) -> void:
+	var dir := DirAccess.open(path)
+	if dir == null:
+		return
+	dir.list_dir_begin()
+	var name := dir.get_next()
+	while name != "":
+		if name != "." and name != "..":
+			var child := path.path_join(name)
+			if dir.current_is_dir():
+				delete_directory_recursive(child)
+			else:
+				dir.remove(name)  # removes file
+		name = dir.get_next()
+		
+	DirAccess.remove_absolute(path)
 
 func _copy_directory_recursive(dir: DirAccess, source_path: String, dest_path: String) -> void:
 	dir.list_dir_begin()
