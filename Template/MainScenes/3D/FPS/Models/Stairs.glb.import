@@ -4,12 +4,12 @@ importer="scene"
 importer_version=1
 type="PackedScene"
 uid="uid://c2tx2owrj7d8g"
-path="res://.godot/imported/Stairs.glb-68eaf77101cb1f87031421d899de54e8.scn"
+path="res://.godot/imported/Stairs.glb-c295d529644a52b597e614377a5f8f12.scn"
 
 [deps]
 
-source_file="res://addons/SetupPlugin/MainScenes/3D/FPS/Models/Stairs.glb"
-dest_files=["res://.godot/imported/Stairs.glb-68eaf77101cb1f87031421d899de54e8.scn"]
+source_file="res://MainScenes/3D/FPS/Models/Stairs.glb"
+dest_files=["res://.godot/imported/Stairs.glb-c295d529644a52b597e614377a5f8f12.scn"]
 
 [params]
 
