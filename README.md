@@ -45,21 +45,15 @@ This is an on-going project I've been working on. I know how hard it is to actua
 ## Install  
 Download the [latest release](https://github.com/CSharpGodotTools/Template/releases/latest) and open `project.godot`.
 
-> [!TIP]
-> After extracting the `.zip`, delete the `Framework` and `addons/imgui-godot` folders and run the following command.
-> ```
-> git init && git submodule add https://github.com/CSharpGodotTools/Framework Framework && git submodule add https://github.com/CSharpGodotTools/imgui-godot-csharp addons/imgui-godot
-> ```
-> This will allow you to fetch updates without having to re-clone.
-
-<img width="602" height="212" alt="image" src="https://github.com/user-attachments/assets/8411cb31-7a15-4f16-a265-0ee28412f052" />
-
-Ignore the warning about an addon failing to load and build the game with
-<img width="27" height="25" alt="image" src="https://github.com/user-attachments/assets/ecb5dba4-22d7-4bef-8e86-726908390318" /> and then enable the addon `Setup Plugin` in `Project > Project Settings > Plugins`
-
 <img width="501" height="344" alt="image" src="https://github.com/user-attachments/assets/9a0e7e22-2bfa-4cdc-8b5a-d92d209242b8" />
 
 Click `Run Setup` to restart Godot with your template ready to go.
+
+> [!TIP]
+> Delete the `Framework` and `addons/imgui-godot` folders and initialize them as submodules to fetch updates without having to re-clone this template.
+> ```
+> git init && git submodule add https://github.com/CSharpGodotTools/Framework Framework && git submodule add https://github.com/CSharpGodotTools/imgui-godot-csharp addons/imgui-godot
+> ```
 
 ## Thank You
 [Brian Shao](https://github.com/cydq)  
