@@ -251,8 +251,6 @@ func _set_controls_enabled(enabled: bool) -> void:
 
 func _set_status(text: String, is_error: bool) -> void:
 	_status_label.text = text
-	_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_status_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_status_label.visible = not text.is_empty()
 	_status_label.modulate = Color(1.0, 0.4, 0.4) if is_error else Color(0.6, 0.95, 0.6)
 
