@@ -42,4 +42,4 @@ func reset_name_edit() -> void:
 	_project_name_edit.caret_column = _previous_valid_game_name.length()
 
 func restore_previous_game_name_preview() -> void:
-	_game_name_preview.text = _previous_valid_game_name
+	_game_name_preview.text = GameNameRules.format_game_name(_previous_valid_game_name)
