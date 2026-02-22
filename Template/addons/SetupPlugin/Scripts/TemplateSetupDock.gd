@@ -72,7 +72,8 @@ func _create_controls() -> void:
 	_status_label.modulate = Color(1.0, 0.4, 0.4)
 
 	_game_name_preview = Label.new()
-	_game_name_preview.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_game_name_preview.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_game_name_preview.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_game_name_preview.custom_minimum_size = Vector2(200, 0)
 
 	_game_name_line_edit = LineEdit.new()
