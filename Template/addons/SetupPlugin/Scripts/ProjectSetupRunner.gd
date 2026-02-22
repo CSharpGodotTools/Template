@@ -41,29 +41,34 @@ func copy_template_to_project_root(template_folder: String) -> void:
 func _copy_directory_recursive(dir: DirAccess, source_path: String, dest_path: String) -> void:
 	dir.list_dir_begin()
 	var file_name: String = dir.get_next()
-	
+
 	while file_name != "":
 		if file_name == "." or file_name == "..":
 			file_name = dir.get_next()
 			continue
-		
+
 		var source_file: String = source_path.path_join(file_name)
 		var dest_file: String = dest_path.path_join(file_name)
-		
+
 		if dir.current_is_dir():
 			DirAccess.make_dir_absolute(dest_file)
 			var sub_dir: DirAccess = DirAccess.open(source_file)
 			if sub_dir != null:
 				_copy_directory_recursive(sub_dir, source_file, dest_file)
 		else:
-			var dest_dir: String = dest_file.get_basename()
-			DirAccess.make_dir_absolute(dest_dir)
-			if FileAccess.file_exists(source_file):
-				var source_content: String = FileAccess.get_file_as_string(source_file)
-				var file: FileAccess = FileAccess.open(dest_file, FileAccess.WRITE)
-				if file != null:
-					file.store_string(source_content)
-		
+			# Ensure parent directory exists
+			DirAccess.make_dir_absolute(dest_file.get_base_dir())
+
+			var source_file_access := FileAccess.open(source_file, FileAccess.READ)
+			if source_file_access != null:
+				var file_data := source_file_access.get_buffer(source_file_access.get_length())
+				source_file_access.close()
+
+				var dest_file_access := FileAccess.open(dest_file, FileAccess.WRITE)
+				if dest_file_access != null:
+					dest_file_access.store_buffer(file_data)
+					dest_file_access.close()
+
 		file_name = dir.get_next()
 
 func disable_and_delete_setup_plugin() -> void:
