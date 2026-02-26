@@ -1,10 +1,10 @@
 [gd_scene format=4 uid="uid://cndqgr17i6ruy"]
 
 [ext_resource type="PackedScene" uid="uid://c6pism2kgjr5c" path="res://Framework/Scenes/PopupMenu/PopupMenu.tscn" id="1_k54qk"]
-[ext_resource type="Script" uid="uid://bmctcduu1fcih" path="res://addons/SetupPlugin/MainScenes/3D/FPS/Scripts/Player.cs" id="2_71hwj"]
-[ext_resource type="Script" uid="uid://cnhpctr13d48d" path="res://addons/SetupPlugin/MainScenes/3D/FPS/Scripts/PlayerMovementConfig.cs" id="3_g43ns"]
-[ext_resource type="Material" uid="uid://cowswyx8te6mx" path="res://addons/SetupPlugin/MainScenes/3D/FPS/Materials/Floor.tres" id="4_tjjk3"]
-[ext_resource type="Material" uid="uid://djvia6twnqhxk" path="res://addons/SetupPlugin/MainScenes/3D/FPS/Materials/Obstacle.tres" id="5_s838p"]
+[ext_resource type="Script" uid="uid://bmctcduu1fcih" path="res://MainScenes/3D/FPS/Scripts/Player.cs" id="2_71hwj"]
+[ext_resource type="Script" uid="uid://cnhpctr13d48d" path="res://MainScenes/3D/FPS/Scripts/PlayerMovementConfig.cs" id="3_g43ns"]
+[ext_resource type="Material" uid="uid://cowswyx8te6mx" path="res://MainScenes/3D/FPS/Materials/Floor.tres" id="4_tjjk3"]
+[ext_resource type="Material" uid="uid://djvia6twnqhxk" path="res://MainScenes/3D/FPS/Materials/Obstacle.tres" id="5_s838p"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_k54qk"]
 sky_top_color = Color(1, 1, 1, 1)
@@ -113,9 +113,9 @@ metadata/_edit_lock_ = true
 [node name="Player" type="CharacterBody3D" parent="." unique_id=321834285 node_paths=PackedStringArray("_camera", "_popupMenu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("2_71hwj")
+_movementConfig = SubResource("Resource_ugmif")
 _camera = NodePath("Camera3D")
 _popupMenu = NodePath("../CanvasLayer/PopupMenu")
-_movementConfig = SubResource("Resource_ugmif")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=1813375761]
 shape = SubResource("CapsuleShape3D_k54qk")
