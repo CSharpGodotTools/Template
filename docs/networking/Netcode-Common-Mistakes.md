@@ -1,0 +1,3 @@
+Avoid accessing properties not marked as thread safe. This can lead to random crashes with no errors logged to the console. I've tried my best to say if a property is thread safe or not in their descriptions. Please use the proper `ConcurrentQueue<T>` channels if you need to modify the netcode under the hood.
+
+If manually override the `Write`, `Read` methods in a packet, you may accidentally write for example an int but then later read a byte. These bugs are very hard to track down later so make extra sure you do not make this mistake early. Although not required but you may find it helpful to do `writer.Write<int>(myInt)` instead of `writer.Write(myInt)`.

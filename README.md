@@ -15,31 +15,30 @@ This is an on-going project I've been working on. I know how hard it is to actua
 
 ## Features
 - Multiplayer
-  - [Minimal setup required](https://github.com/CSharpGodotTools/Template/wiki/Multiplayer)
-  - [Minimal packet data sent over the network](https://github.com/CSharpGodotTools/Template/wiki/Multiplayer#minimal-packet-data-sent)
-  - [Packets automatically create their `Write`, `Read` methods for you](https://github.com/CSharpGodotTools/Template/wiki/Packets)
+  - [Minimal setup required](docs/networking/Multiplayer.md)
+  - [Minimal packet data sent over the network](docs/networking/Multiplayer.md#minimal-packet-data-sent)
+  - [Packets automatically create their `Write`, `Read` methods for you](docs/networking/Packets.md)
 - Templates
   - Minimal 2D scene
   - Minimal 3D scene
   - [FPS scene](https://github.com/CSharpGodotTools/Template/wiki/FPS-Template)
 - Performance
-  - [Centralized Component Scripts](https://github.com/CSharpGodotTools/Template/wiki/Component-Scripts)
+  - [Centralized Component Scripts](docs/utilities/Component-Scripts.md)
 - Debugging
-  - [Visual In-Game Debugging](https://github.com/CSharpGodotTools/Template/wiki/Visualize)
-  - [ImGui Metrics Overlay](https://github.com/CSharpGodotTools/Template/wiki/Metrics-Overlay)
-  - [Console Commands](https://github.com/CSharpGodotTools/Template/wiki/Console-Commands)
-  - [Custom Main Run Args](https://github.com/CSharpGodotTools/Template/wiki/Custom-Main-Run-Args)
-  - [GDUnit4 Testing](https://github.com/CSharpGodotTools/Template/wiki/GDUnit-Testing)
+  - [Visual In-Game Debugging](https://github.com/CSharpGodotTools/Template/blob/main/Template.Visualize/README.md)
+  - [ImGui Metrics Overlay](docs/utilities/Metrics-Overlay.md)
+  - [Console Commands](docs/utilities/Console-Commands.md)
+  - [Custom Main Run Args](docs/utilities/Custom-Main-Run-Args.md)
+  - [GDUnit4 Testing](docs/utilities/GDUnit-Testing.md)
 - Utilities
-  - [Cat Lips Source Generators](https://github.com/CSharpGodotTools/Template/wiki/Cat-Lips-Source-Generators)
-  - [Simplified Tweens](https://github.com/CSharpGodotTools/Template/wiki/Simplified-Tweens)
+  - [Cat Lips Source Generators](https://github.com/Cat-Lips/GodotSharp.SourceGenerators)
+  - [Simplified Tweens](docs/utilities/Simplified-Tweens.md)
   - [Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)
-  - [Services](https://github.com/CSharpGodotTools/Template/wiki/Services)
+  - [Services](docs/utilities/Services.md)
  
 ## Prerequisites
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
 - [Latest Godot C# Release](https://godotengine.org/)
-- [Custom ENet build](https://github.com/CSharpGodotTools/Template/wiki/Custom-ENet-Builds) may be required if using Mac or Linux
 
 ## Install  
 Download the [latest release](https://github.com/CSharpGodotTools/Template/releases/latest) and open `project.godot`.
