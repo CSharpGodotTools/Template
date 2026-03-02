@@ -1,43 +1,51 @@
 using Godot;
-using ImGuiNET;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using Monitor = Godot.Performance.Monitor;
-using Vector2 = System.Numerics.Vector2;
 
 namespace Framework.Debugging;
 
-public class MetricsOverlay
+public partial class MetricsOverlay : CanvasLayer
 {
     // Config
-    private const int BytesInMegabyte     = 1048576;
-    private const int BytesInKilobyte     = 1024;
-    private const int MaxFpsBuffer        = 100;
-    private const int WindowWidth         = 220;
-    private const int FpsGraphWidthMargin = 15;
-    private const int FpsGraphHeight      = 30;
+    private const int BytesInMegabyte = 1048576;
+    private const int BytesInKilobyte = 1024;
+    private const int MaxFpsBuffer = 100;
+    private const int PanelWidth = 280;
+    private const int GraphHeight = 50;
+    private const int Margin = 10;
 
-    private const string ImGuiWindowName = "Metrics Overlay";
-    private const string LabelMetrics    = "Metrics";
-    private const string LabelVariables  = "Variables";
-    private const string LabelFpsGraph   = "##FPSGraph"; // The ## hides the text
+    // Theme Colors
+    private static readonly Color BackgroundColor = new(0.11f, 0.11f, 0.13f, 0.92f);
+    private static readonly Color HeaderColor = new(0.16f, 0.16f, 0.18f, 1.0f);
+    private static readonly Color TextColor = new(0.9f, 0.9f, 0.9f, 1.0f);
+    private static readonly Color AccentColor = new(0.26f, 0.59f, 0.98f, 1.0f);
+    private static readonly Color GraphLineColor = new(0.26f, 0.59f, 0.98f, 0.8f);
+    private static readonly Color GraphFillColor = new(0.26f, 0.59f, 0.98f, 0.3f);
 
     // Variables
-    // This was made static to allow tracking variables even before metrics overlay instance gets initialized
     private readonly Dictionary<string, Func<object>> _processMonitors = [];
     private readonly Dictionary<string, Func<string>> _currentMetrics = [];
-
     private readonly float[] _fpsBuffer = new float[MaxFpsBuffer];
+
+    private PanelContainer _panel;
+    private VBoxContainer _mainContainer;
+    private VBoxContainer _metricsContainer;
+    private VBoxContainer _variablesContainer;
+    private FpsGraph _fpsGraph;
+    private Button _metricsHeader;
+    private Button _variablesHeader;
+
     private float _cachedFps;
-    private bool _visible;
     private int _fpsIndex;
+    private bool _metricsExpanded = true;
+    private bool _variablesExpanded = true;
 
     public MetricsOverlay()
     {
         Dictionary<string, (bool Enabled, Func<string> ValueProvider)> metrics = new()
         {
-            { "FPS",                    (true,  () => $"{_cachedFps}") },
+            { "FPS",                    (true,  () => $"{_cachedFps:F0}") },
             { "Process",                (false, () => $"{Retrieve(Monitor.TimeProcess) * 1000:0.00} ms") },
             { "Physics Process",        (false, () => $"{Retrieve(Monitor.TimePhysicsProcess) * 1000:0.00} ms") },
             { "Navigation Process",     (false, () => $"{Retrieve(Monitor.TimeNavigationProcess) * 1000:0.00} ms") },
@@ -56,119 +64,260 @@ public class MetricsOverlay
             { "Total Draw Calls",       (false, () => $"{Retrieve(Monitor.RenderTotalDrawCallsInFrame)}") },
         };
 
-        foreach (var metric in metrics)
+        foreach (KeyValuePair<string, (bool Enabled, Func<string> ValueProvider)> metric in metrics)
         {
             if (metric.Value.Enabled)
             {
                 _currentMetrics.Add(metric.Key, metric.Value.ValueProvider);
             }
         }
+
+        BuildUi();
     }
 
-    public void Update()
+    // Godot Overrides
+    public override void _Ready()
+    {
+        Layer = 100;
+        Visible = false;
+    }
+
+    public override void _Process(double delta)
     {
         if (Input.IsActionJustPressed(InputActions.DebugOverlay))
         {
-            _visible = !_visible;
+            Visible = !Visible;
         }
 
-        if (_visible)
+        if (Visible)
         {
-            UpdateFpsBuffer(ref _cachedFps, _fpsBuffer, ref _fpsIndex);
-            RenderProcessOverlay(_currentMetrics, _fpsBuffer, ref _fpsIndex);
+            UpdateMetrics();
         }
     }
 
     // API
     public void StartMonitoring(string key, Func<object> function)
     {
-        _visible = true;
+        Visible = true;
         _processMonitors.Add(key, function);
+        UpdateVariablesSection();
     }
 
     public void StopMonitoring(string key)
     {
         _processMonitors.Remove(key);
+        UpdateVariablesSection();
     }
 
     // Private Methods
-    private void RenderProcessMonitors()
+    private void BuildUi()
     {
-        int processMonitors = _processMonitors.Count;
+        _panel = new PanelContainer
+        {
+            CustomMinimumSize = new Vector2(PanelWidth, 0)
+        };
+        AddChild(_panel);
 
-        if (processMonitors == 0)
-            return;
+        StyleBox panelStyle = new StyleBoxFlat
+        {
+            BgColor = BackgroundColor,
+            CornerRadiusTopLeft = 8,
+            CornerRadiusTopRight = 8,
+            CornerRadiusBottomLeft = 8,
+            CornerRadiusBottomRight = 8,
+            ContentMarginLeft = Margin,
+            ContentMarginTop = Margin,
+            ContentMarginRight = Margin,
+            ContentMarginBottom = Margin
+        };
+        _panel.AddThemeStyleboxOverride("panel", panelStyle);
 
-        if (!ImGui.CollapsingHeader(LabelVariables, ImGuiTreeNodeFlags.DefaultOpen))
-            return;
+        _mainContainer = new VBoxContainer { SizeFlagsHorizontal = Control.SizeFlags.ExpandFill };
+        _panel.AddChild(_mainContainer);
 
-        if (processMonitors > 0)
+        BuildMetricsSection();
+        BuildVariablesSection();
+
+        CallDeferred(MethodName.PositionPanel);
+    }
+
+    private void PositionPanel()
+    {
+        Vector2 viewportSize = GetViewport().GetVisibleRect().Size;
+        _panel.Position = new Vector2(viewportSize.X - PanelWidth - Margin, Margin);
+    }
+
+    private void BuildMetricsSection()
+    {
+        _metricsHeader = CreateSectionHeader("METRICS");
+        _metricsHeader.Pressed += () => ToggleSection(ref _metricsExpanded, _metricsContainer);
+        _mainContainer.AddChild(_metricsHeader);
+
+        _metricsContainer = new VBoxContainer { Name = "MetricsContainer" };
+        _mainContainer.AddChild(_metricsContainer);
+
+        _fpsGraph = new FpsGraph { CustomMinimumSize = new Vector2(0, GraphHeight) };
+        _metricsContainer.AddChild(_fpsGraph);
+
+        UpdateMetricsSection();
+    }
+
+    private void BuildVariablesSection()
+    {
+        _variablesHeader = CreateSectionHeader("VARIABLES");
+        _variablesHeader.Pressed += () => ToggleSection(ref _variablesExpanded, _variablesContainer);
+        _mainContainer.AddChild(_variablesHeader);
+
+        _variablesContainer = new VBoxContainer { Name = "VariablesContainer", Visible = false };
+        _mainContainer.AddChild(_variablesContainer);
+    }
+
+    private Button CreateSectionHeader(string text)
+    {
+        Button button = new()
+        {
+            Text = text,
+            Flat = true,
+            Alignment = HorizontalAlignment.Left
+        };
+
+        StyleBox normalStyle = new StyleBoxFlat
+        {
+            BgColor = HeaderColor,
+            ContentMarginLeft = 5,
+            ContentMarginTop = 3,
+            ContentMarginRight = 5,
+            ContentMarginBottom = 3
+        };
+        button.AddThemeStyleboxOverride("normal", normalStyle);
+        button.AddThemeStyleboxOverride("hover", normalStyle);
+        button.AddThemeColorOverride("font_color", AccentColor);
+
+        return button;
+    }
+
+    private void ToggleSection(ref bool expanded, Control container)
+    {
+        expanded = !expanded;
+        container.Visible = expanded;
+    }
+
+    private void UpdateMetrics()
+    {
+        _cachedFps = (float)Retrieve(Monitor.TimeFps);
+        _fpsBuffer[_fpsIndex] = _cachedFps;
+        _fpsIndex = (_fpsIndex + 1) % _fpsBuffer.Length;
+
+        _fpsGraph.UpdateData(_fpsBuffer, _fpsIndex);
+        UpdateMetricsSection();
+    }
+
+    private void UpdateMetricsSection()
+    {
+        ClearLabels(_metricsContainer, skipGraph: true);
+
+        foreach ((string key, Func<string> valueProvider) in _currentMetrics)
+        {
+            Label label = CreateLabel($"{key}: {valueProvider()}");
+            _metricsContainer.AddChild(label);
+        }
+    }
+
+    private void UpdateVariablesSection()
+    {
+        ClearLabels(_variablesContainer, skipGraph: false);
+
+        bool hasVariables = _processMonitors.Count > 0;
+        _variablesHeader.Visible = hasVariables;
+        _variablesContainer.Visible = hasVariables && _variablesExpanded;
+
+        if (hasVariables)
         {
             foreach (KeyValuePair<string, Func<object>> kvp in _processMonitors)
             {
-                ImGui.Text($"{kvp.Key}: {kvp.Value()}");
+                Label label = CreateLabel($"{kvp.Key}: {kvp.Value()}");
+                _variablesContainer.AddChild(label);
             }
         }
     }
 
-    private void RenderProcessOverlay(Dictionary<string, Func<string>> metrics, float[] fpsBuffer, ref int fpsIndex)
+    private void ClearLabels(Node container, bool skipGraph)
     {
-        Vector2 topRight = new(ImGui.GetIO().DisplaySize.X - WindowWidth, 0);
-        BeginOverlayWindow(topRight);
-
-        RenderMetrics(metrics, fpsBuffer, fpsIndex);
-
-        RenderProcessMonitors();
-
-        EndOverlayWindow();
-    }
-
-    private static void BeginOverlayWindow(Vector2 position)
-    {
-        ImGui.SetNextWindowPos(position, ImGuiCond.Always);
-        ImGui.Begin(ImGuiWindowName, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.NoTitleBar);
-    }
-
-    private static void EndOverlayWindow()
-    {
-        ImGui.End();
-    }
-
-    private static void RenderMetrics(Dictionary<string, Func<string>> metrics, float[] fpsBuffer, int fpsIndex)
-    {
-        if (!ImGui.CollapsingHeader(LabelMetrics, ImGuiTreeNodeFlags.DefaultOpen))
-            return;
-
-        foreach ((string key, Func<string> valueProvider) in metrics)
+        foreach (Node child in container.GetChildren())
         {
-            ImGui.Text($"{key}: {valueProvider()}");
+            if (skipGraph && child is FpsGraph)
+                continue;
 
-            if (key == "FPS")
-            {
-                RenderFpsGraph(fpsBuffer, fpsIndex);
-            }
+            child.QueueFree();
         }
     }
 
-    private static void UpdateFpsBuffer(ref float cachedFps, float[] fpsBuffer, ref int fpsIndex)
+    private Label CreateLabel(string text)
     {
-        cachedFps = (float)Retrieve(Monitor.TimeFps);
-        fpsBuffer[fpsIndex] = cachedFps;
-        fpsIndex = (fpsIndex + 1) % fpsBuffer.Length;
-    }
-
-    private static void RenderFpsGraph(float[] fpsBuffer, int fpsIndex)
-    {
-        ImGui.PushStyleVar(ImGuiStyleVar.FramePadding, Vector2.Zero);
-
-        ImGui.PlotLines(LabelFpsGraph, ref fpsBuffer[0], fpsBuffer.Length, fpsIndex,
-            overlay_text: null,
-            scale_min: 0,
-            scale_max: DisplayServer.ScreenGetRefreshRate(),
-            graph_size: new Vector2(WindowWidth - FpsGraphWidthMargin, FpsGraphHeight));
-
-        ImGui.PopStyleVar();
+        Label label = new()
+        {
+            Text = text,
+            AutowrapMode = TextServer.AutowrapMode.Off
+        };
+        label.AddThemeColorOverride("font_color", TextColor);
+        return label;
     }
 
     private static double Retrieve(Monitor monitor) => Performance.GetMonitor(monitor);
+
+    // Nested Class: FPS Graph
+    private partial class FpsGraph : Control
+    {
+        private float[] _data = [];
+        private int _dataIndex;
+        private float _maxRefreshRate;
+
+        public override void _Ready()
+        {
+            _maxRefreshRate = DisplayServer.ScreenGetRefreshRate();
+        }
+
+        public void UpdateData(float[] data, int index)
+        {
+            _data = data;
+            _dataIndex = index;
+            QueueRedraw();
+        }
+
+        public override void _Draw()
+        {
+            if (_data.Length == 0)
+                return;
+
+            Vector2 graphSize = Size;
+            int bufferLength = _data.Length;
+            float xStep = graphSize.X / (bufferLength - 1);
+
+            Vector2[] points = new Vector2[bufferLength];
+            for (int i = 0; i < bufferLength; i++)
+            {
+                int dataIdx = (_dataIndex + i) % bufferLength;
+                float normalizedValue = Mathf.Clamp(_data[dataIdx] / _maxRefreshRate, 0f, 1f);
+                float x = i * xStep;
+                float y = graphSize.Y - (normalizedValue * graphSize.Y);
+                points[i] = new Vector2(x, y);
+            }
+
+            // Draw filled area
+            Vector2[] fillPoints = new Vector2[bufferLength + 2];
+            fillPoints[0] = new Vector2(0, graphSize.Y);
+            for (int i = 0; i < bufferLength; i++)
+            {
+                fillPoints[i + 1] = points[i];
+            }
+            fillPoints[bufferLength + 1] = new Vector2(graphSize.X, graphSize.Y);
+            DrawColoredPolygon(fillPoints, GraphFillColor);
+
+            // Draw line
+            for (int i = 0; i < bufferLength - 1; i++)
+            {
+                DrawLine(points[i], points[i + 1], GraphLineColor, 2f);
+            }
+        }
+    }
 }

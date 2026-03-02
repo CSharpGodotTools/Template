@@ -3,8 +3,6 @@
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <LangVersion>latest</LangVersion>
-        <!--Required for ImGui-->
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <EnableDynamicLoading>true</EnableDynamicLoading>
         <!--Prevent use of the global usings feature-->
         <ImplicitUsings>false</ImplicitUsings>
@@ -23,7 +21,6 @@
         <!-- Package References -->
         <!-- Condition="!Exists('ENet-CSharp.dll')" is required for other platforms -->
         <PackageReference Include="ENet-CSharp" Version="2.4.8" Condition="!Exists('ENet-CSharp.dll')" />
-        <PackageReference Include="ImGui.NET" Version="1.91.6.1" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <!-- https://github.com/Cat-Lips/GodotSharp.SourceGenerators -->
         <PackageReference Include="GodotSharp.SourceGenerators" Version="2.7.0-260208-1601.Release" />

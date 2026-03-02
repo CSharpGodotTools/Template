@@ -26,7 +26,7 @@ This is an on-going project I've been working on. I know how hard it is to actua
   - [Centralized Component Scripts](docs/utilities/ComponentScripts.md)
 - Debugging
   - [Visual In-Game Debugging](Template.Visualize/README.md)
-  - [ImGui Metrics Overlay](docs/utilities/MetricsOverlay.md)
+  - [Metrics Overlay](docs/utilities/MetricsOverlay.md)
   - [Console Commands](docs/utilities/ConsoleCommands.md)
   - [Custom Main Run Args](docs/utilities/CustomMainRunArgs.md)
   - [GDUnit4 Testing](docs/utilities/GDUnitTesting.md)

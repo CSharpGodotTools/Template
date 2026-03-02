@@ -56,6 +56,7 @@ public abstract partial class AutoloadsFramework : Node
         SceneManager = new SceneManager(this, _scenes);
         Services = new Services(this);
         MetricsOverlay = new MetricsOverlay();
+        AddChild(MetricsOverlay);
         Profiler = new Profiler();
         GameConsole = GetNode<GameConsole>("%Console");
         FocusOutline = new FocusOutlineManager(this);
@@ -82,7 +83,6 @@ public abstract partial class AutoloadsFramework : Node
     public sealed override void _Process(double delta)
     {
         OptionsManager.Update();
-        MetricsOverlay.Update();
 
 #if DEBUG
         VisualizeAutoload.Update();

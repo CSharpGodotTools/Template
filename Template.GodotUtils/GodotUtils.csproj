@@ -19,7 +19,6 @@
 		<PackageReference Include="ENet-CSharp" Version="2.4.8" Condition="!Exists('ENet-CSharp.dll')" />
 		<!-- JSON support -->
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="ImGui.NET" Version="1.91.6.1" />
 		<PackageReference Include="GodotSharp" Version="4.6.1" />
 	</ItemGroup>
 
