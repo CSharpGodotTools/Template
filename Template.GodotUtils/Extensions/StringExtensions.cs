@@ -8,7 +8,7 @@ namespace GodotUtils;
 /// <summary>
 /// Extension helpers for strings.
 /// </summary>
-public static partial class StringExtensions
+public static class StringExtensions
 {
     /// <summary>
     /// Returns true if the string looks like an IP address or "localhost".

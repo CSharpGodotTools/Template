@@ -9,8 +9,11 @@ namespace GodotUtils.Debugging;
 /// <summary>
 /// Formats JSON parsing errors with nearby context lines.
 /// </summary>
-public class JsonExceptionHandler
+public static class JsonExceptionHandler
 {
+    private const int ContextLinesBefore = 7;
+    private const int ContextLinesAfter = 8;
+
     /// <summary>
     /// Prints a formatted JSON parsing error with context.
     /// </summary>
@@ -30,8 +33,8 @@ public class JsonExceptionHandler
             string problematicLine = lines[lineIndex];
 
             // Determine the range of lines to display
-            int startLine = Math.Max(0, lineIndex - 7);
-            int endLine = Math.Min(lines.Length, lineIndex + 8);
+            int startLine = Math.Max(0, lineIndex - ContextLinesBefore);
+            int endLine = Math.Min(lines.Length, lineIndex + ContextLinesAfter);
 
             // Create the error message
             StringBuilder errorMessage = new();

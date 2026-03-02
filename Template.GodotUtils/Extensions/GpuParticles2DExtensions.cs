@@ -5,7 +5,7 @@ namespace GodotUtils;
 /// <summary>
 /// Extension helpers for 2D GPU particles.
 /// </summary>
-public static class GPUParticles2DExtensions
+public static class GpuParticles2DExtensions
 {
     /// <summary>
     /// Gets the ParticleProcessMaterial assigned to the particle node.

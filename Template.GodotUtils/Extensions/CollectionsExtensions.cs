@@ -7,7 +7,7 @@ namespace GodotUtils;
 /// <summary>
 /// Extension helpers for collections.
 /// </summary>
-public static class ExtensionsCollection
+public static class CollectionsExtensions
 {
     /// <summary>
     /// Iterates over the sequence and invokes <paramref name="action"/> for each element.
