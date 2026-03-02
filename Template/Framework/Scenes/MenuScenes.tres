@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="MenuScenes" format=3 uid="uid://xig0kceiok04"]
+
+[ext_resource type="PackedScene" uid="uid://rbcqvr4snrvn" path="res://Framework/Scenes/MenuUI/Credits/Credits.tscn" id="1_sc3de"]
+[ext_resource type="PackedScene" uid="uid://d4a5xfmaulku1" path="res://Framework/Scenes/MenuUI/MainMenu/MainMenu.tscn" id="2_65alf"]
+[ext_resource type="PackedScene" uid="uid://d1jo48n2hdkih" path="res://Framework/ModLoader/ModLoader.tscn" id="3_jpuli"]
+[ext_resource type="PackedScene" uid="uid://7tfets4irkba" path="res://Framework/Scenes/Options/Options.tscn" id="4_u3dbg"]
+[ext_resource type="Script" uid="uid://17yxgcswri77" path="res://Framework/Scenes/MenuScenes.cs" id="5_o2h5i"]
+
+[resource]
+script = ExtResource("5_o2h5i")
+MainMenu = ExtResource("2_65alf")
+ModLoader = ExtResource("3_jpuli")
+Options = ExtResource("4_u3dbg")
+Credits = ExtResource("1_sc3de")

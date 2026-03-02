@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ccaiohcajdd8s"]
+
+[ext_resource type="Script" uid="uid://b0qnc724h23l0" path="res://Framework/Netcode/Examples/TopDown2/World.cs" id="1_wleuo"]
+
+[node name="World" type="Node2D" unique_id=583964021]
+script = ExtResource("1_wleuo")
