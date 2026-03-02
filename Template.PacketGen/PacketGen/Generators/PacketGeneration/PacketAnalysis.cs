@@ -5,8 +5,16 @@ using System.Collections.Generic;
 
 namespace PacketGen.Generators.PacketGeneration;
 
+/// <summary>
+/// Analyzes packet type symbols to extract properties and metadata for code generation.
+/// </summary>
 internal static class PacketAnalysis
 {
+    /// <summary>
+    /// Analyzes a packet type symbol and builds a generation model.
+    /// </summary>
+    /// <param name="symbol">The packet type symbol to analyze.</param>
+    /// <returns>A model containing all properties and metadata needed for generation.</returns>
     public static PacketGenerationModel Analyze(INamedTypeSymbol symbol)
     {
         ImmutableArray<ISymbol> members = symbol.GetMembers();

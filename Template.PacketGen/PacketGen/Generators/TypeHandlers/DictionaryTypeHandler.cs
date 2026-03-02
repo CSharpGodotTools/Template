@@ -3,6 +3,9 @@ using PacketGen.Generators.PacketGeneration;
 
 namespace PacketGen.Generators.TypeHandlers;
 
+/// <summary>
+/// Handles serialization of Dictionary&lt;TKey, TValue&gt; collections.
+/// </summary>
 internal sealed class DictionaryTypeHandler(TypeHandlerRegistry registry) : ITypeHandler
 {
     public bool CanHandle(ITypeSymbol type)

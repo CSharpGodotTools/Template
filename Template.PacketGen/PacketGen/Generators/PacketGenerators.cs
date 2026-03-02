@@ -3,6 +3,9 @@ using PacketGen.Generators;
 
 namespace PacketGen;
 
+/// <summary>
+/// Entry point for packet source generation.
+/// </summary>
 internal static class PacketGenerators
 {
     private static readonly PacketGenerationOrchestrator _orchestrator = new();

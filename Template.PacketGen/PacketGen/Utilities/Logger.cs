@@ -1,4 +1,5 @@
 using Microsoft.CodeAnalysis;
+using System.Collections.Immutable;
 using System.ComponentModel;
 
 namespace PacketGen;
@@ -74,7 +75,7 @@ internal static class Logger
         Location location = Location.None;
         if (symbol != null)
         {
-            var locations = symbol.Locations;
+            ImmutableArray<Location> locations = symbol.Locations;
             location = locations.Length > 0 ? locations[0] : Location.None;
         }
 

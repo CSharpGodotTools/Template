@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace PacketGen.Generators.TypeHandlers;
 
+/// <summary>
+/// Registry that dispatches type serialization/deserialization to appropriate handlers.
+/// </summary>
 internal sealed class TypeHandlerRegistry
 {
     private readonly List<ITypeHandler> _handlers = [];

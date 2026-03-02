@@ -2,13 +2,17 @@
 
 namespace PacketGen.Utilities;
 
-// See Framework.Netcode.PacketReader for all read methods
-internal class ReadMethodSuffix
+/// <summary>
+/// Maps type symbols to their corresponding PacketReader Read method suffixes.
+/// See Framework.Netcode.PacketReader for all read methods.
+/// </summary>
+internal static class ReadMethodSuffix
 {
     /// <summary>
-    /// Returns the suffix for the appropriate Read() method defined in <see href="https://github.com/CSharpGodotTools/Framework/blob/7856ac9ebd0bd3fbda74d991c639c96797c2ced2/Netcode/Packet/PacketReader.cs">PacketReader.cs</see>.
+    /// Returns the suffix for the appropriate Read method defined in PacketReader.cs.
     /// </summary>
-    /// <param name="typeSymbol">The type symbol to get the type name from.</param>
+    /// <param name="typeSymbol">The type symbol to get the Read method suffix for.</param>
+    /// <returns>The method suffix (e.g., "Int", "String", "Bool"), or null if not supported.</returns>
     public static string? Get(ITypeSymbol typeSymbol)
     {
         return typeSymbol.ToDisplayString() switch

@@ -3,8 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public static class PacketRegistryGenerator
+namespace PacketGen.Generators;
+
+/// <summary>
+/// Generates PacketRegistry.g.cs containing deterministic opcode mappings for client and server packets.
+/// </summary>
+internal static class PacketRegistryGenerator
 {
+    /// <summary>
+    /// Generates source code for the packet registry class with deterministic opcode assignments.
+    /// </summary>
+    /// <param name="registryClassSymbol">The symbol representing the [PacketRegistry] annotated class.</param>
+    /// <param name="idTypeName">The type name to use for opcodes (e.g., "byte", "ushort").</param>
+    /// <param name="clientSymbols">List of all ClientPacket-derived types.</param>
+    /// <param name="serverSymbols">List of all ServerPacket-derived types.</param>
+    /// <returns>Generated source code for the packet registry.</returns>
     public static string GetSource(
         INamedTypeSymbol registryClassSymbol,
         string idTypeName,
@@ -18,13 +31,13 @@ public static class PacketRegistryGenerator
         int clientOpcode = 0;
         int serverOpcode = 0;
 
-        var clientEntries = new List<string>();
-        var serverEntries = new List<string>();
+        List<string> clientEntries = [];
+        List<string> serverEntries = [];
 
-        var namespaces = new HashSet<string>();
+        HashSet<string> namespaces = [];
 
         // Process client packets
-        foreach (var symbol in clientSymbols)
+        foreach (INamedTypeSymbol symbol in clientSymbols)
         {
             if (clientOpcode > byte.MaxValue)
                 throw new InvalidOperationException("Client packet opcode overflow");
@@ -49,7 +62,7 @@ public static class PacketRegistryGenerator
         }
 
         // Process server packets
-        foreach (var symbol in serverSymbols)
+        foreach (INamedTypeSymbol symbol in serverSymbols)
         {
             if (serverOpcode > byte.MaxValue)
                 throw new InvalidOperationException("Server packet opcode overflow");
@@ -73,7 +86,7 @@ public static class PacketRegistryGenerator
             namespaces.Add(namespaceName);
         }
 
-        var usings = string.Join("\n", namespaces.OrderBy(ns => ns).Select(ns => $"using {ns};"));
+        string usings = string.Join("\n", namespaces.OrderBy(ns => ns).Select(ns => $"using {ns};"));
 
         string registryNamespace = registryClassSymbol.ContainingNamespace.ToDisplayString();
         string registryClassName = registryClassSymbol.Name;

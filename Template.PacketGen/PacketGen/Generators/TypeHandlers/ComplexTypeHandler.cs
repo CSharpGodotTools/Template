@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace PacketGen.Generators.TypeHandlers;
 
+/// <summary>
+/// Handles serialization of user-defined classes and structs by recursively serializing their properties.
+/// </summary>
 internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHandler
 {
     private const int MaxTraversalDepth = 24;

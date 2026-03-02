@@ -4,6 +4,9 @@ using PacketGen.Utilities;
 
 namespace PacketGen.Generators.TypeHandlers;
 
+/// <summary>
+/// Handles serialization of List&lt;T&gt; collections.
+/// </summary>
 internal sealed class ListTypeHandler(TypeHandlerRegistry registry) : ITypeHandler
 {
     public bool CanHandle(ITypeSymbol type)

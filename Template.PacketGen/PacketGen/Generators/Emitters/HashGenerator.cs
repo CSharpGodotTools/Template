@@ -4,8 +4,13 @@ using System.Collections.Generic;
 
 namespace PacketGen.Generators.Emitters;
 
+/// <summary>
+/// Generates GetHashCode expressions for packet properties.
+/// </summary>
 internal sealed class HashGenerator : IHashGenerator
 {
+    private const int HashMultiplier = 397;
+
     public void Generate(List<HashLine> hashLines, IPropertySymbol property, HashSet<string> namespaces)
     {
         ITypeSymbol type = property.Type;
@@ -16,7 +21,7 @@ internal sealed class HashGenerator : IHashGenerator
             ? $"DeepHash({property.Name})"
             : BuildDefaultHash(type, typeName, property);
 
-        hashLines.Add(new HashLine($"hash = (hash * 397) ^ {propHash};", usesDeepHash));
+        hashLines.Add(new HashLine($"hash = (hash * {HashMultiplier}) ^ {propHash};", usesDeepHash));
     }
 
     private static string BuildDefaultHash(ITypeSymbol type, string typeName, IPropertySymbol property)

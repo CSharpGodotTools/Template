@@ -2,6 +2,9 @@ using System.Text;
 
 namespace PacketGen.Generators.TypeHandlers;
 
+/// <summary>
+/// Helper for generating unique variable names during code generation.
+/// </summary>
 internal static class TypeHandlerNameHelper
 {
     public static string BuildName(string seed, string role, int depth)

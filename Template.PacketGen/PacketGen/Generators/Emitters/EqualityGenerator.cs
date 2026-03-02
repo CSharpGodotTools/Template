@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace PacketGen.Generators.Emitters;
 
+/// <summary>
+/// Generates Equals method expressions for packet properties.
+/// </summary>
 internal sealed class EqualityGenerator : IEqualityGenerator
 {
     public void Generate(List<EqualityLine> equalsLines, IPropertySymbol property)

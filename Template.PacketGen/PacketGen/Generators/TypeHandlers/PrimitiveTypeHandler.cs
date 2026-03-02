@@ -4,6 +4,9 @@ using PacketGen.Utilities;
 
 namespace PacketGen.Generators.TypeHandlers;
 
+/// <summary>
+/// Handles serialization of primitive types (int, string, bool, etc.).
+/// </summary>
 internal sealed class PrimitiveTypeHandler : ITypeHandler
 {
     public bool CanHandle(ITypeSymbol type) => ReadMethodSuffix.Get(type) != null;

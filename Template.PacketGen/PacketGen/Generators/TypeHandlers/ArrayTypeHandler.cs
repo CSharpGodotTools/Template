@@ -6,6 +6,9 @@ using PacketGen.Utilities;
 
 namespace PacketGen.Generators.TypeHandlers;
 
+/// <summary>
+/// Handles serialization of arrays including jagged arrays.
+/// </summary>
 internal sealed class ArrayTypeHandler(TypeHandlerRegistry registry) : ITypeHandler
 {
     public bool CanHandle(ITypeSymbol type) => type is IArrayTypeSymbol;

@@ -8,8 +8,21 @@ using System.Linq;
 
 namespace PacketGen.Generators;
 
+/// <summary>
+/// Orchestrates packet code generation by analyzing packet types and emitting Write, Read, Equals, and GetHashCode methods.
+/// </summary>
 internal sealed class PacketGenerationOrchestrator
 {
+    private const int HashSeedValue = 17;
+    private const int HashMultiplierPrimary = 397;
+    private const int HashMultiplierSecondary = 31;
+
+    /// <summary>
+    /// Generates complete source code for a packet class including serialization and equality methods.
+    /// </summary>
+    /// <param name="compilation">The current compilation context.</param>
+    /// <param name="symbol">The packet type symbol to generate code for.</param>
+    /// <returns>Generated source code, or null if generation should be skipped.</returns>
     public string? GenerateSource(Compilation compilation, INamedTypeSymbol symbol)
     {
         PacketGenerationModel model = PacketAnalysis.Analyze(symbol);
@@ -100,7 +113,7 @@ internal sealed class PacketGenerationOrchestrator
         if (left.Length != right.Length)
             return false;
 
-        var elementType = left.GetType().GetElementType();
+        Type? elementType = left.GetType().GetElementType();
         if (elementType != null && elementType != typeof(object) && !typeof(IEnumerable).IsAssignableFrom(elementType))
             return StructuralEqualityComparer.Equals(left, right);
 
@@ -175,7 +188,7 @@ internal sealed class PacketGenerationOrchestrator
 
     private static int ArrayHash(Array array)
     {
-        var elementType = array.GetType().GetElementType();
+        Type? elementType = array.GetType().GetElementType();
         if (elementType != null && elementType != typeof(object) && !typeof(IEnumerable).IsAssignableFrom(elementType))
             return StructuralEqualityComparer.GetHashCode(array);
 
@@ -188,9 +201,9 @@ internal sealed class PacketGenerationOrchestrator
 
         foreach (DictionaryEntry entry in dict)
         {
-            int entryHash = 17;
-            entryHash = (entryHash * 31) ^ DeepHash(entry.Key);
-            entryHash = (entryHash * 31) ^ DeepHash(entry.Value);
+            int entryHash = {{HashSeedValue}};
+            entryHash = (entryHash * {{HashMultiplierSecondary}}) ^ DeepHash(entry.Key);
+            entryHash = (entryHash * {{HashMultiplierSecondary}}) ^ DeepHash(entry.Value);
             hash ^= entryHash;
         }
 
@@ -199,11 +212,11 @@ internal sealed class PacketGenerationOrchestrator
 
     private static int SequenceHash(IEnumerable sequence)
     {
-        int hash = 17;
+        int hash = {{HashSeedValue}};
 
         foreach (object item in sequence)
         {
-            hash = (hash * 31) ^ DeepHash(item);
+            hash = (hash * {{HashMultiplierSecondary}}) ^ DeepHash(item);
         }
 
         return hash;
@@ -243,7 +256,7 @@ public partial class {{model.ClassName}}
 
     public override int GetHashCode()
     {
-        int hash = 17;
+        int hash = {{HashSeedValue}};
 
 {{string.Join("\n", hashLines.Select(line => indent8 + line.Expression))}}
 
@@ -268,16 +281,14 @@ public partial class {{model.ClassName}}
         DictionaryTypeHandler dictionaries = new(registry);
         ComplexTypeHandler complexTypes = new(registry);
 
-#pragma warning disable IDE0300 // Simplify collection initialization
-        registry.SetHandlers(new ITypeHandler[]
-        {
+        registry.SetHandlers(
+        [
             primitives,
             arrays,
             lists,
             dictionaries,
             complexTypes
-        });
-#pragma warning restore IDE0300 // Simplify collection initialization
+        ]);
 
         return registry;
     }
