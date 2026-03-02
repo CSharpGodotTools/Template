@@ -11,6 +11,12 @@ namespace GodotUtils.Debugging;
 /// </summary>
 internal static class VisualUI
 {
+    private const string MainPanelName = "Main Panel";
+    private const string MutableMembersName = "Mutable Members";
+    private const string ReadonlyMembersName = "Readonly Members";
+    private const string LogsName = "Logs";
+    private const string MainVBoxName = "Main VBox";
+
     /// <summary>
     /// Creates the visual panel for a specified visual node.
     /// </summary>
@@ -20,18 +26,18 @@ internal static class VisualUI
 
         PanelContainer panelContainer = VisualUiElementFactory.CreatePanelContainer(node.Name);
         panelContainer.MouseFilter = MouseFilterEnum.Ignore;
-        panelContainer.Name = "Main Panel";
+        panelContainer.Name = MainPanelName;
 
         Vector2 currentCameraZoom = GetCurrentCameraZoom(node);
         panelContainer.Scale = new Vector2(1f / currentCameraZoom.X, 1f / currentCameraZoom.Y) * VisualUiLayout.PanelScaleFactor;
 
         VBoxContainer mutableMembersVbox = VisualUiElementFactory.CreateColoredVBox(VisualUiResources.MutableMembersColor);
-        mutableMembersVbox.MouseFilter =  MouseFilterEnum.Ignore;
-        mutableMembersVbox.Name = "Mutable Members";
+        mutableMembersVbox.MouseFilter = MouseFilterEnum.Ignore;
+        mutableMembersVbox.Name = MutableMembersName;
 
         VBoxContainer readonlyMembersVbox = VisualUiElementFactory.CreateColoredVBox(VisualUiResources.ReadonlyMembersColor);
         readonlyMembersVbox.MouseFilter = MouseFilterEnum.Ignore;
-        readonlyMembersVbox.Name = "Readonly Members";
+        readonlyMembersVbox.Name = ReadonlyMembersName;
 
         // Readonly Members
         ReadonlyMemberBinder readonlyBinder = new();
@@ -46,7 +52,7 @@ internal static class VisualUI
 
         VBoxContainer vboxLogs = new()
         {
-            Name = "Logs"
+            Name = LogsName
         };
         mutableMembersVbox.AddChild(vboxLogs);
 
@@ -59,19 +65,15 @@ internal static class VisualUI
             CustomMinimumSize = new Vector2(0, VisualUiLayout.MinScrollViewDistance)
         };
 
-        // Make them hidden by default
-        //mutableMembersVbox.Hide();
-        //readonlyMembersVbox.Hide();
-
         VBoxContainer titleBar = VisualTitleBarBuilder.Build(node.Name, mutableMembersVbox, readonlyMembersVbox, visualData, readonlyMembers);
-        titleBar.Name = "Main VBox";
+        titleBar.Name = MainVBoxName;
         titleBar.MouseFilter = MouseFilterEnum.Ignore;
         titleBar.AddChild(readonlyMembersVbox);
         titleBar.AddChild(mutableMembersVbox);
 
         scrollContainer.AddChild(titleBar);
         panelContainer.AddChild(scrollContainer);
-        
+
         // Add to canvas layer so UI is not affected by lighting in game world
         CanvasLayer canvasLayer = VisualUiElementFactory.CreateCanvasLayer(node.Name, node.GetInstanceId());
         canvasLayer.AddChild(panelContainer);
@@ -85,19 +87,11 @@ internal static class VisualUI
     {
         Viewport viewport = node.GetViewport();
         if (viewport == null)
-        {
             return Vector2.One;
-        }
 
         Camera2D cam2D = viewport.GetCamera2D();
 
-        if (cam2D != null)
-        {
-            return cam2D.Zoom;
-        }
-
-        return Vector2.One;
+        return cam2D?.Zoom ?? Vector2.One;
     }
-
 }
 #endif

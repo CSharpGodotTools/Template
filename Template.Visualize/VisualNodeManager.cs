@@ -7,6 +7,7 @@ namespace GodotUtils.Debugging;
 
 internal sealed class VisualNodeManager
 {
+    private static readonly Type[] _positionNodeTypes = [typeof(Node2D), typeof(Control)];
     private static readonly Vector2 _defaultOffset = new(100, 100);
     private readonly Dictionary<ulong, VisualNodeInfo> _nodeTrackers = [];
 
@@ -21,7 +22,7 @@ internal sealed class VisualNodeManager
             (Control visualPanel, IReadOnlyList<Action> actions) = VisualUI.CreateVisualPanel(visualData, readonlyMembers);
 
             ulong instanceId = node.GetInstanceId();
-            Node positionalNode = GetClosestParentOfType(node, typeof(Node2D), typeof(Control));
+            Node positionalNode = GetClosestParentOfType(node, _positionNodeTypes);
 
             if (positionalNode == null)
             {
@@ -35,21 +36,7 @@ internal sealed class VisualNodeManager
 
             visualPanel.GlobalPosition = initialPosition;
 
-            // Ensure the added visual panel is not overlapping with any other visual panels
-            Vector2 offset = Vector2.Zero;
-
-            foreach (VisualNodeInfo tracker in _nodeTrackers.Values)
-            {
-                Control existingControl = tracker.VisualControl;
-                if (existingControl == visualPanel)
-                    continue; // Skip checking against itself
-
-                if (ControlsOverlapping(visualPanel, existingControl))
-                {
-                    // Move vbox down by the existing controls height
-                    offset += new Vector2(0, existingControl.GetRect().Size.Y);
-                }
-            }
+            Vector2 offset = CalculateVerticalOffset(visualPanel);
 
             _nodeTrackers.Add(instanceId, new VisualNodeInfo(actions, visualPanel, positionalNode ?? node, offset));
         }
@@ -112,11 +99,9 @@ internal sealed class VisualNodeManager
 
     private static Node GetClosestParentOfType(Node node, params Type[] typesToCheck)
     {
-        // Check if the current node is of one of the specified types
         if (IsNodeOfType(node, typesToCheck))
             return node;
 
-        // Recursively get the parent and check its type
         Node parent = node.GetParent();
 
         while (parent != null)
@@ -127,8 +112,23 @@ internal sealed class VisualNodeManager
             parent = parent.GetParent();
         }
 
-        // If no suitable parent is found, return null
         return null;
+    }
+
+    private Vector2 CalculateVerticalOffset(Control visualPanel)
+    {
+        Vector2 offset = Vector2.Zero;
+
+        foreach (VisualNodeInfo tracker in _nodeTrackers.Values)
+        {
+            Control existingControl = tracker.VisualControl;
+            if (!ControlsOverlapping(visualPanel, existingControl))
+                continue;
+
+            offset += new Vector2(0, existingControl.GetRect().Size.Y);
+        }
+
+        return offset;
     }
 
     private static bool IsNodeOfType(Node node, Type[] typesToCheck)
@@ -144,11 +144,9 @@ internal sealed class VisualNodeManager
 
     private static bool ControlsOverlapping(Control control1, Control control2)
     {
-        // Get the bounding rectangles of the control nodes
         Rect2 rect1 = control1.GetRect();
         Rect2 rect2 = control2.GetRect();
 
-        // Check if the rectangles intersect
         return rect1.Intersects(rect2);
     }
 }

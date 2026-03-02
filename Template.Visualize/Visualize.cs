@@ -9,6 +9,7 @@ namespace GodotUtils.Debugging;
 /// </summary>
 public static class Visualize
 {
+    private const double DefaultFadeTimeSeconds = 5;
     private const int MaxLabelsVisible = 5;
     private static readonly VisualNodeManager _visualNodeManager = new();
 
@@ -30,7 +31,7 @@ public static class Visualize
         _visualNodeManager.Update();
     }
 
-    public static void Log(object message, Node node, double fadeTime = 5)
+    public static void Log(object message, Node node, double fadeTime = DefaultFadeTimeSeconds)
     {
         ArgumentNullException.ThrowIfNull(node);
 
@@ -63,7 +64,7 @@ public static class Visualize
 
     private static void AddLabel(VBoxContainer vbox, object message, double fadeTime)
     {
-        Label label = new() { Text = message?.ToString() };
+        Label label = new() { Text = message?.ToString() ?? string.Empty };
 
         vbox.AddChild(label);
         vbox.MoveChild(label, 0);
