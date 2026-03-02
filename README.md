@@ -23,16 +23,16 @@ This is an on-going project I've been working on. I know how hard it is to actua
   - Minimal 3D scene
   - [FPS scene](https://github.com/CSharpGodotTools/Template/wiki/FPS-Template)
 - Performance
-  - [Centralized Component Scripts](docs/utilities/Component-Scripts.md)
+  - [Centralized Component Scripts](docs/utilities/ComponentScripts.md)
 - Debugging
   - [Visual In-Game Debugging](https://github.com/CSharpGodotTools/Template/blob/main/Template.Visualize/README.md)
-  - [ImGui Metrics Overlay](docs/utilities/Metrics-Overlay.md)
-  - [Console Commands](docs/utilities/Console-Commands.md)
-  - [Custom Main Run Args](docs/utilities/Custom-Main-Run-Args.md)
-  - [GDUnit4 Testing](docs/utilities/GDUnit-Testing.md)
+  - [ImGui Metrics Overlay](docs/utilities/MetricsOverlay.md)
+  - [Console Commands](docs/utilities/ConsoleCommands.md)
+  - [Custom Main Run Args](docs/utilities/CustomMainRunArgs.md)
+  - [GDUnit4 Testing](docs/utilities/GDUnitTesting.md)
 - Utilities
   - [Cat Lips Source Generators](https://github.com/Cat-Lips/GodotSharp.SourceGenerators)
-  - [Simplified Tweens](docs/utilities/Simplified-Tweens.md)
+  - [Simplified Tweens](docs/utilities/SimplifiedTweens.md)
   - [Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)
   - [Services](docs/utilities/Services.md)
  

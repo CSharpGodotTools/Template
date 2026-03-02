@@ -94,9 +94,9 @@ Notice the `SPacketHello` packet has only 12 bytes. 10 for the characters in "Wh
 
 ## Further Reading
 - [Packets](Packets.md)
-- [Client API](Client-API.md)
-- [Server API](Server-API.md)
-- [Common Mistakes](Netcode-Common-Mistakes.md)
+- [Client API](ClientAPI.md)
+- [Server API](ServerAPI.md)
+- [Common Mistakes](NetcodeCommonMistakes.md)
 - [ENet-CSharp Documentation](https://github.com/nxrighthere/ENet-CSharp?tab=readme-ov-file#api-reference)
 
 [https://github.com/user-attachments/assets/964ced37-4a20-4de8-87ee-550fe5ecb561](https://github.com/user-attachments/assets/964ced37-4a20-4de8-87ee-550fe5ecb561)
