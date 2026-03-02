@@ -10,7 +10,7 @@ using System.Text.Json;
 
 namespace Framework.UI;
 
-public class ModLoaderUI
+public class ModLoaderUi
 {
     private readonly Dictionary<string, ModInfo> _mods = [];
     private readonly Dictionary<string, ManagedModRuntime> _managedMods = [];
