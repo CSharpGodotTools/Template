@@ -8,7 +8,7 @@ Game.Metrics.StartMonitoring("My Variable", () => _someVariable);
 //Game.Metrics.StopMonitoring("My Variable");
 ```
 
-<img width="214" height="163" alt="image" src="https://github.com/user-attachments/assets/e8174be2-f7fe-483e-990d-9d7f2fc67eda" />
+<img width="293" height="311" alt="image" src="https://github.com/user-attachments/assets/02c77eef-7295-4bf0-856f-d0d32e0993ed" />
 
 You can also profile the rest of your codes performance.
 
