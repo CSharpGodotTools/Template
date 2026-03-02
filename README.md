@@ -46,14 +46,6 @@ Download the [latest release](https://github.com/CSharpGodotTools/Template/relea
 
 Click `Run Setup` to restart Godot with your template ready to go.
 
-## Updates
-Framework is now integrated as a local folder. To update it, manually copy the latest Framework files from the [Framework repository](https://github.com/CSharpGodotTools/Framework) into the `Template/Framework` folder.
-
-To update imgui-godot (still a submodule):
-```
-git submodule update --remote addons/imgui-godot
-```
-
 ## Thank You
 [Brian Shao](https://github.com/cydq)  
 [Cat Lips](https://github.com/Cat-Lips)  
