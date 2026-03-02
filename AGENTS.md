@@ -24,10 +24,11 @@ When rules conflict, higher priority wins.
 Execute every task as this loop:
 
 1. **Identify subproject.** Determine target: `Template`, `Template.GodotUtils`, `Template.PacketGen`, or `Template.Visualize`. If ambiguous, ask the user **before proceeding**. Each subfolder is a separate project root (`Template/` = main game project).
-2. **Apply all rules in this document** to every file touched. Never assume existing code is correct — fix bugs and inconsistencies in the affected area or raise them if out of scope.
-3. **Build.** Run `cd <project-folder> && dotnet build`. Fix all compiler errors. Iterate until clean.
-4. **Self-review.** Rebuild. Run relevant tests. Verify style/formatting compliance. Step through changes mentally for regressions.
-5. **Declare complete** only after a green build and full review.
+2. **Branch early.** Start each task on a new descriptive Git branch and commit changes there as you work.
+3. **Apply all rules in this document** to every file touched. Never assume existing code is correct — fix bugs and inconsistencies in the affected area or raise them if out of scope.
+4. **Build.** Run `cd <project-folder> && dotnet build`. Fix all compiler errors. Iterate until clean.
+5. **Self-review.** Rebuild. Run relevant tests. Verify style/formatting compliance. Step through changes mentally for regressions.
+6. **Declare complete** only after a green build and full review.
 
 ---
 
