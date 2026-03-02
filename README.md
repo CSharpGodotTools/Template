@@ -21,11 +21,11 @@ This is an on-going project I've been working on. I know how hard it is to actua
 - Templates
   - Minimal 2D scene
   - Minimal 3D scene
-  - [FPS scene](https://github.com/CSharpGodotTools/Template/wiki/FPS-Template)
+  - FPS scene
 - Performance
   - [Centralized Component Scripts](docs/utilities/ComponentScripts.md)
 - Debugging
-  - [Visual In-Game Debugging](https://github.com/CSharpGodotTools/Template/blob/main/Template.Visualize/README.md)
+  - [Visual In-Game Debugging](Template.Visualize/README.md)
   - [ImGui Metrics Overlay](docs/utilities/MetricsOverlay.md)
   - [Console Commands](docs/utilities/ConsoleCommands.md)
   - [Custom Main Run Args](docs/utilities/CustomMainRunArgs.md)
@@ -33,7 +33,6 @@ This is an on-going project I've been working on. I know how hard it is to actua
 - Utilities
   - [Cat Lips Source Generators](https://github.com/Cat-Lips/GodotSharp.SourceGenerators)
   - [Simplified Tweens](docs/utilities/SimplifiedTweens.md)
-  - [Extensions](https://github.com/CSharpGodotTools/Template/wiki/Extensions)
   - [Services](docs/utilities/Services.md)
  
 ## Prerequisites
