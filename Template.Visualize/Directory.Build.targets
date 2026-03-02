@@ -3,11 +3,22 @@
     <EnableGodotUtilsPostBuild>true</EnableGodotUtilsPostBuild>
     <GodotUtilsRoot>$(MSBuildThisFileDirectory)</GodotUtilsRoot>
     <GodotTemplateLibs>$(GodotUtilsRoot)..\Template\Framework\Libraries</GodotTemplateLibs>
+    <BuildExtras Condition="'$(BuildExtras)' == ''">false</BuildExtras>
+    <SkipBuild Condition="'$(BuildExtras)' != 'true'">true</SkipBuild>
   </PropertyGroup>
 
-  <Target Name="CopyGodotOutputs"
-          AfterTargets="PostBuildEvent"
-          Condition="'$(EnableGodotUtilsPostBuild)'=='true'">
+  <Target Name="SkipBuildIfNotExtras" Condition="'$(SkipBuild)' == 'true'" BeforeTargets="Build">
+    <Message Importance="high" Text="Skipping build of $(MSBuildProjectName) because BuildExtras is not true." />
+    <PropertyGroup>
+      <BuildDependsOn>
+        $(BuildDependsOn.Replace('Build', ''))
+      </BuildDependsOn>
+    </PropertyGroup>
+  </Target>
+
+    <Target Name="CopyGodotOutputs"
+      AfterTargets="PostBuildEvent"
+      Condition="'$(EnableGodotUtilsPostBuild)'=='true' and '$(BuildExtras)'=='true'">
     <MakeDir Directories="$(GodotTemplateLibs)" />
     <Copy SourceFiles="$(TargetDir)$(AssemblyName).dll"
           DestinationFolder="$(GodotTemplateLibs)"

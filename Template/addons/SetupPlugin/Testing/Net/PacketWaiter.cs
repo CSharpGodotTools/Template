@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Framework.Netcode;
 
 namespace Template.Setup.Testing;
 
@@ -10,7 +11,7 @@ public static class PacketWaiter
         PacketCapture<TPacket> capture,
         ENetTestHarness<TPacket> harness,
         TimeSpan timeout)
-        where TPacket : Framework.Netcode.ClientPacket
+        where TPacket : ClientPacket
     {
         Stopwatch stopwatch = Stopwatch.StartNew();
         PacketWaitDiagnostics diagnostics = new();
