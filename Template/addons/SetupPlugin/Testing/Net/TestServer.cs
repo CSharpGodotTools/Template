@@ -18,6 +18,11 @@ public sealed class TestServer<TPacket> : GodotServer
         }
     }
 
+    protected override void RegisterPackets()
+    {
+        
+    }
+
     private void HandlePacket(TPacket packet, uint peerId)
     {
         _onPacket(packet, peerId);
