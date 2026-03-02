@@ -29,7 +29,7 @@ public partial class ModLoader : Node
         _uiAuthors = GetNode<Label>("%Authors");
         _uiIncompatibilities = GetNode<Label>("%Incompatibilities");
 
-        ModLoaderUI modLoaderUi = new();
+        ModLoaderUi modLoaderUi = new();
         modLoaderUi.LoadMods(this);
         Dictionary<string, ModInfo> mods = modLoaderUi.GetMods();
 

@@ -56,7 +56,7 @@ public partial class OptionsInput
 
         public void Clear()
         {
-            var children = _content.GetChildren();
+            Godot.Collections.Array<Node> children = _content.GetChildren();
             for (int i = 0; i < children.Count; i++)
             {
                 _content.GetChild(i).QueueFree();
