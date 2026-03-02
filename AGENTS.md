@@ -12,11 +12,10 @@ When rules conflict, higher priority wins.
 | Rank | Domain | Scope |
 |------|--------|-------|
 | **P0** | **Build & Functionality** | Code compiles, runs correctly, tests pass, no regressions. |
-| **P1** | **Safety & Nullability** | No defensive null checks on expected non-null values; let crashes expose bugs. |
-| **P2** | **Core Logic** | DRY, explicit types, readability, correct APIs. |
-| **P3** | **Structure & Naming** | File layout, line limits, naming conventions, `.uid` file names synced with script names |
-| **P4** | **Formatting & Style** | Whitespace, brace style, comment aesthetics. |
-| **P5** | **Communication** | Summaries, code-comment hygiene. |
+| **P1** | **Core Logic** | DRY, SRP, SoC, Deep Modules, correct APIs. |
+| **P2** | **Structure & Naming** | File layout, naming conventions, `.uid` file names synced with script file names |
+| **P3** | **Formatting & Style** | Whitespace, brace style, comment aesthetics. |
+| **P4** | **Communication** | Summaries, code-comment hygiene. |
 
 ---
 
@@ -24,7 +23,7 @@ When rules conflict, higher priority wins.
 
 Execute every task as this loop:
 
-1. **Identify subproject.** Determine target: `Template`, `Template.GodotUtils`, or `Template.Visualize`. If ambiguous, ask the user **before proceeding**. Each subfolder is a separate project root (`Template/` = main game project).
+1. **Identify subproject.** Determine target: `Template`, `Template.GodotUtils`, `Template.PacketGen`, or `Template.Visualize`. If ambiguous, ask the user **before proceeding**. Each subfolder is a separate project root (`Template/` = main game project).
 2. **Apply all rules in this document** to every file touched. Never assume existing code is correct — fix bugs and inconsistencies in the affected area or raise them if out of scope.
 3. **Build.** Run `cd <project-folder> && dotnet build`. Fix all compiler errors. Iterate until clean.
 4. **Self-review.** Rebuild. Run relevant tests. Verify style/formatting compliance. Step through changes mentally for regressions.
@@ -37,24 +36,23 @@ Execute every task as this loop:
 * **Explicit types over `var`.** Declare concrete types; never rely on implicit inference.
 * **Primary constructors.** Use when parameters are simple.
 * **DRY.** Factor shared behaviour into helpers/methods. Reuse over duplication.
-* **Readability wins.** Clear names, simple control flow, comments where intent is non-obvious. Bias toward readability in generation and refactoring.
-* **Inline comments.** Concise, human-readable comments for non-obvious steps or performance considerations within method bodies.
+* **Readability.** Clear names, simple control flow, comments where intent is non-obvious.
 * **Short type names.** No excessively long nested type names.
 * **No external private field access.** Never reach into another file's private members (e.g. `custom._optionsManager`). Expose getters or use proper APIs.
 * **Constants over magic values.** All literal numbers/strings become descriptive PascalCase constants.
 * **Named types over tuples.** Return a class/struct, not `Tuple`/`ValueTuple`, for multiple return values.
 * **C# events, not Godot signals.** Use standard C# events for decoupled notifications. Signals are banned.
+* **Favor deep modules.** Hide complex cohesive logic behind simple APIs over 'shallow' files that fragment a single responsibility into multiple files.
+* **Avoid unnecessary null checks.** No defensive null checks on expected non-null values; let crashes expose bugs.
 
 ---
 
 ## §4 Structural & Naming Constraints
 
-* **File names:** max 21 characters (excluding extension). Single dot (extension only).
-* **Trailing acronyms:** PascalCase (`Ui` not `UI`). Example: `OptionsCustomUiDropdown.cs`.
-* **Descriptive names.** No abbreviations in filenames or type identifiers.
+* **Descriptive names:** No abbreviations in filenames or type identifiers, max 22 characters.
+* **Trailing acronyms:** PascalCase (`Ui` not `UI`). Example: `OptionsUiDropdown.cs`.
 * **One type per file.** One class/struct/enum per `.cs` file.
-* **Max 100 lines per file.** Extract helpers/types when a file exceeds this.
-* **No `partial` for line-count reduction.** Refactor non-`Node` classes into helpers or nested types instead.
+* **No `partial` for line-count reduction.** Refactor classes into helpers or nested types instead.
 * **Subfolder grouping.** Organise related scripts: `Definitions/`, `Registry/`, `Ui/`, etc.
 
 ---
@@ -65,7 +63,6 @@ Execute every task as this loop:
 
 * Separate logical blocks with blank lines.
 * Comments wrap at ~100 characters; longer code lines need not break.
-* Method parameter lists: one line unless >~100 characters.
 * Expand braces to multiple lines; exception: very short one-liners.
 
 ### Collections & Initialisation
@@ -79,8 +76,9 @@ Execute every task as this loop:
 
 ### Access & Naming
 
-* Mark fields and methods `private` explicitly; never rely on defaults.
+* Mark fields and methods `private` explicitly.
 * Private fields: `_camelCase`. Constants: `PascalCase`.
+* Mark private methods `static` if they do not access instance members.
 
 ### Documentation
 
