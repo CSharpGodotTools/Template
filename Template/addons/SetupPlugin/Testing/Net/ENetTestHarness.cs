@@ -21,7 +21,7 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
 
     private static int _enetRefCount;
 
-    public ENetTestHarness(Action<TPacket, ENet.Peer> onPacket)
+    public ENetTestHarness(Action<TPacket, uint> onPacket)
     {
         AddEnetRef();
         Server = new TestServer<TPacket>(onPacket);

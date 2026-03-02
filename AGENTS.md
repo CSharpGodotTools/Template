@@ -11,10 +11,10 @@ When rules conflict, higher priority wins.
 
 | Rank | Domain | Scope |
 |------|--------|-------|
-| **P0** | **Build & Functionality** | Code compiles, runs correctly, no regressions. |
+| **P0** | **Build & Functionality** | Code compiles, runs correctly, tests pass, no regressions. |
 | **P1** | **Safety & Nullability** | No defensive null checks on expected non-null values; let crashes expose bugs. |
 | **P2** | **Core Logic** | DRY, explicit types, readability, correct APIs. |
-| **P3** | **Structure & Naming** | File layout, line limits, naming conventions. |
+| **P3** | **Structure & Naming** | File layout, line limits, naming conventions, `.uid` file names synced with script names |
 | **P4** | **Formatting & Style** | Whitespace, brace style, comment aesthetics. |
 | **P5** | **Communication** | Summaries, code-comment hygiene. |
 

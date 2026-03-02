@@ -22,13 +22,7 @@ public static class PacketTimeoutDiagnostics
             $"({typeof(TPacket).Name}). " +
             $"ClientRunning={waitDiagnostics.ClientRunning}, " +
             $"ClientConnected={waitDiagnostics.ClientConnected}, " +
-            $"ServerRunning={waitDiagnostics.ServerRunning}, " +
-            $"OutgoingCount={waitDiagnostics.LastOutgoingCount}, " +
-            $"OutgoingEnqueued={waitDiagnostics.SawOutgoingEnqueue}, " +
-            $"OutgoingDrained={waitDiagnostics.SawOutgoingDrain}, " +
-            $"GodotPacketCount={waitDiagnostics.LastGodotPacketCount}, " +
-            $"CommandCount={waitDiagnostics.LastCommandCount}, " +
-            $"PeerId={harness.Client.PeerId}. " +
+            $"ServerRunning={waitDiagnostics.ServerRunning}. " +
             $"{sizeInfo} {registryInfo}";
     }
 

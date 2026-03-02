@@ -28,18 +28,6 @@ public static class PacketWaiter
             diagnostics.ClientRunning = harness.Client.IsRunning;
             diagnostics.ClientConnected = harness.Client.IsConnected;
             diagnostics.ServerRunning = harness.Server.IsRunning;
-            diagnostics.LastOutgoingCount = harness.Client.OutgoingCount;
-            diagnostics.LastGodotPacketCount = harness.Client.GodotPacketCount;
-            diagnostics.LastCommandCount = harness.Client.CommandCount;
-
-            if (diagnostics.LastOutgoingCount > 0)
-            {
-                diagnostics.SawOutgoingEnqueue = true;
-            }
-            else if (diagnostics.SawOutgoingEnqueue)
-            {
-                diagnostics.SawOutgoingDrain = true;
-            }
 
             await Task.Delay(10);
         }

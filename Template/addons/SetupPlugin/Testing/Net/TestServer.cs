@@ -1,4 +1,3 @@
-using ENet;
 using Framework.Netcode;
 using Framework.Netcode.Server;
 using System;
@@ -8,19 +7,19 @@ namespace Template.Setup.Testing;
 public sealed class TestServer<TPacket> : GodotServer
     where TPacket : ClientPacket
 {
-    private readonly Action<TPacket, Peer> _onPacket;
+    private readonly Action<TPacket, uint> _onPacket;
 
-    public TestServer(Action<TPacket, Peer> onPacket)
+    public TestServer(Action<TPacket, uint> onPacket)
     {
         _onPacket = onPacket;
         if (_onPacket != null)
         {
-            RegisterPacketHandler<TPacket>(HandlePacket);
+            OnPacket<TPacket>(HandlePacket);
         }
     }
 
-    private void HandlePacket(TPacket packet, Peer peer)
+    private void HandlePacket(TPacket packet, uint peerId)
     {
-        _onPacket(packet, peer);
+        _onPacket(packet, peerId);
     }
 }

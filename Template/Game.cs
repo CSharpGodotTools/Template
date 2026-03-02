@@ -1,4 +1,4 @@
-﻿using Framework;
+using Framework;
 
 namespace __TEMPLATE__;
 
