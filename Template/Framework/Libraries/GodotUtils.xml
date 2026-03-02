@@ -219,12 +219,12 @@
             Sets the canvas item fully transparent and returns it.
             </summary>
         </member>
-        <member name="T:GodotUtils.ExtensionsCollection">
+        <member name="T:GodotUtils.CollectionsExtensions">
             <summary>
             Extension helpers for collections.
             </summary>
         </member>
-        <member name="M:GodotUtils.ExtensionsCollection.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
+        <member name="M:GodotUtils.CollectionsExtensions.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0})">
             <summary>
             Iterates over the sequence and invokes <paramref name="action"/> for each element.
             </summary>
@@ -302,12 +302,12 @@
             Returns true when the value has no fractional part.
             </summary>
         </member>
-        <member name="T:GodotUtils.GPUParticles2DExtensions">
+        <member name="T:GodotUtils.GpuParticles2DExtensions">
             <summary>
             Extension helpers for 2D GPU particles.
             </summary>
         </member>
-        <member name="M:GodotUtils.GPUParticles2DExtensions.GetParticleProcessMaterial(Godot.GpuParticles2D)">
+        <member name="M:GodotUtils.GpuParticles2DExtensions.GetParticleProcessMaterial(Godot.GpuParticles2D)">
             <summary>
             Gets the ParticleProcessMaterial assigned to the particle node.
             </summary>
