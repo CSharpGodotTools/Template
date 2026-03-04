@@ -113,9 +113,9 @@ metadata/_edit_lock_ = true
 [node name="Player" type="CharacterBody3D" parent="." unique_id=321834285 node_paths=PackedStringArray("_camera", "_popupMenu")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("2_71hwj")
-_movementConfig = SubResource("Resource_ugmif")
 _camera = NodePath("Camera3D")
 _popupMenu = NodePath("../CanvasLayer/PopupMenu")
+_movementConfig = SubResource("Resource_ugmif")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Player" unique_id=1813375761]
 shape = SubResource("CapsuleShape3D_k54qk")
