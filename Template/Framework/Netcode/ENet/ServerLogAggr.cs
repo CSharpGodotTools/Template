@@ -104,28 +104,28 @@ internal sealed class ServerLogAggregator
         _lastTimeoutPeerId = 0;
 
         double reportSeconds = Math.Max(windowSeconds, 0.01);
-        List<(long Tick, Action LogAction)> logEntries = new(3);
+        List<LogEntry> logEntries = new(3);
 
         if (connects > 0)
         {
-            logEntries.Add((lastConnectTicks, () => log(FormatConnectMessage(connects, lastConnectPeerId, reportSeconds))));
+            logEntries.Add(new LogEntry { Tick = lastConnectTicks, LogAction = () => log(FormatConnectMessage(connects, lastConnectPeerId, reportSeconds)) });
         }
 
         if (disconnects > 0)
         {
-            logEntries.Add((lastDisconnectTicks, () => log(FormatDisconnectMessage(disconnects, lastDisconnectPeerId, reportSeconds))));
+            logEntries.Add(new LogEntry { Tick = lastDisconnectTicks, LogAction = () => log(FormatDisconnectMessage(disconnects, lastDisconnectPeerId, reportSeconds)) });
         }
 
         if (timeouts > 0)
         {
-            logEntries.Add((lastTimeoutTicks, () => log(FormatTimeoutMessage(timeouts, lastTimeoutPeerId, reportSeconds))));
+            logEntries.Add(new LogEntry { Tick = lastTimeoutTicks, LogAction = () => log(FormatTimeoutMessage(timeouts, lastTimeoutPeerId, reportSeconds)) });
         }
 
         logEntries.Sort(static (left, right) => left.Tick.CompareTo(right.Tick));
 
-        foreach ((long Tick, Action LogAction) in logEntries)
+        foreach (LogEntry entry in logEntries)
         {
-            LogAction();
+            entry.LogAction();
         }
     }
 
@@ -190,5 +190,11 @@ internal sealed class ServerLogAggregator
         }
 
         return $"{FormatCount("client", count)} timed out{FormatLastSuffix(count, seconds)}";
+    }
+
+    internal struct LogEntry
+    {
+        public long Tick { get; set; }
+        public Action LogAction { get; set; }
     }
 }
