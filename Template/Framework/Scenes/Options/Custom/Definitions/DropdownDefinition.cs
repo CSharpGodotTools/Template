@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Class-based definition for a custom dropdown option.

@@ -1,5 +1,5 @@
 using Framework;
-using Framework.UI;
+using Framework.Ui;
 using System.Collections.Generic;
 
 namespace __TEMPLATE__.FPS;

@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// JSON element parsers used by <see cref="OptionPersistence"/> to

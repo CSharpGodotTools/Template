@@ -1,9 +1,9 @@
-using Framework.UI;
+using Framework.Ui;
 using GodotUtils;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using QualityP = Framework.UI.QualityPreset;
+using QualityP = Framework.Ui.QualityPreset;
 using VSyncMode = Godot.DisplayServer.VSyncMode;
 
 namespace Framework;

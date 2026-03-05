@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-namespace Framework.UI.Console;
+namespace Framework.Ui.Console;
 
 /// <summary>
 /// Handles custom command line arguments set for each instance.

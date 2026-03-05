@@ -1,6 +1,6 @@
 using System;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Runtime wrapper created after a <see cref="DropdownOptionDefinition"/>

@@ -1,5 +1,5 @@
 using Framework;
-using Framework.UI;
+using Framework.Ui;
 
 namespace __TEMPLATE__.FPS;
 

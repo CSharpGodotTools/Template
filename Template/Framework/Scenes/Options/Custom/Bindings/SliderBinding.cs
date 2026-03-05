@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Disposable helper that owns a slider row and its event subscription.

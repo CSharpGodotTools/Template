@@ -1,7 +1,7 @@
 using Godot;
 using GodotUtils;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 public partial class Options : PanelContainer
 {

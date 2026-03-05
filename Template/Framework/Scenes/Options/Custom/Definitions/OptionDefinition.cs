@@ -1,4 +1,4 @@
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Base type for a custom option that can be shown in the Options UI.

@@ -1,6 +1,6 @@
 
 #nullable enable
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Lightweight descriptor used by <see cref="CustomOptionSetup"/> when

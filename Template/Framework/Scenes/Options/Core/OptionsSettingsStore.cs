@@ -8,7 +8,7 @@ using FileAccess = Godot.FileAccess;
 
 #nullable enable
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Handles loading and saving ResourceOptions from/to options.json.

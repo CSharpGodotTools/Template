@@ -5,7 +5,7 @@ using System;
 using static Godot.DisplayServer;
 using WindowMode = GodotUtils.WindowMode;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 public class OptionsDisplay : IDisposable
 {

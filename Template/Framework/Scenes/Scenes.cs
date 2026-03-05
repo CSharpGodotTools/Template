@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 [GlobalClass]
 public partial class Scenes : Node

@@ -2,7 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 public partial class OptionsInput
 {

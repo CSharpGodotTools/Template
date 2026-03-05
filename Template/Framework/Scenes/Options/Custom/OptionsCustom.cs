@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Creates and manages UI controls for custom options registered via OptionsManager.

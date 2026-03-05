@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 #nullable enable
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Central registry for custom option definitions. Manages stable IDs,

@@ -1,4 +1,4 @@
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Tabs available in the options UI.

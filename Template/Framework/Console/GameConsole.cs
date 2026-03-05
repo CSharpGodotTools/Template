@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Framework.UI.Console;
+namespace Framework.Ui.Console;
 
 public partial class GameConsole : Node
 {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Handles initial population and runtime registration of custom option

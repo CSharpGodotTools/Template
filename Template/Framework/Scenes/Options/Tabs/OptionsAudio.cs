@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 public partial class OptionsAudio : IDisposable
 {

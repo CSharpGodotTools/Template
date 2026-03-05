@@ -1,11 +1,11 @@
-using Framework.UI.Console;
+using Framework.Ui.Console;
 using Godot;
 using GodotUtils;
 using System;
 
 // This was intentionally set to GodotUtils instead of __TEMPLATE__ as GodotUtils relies on MainMenuBtnPressed
 // and GodotUtils should NOT have any trace of using Framework.
-namespace Framework.UI; 
+namespace Framework.Ui; 
 
 public partial class PopupMenu : Control
 {

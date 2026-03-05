@@ -1,4 +1,4 @@
-using Framework.UI.Console;
+using Framework.Ui.Console;
 using Godot;
 using GodotUtils;
 using System;

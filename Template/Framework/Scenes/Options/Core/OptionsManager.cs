@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 // Autoload
 /// <summary>

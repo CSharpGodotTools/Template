@@ -1,4 +1,4 @@
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Class-based definition for a custom line edit option.

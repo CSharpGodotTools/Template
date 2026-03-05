@@ -1,7 +1,7 @@
 using Godot;
 using System.IO;
 
-namespace GodotUtils.UI;
+namespace GodotUtils.Ui;
 
 [Tool]
 public partial class ToolScriptHelpers : Node

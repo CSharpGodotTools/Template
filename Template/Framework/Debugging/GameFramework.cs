@@ -1,6 +1,6 @@
 ﻿using Framework.Debugging;
-using Framework.UI;
-using Framework.UI.Console;
+using Framework.Ui;
+using Framework.Ui.Console;
 using System;
 
 namespace Framework;

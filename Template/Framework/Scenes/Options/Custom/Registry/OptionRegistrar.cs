@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Factory that creates registered option wrappers with

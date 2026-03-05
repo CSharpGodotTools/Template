@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 public class ModLoaderUi
 {

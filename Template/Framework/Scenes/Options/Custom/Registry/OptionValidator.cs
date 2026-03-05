@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Validates custom option definitions before they are registered.

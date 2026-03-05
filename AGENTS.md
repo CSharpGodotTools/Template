@@ -7,10 +7,8 @@
 ## §1 Operational Workflow
 
 1. Identify subproject: `Template`, `Template.GodotUtils`, `Template.PacketGen`, or `Template.Visualize`. If ambiguous, ask the user **before proceeding**.
-2. Start each task on a new concise Git branch name (no `/` in name) (e.g. `player-jumping`) and split changes across multiple commits.
-3. Work on your assigned task.
-4. Run `cd <project-folder> && dotnet build`. Fix all compiler errors. Repeat until no errors.
-5. Keep post task summary as concise as possible.
+2. Work on your assigned task.
+3. Run `cd <project-folder> && dotnet build`. Fix all compiler errors. Repeat until no errors. 
 
 ---
 
@@ -20,15 +18,8 @@
 
 * No abbreviations in types.
 * Private fields: `_camelCase`. Constants: `PascalCase`.
-* For PascalCase use `Ui` not `UI`.
+* For PascalCase use for e.g. `Ui` not `UI`.
 * All types max 22 characters.
-
-### File Organization
-
-* One class/struct/enum per `.cs` file.
-* Splitting code across multiple partials is banned.
-* Create subfolders as needed to organize scripts.
-* Delete `.uid` files that are no longer needed.
 
 ### Readability
 
@@ -40,10 +31,11 @@
 * No meta-comments in code ("moved from X", "refactored because Y").
 * Public API methods: human-readable XML doc comments.
 * Omit summary comments on trivial types (self-evident enums, etc.).
+* Create subfolders as needed to organize scripts.
 
 ### Flow
 
-* Use proper OOP.
+* Use proper OOP principles.
 * Use primary constructors.
 * `using` directives above the namespace declaration.
 * Use usings; e.g. write `Debug.Assert` instead of `System.Diagnostics.Debug.Assert`.
@@ -59,3 +51,4 @@ The following are banned in C#:
 * Godot signals.
 * Trivial self evident null checks.
 * Tuples (x, y). Create new class/struct type instead.
+* Avoid editing any test related scripts unless explicitly asked to.

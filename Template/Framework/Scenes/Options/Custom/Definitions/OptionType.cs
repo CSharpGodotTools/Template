@@ -1,4 +1,4 @@
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Kind of custom option stored in a descriptor.

@@ -1,7 +1,7 @@
 using Framework;
 using Godot;
 using GodotUtils;
-using PopupMenu = Framework.UI.PopupMenu;
+using PopupMenu = Framework.Ui.PopupMenu;
 
 namespace __TEMPLATE__.FPS;
 

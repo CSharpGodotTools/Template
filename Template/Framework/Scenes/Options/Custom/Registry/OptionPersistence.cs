@@ -5,7 +5,7 @@ using System.Text.Json;
 
 #nullable enable
 
-namespace Framework.UI;
+namespace Framework.Ui;
 
 /// <summary>
 /// Reads and writes custom option values into the JSON‑backed
