@@ -1,8 +1,8 @@
 ﻿using Microsoft.CodeAnalysis;
-using System;
 using PacketGen;
 using PacketGen.Generators.PacketGeneration;
 using PacketGen.Utilities;
+using System;
 
 namespace PacketGen.Generators.TypeHandlers;
 

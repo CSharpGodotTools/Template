@@ -1,10 +1,10 @@
+using Framework.Netcode;
 using GdUnit4;
-using static GdUnit4.Assertions;
 using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using Framework.Netcode;
+using static GdUnit4.Assertions;
 
 namespace Template.Setup.Testing;
 

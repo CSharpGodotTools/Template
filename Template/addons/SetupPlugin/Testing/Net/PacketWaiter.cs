@@ -1,7 +1,7 @@
+using Framework.Netcode;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Framework.Netcode;
 
 namespace Template.Setup.Testing;
 

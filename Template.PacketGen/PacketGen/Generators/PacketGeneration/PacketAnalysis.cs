@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace PacketGen.Generators.PacketGeneration;
 

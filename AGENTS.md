@@ -53,7 +53,7 @@
 
 ### Bans
 
-The following are banned:
+The following are banned in C#:
 * `var`.
 * `#region`.
 * Godot signals.

@@ -1,7 +1,7 @@
+using Framework.Netcode;
 using System;
 using System.Collections;
 using System.Reflection;
-using Framework.Netcode;
 
 namespace Template.Setup.Testing;
 
