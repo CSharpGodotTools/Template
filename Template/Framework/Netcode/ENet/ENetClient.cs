@@ -62,7 +62,7 @@ public abstract class ENetClient : ENetLow
         ProcessENetCommands();
         ProcessIncomingPackets();
         ProcessOutgoingPackets();
-        _logAggregator.Flush(force: false, message => Log(message));
+        _logAggregator.Flush(message => Log(message), false);
     }
 
     /// <summary>
@@ -175,7 +175,7 @@ public abstract class ENetClient : ENetLow
 
             if (Interlocked.Decrement(ref _activeClientWorkers) == 0)
             {
-                _logAggregator.Flush(force: true, message => Log(message));
+                _logAggregator.Flush(message => Log(message), true);
             }
         }
     }

@@ -9,11 +9,8 @@ namespace Framework.Netcode.Client;
 /// Coalesces rapid client lifecycle events into summarised log messages.
 /// Thread-safe: shared across all client worker threads.
 /// </summary>
-internal sealed class ClientLogAggregator
+internal sealed class ClientLogAggregator : EventLogAggregator
 {
-    private const double QuietGapSeconds = 0.5;
-    private const double MaxWindowSeconds = 5.0;
-
     private int _connectedCount;
     private int _disconnectedCount;
     private int _timeoutCount;
@@ -31,7 +28,7 @@ internal sealed class ClientLogAggregator
     /// <summary>
     /// Records a connect lifecycle event.
     /// </summary>
-    public void RecordConnect(uint peerId)
+    public override void RecordConnect(uint peerId)
     {
         Interlocked.Increment(ref _connectedCount);
         Interlocked.Exchange(ref _lastConnectPeerId, peerId);
@@ -41,7 +38,7 @@ internal sealed class ClientLogAggregator
     /// <summary>
     /// Records a disconnect lifecycle event.
     /// </summary>
-    public void RecordDisconnect(uint peerId)
+    public override void RecordDisconnect(uint peerId)
     {
         Interlocked.Increment(ref _disconnectedCount);
         Interlocked.Exchange(ref _lastDisconnectPeerId, peerId);
@@ -51,7 +48,7 @@ internal sealed class ClientLogAggregator
     /// <summary>
     /// Records a timeout lifecycle event.
     /// </summary>
-    public void RecordTimeout(uint peerId)
+    public override void RecordTimeout(uint peerId)
     {
         Interlocked.Increment(ref _timeoutCount);
         Interlocked.Exchange(ref _lastTimeoutPeerId, peerId);
@@ -61,7 +58,7 @@ internal sealed class ClientLogAggregator
     /// <summary>
     /// Emits a coalesced lifecycle log report when burst thresholds are reached.
     /// </summary>
-    public void Flush(bool force, Action<string> log)
+    public override void Flush(Action<string> log, bool force = false)
     {
         int connectedSnapshot = Volatile.Read(ref _connectedCount);
         int disconnectedSnapshot = Volatile.Read(ref _disconnectedCount);
@@ -75,16 +72,7 @@ internal sealed class ClientLogAggregator
         long windowStartTicks = Interlocked.Read(ref _eventWindowStartTicks);
         long eventLastTicks = Interlocked.Read(ref _eventLastEventTicks);
 
-        if (windowStartTicks == 0 || eventLastTicks == 0)
-        {
-            return;
-        }
-
-        long nowTicks = Stopwatch.GetTimestamp();
-        double secondsSinceLast = (nowTicks - eventLastTicks) / (double)Stopwatch.Frequency;
-        double windowSeconds = (eventLastTicks - windowStartTicks) / (double)Stopwatch.Frequency;
-
-        if (!force && secondsSinceLast < QuietGapSeconds && windowSeconds < MaxWindowSeconds)
+        if (!ShouldFlush(windowStartTicks, eventLastTicks, out double windowSeconds) && !force)
         {
             return;
         }
@@ -130,12 +118,7 @@ internal sealed class ClientLogAggregator
             logEntries.Add(new LogEntry { Tick = lastTimeoutTicks, LogAction = () => log(FormatTimeoutMessage(timeouts, lastTimeoutPeerId, reportSeconds)) });
         }
 
-        logEntries.Sort(static (left, right) => left.Tick.CompareTo(right.Tick));
-
-        foreach (LogEntry entry in logEntries)
-        {
-            entry.LogAction();
-        }
+        EmitLogEntries(log, logEntries);
     }
 
     private void MarkEvent(ref long eventTypeLastTicks)
@@ -154,27 +137,7 @@ internal sealed class ClientLogAggregator
         Interlocked.Exchange(ref eventTypeLastTicks, nowTicks);
     }
 
-    private static string FormatCount(string singular, int count)
-    {
-        if (count == 1)
-        {
-            return $"1 {singular}";
-        }
-
-        return $"{count} {singular}s";
-    }
-
-    private static string FormatLastSuffix(int count, double seconds)
-    {
-        if (count == 1)
-        {
-            return string.Empty;
-        }
-
-        return $" (last {seconds:0.##}s)";
-    }
-
-    private static string FormatConnectMessage(int count, long peerId, double seconds)
+    private string FormatConnectMessage(int count, long peerId, double seconds)
     {
         if (count == 1)
         {
@@ -189,7 +152,7 @@ internal sealed class ClientLogAggregator
         return $"{FormatCount("connect event", count)}{FormatLastSuffix(count, seconds)}";
     }
 
-    private static string FormatDisconnectMessage(int count, long peerId, double seconds)
+    private string FormatDisconnectMessage(int count, long peerId, double seconds)
     {
         if (count == 1)
         {
@@ -204,7 +167,7 @@ internal sealed class ClientLogAggregator
         return $"{FormatCount("disconnect event", count)}{FormatLastSuffix(count, seconds)}";
     }
 
-    private static string FormatTimeoutMessage(int count, long peerId, double seconds)
+    private string FormatTimeoutMessage(int count, long peerId, double seconds)
     {
         if (count == 1)
         {
@@ -217,11 +180,5 @@ internal sealed class ClientLogAggregator
         }
 
         return $"{FormatCount("timeout event", count)}{FormatLastSuffix(count, seconds)}";
-    }
-
-    internal struct LogEntry
-    {
-        public long Tick { get; set; }
-        public Action LogAction { get; set; }
     }
 }
