@@ -28,6 +28,15 @@ internal static class PacketRegistryGenerator
         clientSymbols = [.. clientSymbols.OrderBy(s => s.ToDisplayString())];
         serverSymbols = [.. serverSymbols.OrderBy(s => s.ToDisplayString())];
 
+        int maxOpcode = idTypeName switch
+        {
+            "sbyte" => sbyte.MaxValue,
+            "byte" => byte.MaxValue,
+            "short" => short.MaxValue,
+            "ushort" => ushort.MaxValue,
+            _ => int.MaxValue
+        };
+
         int clientOpcode = 0;
         int serverOpcode = 0;
 
@@ -39,8 +48,8 @@ internal static class PacketRegistryGenerator
         // Process client packets
         foreach (INamedTypeSymbol symbol in clientSymbols)
         {
-            if (clientOpcode > byte.MaxValue)
-                throw new InvalidOperationException("Client packet opcode overflow");
+            if (clientOpcode > maxOpcode)
+                throw new InvalidOperationException($"Client packet opcode overflow (max {maxOpcode} for type '{idTypeName}')");
 
             string typeName = symbol.Name;
 
@@ -64,8 +73,8 @@ internal static class PacketRegistryGenerator
         // Process server packets
         foreach (INamedTypeSymbol symbol in serverSymbols)
         {
-            if (serverOpcode > byte.MaxValue)
-                throw new InvalidOperationException("Server packet opcode overflow");
+            if (serverOpcode > maxOpcode)
+                throw new InvalidOperationException($"Server packet opcode overflow (max {maxOpcode} for type '{idTypeName}')");
 
             string typeName = symbol.Name;
 
