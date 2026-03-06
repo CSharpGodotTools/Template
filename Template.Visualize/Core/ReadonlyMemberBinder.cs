@@ -83,6 +83,7 @@ internal sealed class ReadonlyMemberBinder
             if (elapsedSeconds == VisualUiLayout.MaxSecondsToWaitForInitialValues)
             {
                 GD.PrintRich($"[color=orange][Visualize] Tracking '{node.Name}' to see if '{accessor.Name}' value changes[/color]");
+                break;
             }
         }
     }
