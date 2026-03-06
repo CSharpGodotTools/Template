@@ -65,7 +65,6 @@ public abstract class ENetLow
         }
 
         Host.Flush();
-        Interlocked.Exchange(ref _running, 0);
     }
 
     private void PumpNetworkEvents()
