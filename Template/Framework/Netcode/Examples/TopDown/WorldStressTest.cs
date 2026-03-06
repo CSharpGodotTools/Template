@@ -1,6 +1,7 @@
 using Framework.Netcode;
 using Godot;
 using GodotUtils;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -17,7 +18,6 @@ public partial class World
         private const float DefaultAngularSpeed = Mathf.Pi * 2f / 6f;
         private const float DefaultSendIntervalSeconds = 0.05f;
         private const ushort DefaultPort = 25565;
-        private const int DefaultMaxClients = 500;
 
         private readonly World _world;
         private readonly List<BotClient> _bots = [];
@@ -29,7 +29,6 @@ public partial class World
         private readonly LineEdit _angularSpeedInput;
         private readonly LineEdit _sendIntervalInput;
         private readonly LineEdit _portInput;
-        private readonly LineEdit _maxClientsInput;
 
         private int _targetClients = DefaultTargetClients;
         private float _spawnIntervalSeconds = DefaultSpawnIntervalSeconds;
@@ -37,14 +36,13 @@ public partial class World
         private float _angularSpeed = DefaultAngularSpeed;
         private float _sendIntervalSeconds = DefaultSendIntervalSeconds;
         private ushort _port = DefaultPort;
-        private int _maxClients = DefaultMaxClients;
         private float _spawnAccumulator;
         private bool _started;
         private bool _paused;
         private bool _serverRestartPending;
         private bool _serverStartedByStressTest;
         private ushort _lastServerPort = DefaultPort;
-        private int _lastServerMaxClients = DefaultMaxClients;
+        private int _lastServerCapacity = DefaultTargetClients;
 
         public bool IsRunning => _started;
 
@@ -59,12 +57,23 @@ public partial class World
             _angularSpeedInput = _world.GetNode<LineEdit>("%AngularSpeed");
             _sendIntervalInput = _world.GetNode<LineEdit>("%SendInterval");
             _portInput = _world.GetNode<LineEdit>("%StressPort");
-            _maxClientsInput = _world.GetNode<LineEdit>("%StressMaxClients");
+
+            _targetClientsInput.TextSubmitted += OnTargetClientsChanged;
 
             SetUiDefaults();
 
             _startButton.Pressed += OnStartPressed;
             _stopButton.Pressed += OnStopPressed;
+        }
+
+        ~WorldStressTest()
+        {
+            _targetClientsInput.TextSubmitted -= OnTargetClientsChanged;
+        }
+
+        private void OnTargetClientsChanged(string newText)
+        {
+            _targetClients = ReadInt(_targetClientsInput.Text, DefaultTargetClients, minValue: 1);
         }
 
         public void Start()
@@ -102,6 +111,7 @@ public partial class World
             {
                 if (!IsServerRunning())
                 {
+                    EnsureLocalClientRunning();
                     StartServerWithSettings();
                     _serverRestartPending = false;
                     _paused = false;
@@ -183,11 +193,7 @@ public partial class World
                 if (TryGetNet(out Net<GameClient, GameServer> net))
                 {
                     _port = net.ServerPort;
-                    _maxClients = net.ServerMaxClients;
                 }
-
-                if (_targetClients > _maxClients)
-                    _targetClients = _maxClients;
             }
         }
 
@@ -213,10 +219,10 @@ public partial class World
         {
             if (TryGetNet(out Net<GameClient, GameServer> net))
             {
-                net.StartServer(_port, _maxClients, CreateSilentOptions());
+                net.StartServer(_port, _targetClients, CreateSilentOptions());
                 _serverStartedByStressTest = true;
                 _lastServerPort = _port;
-                _lastServerMaxClients = _maxClients;
+                _lastServerCapacity = _targetClients;
             }
         }
 
@@ -228,7 +234,10 @@ public partial class World
             if (!_serverStartedByStressTest)
                 return false;
 
-            if (_lastServerPort != _port || _lastServerMaxClients != _maxClients)
+            if (_lastServerPort != _port)
+                return true;
+
+            if (_lastServerCapacity != _targetClients)
                 return true;
 
             return false;
@@ -275,7 +284,6 @@ public partial class World
             _angularSpeedInput.Text = DefaultAngularSpeed.ToString(CultureInfo.InvariantCulture);
             _sendIntervalInput.Text = DefaultSendIntervalSeconds.ToString(CultureInfo.InvariantCulture);
             _portInput.Text = DefaultPort.ToString(CultureInfo.InvariantCulture);
-            _maxClientsInput.Text = DefaultMaxClients.ToString(CultureInfo.InvariantCulture);
         }
 
         private void ApplySettingsFromUi()
@@ -286,7 +294,6 @@ public partial class World
             _angularSpeed = ReadFloat(_angularSpeedInput.Text, DefaultAngularSpeed, minValue: 0.01f);
             _sendIntervalSeconds = ReadFloat(_sendIntervalInput.Text, DefaultSendIntervalSeconds, minValue: 0.01f);
             _port = ReadUShort(_portInput.Text, DefaultPort);
-            _maxClients = ReadInt(_maxClientsInput.Text, DefaultMaxClients, minValue: 1);
         }
 
         private static int ReadInt(string text, int fallback, int minValue)

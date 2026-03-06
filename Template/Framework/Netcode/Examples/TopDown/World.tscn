@@ -178,15 +178,3 @@ text = "Port:"
 unique_name_in_owner = true
 layout_mode = 2
 text = "25565"
-
-[node name="MaxClientsHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox" unique_id=365105877]
-layout_mode = 2
-
-[node name="Label" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/MaxClientsHBox" unique_id=1488203579]
-layout_mode = 2
-text = "Max Clients:"
-
-[node name="StressMaxClients" type="LineEdit" parent="CanvasLayer/Stress Test Interface/Margin/VBox/MaxClientsHBox" unique_id=1428866562]
-unique_name_in_owner = true
-layout_mode = 2
-text = "100"
