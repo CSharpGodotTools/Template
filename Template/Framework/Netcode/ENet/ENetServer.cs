@@ -14,7 +14,7 @@ public abstract class ENetServer : ENetLow
     private const string LogTag = "Server";
 
     private readonly ConcurrentQueue<Cmd<ENetServerOpcode>> _enetCmds = new();
-    private readonly ConcurrentQueue<(Packet Packet, Peer Peer)> _incoming = new();
+    private readonly ConcurrentQueue<IncomingPacket> _incoming = new();
     private readonly ConcurrentQueue<OutgoingMessage> _outgoing = new();
     private readonly ConcurrentDictionary<Type, Action<ClientPacket, uint>> _clientPacketHandlers = new();
 
@@ -88,7 +88,7 @@ public abstract class ENetServer : ENetLow
     /// </summary>
     protected sealed override void ConcurrentQueues()
     {
-        ProcessEnetCommands();
+        ProcessENetCommands();
         ProcessIncomingPackets();
         ProcessOutgoingPackets();
         _logAggregator.Flush(message => Log(message));
@@ -139,7 +139,7 @@ public abstract class ENetServer : ENetLow
             return;
         }
 
-        _incoming.Enqueue((packet, netEvent.Peer));
+        _incoming.Enqueue(new IncomingPacket { Packet = packet, Peer = netEvent.Peer });
     }
 
     /// <summary>
@@ -207,7 +207,7 @@ public abstract class ENetServer : ENetLow
         return host;
     }
 
-    private void ProcessEnetCommands()
+    private void ProcessENetCommands()
     {
         while (_enetCmds.TryDequeue(out Cmd<ENetServerOpcode> command))
         {
@@ -275,9 +275,9 @@ public abstract class ENetServer : ENetLow
 
     private void ProcessIncomingPackets()
     {
-        while (_incoming.TryDequeue(out (Packet Packet, Peer Peer) queuedPacket))
+        while (_incoming.TryDequeue(out IncomingPacket queued))
         {
-            HandleIncomingPacket(queuedPacket.Packet, queuedPacket.Peer);
+            HandleIncomingPacket(queued.Packet, queued.Peer);
         }
     }
 
@@ -500,5 +500,11 @@ public abstract class ENetServer : ENetLow
         {
             return new OutgoingMessage(data, true, 0, excludeId, true);
         }
+    }
+
+    private readonly struct IncomingPacket
+    {
+        public Packet Packet { get; init; }
+        public Peer Peer { get; init; }
     }
 }
