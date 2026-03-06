@@ -2,6 +2,40 @@
 # pre-commit: syncs root .editorconfig and builds any changed subproject DLLs/nupkgs.
 # Must be pre-commit (not post-commit) because GitHub Desktop (libgit2) only fires pre-commit.
 
+# ---------------------------------------------------------------------------
+# GUI apps (GitHub Desktop, etc.) launch hooks without sourcing the user's
+# shell profile, so dotnet may not be on PATH.  Source any profile.d dotnet
+# scripts first, then fall back to well-known install locations.
+# ---------------------------------------------------------------------------
+if ! command -v dotnet > /dev/null 2>&1; then
+    # Source distro/SDK profile fragments (Linux Fedora/RHEL/Debian, macOS Homebrew)
+    for profile_frag in /etc/profile.d/dotnet*.sh /etc/profile.d/dotnet.sh; do
+        # shellcheck source=/dev/null
+        [ -f "$profile_frag" ] && source "$profile_frag"
+    done
+
+    # If still not found, probe well-known install paths
+    if ! command -v dotnet > /dev/null 2>&1; then
+        for candidate in \
+            /usr/bin/dotnet \
+            /usr/local/bin/dotnet \
+            "$HOME/.dotnet/dotnet" \
+            /usr/local/share/dotnet/dotnet \
+            "/c/Program Files/dotnet/dotnet.exe" \
+            "$LOCALAPPDATA/Microsoft/dotnet/dotnet.exe"; do
+            if [ -x "$candidate" ]; then
+                export PATH="$(dirname "$candidate"):$PATH"
+                break
+            fi
+        done
+    fi
+fi
+
+if ! command -v dotnet > /dev/null 2>&1; then
+    echo "[pre-commit] ERROR: dotnet not found. Install the .NET SDK and ensure it is on PATH." >&2
+    exit 1
+fi
+
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 LIBS="$REPO_ROOT/Template/Framework/Libraries"
 STAGED="$(git diff --cached --name-only)"
