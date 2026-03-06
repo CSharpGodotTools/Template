@@ -7,9 +7,16 @@ namespace Framework.Netcode.Examples.Topdown;
 
 public partial class GameServer : GodotServer
 {
-    private const int PositionBroadcastIntervalMs = 50;
+    // Clients that opt in to receiving position broadcasts, typically human players only.
+    // Bots never subscribe, which eliminates the majority of outgoing position traffic.
+    private const int PositionBroadcastIntervalMs = 100;
+
+    // Precompute tick interval once to avoid per-call multiplication.
+    private static readonly long BroadcastIntervalTicks =
+        (long)(PositionBroadcastIntervalMs * (double)Stopwatch.Frequency / 1000.0);
 
     private readonly HashSet<uint> _players = [];
+    private readonly HashSet<uint> _positionSubscribers = [];
     private readonly Dictionary<uint, Vector2> _positions = [];
     private long _lastPositionBroadcastTicks;
 
@@ -17,6 +24,7 @@ public partial class GameServer : GodotServer
     {
         OnPacket<CPacketPlayerJoinLeave>(OnPlayerJoinLeave);
         OnPacket<CPacketPlayerPosition>(OnPlayerPosition);
+        OnPacket<CPacketSubscribePositions>(OnSubscribePositions);
     }
 
     protected override void OnPeerDisconnected(uint peerId)
@@ -44,7 +52,18 @@ public partial class GameServer : GodotServer
         }
 
         _positions[peerId] = packet.Position;
-        BroadcastPositions(force: false, excludeId: peerId);
+        BroadcastPositions();
+    }
+
+    private void OnSubscribePositions(CPacketSubscribePositions packet, uint peerId)
+    {
+        if (!_players.Contains(peerId) || !_positionSubscribers.Add(peerId))
+        {
+            return;
+        }
+
+        // Send the current snapshot so the subscriber is immediately up to date.
+        SendPositionsSnapshotTo(peerId);
     }
 
     private void AddPlayer(uint peerId)
@@ -54,7 +73,7 @@ public partial class GameServer : GodotServer
             return;
         }
 
-        // Tell the new player their own ID
+        // Tell the new player their own ID.
         Send(new SPacketPlayerJoinedLeaved
         {
             Id = peerId,
@@ -62,7 +81,7 @@ public partial class GameServer : GodotServer
             IsLocal = true
         }, peerId);
 
-        // Tell everyone else about the new player
+        // Tell everyone else about the new player.
         Broadcast(new SPacketPlayerJoinedLeaved
         {
             Id = peerId,
@@ -71,7 +90,7 @@ public partial class GameServer : GodotServer
         }, peerId);
 
         SendExistingPlayersTo(peerId);
-        SendPositionsSnapshotTo(peerId);
+        // Position snapshot is deferred until the client sends CPacketSubscribePositions.
     }
 
     private void RemovePlayer(uint playerId)
@@ -82,6 +101,7 @@ public partial class GameServer : GodotServer
         }
 
         _positions.Remove(playerId);
+        _positionSubscribers.Remove(playerId);
         Broadcast(new SPacketPlayerJoinedLeaved { Id = playerId, Joined = false });
         BroadcastPositions(force: true);
     }
@@ -104,38 +124,25 @@ public partial class GameServer : GodotServer
 
     private void SendPositionsSnapshotTo(uint peerId)
     {
-        Dictionary<uint, Vector2> snapshot = [];
-
-        foreach (KeyValuePair<uint, Vector2> positionEntry in _positions)
-        {
-            if (positionEntry.Key != peerId)
-            {
-                snapshot[positionEntry.Key] = positionEntry.Value;
-            }
-        }
-
-        Send(new SPacketPlayerPositions { Positions = snapshot }, peerId);
+        // Pass _positions directly — Write() serialises it synchronously before returning.
+        Send(new SPacketPlayerPositions { Positions = _positions }, peerId);
     }
 
-    private void BroadcastPositions(bool force = false, uint excludeId = 0)
+    private void BroadcastPositions(bool force = false)
     {
-        if (!CanBroadcastPositions(force))
+        if (!CanBroadcastPositions(force) || _positionSubscribers.Count == 0)
         {
             return;
         }
 
-        SPacketPlayerPositions packet = new()
-        {
-            Positions = new Dictionary<uint, Vector2>(_positions)
-        };
+        // Serialise once and enqueue a unicast per subscriber to avoid redundant copies.
+        SPacketPlayerPositions packet = new() { Positions = _positions };
+        packet.Write();
+        byte[] data = packet.GetData();
 
-        if (excludeId > 0)
+        foreach (uint subscriberId in _positionSubscribers)
         {
-            Broadcast(packet, excludeId);
-        }
-        else
-        {
-            Broadcast(packet);
+            EnqueueOutgoing(OutgoingMessage.Unicast(data, subscriberId));
         }
     }
 
@@ -154,8 +161,7 @@ public partial class GameServer : GodotServer
             return true;
         }
 
-        long broadcastIntervalTicks = (long)(PositionBroadcastIntervalMs * (double)Stopwatch.Frequency / 1000.0);
-        if (now - _lastPositionBroadcastTicks < broadcastIntervalTicks)
+        if (now - _lastPositionBroadcastTicks < BroadcastIntervalTicks)
         {
             return false;
         }

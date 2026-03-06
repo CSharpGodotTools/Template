@@ -26,9 +26,21 @@ public partial class GameClient : GodotClient
         OnPacket<SPacketPlayerPositions>(OnPlayerPositions);
     }
 
+    /// <summary>
+    /// When true (the default) the client sends <see cref="CPacketSubscribePositions"/> on
+    /// connect and will receive periodic position broadcasts from the server.
+    /// Set to false for bots that do not need to track remote player positions.
+    /// </summary>
+    public bool IsPositionSubscriber { get; set; } = true;
+
     protected override void OnConnected()
     {
         Send(new CPacketPlayerJoinLeave { Joined = true });
+
+        if (IsPositionSubscriber)
+        {
+            Send(new CPacketSubscribePositions());
+        }
     }
 
     protected override void OnDisconnected()
@@ -128,6 +140,12 @@ public partial class GameClient : GodotClient
 
     private void ApplyRemotePositions(IReadOnlyDictionary<uint, Vector2> positions)
     {
+        // Skip all work when nothing is listening — the common case for bots.
+        if (RemotePositionsUpdated == null)
+        {
+            return;
+        }
+
         uint localId = LocalId;
         _remotePositions.Clear();
 
@@ -139,8 +157,8 @@ public partial class GameClient : GodotClient
             }
         }
 
-        Dictionary<uint, Vector2> updatedPositions = new(_remotePositions);
-        RemotePositionsUpdated?.Invoke(updatedPositions);
+        // Pass the internal dictionary directly — callers must not retain the reference.
+        RemotePositionsUpdated.Invoke(_remotePositions);
     }
 
     private bool IsLocalPlayer(uint playerId)

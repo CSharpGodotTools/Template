@@ -1,20 +1,25 @@
 # AGENTS
 
-> **Do not modify this files contents — it is machine-consumed.**
-> Godot Version: v4.6.1.stable.mono.official [14d19694e]
-> net10.0 latest C# version
-
----
-
 ## §1 Workflow
 
 1. Identify subproject: `Template`, `Template.GodotUtils`, `Template.PacketGen`, or `Template.Visualize`. If ambiguous, ask the user **before proceeding**.
-2. Work on your assigned task. Break task into small changes. Commit each separately with clear message. No single big commit. use context7
+2. Work on your assigned task split across several small, atomic commits each with a clear description, max 200 chars (omit if trivial).
 3. Run `cd <project-folder> && dotnet build && dotnet test`. Fix all compiler errors. Repeat until no errors.
+4. Update .git/CHANGELOG.md with new changes.
 
 ---
 
-## §2 Rules
+## §2 Context
+
+* Godot Version: v4.6.1.stable.mono.official [14d19694e]
+* net10.0 latest C# version
+* ENet Docs: https://github.com/SoftwareGuy/ENet-CSharp/blob/master/DOCUMENTATION.md
+* Run Godot MCP server if available. Ask user what scene to run if ambiguous.
+* Use context7
+
+---
+
+## §3 Rules
 
 ### Naming
 
@@ -55,3 +60,4 @@ The following are banned in C#:
 * Tuples (x, y). Create new class/struct type instead.
 * Avoid editing any test related scripts unless explicitly asked to.
 * Breaking API changes unless explicitly asked to.
+* Modifying or committing the AGENTS.md file.

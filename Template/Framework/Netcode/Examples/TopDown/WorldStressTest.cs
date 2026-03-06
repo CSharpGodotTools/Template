@@ -352,7 +352,10 @@ public partial class World
                 _circleRadius = circleRadius;
                 _angularSpeed = angularSpeed;
                 _sendIntervalSeconds = sendIntervalSeconds;
-                _client = new GameClient();
+
+                // Bots do not need remote position data; opting out eliminates the bulk
+                // of server→client position traffic when many bots are connected.
+                _client = new GameClient { IsPositionSubscriber = false };
 
                 Task connectTask = _client.Connect("127.0.0.1", port, CreateSilentOptions());
                 _ = connectTask.ContinueWith(
