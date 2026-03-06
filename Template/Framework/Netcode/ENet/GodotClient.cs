@@ -46,7 +46,7 @@ public abstract class GodotClient : ENetClient
     /// <summary>
     /// Fires when the client times out from the server. Thread safe.
     /// </summary>
-    public event Action Timedout;
+    public event Action TimedOut;
 
     /// <summary>
     /// Is the client connected to the server? Thread safe.
@@ -184,7 +184,7 @@ public abstract class GodotClient : ENetClient
                     break;
 
                 case GodotOpcode.Timeout:
-                    TryInvoke(() => Timedout?.Invoke());
+                    TryInvoke(() => TimedOut?.Invoke());
                     break;
             }
         }
