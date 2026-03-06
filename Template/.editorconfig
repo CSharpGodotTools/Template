@@ -8,8 +8,8 @@
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
-# Exclude imgui-godot from IntelliSense diagnostics
-[addons/imgui-godot/**/*.cs]
+# Exclude addons from intellisense
+[**/addons/**/*.cs]
 generated_code = true
 dotnet_analyzer_diagnostic.severity = none
 
@@ -18,6 +18,9 @@ dotnet_analyzer_diagnostic.severity = none
 
 # Namespace "X.Y" does not match folder structure, expected "X.Y.Z"
 dotnet_diagnostic.IDE0130.severity = none
+
+# Change Component.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it
+dotnet_diagnostic.CA1816.severity = none
 
 # Indentation and spacing
 indent_size = 4
