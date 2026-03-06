@@ -9,7 +9,7 @@ public abstract class GodotServer : ENetServer
 {
     private const string LogTag = "Server";
 
-    public GodotServer()
+    protected GodotServer()
     {
         RegisterPackets();
     }
