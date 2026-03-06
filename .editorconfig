@@ -1,9 +1,6 @@
-# DO NOT GENERATE .EDITORCONFIG FROM VS UI OR CUSTOM ADDED RULES WILL BE REMOVED
-# List of custom changes made:
-# - Suppressed namespace warnings
-# - Added custom naming rule for private int _fieldName
-# - End of line changed to LF because Godot requires this
-# - Insert final new line 
+# IMPORTANT
+# - This file should only be edited from the true project root as git hooks sync its changes to all sub projects.
+# - Do not generate .editorconfig from Visual Studio or all manual edited rules including comments will be wiped.
 
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
@@ -16,11 +13,9 @@ dotnet_analyzer_diagnostic.severity = none
 # C# files
 [*.cs]
 
-# Namespace "X.Y" does not match folder structure, expected "X.Y.Z"
-dotnet_diagnostic.IDE0130.severity = none
-
-# Change Component.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it
-dotnet_diagnostic.CA1816.severity = none
+# Suppressed suggestions
+dotnet_diagnostic.IDE0130.severity = none # Namespace "X.Y" does not match folder structure, expected "X.Y.Z"
+dotnet_diagnostic.CA1816.severity = none # Change X.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it
 
 # Indentation and spacing
 indent_size = 4
@@ -28,7 +23,7 @@ indent_style = space
 tab_width = 4
 
 # New line preferences
-end_of_line = lf
+end_of_line = lf # Godot requires LF line endings
 insert_final_newline = true
 
 #### .NET Code Actions ####
