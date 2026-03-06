@@ -11,6 +11,7 @@ namespace Framework.Netcode;
 public abstract class ENetLow
 {
     protected const byte DefaultChannelId = 0;
+    private const int WorkerPollTimeoutMs = 15;
 
     protected Host Host { get; set; }
     protected CancellationTokenSource CTS { get; set; }
@@ -90,7 +91,7 @@ public abstract class ENetLow
             return true;
         }
 
-        if (Host.Service(15, out netEvent) > 0)
+        if (Host.Service(WorkerPollTimeoutMs, out netEvent) > 0)
         {
             hasServiced = true;
             return true;
