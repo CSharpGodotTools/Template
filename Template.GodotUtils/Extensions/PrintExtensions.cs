@@ -91,7 +91,8 @@ public static class PrintExtensions
 
             foreach (Type ignoredProp in ignoredProps)
             {
-                if (ignoredProp.GetProperties().Contains(member))
+                if (member.DeclaringType != null &&
+                    (member.DeclaringType == ignoredProp || member.DeclaringType.IsSubclassOf(ignoredProp)))
                 {
                     prop.Ignored = true;
                 }
