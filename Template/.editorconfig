@@ -3,7 +3,7 @@
 # - Suppressed namespace warnings
 # - Added custom naming rule for private int _fieldName
 # - End of line changed to LF because Godot requires this
-# - Insert final new line
+# - Insert final new line 
 
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
