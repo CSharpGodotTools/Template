@@ -125,15 +125,8 @@ internal sealed class ClientLogAggregator : EventLogAggregator
     {
         long nowTicks = Stopwatch.GetTimestamp();
 
-        if (Interlocked.CompareExchange(ref _eventWindowStartTicks, nowTicks, 0) == 0)
-        {
-            Interlocked.Exchange(ref _eventLastEventTicks, nowTicks);
-        }
-        else
-        {
-            Interlocked.Exchange(ref _eventLastEventTicks, nowTicks);
-        }
-
+        Interlocked.CompareExchange(ref _eventWindowStartTicks, nowTicks, 0);
+        Interlocked.Exchange(ref _eventLastEventTicks, nowTicks);
         Interlocked.Exchange(ref eventTypeLastTicks, nowTicks);
     }
 
