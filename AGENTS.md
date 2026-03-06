@@ -52,3 +52,4 @@ The following are banned in C#:
 * Trivial self evident null checks.
 * Tuples (x, y). Create new class/struct type instead.
 * Avoid editing any test related scripts unless explicitly asked to.
+* Breaking API changes unless explicitly asked to.
