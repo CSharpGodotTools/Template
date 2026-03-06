@@ -1,14 +1,16 @@
-# AGENT GUIDELINES
+# AGENTS
 
 > **Do not modify this files contents — it is machine-consumed.**
+> Godot Version: v4.6.1.stable.mono.official [14d19694e]
+> net10.0 latest C# version
 
 ---
 
-## §1 Operational Workflow
+## §1 Workflow
 
 1. Identify subproject: `Template`, `Template.GodotUtils`, `Template.PacketGen`, or `Template.Visualize`. If ambiguous, ask the user **before proceeding**.
-2. Work on your assigned task.
-3. Run `cd <project-folder> && dotnet build`. Fix all compiler errors. Repeat until no errors. 
+2. Work on your assigned task. Break task into small changes. Commit each separately with clear message. No single big commit. use context7
+3. Run `cd <project-folder> && dotnet build && dotnet test`. Fix all compiler errors. Repeat until no errors.
 
 ---
 
@@ -16,10 +18,10 @@
 
 ### Naming
 
-* No abbreviations in types.
+* No abbreviated type names.
 * Private fields: `_camelCase`. Constants: `PascalCase`.
 * For PascalCase use for e.g. `Ui` not `UI`.
-* All types max 22 characters.
+* All type names max 22 characters.
 
 ### Readability
 
