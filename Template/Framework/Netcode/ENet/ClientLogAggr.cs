@@ -163,14 +163,7 @@ internal sealed class ClientLogAggregator : EventLogAggregator
     private static string FormatTimeoutMessage(int count, long peerId, double seconds)
     {
         if (count == 1)
-        {
-            if (peerId > 0)
-            {
-                return $"Connection to server timed out (peer {peerId})";
-            }
-
-            return "Connection to server timed out";
-        }
+            return $"Connection to server timed out (peer {peerId})";
 
         return $"{FormatCount("timeout event", count)}{FormatLastSuffix(count, seconds)}";
     }
