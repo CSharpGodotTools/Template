@@ -110,7 +110,7 @@ if $build_packetgen; then
 
     dotnet_cmd build "$proj" -c Release --no-restore
 
-    out_dir="$REPO_ROOT/Template.PacketGen/PacketGen/bin/Release/netstandard2.0"
+    out_dir="$REPO_ROOT/Template.PacketGen/PacketGen/bin/Release"
 
     new_pkg="$(find "$out_dir" -maxdepth 1 -name "PacketGen.*.nupkg" | head -1)"
 
