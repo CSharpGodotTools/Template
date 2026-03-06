@@ -9,7 +9,7 @@ public abstract class ClientPacket : GamePacket
 {
     private readonly Type _packetType;
 
-    public ClientPacket()
+    protected ClientPacket()
     {
         _packetType = GetType();
     }

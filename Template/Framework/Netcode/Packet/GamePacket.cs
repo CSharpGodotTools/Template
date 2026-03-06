@@ -7,7 +7,7 @@ namespace Framework.Netcode;
 /// </summary>
 public abstract class GamePacket
 {
-    public static int MaxSize => 8192;
+    public const int MaxSize = 8192;
 
     private byte[] _data;
     private long _size;
