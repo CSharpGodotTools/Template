@@ -31,8 +31,8 @@ Git Bash ships with `bash`, `grep`, `sed`, `find`, and `diff`, so all hooks work
 
 | Hook | Trigger | Action |
 |---|---|---|
-| `pre-commit` | Any commit that stages `.editorconfig` | Copies root `.editorconfig` to every subproject root and stages the copies automatically so they land in the same commit. |
-| `post-commit` | After any commit | **GodotUtils** — builds and copies `GodotUtils.dll` + `GodotUtils.xml` to `Template/Framework/Libraries/` when files under `Template.GodotUtils/` were committed. **Visualize** — same for `Visualize.dll` + `Visualize.xml` when files under `Template.Visualize/` were committed. **PacketGen** — builds a release nupkg, replaces the old `PacketGen.*.nupkg` in `Template/Framework/Libraries/`, then bumps the patch version in `PacketGen.csproj` for the next release when files under `Template.PacketGen/` were committed. |
+| `pre-commit` | Any commit | **`.editorconfig`** — when staged, copies root `.editorconfig` to every subproject root and stages the copies so they land in the same commit. **GodotUtils** — builds and stages `GodotUtils.dll` + `GodotUtils.xml` into `Template/Framework/Libraries/` when files under `Template.GodotUtils/` are staged. **Visualize** — same for `Visualize.dll` + `Visualize.xml`. **PacketGen** — bumps the patch version in `PacketGen.csproj`, builds a release nupkg, swaps the old `PacketGen.*.nupkg` in `Template/Framework/Libraries/`, and stages everything — all in the same commit. Aborts the commit if any build fails. |
+| `post-commit` | After any commit | Intentionally empty. GitHub Desktop (libgit2) does not invoke `post-commit` hooks, so all build logic lives in `pre-commit`. |
 | `post-checkout` | Switching branches | Syncs root `.editorconfig` to all subproject roots when the files differ, so the correct config is always in place after a checkout. |
 | `post-merge` | After `git merge` / `git pull` | Syncs root `.editorconfig` to all subproject roots when `.editorconfig` was part of the merged changes. |
 
@@ -42,7 +42,7 @@ Git Bash ships with `bash`, `grep`, `sed`, `find`, and `diff`, so all hooks work
 
 | Tool | Used by |
 |---|---|
-| `dotnet` (.NET 10 SDK) | `post-commit` (all three builds) |
+| `dotnet` (.NET 10 SDK) | `pre-commit` (all three builds) |
 | `bash` 4+ | All hooks |
 | Standard POSIX utils — `grep`, `sed`, `find`, `diff`, `cp` | All hooks |
 
