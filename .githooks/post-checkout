@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# post-checkout: syncs root .editorconfig to all subproject roots after a branch checkout.
+# $3 = 1 on branch checkout, 0 on file checkout.
+
+[ "$3" = "1" ] || exit 0
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+SRC="$REPO_ROOT/.editorconfig"
+
+[ -f "$SRC" ] || exit 0
+
+SUBPROJECTS=(
+    "Template"
+    "Template.GodotUtils"
+    "Template.PacketGen"
+    "Template.Visualize"
+)
+
+synced=0
+for dir in "${SUBPROJECTS[@]}"; do
+    dest="$REPO_ROOT/$dir/.editorconfig"
+    if ! diff -q "$SRC" "$dest" > /dev/null 2>&1; then
+        cp "$SRC" "$dest"
+        echo "[post-checkout] Updated $dir/.editorconfig"
+        synced=1
+    fi
+done
+
+[ "$synced" = "1" ] && echo "[post-checkout] .editorconfig synced to subproject roots."
+exit 0

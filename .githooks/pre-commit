@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# pre-commit: syncs root .editorconfig to all subproject roots whenever it is staged.
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+
+# Only act when the root .editorconfig is part of this commit
+if ! git diff --cached --name-only | grep -q "^\.editorconfig$"; then
+    exit 0
+fi
+
+echo "[pre-commit] .editorconfig staged; syncing to subproject roots..."
+
+SUBPROJECTS=(
+    "Template"
+    "Template.GodotUtils"
+    "Template.PacketGen"
+    "Template.Visualize"
+)
+
+for dir in "${SUBPROJECTS[@]}"; do
+    dest="$REPO_ROOT/$dir/.editorconfig"
+    cp "$REPO_ROOT/.editorconfig" "$dest"
+    git add "$dest"
+    echo "  staged $dir/.editorconfig"
+done
+
+exit 0
