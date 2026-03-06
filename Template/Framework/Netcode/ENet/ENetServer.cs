@@ -81,10 +81,7 @@ public abstract class ENetServer : ENetLow
     /// <summary>
     /// Requests a kick-all from any thread. Thread safe.
     /// </summary>
-    protected void RequestKickAll(DisconnectOpcode opcode)
-    {
-        _enetCmds.Enqueue(new Cmd<ENetServerOpcode>(ENetServerOpcode.KickAll, opcode));
-    }
+    protected void RequestKickAll(DisconnectOpcode opcode) => KickAll(opcode);
 
     /// <summary>
     /// Processes server worker queues each network tick.
@@ -256,6 +253,7 @@ public abstract class ENetServer : ENetLow
 
         peer.DisconnectNow((uint)opcode);
         _peers.Remove(peerId);
+        TryInvokePeerDisconnected(peerId);
     }
 
     private void HandleKickAllCommand(Cmd<ENetServerOpcode> command)
@@ -269,6 +267,7 @@ public abstract class ENetServer : ENetLow
         foreach (Peer peer in _peers.Values)
         {
             peer.DisconnectNow((uint)opcode);
+            TryInvokePeerDisconnected(peer.ID);
         }
 
         _peers.Clear();
