@@ -24,7 +24,6 @@ public class Net<TGameClient, TGameServer> : IDisposable
     private readonly bool _enetInitialized;
     private long _shutdownStarted;
     private int _disposed;
-    private bool _stopRequestedByMainMenu;
 
     public event Action<GodotServer> ServerCreated;
     public event Action<GodotClient> ClientCreated;
@@ -220,7 +219,6 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// </summary>
     public void RequestShutdown()
     {
-        _stopRequestedByMainMenu = true;
         _ = StopThreads();
     }
 
@@ -236,7 +234,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
 
         Autoloads.Instance.PreQuit -= StopThreads;
 
-        if (!_stopRequestedByMainMenu)
+        if (Interlocked.Read(ref _shutdownStarted) == 0)
         {
             _ = StopThreads();
         }
