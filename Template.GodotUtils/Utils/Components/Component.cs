@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Threading.Tasks;
 
 namespace GodotUtils;
 
@@ -11,6 +10,7 @@ public class Component : IDisposable
 {
     protected Node Owner;
     private ComponentManager _componentManager;
+    private SceneTree _deferredTree;
     private bool _disposed;
 
     /// <summary>
@@ -127,17 +127,19 @@ public class Component : IDisposable
             _componentManager.UnregisterUnhandledInput(this);
     }
 
-    private async Task CallNextFrame(Action action)
-    {
-        await Owner.WaitOneFrame();
-        action();
-    }
-
     private void InitializeComponent()
     {
         _componentManager = ComponentManager.Instance;
         Ready();
-        TaskUtils.FireAndForget(() => CallNextFrame(Deferred));
+        _deferredTree = Owner.GetTree();
+        _deferredTree.ProcessFrame += OnDeferredOnce;
+    }
+
+    private void OnDeferredOnce()
+    {
+        _deferredTree.ProcessFrame -= OnDeferredOnce;
+        _deferredTree = null;
+        Deferred();
     }
 
     private void CleanupOnTreeExit()
@@ -162,6 +164,12 @@ public class Component : IDisposable
         finally
         {
             _componentManager?.UnregisterAll(this);
+
+            if (_deferredTree != null)
+            {
+                _deferredTree.ProcessFrame -= OnDeferredOnce;
+                _deferredTree = null;
+            }
 
             if (Owner != null)
             {
