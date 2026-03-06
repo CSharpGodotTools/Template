@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace Framework.Netcode.Server;
 
+/// <summary>
+/// Main-thread server facade. Provides packet handler registration and exposes
+/// send and broadcast helpers callable from the Godot main thread.
+/// </summary>
 public abstract class GodotServer : ENetServer
 {
     private const string LogTag = "Server";

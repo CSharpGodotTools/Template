@@ -9,6 +9,10 @@ using System.Threading;
 namespace Framework.Netcode.Server;
 
 // ENet API Reference: https://github.com/SoftwareGuy/ENet-CSharp/blob/master/DOCUMENTATION.md
+/// <summary>
+/// Base ENet server worker that owns peer tracking, incoming packet dispatch, and outgoing message queues.
+/// Extend <see cref="GodotServer"/> for game-level packet registration.
+/// </summary>
 public abstract class ENetServer : ENetLow
 {
     private const string LogTag = "Server";

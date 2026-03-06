@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Framework.Netcode.Client;
 
+/// <summary>
+/// Main-thread client facade. Provides packet handler registration and exposes
+/// connection lifecycle events that fire on the Godot main thread.
+/// </summary>
 public abstract class GodotClient : ENetClient
 {
     private const string LogTag = "Client";

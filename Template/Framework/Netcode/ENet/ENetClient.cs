@@ -8,6 +8,10 @@ using System.Threading;
 namespace Framework.Netcode.Client;
 
 // ENet API Reference: https://github.com/SoftwareGuy/ENet-CSharp/blob/master/DOCUMENTATION.md
+/// <summary>
+/// Base ENet client worker that owns the connection lifecycle, send queue, and packet dispatch.
+/// Extend <see cref="GodotClient"/> for game-level packet registration.
+/// </summary>
 public abstract class ENetClient : ENetLow
 {
     private const string LogTag = "Client";

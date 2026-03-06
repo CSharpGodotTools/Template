@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Framework.Netcode;
 
+/// <summary>
+/// Top-level network coordinator. Owns a single server and client pair, manages
+/// ENet initialisation/deinitialisation, and exposes lifecycle events for both.
+/// </summary>
 public class Net<TGameClient, TGameServer> : IDisposable
     where TGameClient : GodotClient, new()
     where TGameServer : GodotServer, new()
@@ -29,6 +33,9 @@ public class Net<TGameClient, TGameServer> : IDisposable
     public event Action<GodotClient> ClientCreated;
     public event Action<GodotClient> ClientDestroyed;
 
+    /// <summary>
+    /// Byte offset within a packet reserved for the heartbeat sequence number.
+    /// </summary>
     public static int HeartbeatPosition { get; } = 20;
 
     public GodotServer Server { get; private set; }
