@@ -1,122 +1,125 @@
 #!/usr/bin/env bash
-# pre-commit: syncs root .editorconfig and builds any changed subproject DLLs/nupkgs.
-# Must be pre-commit (not post-commit) because GitHub Desktop (libgit2) only fires pre-commit.
-
-# ---------------------------------------------------------------------------
-# GUI apps (GitHub Desktop, etc.) launch hooks without sourcing the user's
-# shell profile, so dotnet may not be on PATH.  Source any profile.d dotnet
-# scripts first, then fall back to well-known install locations.
-# ---------------------------------------------------------------------------
-if ! command -v dotnet > /dev/null 2>&1; then
-    # Source distro/SDK profile fragments (Linux Fedora/RHEL/Debian, macOS Homebrew)
-    for profile_frag in /etc/profile.d/dotnet*.sh /etc/profile.d/dotnet.sh; do
-        # shellcheck source=/dev/null
-        [ -f "$profile_frag" ] && source "$profile_frag"
-    done
-
-    # If still not found, probe well-known install paths
-    if ! command -v dotnet > /dev/null 2>&1; then
-        for candidate in \
-            /usr/bin/dotnet \
-            /usr/local/bin/dotnet \
-            "$HOME/.dotnet/dotnet" \
-            /usr/local/share/dotnet/dotnet \
-            "/c/Program Files/dotnet/dotnet.exe" \
-            "$LOCALAPPDATA/Microsoft/dotnet/dotnet.exe"; do
-            if [ -x "$candidate" ]; then
-                export PATH="$(dirname "$candidate"):$PATH"
-                break
-            fi
-        done
-    fi
-fi
-
-if ! command -v dotnet > /dev/null 2>&1; then
-    echo "[pre-commit] ERROR: dotnet not found. Install the .NET SDK and ensure it is on PATH." >&2
-    exit 1
-fi
+set -e
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 LIBS="$REPO_ROOT/Template/Framework/Libraries"
 STAGED="$(git diff --cached --name-only)"
 
-# ---------------------------------------------------------------------------
-# 1. Sync root .editorconfig to all subproject roots when it is staged
-# ---------------------------------------------------------------------------
+# ------------------------------------------------------------
+# Resolve dotnet command (Flatpak-safe)
+# ------------------------------------------------------------
+dotnet_cmd() {
+    if command -v flatpak-spawn >/dev/null 2>&1; then
+        flatpak-spawn --host dotnet "$@"
+    else
+        dotnet "$@"
+    fi
+}
+
+echo "[pre-commit] dotnet version: $(dotnet_cmd --version 2>&1)"
+
+# ------------------------------------------------------------
+# Track which projects must build
+# ------------------------------------------------------------
+build_godotutils=false
+build_visualize=false
+build_packetgen=false
+
+echo "$STAGED" | grep -q "^Template\.GodotUtils/" && build_godotutils=true
+echo "$STAGED" | grep -q "^Template\.Visualize/" && build_visualize=true
+echo "$STAGED" | grep -q "^Template\.PacketGen/" && build_packetgen=true
+
+# Visualize depends on GodotUtils
+if $build_visualize; then
+    build_godotutils=true
+fi
+
+# ------------------------------------------------------------
+# 1 Sync .editorconfig
+# ------------------------------------------------------------
 if echo "$STAGED" | grep -q "^\.editorconfig$"; then
-    echo "[pre-commit] .editorconfig staged; syncing to subproject roots..."
-    for dir in "Template" "Template.GodotUtils" "Template.PacketGen" "Template.Visualize"; do
+    echo "[pre-commit] Syncing .editorconfig..."
+
+    for dir in Template Template.GodotUtils Template.PacketGen Template.Visualize; do
         dest="$REPO_ROOT/$dir/.editorconfig"
         cp "$REPO_ROOT/.editorconfig" "$dest"
         git add "$dest"
-        echo "  staged $dir/.editorconfig"
     done
 fi
 
-# ---------------------------------------------------------------------------
-# 2. Build GodotUtils and copy DLLs when any of its files are staged
-# ---------------------------------------------------------------------------
-if echo "$STAGED" | grep -q "^Template\.GodotUtils/"; then
+# ------------------------------------------------------------
+# 2 Build GodotUtils
+# ------------------------------------------------------------
+if $build_godotutils; then
     echo "[pre-commit] Building GodotUtils..."
-    if dotnet build "$REPO_ROOT/Template.GodotUtils/GodotUtils.csproj" -p:BuildExtras=true; then
-        git add "$LIBS/GodotUtils.dll" "$LIBS/GodotUtils.xml" 2>/dev/null
-        echo "[pre-commit] GodotUtils built and staged."
-    else
-        echo "[pre-commit] GodotUtils build FAILED — aborting commit." >&2
-        exit 1
-    fi
+
+    proj="$REPO_ROOT/Template.GodotUtils/GodotUtils.csproj"
+
+    dotnet_cmd build "$proj" -p:BuildExtras=true
+
+    git add \
+        "$LIBS/GodotUtils.dll" \
+        "$LIBS/GodotUtils.xml" 2>/dev/null || true
 fi
 
-# ---------------------------------------------------------------------------
-# 3. Build Visualize and copy DLLs when any of its files are staged
-#    (GodotUtils is built first above if both are staged)
-# ---------------------------------------------------------------------------
-if echo "$STAGED" | grep -q "^Template\.Visualize/"; then
+# ------------------------------------------------------------
+# 3 Build Visualize
+# ------------------------------------------------------------
+if $build_visualize; then
     echo "[pre-commit] Building Visualize..."
-    if dotnet build "$REPO_ROOT/Template.Visualize/Visualize.csproj" -p:BuildExtras=true; then
-        git add "$LIBS/Visualize.dll" "$LIBS/Visualize.xml" 2>/dev/null
-        echo "[pre-commit] Visualize built and staged."
-    else
-        echo "[pre-commit] Visualize build FAILED — aborting commit." >&2
-        exit 1
-    fi
+
+    proj="$REPO_ROOT/Template.Visualize/Visualize.csproj"
+
+    dotnet_cmd build "$proj" -p:BuildExtras=true
+
+    git add \
+        "$LIBS/Visualize.dll" \
+        "$LIBS/Visualize.xml" 2>/dev/null || true
 fi
 
-# ---------------------------------------------------------------------------
-# 4. Build PacketGen nupkg when any of its files are staged
-# ---------------------------------------------------------------------------
-if echo "$STAGED" | grep -q "^Template\.PacketGen/"; then
+# ------------------------------------------------------------
+# 4 Build PacketGen
+# ------------------------------------------------------------
+if $build_packetgen; then
     echo "[pre-commit] Building PacketGen..."
-    local_proj="$REPO_ROOT/Template.PacketGen/PacketGen/PacketGen.csproj"
 
-    # Bump the patch version before building so the nupkg carries the new version
-    current_version="$(grep -oP '(?<=<Version>)[^<]+' "$local_proj" | head -1)"
+    proj="$REPO_ROOT/Template.PacketGen/PacketGen/PacketGen.csproj"
+
+    current_version="$(grep -oP '(?<=<Version>)[^<]+' "$proj" | head -1)"
+
     if [ -n "$current_version" ]; then
         major="${current_version%%.*}"
         rest="${current_version#*.}"
         minor="${rest%%.*}"
         patch="${rest#*.}"
-        next_version="$major.$minor.$((patch + 1))"
-        sed -i "s|<Version>$current_version</Version>|<Version>$next_version</Version>|" "$local_proj"
-        git add "$local_proj"
-        echo "[pre-commit] PacketGen version bumped $current_version → $next_version."
+
+        next_version="$major.$minor.$((patch+1))"
+
+        sed -i "s|<Version>$current_version</Version>|<Version>$next_version</Version>|" "$proj"
+
+        git add "$proj"
+
+        echo "[pre-commit] PacketGen version $current_version → $next_version"
     fi
 
+    dotnet_cmd build "$proj" -c Release
+
     out_dir="$REPO_ROOT/Template.PacketGen/PacketGen/bin/Release/netstandard2.0"
-    if dotnet build "$local_proj" -c Release; then
-        new_nupkg="$(find "$out_dir" -maxdepth 1 -name "PacketGen.*.nupkg" | head -1)"
-        if [ -z "$new_nupkg" ]; then
-            echo "[pre-commit] No PacketGen nupkg found after build — aborting commit." >&2
-            exit 1
-        fi
-        find "$LIBS" -maxdepth 1 -name "PacketGen.*.nupkg" -delete
-        cp "$new_nupkg" "$LIBS/"
-        git add "$LIBS/"PacketGen.*.nupkg 2>/dev/null
-        echo "[pre-commit] $(basename "$new_nupkg") staged."
-    else
-        echo "[pre-commit] PacketGen build FAILED — aborting commit." >&2
+
+    new_pkg="$(find "$out_dir" -maxdepth 1 -name "PacketGen.*.nupkg" | head -1)"
+
+    if [ -z "$new_pkg" ]; then
+        echo "[pre-commit] PacketGen nupkg not found!"
         exit 1
     fi
+
+    find "$LIBS" -maxdepth 1 -name "PacketGen.*.nupkg" -delete
+
+    cp "$new_pkg" "$LIBS/"
+
+    git add "$LIBS"/PacketGen.*.nupkg
 fi
+
+echo "[pre-commit] ✔ Done"
 
 exit 0
