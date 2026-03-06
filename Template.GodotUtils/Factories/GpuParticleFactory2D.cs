@@ -26,7 +26,7 @@ public static class GpuParticleFactory2D
 
         void OnExitedTree()
         {
-            particles.Finished -= particles.QueueFree;
+            particles.Finished -= OnFinished;
             particles.TreeExited -= OnExitedTree;
         }
     }
