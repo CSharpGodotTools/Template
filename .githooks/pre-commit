@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 LIBS="$REPO_ROOT/Template/Framework/Libraries"
+
 STAGED="$(git diff --cached --name-only)"
 
 # ------------------------------------------------------------
-# Resolve dotnet command (Flatpak-safe)
+# dotnet resolver
+# Works in:
+#  • normal terminals
+#  • CI
+#  • Flatpak GitHub Desktop
 # ------------------------------------------------------------
 dotnet_cmd() {
     if command -v flatpak-spawn >/dev/null 2>&1; then
@@ -19,15 +24,15 @@ dotnet_cmd() {
 echo "[pre-commit] dotnet version: $(dotnet_cmd --version 2>&1)"
 
 # ------------------------------------------------------------
-# Track which projects must build
+# Determine which projects changed
 # ------------------------------------------------------------
 build_godotutils=false
 build_visualize=false
 build_packetgen=false
 
-echo "$STAGED" | grep -q "^Template\.GodotUtils/" && build_godotutils=true
-echo "$STAGED" | grep -q "^Template\.Visualize/" && build_visualize=true
-echo "$STAGED" | grep -q "^Template\.PacketGen/" && build_packetgen=true
+echo "$STAGED" | grep -q "^Template\.GodotUtils/" && build_godotutils=true || true
+echo "$STAGED" | grep -q "^Template\.Visualize/" && build_visualize=true || true
+echo "$STAGED" | grep -q "^Template\.PacketGen/" && build_packetgen=true || true
 
 # Visualize depends on GodotUtils
 if $build_visualize; then
@@ -35,12 +40,13 @@ if $build_visualize; then
 fi
 
 # ------------------------------------------------------------
-# 1 Sync .editorconfig
+# 1. Sync .editorconfig
 # ------------------------------------------------------------
 if echo "$STAGED" | grep -q "^\.editorconfig$"; then
-    echo "[pre-commit] Syncing .editorconfig..."
+    echo "[pre-commit] Syncing .editorconfig to subprojects..."
 
-    for dir in Template Template.GodotUtils Template.PacketGen Template.Visualize; do
+    for dir in Template Template.GodotUtils Template.PacketGen Template.Visualize
+    do
         dest="$REPO_ROOT/$dir/.editorconfig"
         cp "$REPO_ROOT/.editorconfig" "$dest"
         git add "$dest"
@@ -48,14 +54,14 @@ if echo "$STAGED" | grep -q "^\.editorconfig$"; then
 fi
 
 # ------------------------------------------------------------
-# 2 Build GodotUtils
+# 2. Build GodotUtils
 # ------------------------------------------------------------
 if $build_godotutils; then
     echo "[pre-commit] Building GodotUtils..."
 
     proj="$REPO_ROOT/Template.GodotUtils/GodotUtils.csproj"
 
-    dotnet_cmd build "$proj" -p:BuildExtras=true
+    dotnet_cmd build "$proj" --no-restore -p:BuildExtras=true
 
     git add \
         "$LIBS/GodotUtils.dll" \
@@ -63,14 +69,14 @@ if $build_godotutils; then
 fi
 
 # ------------------------------------------------------------
-# 3 Build Visualize
+# 3. Build Visualize
 # ------------------------------------------------------------
 if $build_visualize; then
     echo "[pre-commit] Building Visualize..."
 
     proj="$REPO_ROOT/Template.Visualize/Visualize.csproj"
 
-    dotnet_cmd build "$proj" -p:BuildExtras=true
+    dotnet_cmd build "$proj" --no-restore -p:BuildExtras=true
 
     git add \
         "$LIBS/Visualize.dll" \
@@ -78,14 +84,14 @@ if $build_visualize; then
 fi
 
 # ------------------------------------------------------------
-# 4 Build PacketGen
+# 4. Build PacketGen
 # ------------------------------------------------------------
 if $build_packetgen; then
     echo "[pre-commit] Building PacketGen..."
 
     proj="$REPO_ROOT/Template.PacketGen/PacketGen/PacketGen.csproj"
 
-    current_version="$(grep -oP '(?<=<Version>)[^<]+' "$proj" | head -1)"
+    current_version="$(grep -o '<Version>[^<]*</Version>' "$proj" | head -1 | sed 's/<[^>]*>//g')"
 
     if [ -n "$current_version" ]; then
         major="${current_version%%.*}"
@@ -102,24 +108,24 @@ if $build_packetgen; then
         echo "[pre-commit] PacketGen version $current_version → $next_version"
     fi
 
-    dotnet_cmd build "$proj" -c Release
+    dotnet_cmd build "$proj" -c Release --no-restore
 
     out_dir="$REPO_ROOT/Template.PacketGen/PacketGen/bin/Release/netstandard2.0"
 
     new_pkg="$(find "$out_dir" -maxdepth 1 -name "PacketGen.*.nupkg" | head -1)"
 
     if [ -z "$new_pkg" ]; then
-        echo "[pre-commit] PacketGen nupkg not found!"
+        echo "[pre-commit] ERROR: PacketGen nupkg not found"
         exit 1
     fi
 
-    find "$LIBS" -maxdepth 1 -name "PacketGen.*.nupkg" -delete
+    find "$LIBS" -maxdepth 1 -name "PacketGen.*.nupkg" -delete || true
 
     cp "$new_pkg" "$LIBS/"
 
     git add "$LIBS"/PacketGen.*.nupkg
 fi
 
-echo "[pre-commit] ✔ Done"
+echo "[pre-commit] ✓ complete"
 
 exit 0
