@@ -125,7 +125,7 @@ internal sealed class ServerLogAggregator : EventLogAggregator
         eventTypeLastTicks = nowTicks;
     }
 
-    private string FormatConnectMessage(int count, uint peerId, double seconds)
+    private static string FormatConnectMessage(int count, uint peerId, double seconds)
     {
         if (count == 1)
         {
@@ -135,7 +135,7 @@ internal sealed class ServerLogAggregator : EventLogAggregator
         return $"{FormatCount("client", count)} connected{FormatLastSuffix(count, seconds)}";
     }
 
-    private string FormatDisconnectMessage(int count, uint peerId, double seconds)
+    private static string FormatDisconnectMessage(int count, uint peerId, double seconds)
     {
         if (count == 1)
         {
@@ -145,7 +145,7 @@ internal sealed class ServerLogAggregator : EventLogAggregator
         return $"{FormatCount("client", count)} disconnected{FormatLastSuffix(count, seconds)}";
     }
 
-    private string FormatTimeoutMessage(int count, uint peerId, double seconds)
+    private static string FormatTimeoutMessage(int count, uint peerId, double seconds)
     {
         if (count == 1)
         {

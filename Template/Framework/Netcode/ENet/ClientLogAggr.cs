@@ -130,7 +130,7 @@ internal sealed class ClientLogAggregator : EventLogAggregator
         Interlocked.Exchange(ref eventTypeLastTicks, nowTicks);
     }
 
-    private string FormatConnectMessage(int count, long peerId, double seconds)
+    private static string FormatConnectMessage(int count, long peerId, double seconds)
     {
         if (count == 1)
         {
@@ -145,7 +145,7 @@ internal sealed class ClientLogAggregator : EventLogAggregator
         return $"{FormatCount("connect event", count)}{FormatLastSuffix(count, seconds)}";
     }
 
-    private string FormatDisconnectMessage(int count, long peerId, double seconds)
+    private static string FormatDisconnectMessage(int count, long peerId, double seconds)
     {
         if (count == 1)
         {
@@ -160,7 +160,7 @@ internal sealed class ClientLogAggregator : EventLogAggregator
         return $"{FormatCount("disconnect event", count)}{FormatLastSuffix(count, seconds)}";
     }
 
-    private string FormatTimeoutMessage(int count, long peerId, double seconds)
+    private static string FormatTimeoutMessage(int count, long peerId, double seconds)
     {
         if (count == 1)
         {
