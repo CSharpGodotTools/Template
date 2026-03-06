@@ -1,6 +1,6 @@
 # Git Hooks Setup
 
-All hooks live in the version-controlled `.githooks/` directory. Tell git to use them instead of the default `.git/hooks/` directory by running the one-time setup command below, then follow any platform-specific notes.
+All hooks live in the version-controlled `.githooks/` directory. Configure Git to use them instead of `.git/hooks/` by running the one-time setup command below.
 
 ---
 
@@ -21,45 +21,162 @@ Open a **Git Bash** terminal in the repository root:
 git config core.hooksPath .githooks
 ```
 
-Git Bash ships with `bash`, `grep`, `sed`, `find`, and `diff`, so all hooks work without any extra tools. Executable bits are not meaningful on NTFS, so `chmod` is optional.
+Git Bash already ships with all required utilities (`bash`, `grep`, `sed`, `find`, `diff`), so no additional dependencies are needed.
 
-> **PowerShell / CMD**: The hooks are bash scripts and require a POSIX-compatible shell. Use Git Bash, WSL, or any other bash installation — the hooks do not have native PowerShell equivalents.
+> Hooks are written in **bash**, so PowerShell or CMD alone cannot run them. Use Git Bash, WSL, or another POSIX shell.
 
 ---
 
-## What Each Hook Does
+## Flatpak GitHub Desktop
 
-| Hook | Trigger | Action |
-|---|---|---|
-| `pre-commit` | Any commit | **`.editorconfig`** — when staged, copies root `.editorconfig` to every subproject root and stages the copies so they land in the same commit. **GodotUtils** — builds and stages `GodotUtils.dll` + `GodotUtils.xml` into `Template/Framework/Libraries/` when files under `Template.GodotUtils/` are staged. **Visualize** — same for `Visualize.dll` + `Visualize.xml`. **PacketGen** — bumps the patch version in `PacketGen.csproj`, builds a release nupkg, swaps the old `PacketGen.*.nupkg` in `Template/Framework/Libraries/`, and stages everything — all in the same commit. Aborts the commit if any build fails. |
-| `post-commit` | After any commit | Intentionally empty. GitHub Desktop (libgit2) does not invoke `post-commit` hooks, so all build logic lives in `pre-commit`. |
-| `post-checkout` | Switching branches | Syncs root `.editorconfig` to all subproject roots when the files differ, so the correct config is always in place after a checkout. |
-| `post-merge` | After `git merge` / `git pull` | Syncs root `.editorconfig` to all subproject roots when `.editorconfig` was part of the merged changes. |
+If you are using the Flatpak build of GitHub Desktop (`io.github.shiftey.Desktop`), the hooks automatically detect the sandbox and execute `dotnet` on the host system using:
+
+```bash
+flatpak-spawn --host dotnet
+```
+
+No additional configuration is required.
+
+---
+
+## Hook Overview
+
+| Hook            | Trigger                        | Action                                                                                                                                |
+| --------------- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `pre-commit`    | Before any commit              | Handles `.editorconfig` sync and automated builds for GodotUtils, Visualize, and PacketGen. The commit is aborted if any build fails. |
+| `post-commit`   | After commit                   | Intentionally empty. GitHub Desktop does not execute this hook.                                                                       |
+| `post-checkout` | Switching branches             | Syncs `.editorconfig` from root to all subprojects when differences are detected.                                                     |
+| `post-merge`    | After `git merge` / `git pull` | Syncs `.editorconfig` when the root version changed during the merge.                                                                 |
+
+---
+
+## pre-commit Behavior
+
+### `.editorconfig`
+
+When the root `.editorconfig` file is staged:
+
+1. The file is copied to each subproject root
+2. The copies are automatically staged
+3. All changes land in the same commit
+
+Subprojects receiving the sync:
+
+```
+Template/
+Template.GodotUtils/
+Template.PacketGen/
+Template.Visualize/
+```
+
+---
+
+### GodotUtils
+
+When files inside:
+
+```
+Template.GodotUtils/
+```
+
+are staged:
+
+```
+dotnet build Template.GodotUtils/GodotUtils.csproj
+```
+
+Generated files staged automatically:
+
+```
+Template/Framework/Libraries/GodotUtils.dll
+Template/Framework/Libraries/GodotUtils.xml
+```
+
+---
+
+### Visualize
+
+When files inside:
+
+```
+Template.Visualize/
+```
+
+are staged:
+
+```
+dotnet build Template.Visualize/Visualize.csproj
+```
+
+Generated files staged automatically:
+
+```
+Template/Framework/Libraries/Visualize.dll
+Template/Framework/Libraries/Visualize.xml
+```
+
+Visualize depends on **GodotUtils**, so if Visualize changes both projects build.
+
+---
+
+### PacketGen
+
+When files inside:
+
+```
+Template.PacketGen/
+```
+
+are staged:
+
+1. Patch version in `PacketGen.csproj` is automatically incremented
+2. A release build is executed
+3. A new `.nupkg` is generated
+4. The old package in `Template/Framework/Libraries/` is replaced
+5. The new package is staged for the commit
 
 ---
 
 ## Requirements
 
-| Tool | Used by |
-|---|---|
-| `dotnet` (.NET 10 SDK) | `pre-commit` (all three builds) |
-| `bash` 4+ | All hooks |
-| Standard POSIX utils — `grep`, `sed`, `find`, `diff`, `cp` | All hooks |
+| Tool                                | Purpose                      |
+| ----------------------------------- | ---------------------------- |
+| `.NET SDK`                          | Builds projects and packages |
+| `bash`                              | Executes hooks               |
+| `grep`, `sed`, `find`, `cp`, `diff` | Script utilities             |
 
-The Godot SDK (`Godot.NET.Sdk`) required by the Visualize build must also be resolvable by `dotnet build`. This is automatically satisfied when Godot is installed with the Mono / .NET module.
+The Visualize project requires **Godot.NET.Sdk**, which must be available to `dotnet build`.
 
 ---
 
-## Verifying the Setup
+## Verifying Hook Setup
+
+Confirm Git is using the repository hooks:
 
 ```bash
-git config core.hooksPath   # should print: .githooks
-ls -l .githooks/            # should show the four hook scripts as executable
+git config core.hooksPath
 ```
 
-To test the `pre-commit` hook manually without making a real commit:
+Expected output:
+
+```
+.githooks
+```
+
+Verify hooks exist:
 
 ```bash
-git stash                   # ensure a clean state first
-git hook run pre-commit     # requires git 2.36+, or just make a test commit
+ls .githooks
 ```
+
+---
+
+## Testing Hooks
+
+You can trigger the pre-commit hook by making a test commit:
+
+```bash
+git commit --allow-empty -m "hook test"
+```
+
+If builds fail, the commit will be aborted.
