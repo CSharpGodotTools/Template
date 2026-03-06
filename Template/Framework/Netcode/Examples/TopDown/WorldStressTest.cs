@@ -29,6 +29,11 @@ public partial class World
         private readonly LineEdit _angularSpeedInput;
         private readonly LineEdit _sendIntervalInput;
         private readonly LineEdit _portInput;
+        private readonly Label _statusLabel;
+        private readonly Label _activeBotsLabel;
+        private readonly Label _elapsedLabel;
+        private readonly Label _peersLabel;
+        private readonly Label _spawnRateLabel;
 
         private int _targetClients = DefaultTargetClients;
         private float _spawnIntervalSeconds = DefaultSpawnIntervalSeconds;
@@ -43,6 +48,7 @@ public partial class World
         private bool _serverStartedByStressTest;
         private ushort _lastServerPort = DefaultPort;
         private int _lastServerCapacity = DefaultTargetClients;
+        private float _elapsedSeconds;
 
         public bool IsRunning => _started;
 
@@ -57,10 +63,16 @@ public partial class World
             _angularSpeedInput = _world.GetNode<LineEdit>("%AngularSpeed");
             _sendIntervalInput = _world.GetNode<LineEdit>("%SendInterval");
             _portInput = _world.GetNode<LineEdit>("%StressPort");
+            _statusLabel = _world.GetNode<Label>("%StatusLabel");
+            _activeBotsLabel = _world.GetNode<Label>("%ActiveBotsLabel");
+            _elapsedLabel = _world.GetNode<Label>("%ElapsedLabel");
+            _peersLabel = _world.GetNode<Label>("%PeersLabel");
+            _spawnRateLabel = _world.GetNode<Label>("%SpawnRateLabel");
 
             _targetClientsInput.TextSubmitted += OnTargetClientsChanged;
 
             SetUiDefaults();
+            UpdateStatsUi();
 
             _startButton.Pressed += OnStartPressed;
             _stopButton.Pressed += OnStopPressed;
@@ -84,6 +96,7 @@ public partial class World
             _started = true;
             _paused = false;
             _serverRestartPending = false;
+            _elapsedSeconds = 0f;
             _spawnAccumulator = 0f;
             ApplySettingsFromUi();
             ApplyRunningServerSettings();
@@ -91,6 +104,7 @@ public partial class World
             if (ShouldRestartServer())
             {
                 RequestServerRestart();
+                UpdateStatsUi();
                 return;
             }
 
@@ -100,6 +114,8 @@ public partial class World
 
             if (!_paused)
                 SpawnBot();
+
+            UpdateStatsUi();
         }
 
         public void Tick(float deltaSeconds)
@@ -147,10 +163,14 @@ public partial class World
                 SpawnBot();
             }
 
+            _elapsedSeconds += deltaSeconds;
+
             foreach (BotClient bot in _bots)
             {
                 bot.Tick(deltaSeconds);
             }
+
+            UpdateStatsUi();
         }
 
         public void Stop()
@@ -159,7 +179,9 @@ public partial class World
             _started = false;
             _paused = false;
             _serverRestartPending = false;
+            _elapsedSeconds = 0f;
             _world.ClearRemotePlayers();
+            UpdateStatsUi();
         }
 
         public void Dispose()
@@ -266,13 +288,13 @@ public partial class World
 
         private void OnStartPressed()
         {
-            _world.GetTree().UnfocusCurrentControl();
+            _world.GetViewport().GuiReleaseFocus();
             Start();
         }
 
         private void OnStopPressed()
         {
-            _world.GetTree().UnfocusCurrentControl();
+            _world.GetViewport().GuiReleaseFocus();
             Stop();
         }
 
@@ -340,6 +362,34 @@ public partial class World
             }
 
             return net != null;
+        }
+
+        private void UpdateStatsUi()
+        {
+            string status;
+            if (!_started)
+                status = "Idle";
+            else if (_serverRestartPending)
+                status = "Restarting";
+            else if (_paused)
+                status = "Paused";
+            else
+                status = "Running";
+
+            _statusLabel.Text = status;
+            _activeBotsLabel.Text = $"{_bots.Count} / {_targetClients}";
+
+            int minutes = (int)(_elapsedSeconds / 60f);
+            int seconds = (int)(_elapsedSeconds % 60f);
+            _elapsedLabel.Text = $"{minutes:D2}:{seconds:D2}";
+
+            int peerCount = 0;
+            if (TryGetNet(out Net<GameClient, GameServer> net) && net.Server != null)
+                peerCount = net.Server.ConnectedPeerCount;
+            _peersLabel.Text = peerCount.ToString(CultureInfo.InvariantCulture);
+
+            float spawnRate = _spawnIntervalSeconds > 0f ? 1f / _spawnIntervalSeconds : 0f;
+            _spawnRateLabel.Text = spawnRate.ToString("F1", CultureInfo.InvariantCulture);
         }
 
         private sealed class BotClient
