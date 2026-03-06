@@ -39,6 +39,8 @@ public class ComponentManager
 
     public void EnterTree()
     {
+        _managerNode.SetProcess(false);
+        _managerNode.SetPhysicsProcess(false);
         _managerNode.SetProcessInput(false);
         _managerNode.SetProcessUnhandledInput(false);
     }
@@ -86,6 +88,9 @@ public class ComponentManager
     public void RegisterProcess(Component component)
     {
         Register(component, _process, _processPaused);
+
+        if (_process.Count == 1)
+            _managerNode.SetProcess(true);
     }
 
     /// <summary>
@@ -94,6 +99,9 @@ public class ComponentManager
     public void UnregisterProcess(Component component)
     {
         Unregister(component, _process, _processPaused);
+
+        if (_process.Count == 0)
+            _managerNode.SetProcess(false);
     }
 
     /// <summary>
@@ -102,6 +110,9 @@ public class ComponentManager
     public void RegisterPhysicsProcess(Component component)
     {
         Register(component, _physicsProcess, _physicsProcessPaused);
+
+        if (_physicsProcess.Count == 1)
+            _managerNode.SetPhysicsProcess(true);
     }
 
     /// <summary>
@@ -110,6 +121,9 @@ public class ComponentManager
     public void UnregisterPhysicsProcess(Component component)
     {
         Unregister(component, _physicsProcess, _physicsProcessPaused);
+
+        if (_physicsProcess.Count == 0)
+            _managerNode.SetPhysicsProcess(false);
     }
 
     /// <summary>
