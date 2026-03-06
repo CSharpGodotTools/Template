@@ -32,7 +32,7 @@ public static class AnimatedSprite2DExtensions
         else
         {
             GD.Print($"The frame '{frame}' specified for {sprite.Name} is " +
-                $"lower than the frame count '{frameCount}'");
+                $"out of range (frame count is '{frameCount}')");
         }
 
         sprite.Play(anim);
@@ -45,7 +45,7 @@ public static class AnimatedSprite2DExtensions
     {
         string resolvedAnim = ResolveAnimation(sprite, anim);
         sprite.InstantPlay(resolvedAnim);
-        sprite.Frame = GD.RandRange(0, sprite.SpriteFrames.GetFrameCount(resolvedAnim));
+        sprite.Frame = GD.RandRange(0, sprite.SpriteFrames.GetFrameCount(resolvedAnim) - 1);
     }
 
     /// <summary>
