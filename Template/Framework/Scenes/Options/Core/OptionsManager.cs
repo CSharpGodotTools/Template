@@ -62,7 +62,6 @@ public partial class OptionsManager : IDisposable
     public void Dispose()
     {
         _autoloads.PreQuit -= SaveSettingsOnQuit;
-        GC.SuppressFinalize(this);
     }
 
     public string GetCurrentTab()

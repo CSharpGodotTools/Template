@@ -39,7 +39,6 @@ public class OptionsGeneral : IDisposable
     public void Dispose()
     {
         _languageBtn.ItemSelected -= OnLanguageItemSelected;
-        GC.SuppressFinalize(this);
     }
 }
 

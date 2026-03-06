@@ -54,7 +54,5 @@ internal sealed class LineEditBinding(HBoxContainer row, LineEdit lineEdit, Line
 
         if (GodotObject.IsInstanceValid(_row))
             _row.QueueFree();
-
-        GC.SuppressFinalize(this);
     }
 }

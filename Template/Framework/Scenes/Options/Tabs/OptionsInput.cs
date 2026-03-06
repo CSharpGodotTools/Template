@@ -42,7 +42,6 @@ public partial class OptionsInput : IDisposable
         _view.HotkeyPressed -= OnHotkeyButtonPressed;
         _view.PlusPressed -= OnPlusButtonPressed;
         _editor.Clear();
-        GC.SuppressFinalize(this);
     }
 
     public void HandleInput(InputEvent @event)

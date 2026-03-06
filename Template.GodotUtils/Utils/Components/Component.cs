@@ -168,8 +168,6 @@ public class Component : IDisposable
                 Owner.Ready -= InitializeComponent;
                 Owner.TreeExited -= CleanupOnTreeExit;
             }
-
-            GC.SuppressFinalize(this);
         }
     }
 }

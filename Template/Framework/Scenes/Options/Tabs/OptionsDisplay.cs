@@ -67,7 +67,6 @@ public class OptionsDisplay : IDisposable
         _resolutionSlider.ValueChanged -= OnResolutionValueChanged;
 
         _vsyncMode.ItemSelected -= OnVSyncModeItemSelected;
-        GC.SuppressFinalize(this);
     }
 
     private void SetupMaxFps(Button displayBtn)

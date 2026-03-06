@@ -140,6 +140,5 @@ public class OptionsNav : IDisposable
     public void Dispose()
     {
         UnsubscribeFromNavBtns();
-        GC.SuppressFinalize(this);
     }
 }

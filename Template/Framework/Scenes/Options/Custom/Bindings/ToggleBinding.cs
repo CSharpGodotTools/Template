@@ -53,7 +53,5 @@ internal sealed class ToggleBinding(HBoxContainer row, CheckBox checkbox, CheckB
 
         if (GodotObject.IsInstanceValid(_row))
             _row.QueueFree();
-
-        GC.SuppressFinalize(this);
     }
 }

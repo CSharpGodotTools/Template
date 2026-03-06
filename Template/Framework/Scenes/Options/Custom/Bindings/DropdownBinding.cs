@@ -54,7 +54,5 @@ internal sealed class DropdownBinding(HBoxContainer row, OptionButton dropdown, 
 
         if (GodotObject.IsInstanceValid(_row))
             _row.QueueFree();
-
-        GC.SuppressFinalize(this);
     }
 }

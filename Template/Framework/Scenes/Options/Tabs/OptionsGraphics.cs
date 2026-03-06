@@ -28,7 +28,6 @@ public class OptionsGraphics : IDisposable
     {
         _optionBtnQualityPreset.ItemSelected -= OnQualityModeItemSelected;
         _antialiasing.ItemSelected -= OnAntialiasingItemSelected;
-        GC.SuppressFinalize(this);
     }
 
     private void SetupQualityPreset(Button graphicsBtn)

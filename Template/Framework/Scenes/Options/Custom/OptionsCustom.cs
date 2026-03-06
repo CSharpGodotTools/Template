@@ -57,6 +57,5 @@ public sealed class OptionsCustom : IDisposable
             binding.Dispose();
 
         Bindings.Clear();
-        GC.SuppressFinalize(this);
     }
 }

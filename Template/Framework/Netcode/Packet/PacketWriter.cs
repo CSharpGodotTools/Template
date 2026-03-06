@@ -235,6 +235,5 @@ public class PacketWriter : IDisposable
     {
         _writer.Dispose();
         Stream.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

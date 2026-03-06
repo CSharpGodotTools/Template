@@ -57,7 +57,5 @@ internal sealed class SliderBinding(HBoxContainer row, HSlider slider, Godot.Ran
 
         if (GodotObject.IsInstanceValid(_row))
             _row.QueueFree();
-
-        GC.SuppressFinalize(this);
     }
 }

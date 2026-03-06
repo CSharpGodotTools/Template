@@ -336,6 +336,5 @@ public class PacketReader : IDisposable
     {
         _reader.Dispose();
         _stream.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

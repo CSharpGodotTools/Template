@@ -240,7 +240,5 @@ public class Net<TGameClient, TGameServer> : IDisposable
         {
             _ = StopThreads();
         }
-
-        GC.SuppressFinalize(this);
     }
 }
