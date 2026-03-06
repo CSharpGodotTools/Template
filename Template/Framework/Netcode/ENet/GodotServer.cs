@@ -15,7 +15,7 @@ public abstract class GodotServer : ENetServer
     }
 
     /// <summary>
-    /// Register all packet handlers for this client.
+    /// Register all packet handlers for this server.
     /// </summary>
     protected abstract void RegisterPackets();
 

@@ -243,6 +243,9 @@ public abstract class ENetClient : ENetLow
             return false;
         }
 
+        // The packet registry vends a shared singleton per packet type. Handlers must not
+        // retain a reference to this instance across processing boundaries — the same object
+        // is reused and mutated for every subsequent packet of the same type.
         ServerPacket handlerPacket = PacketRegistry.ServerPacketInfo[packetType].Instance;
         packetData = new PacketData
         {
