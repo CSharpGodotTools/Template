@@ -13,7 +13,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     private const int ShutdownPollIntervalMs = 50;
     private const int DefaultMaxClients = 500;
 
-    private static readonly ENetOptions _defaultClientOptions = new()
+    private static readonly ENetOptions _defaultOptions = new()
     {
         PrintPacketByteSize = false,
         PrintPacketData = false,
@@ -54,7 +54,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// </summary>
     public void StartServer(ushort port, int maxClients = DefaultMaxClients, ENetOptions options = null)
     {
-        options ??= _defaultClientOptions;
+        options ??= _defaultOptions;
 
         if (!CanUseENet())
             return;
@@ -101,7 +101,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
         ClientCreated?.Invoke(Client);
 
         // Fire-and-forget connect (if Connect is async)
-        _ = Client.Connect(ip, port, CloneDefaultClientOptions());
+        _ = Client.Connect(ip, port, CloneDefaultOptions());
     }
 
     /// <summary>
@@ -171,15 +171,15 @@ public class Net<TGameClient, TGameServer> : IDisposable
         return false;
     }
 
-    private static ENetOptions CloneDefaultClientOptions()
+    private static ENetOptions CloneDefaultOptions()
     {
         return new ENetOptions
         {
-            PrintPacketByteSize = _defaultClientOptions.PrintPacketByteSize,
-            PrintPacketData = _defaultClientOptions.PrintPacketData,
-            PrintPacketReceived = _defaultClientOptions.PrintPacketReceived,
-            PrintPacketSent = _defaultClientOptions.PrintPacketSent,
-            ShowLogTimestamps = _defaultClientOptions.ShowLogTimestamps
+            PrintPacketByteSize = _defaultOptions.PrintPacketByteSize,
+            PrintPacketData = _defaultOptions.PrintPacketData,
+            PrintPacketReceived = _defaultOptions.PrintPacketReceived,
+            PrintPacketSent = _defaultOptions.PrintPacketSent,
+            ShowLogTimestamps = _defaultOptions.ShowLogTimestamps
         };
     }
 
