@@ -49,7 +49,7 @@ public class ConsoleHistory
 
     public string Get(int nav)
     {
-        if (nav == _inputHistory.Count)
+        if (nav < 0 || nav >= _inputHistory.Count)
         {
             return string.Empty;
         }
