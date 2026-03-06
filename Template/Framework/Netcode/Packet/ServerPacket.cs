@@ -17,7 +17,7 @@ public abstract class ServerPacket : GamePacket
     /// <summary>
     /// Returns the registry opcode for this server packet type.
     /// </summary>
-    public override byte GetOpcode()
+    public override ushort GetOpcode()
     {
         return PacketRegistry.ServerPacketInfo[_packetType].Opcode;
     }

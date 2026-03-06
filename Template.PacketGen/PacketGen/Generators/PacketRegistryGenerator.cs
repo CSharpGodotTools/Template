@@ -48,8 +48,9 @@ internal static class PacketRegistryGenerator
         // Process client packets
         foreach (INamedTypeSymbol symbol in clientSymbols)
         {
-            if (clientOpcode > maxOpcode)
-                throw new InvalidOperationException($"Client packet opcode overflow (max {maxOpcode} for type '{idTypeName}')");
+            // The last opcode value is always reserved for packet fragmentation.
+            if (clientOpcode >= maxOpcode)
+                throw new InvalidOperationException($"Client packet opcode overflow (max assignable {maxOpcode - 1} for type '{idTypeName}', {maxOpcode} is reserved for fragmentation)");
 
             string typeName = symbol.Name;
 
@@ -73,8 +74,9 @@ internal static class PacketRegistryGenerator
         // Process server packets
         foreach (INamedTypeSymbol symbol in serverSymbols)
         {
-            if (serverOpcode > maxOpcode)
-                throw new InvalidOperationException($"Server packet opcode overflow (max {maxOpcode} for type '{idTypeName}')");
+            // The last opcode value is always reserved for packet fragmentation.
+            if (serverOpcode >= maxOpcode)
+                throw new InvalidOperationException($"Server packet opcode overflow (max assignable {maxOpcode - 1} for type '{idTypeName}', {maxOpcode} is reserved for fragmentation)");
 
             string typeName = symbol.Name;
 
@@ -100,6 +102,9 @@ internal static class PacketRegistryGenerator
         string registryNamespace = registryClassSymbol.ContainingNamespace.ToDisplayString();
         string registryClassName = registryClassSymbol.Name;
 
+        // The last value is reserved as the fragment opcode and never assigned to a user packet.
+        string fragmentOpcodeValue = maxOpcode.ToString();
+
         // Generate the source code
         string sourceCode = $$"""
 using System;
@@ -112,8 +117,16 @@ public partial class {{registryClassName}}
 {
     public static readonly Dictionary<Type, PacketInfo<ClientPacket>> ClientPacketInfo;
     public static readonly Dictionary<{{idTypeName}}, Type> ClientPacketTypes;
+    public static readonly Dictionary<ushort, Type> ClientPacketTypesWire;
     public static readonly Dictionary<Type, PacketInfo<ServerPacket>> ServerPacketInfo;
     public static readonly Dictionary<{{idTypeName}}, Type> ServerPacketTypes;
+    public static readonly Dictionary<ushort, Type> ServerPacketTypesWire;
+
+    /// <summary>
+    /// Opcode reserved for packet fragmentation. Never assigned to a user-defined packet type.
+    /// Always the maximum value of the configured opcode backing type.
+    /// </summary>
+    public const ushort FragmentOpcode = {{fragmentOpcodeValue}};
 
     static PacketRegistry()
     {
@@ -123,6 +136,7 @@ public partial class {{registryClassName}}
         };
 
         ClientPacketTypes = ClientPacketInfo.ToDictionary(kvp => kvp.Value.Opcode, kvp => kvp.Key);
+        ClientPacketTypesWire = ClientPacketInfo.ToDictionary(kvp => (ushort)kvp.Value.Opcode, kvp => kvp.Key);
 
         ServerPacketInfo = new Dictionary<Type, PacketInfo<ServerPacket>>()
         {
@@ -130,6 +144,7 @@ public partial class {{registryClassName}}
         };
 
         ServerPacketTypes = ServerPacketInfo.ToDictionary(kvp => kvp.Value.Opcode, kvp => kvp.Key);
+        ServerPacketTypesWire = ServerPacketInfo.ToDictionary(kvp => (ushort)kvp.Value.Opcode, kvp => kvp.Key);
     }
 }
 

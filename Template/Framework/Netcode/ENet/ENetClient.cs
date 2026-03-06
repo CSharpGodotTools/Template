@@ -2,6 +2,7 @@ using ENet;
 using GodotUtils;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
@@ -22,6 +23,8 @@ public abstract class ENetClient : ENetLow
     private static readonly ClientLogAggregator _logAggregator = new();
     private static int _activeClientWorkers;
     private Peer _peer;
+    private ushort _streamCounter;
+    private readonly Dictionary<ushort, FragmentBuffer> _reassemblyBuffers = [];
 
     protected ConcurrentQueue<Cmd<GodotOpcode>> MainThreadCommands { get; } = new();
     protected ConcurrentQueue<PacketData> MainThreadPackets { get; } = new();
@@ -152,6 +155,7 @@ public abstract class ENetClient : ENetLow
     {
         base.OnDisconnectCleanup(peer);
         Interlocked.Exchange(ref _connected, 0);
+        _reassemblyBuffers.Clear();
     }
 
     /// <summary>
@@ -227,19 +231,51 @@ public abstract class ENetClient : ENetLow
     {
         while (_incoming.TryDequeue(out Packet packet))
         {
-            if (!TryCreatePacketData(packet, out PacketData packetData))
+            // Copy bytes eagerly so we can inspect the opcode before any higher-level parsing.
+            byte[] bytes = new byte[packet.Length];
+            packet.CopyTo(bytes);
+            packet.Dispose();
+
+            if (PacketFragmenter.IsFragment(bytes))
             {
+                HandleFragmentBytes(bytes);
                 continue;
             }
+
+            if (!TryCreatePacketData(bytes, out PacketData packetData))
+                continue;
 
             MainThreadPackets.Enqueue(packetData);
         }
     }
 
-    private bool TryCreatePacketData(Packet packet, out PacketData packetData)
+    private void HandleFragmentBytes(byte[] fragmentBytes)
+    {
+        if (!PacketFragmenter.TryReadHeader(fragmentBytes, out ushort streamId, out ushort fragIndex, out ushort totalFragments))
+            return;
+
+        if (!_reassemblyBuffers.TryGetValue(streamId, out FragmentBuffer buffer))
+        {
+            buffer = new FragmentBuffer(totalFragments);
+            _reassemblyBuffers[streamId] = buffer;
+        }
+
+        byte[] payload = PacketFragmenter.ExtractPayload(fragmentBytes);
+        if (!buffer.Add(fragIndex, payload))
+            return;
+
+        _reassemblyBuffers.Remove(streamId);
+
+        if (!TryCreatePacketData(buffer.Assemble(), out PacketData packetData))
+            return;
+
+        MainThreadPackets.Enqueue(packetData);
+    }
+
+    private bool TryCreatePacketData(byte[] bytes, out PacketData packetData)
     {
         packetData = null;
-        PacketReader reader = new(packet);
+        PacketReader reader = new(bytes);
 
         if (!TryReadPacketType(reader, out Type packetType))
         {
@@ -265,10 +301,10 @@ public abstract class ENetClient : ENetLow
     {
         packetType = null;
 
-        byte opcode;
+        ushort opcode;
         try
         {
-            opcode = reader.ReadByte();
+            opcode = reader.ReadUShort();
         }
         catch (EndOfStreamException exception)
         {
@@ -276,7 +312,7 @@ public abstract class ENetClient : ENetLow
             return false;
         }
 
-        if (!PacketRegistry.ServerPacketTypes.TryGetValue(opcode, out packetType))
+        if (!PacketRegistry.ServerPacketTypesWire.TryGetValue(opcode, out packetType))
         {
             Log($"Received malformed opcode: {opcode} (Ignoring)");
             return false;
@@ -291,6 +327,17 @@ public abstract class ENetClient : ENetLow
         {
             try
             {
+                if (data.Length > GamePacket.MaxSize)
+                {
+                    foreach (byte[] fragment in PacketFragmenter.Fragment(data, _streamCounter++))
+                    {
+                        Packet fragPacket = CreateReliablePacket(fragment);
+                        _peer.Send(DefaultChannelId, ref fragPacket);
+                    }
+
+                    continue;
+                }
+
                 Packet enetPacket = CreateReliablePacket(data);
                 _peer.Send(DefaultChannelId, ref enetPacket);
             }

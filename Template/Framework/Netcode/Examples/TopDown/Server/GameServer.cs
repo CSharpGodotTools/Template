@@ -136,6 +136,7 @@ public partial class GameServer : GodotServer
         }
 
         // Serialise once and enqueue a unicast per subscriber to avoid redundant copies.
+        // The core transport will fragment automatically if the payload exceeds MaxSize.
         SPacketPlayerPositions packet = new() { Positions = _positions };
         packet.Write();
         byte[] data = packet.GetData();

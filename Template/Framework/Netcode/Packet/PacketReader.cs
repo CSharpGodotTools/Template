@@ -42,6 +42,17 @@ public class PacketReader : IDisposable
     }
 
     /// <summary>
+    /// Creates a packet reader directly from a managed byte buffer (no ENet packet involved).
+    /// Used internally after fragment reassembly.
+    /// </summary>
+    internal PacketReader(byte[] data)
+    {
+        _readBuffer = data;
+        _stream = new MemoryStream(_readBuffer, writable: false);
+        _reader = new BinaryReader(_stream);
+    }
+
+    /// <summary>
     /// Reads a <see cref="byte"/> value.
     /// </summary>
     public byte ReadByte() => _reader.ReadByte();

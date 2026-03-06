@@ -28,6 +28,14 @@ public abstract class ENetServer : ENetLow
     private readonly Dictionary<uint, Peer> _peers = [];
 
     private readonly ServerLogAggregator _logAggregator = new();
+    private ushort _streamCounter;
+    private readonly Dictionary<uint, Dictionary<ushort, FragmentBuffer>> _reassemblyBuffers = [];
+    private int _connectedPeerCount;
+
+    /// <summary>
+    /// Number of currently connected peers. Thread safe.
+    /// </summary>
+    public int ConnectedPeerCount => Interlocked.CompareExchange(ref _connectedPeerCount, 0, 0);
 
     /// <summary>
     /// Registers a handler for a specific client packet type.
@@ -104,6 +112,7 @@ public abstract class ENetServer : ENetLow
     protected sealed override void OnConnectLow(Event netEvent)
     {
         _peers[netEvent.Peer.ID] = netEvent.Peer;
+        Interlocked.Increment(ref _connectedPeerCount);
         _logAggregator.RecordConnect(netEvent.Peer.ID);
     }
 
@@ -180,7 +189,8 @@ public abstract class ENetServer : ENetLow
     protected sealed override void OnDisconnectCleanup(Peer peer)
     {
         base.OnDisconnectCleanup(peer);
-        _peers.Remove(peer.ID);
+        if (_peers.Remove(peer.ID))
+            Interlocked.Decrement(ref _connectedPeerCount);
     }
 
     private string BuildTimestampPrefix()
@@ -257,6 +267,8 @@ public abstract class ENetServer : ENetLow
 
         peer.DisconnectNow((uint)opcode);
         _peers.Remove(peerId);
+        Interlocked.Decrement(ref _connectedPeerCount);
+        _reassemblyBuffers.Remove(peerId);
         TryInvokePeerDisconnected(peerId);
     }
 
@@ -274,20 +286,59 @@ public abstract class ENetServer : ENetLow
             TryInvokePeerDisconnected(peer.ID);
         }
 
+        Interlocked.Exchange(ref _connectedPeerCount, 0);
         _peers.Clear();
+        _reassemblyBuffers.Clear();
     }
 
     private void ProcessIncomingPackets()
     {
         while (_incoming.TryDequeue(out IncomingPacket queued))
         {
-            HandleIncomingPacket(queued.Packet, queued.Peer);
+            // Copy bytes eagerly so we can inspect the opcode before any higher-level parsing.
+            byte[] bytes = new byte[queued.Packet.Length];
+            queued.Packet.CopyTo(bytes);
+            queued.Packet.Dispose();
+
+            if (PacketFragmenter.IsFragment(bytes))
+            {
+                HandleFragmentBytes(bytes, queued.Peer);
+            }
+            else
+            {
+                DispatchIncomingBytes(bytes, queued.Peer);
+            }
         }
     }
 
-    private void HandleIncomingPacket(Packet enetPacket, Peer peer)
+    private void HandleFragmentBytes(byte[] fragmentBytes, Peer peer)
     {
-        PacketReader reader = new(enetPacket);
+        if (!PacketFragmenter.TryReadHeader(fragmentBytes, out ushort streamId, out ushort fragIndex, out ushort totalFragments))
+            return;
+
+        if (!_reassemblyBuffers.TryGetValue(peer.ID, out Dictionary<ushort, FragmentBuffer> peerBuffers))
+        {
+            peerBuffers = [];
+            _reassemblyBuffers[peer.ID] = peerBuffers;
+        }
+
+        if (!peerBuffers.TryGetValue(streamId, out FragmentBuffer buffer))
+        {
+            buffer = new FragmentBuffer(totalFragments);
+            peerBuffers[streamId] = buffer;
+        }
+
+        byte[] payload = PacketFragmenter.ExtractPayload(fragmentBytes);
+        if (!buffer.Add(fragIndex, payload))
+            return;
+
+        peerBuffers.Remove(streamId);
+        DispatchIncomingBytes(buffer.Assemble(), peer);
+    }
+
+    private void DispatchIncomingBytes(byte[] bytes, Peer peer)
+    {
+        PacketReader reader = new(bytes);
 
         try
         {
@@ -323,10 +374,10 @@ public abstract class ENetServer : ENetLow
 
     private bool TryGetPacketAndType(PacketReader packetReader, out ClientPacket clientPacket, out Type packetType)
     {
-        byte opcode;
+        ushort opcode;
         try
         {
-            opcode = packetReader.ReadByte();
+            opcode = packetReader.ReadUShort();
         }
         catch (EndOfStreamException exception)
         {
@@ -336,7 +387,7 @@ public abstract class ENetServer : ENetLow
             return false;
         }
 
-        if (!PacketRegistry.ClientPacketTypes.TryGetValue(opcode, out packetType))
+        if (!PacketRegistry.ClientPacketTypesWire.TryGetValue(opcode, out packetType))
         {
             Log($"Received malformed opcode: {opcode} (Ignoring)");
             clientPacket = null;
@@ -396,6 +447,7 @@ public abstract class ENetServer : ENetLow
     {
         uint peerId = netEvent.Peer.ID;
         _peers.Remove(peerId);
+        _reassemblyBuffers.Remove(peerId);
         TryInvokePeerDisconnected(peerId);
         logEvent(peerId);
     }
@@ -437,7 +489,16 @@ public abstract class ENetServer : ENetLow
     private void SendUnicast(OutgoingMessage message)
     {
         if (!_peers.TryGetValue(message.TargetPeerId, out Peer peer))
+            return;
+
+        if (message.Data.Length > GamePacket.MaxSize)
         {
+            foreach (byte[] fragment in PacketFragmenter.Fragment(message.Data, _streamCounter++))
+            {
+                Packet fragPacket = CreateReliablePacket(fragment);
+                peer.Send(DefaultChannelId, ref fragPacket);
+            }
+
             return;
         }
 
@@ -447,16 +508,27 @@ public abstract class ENetServer : ENetLow
 
     private void SendBroadcast(OutgoingMessage message)
     {
+        if (message.Data.Length > GamePacket.MaxSize)
+        {
+            foreach (byte[] fragment in PacketFragmenter.Fragment(message.Data, _streamCounter++))
+            {
+                Packet fragPacket = CreateReliablePacket(fragment);
+
+                if (message.HasExclusion && _peers.TryGetValue(message.ExcludePeerId, out Peer excludePeer))
+                    Host.Broadcast(DefaultChannelId, ref fragPacket, excludePeer);
+                else
+                    Host.Broadcast(DefaultChannelId, ref fragPacket);
+            }
+
+            return;
+        }
+
         Packet enetPacket = CreateReliablePacket(message.Data);
 
-        if (message.HasExclusion && _peers.TryGetValue(message.ExcludePeerId, out Peer excludePeer))
-        {
-            Host.Broadcast(DefaultChannelId, ref enetPacket, excludePeer);
-        }
+        if (message.HasExclusion && _peers.TryGetValue(message.ExcludePeerId, out Peer excl))
+            Host.Broadcast(DefaultChannelId, ref enetPacket, excl);
         else
-        {
             Host.Broadcast(DefaultChannelId, ref enetPacket);
-        }
     }
 
     /// <summary>
