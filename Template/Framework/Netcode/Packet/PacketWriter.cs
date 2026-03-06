@@ -37,10 +37,7 @@ public class PacketWriter : IDisposable
     /// </summary>
     public void Write<T>(T value)
     {
-        if (value == null)
-        {
-            throw new ArgumentNullException(nameof(value));
-        }
+        ArgumentNullException.ThrowIfNull(value);
 
         Type valueType = value.GetType();
 
