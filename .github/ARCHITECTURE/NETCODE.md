@@ -28,6 +28,8 @@ Template/Framework/Netcode/
     PacketWriter.cs            -- BinaryWriter over MemoryStream
     PacketReader.cs            -- BinaryReader over copied ENet packet bytes
     PacketData.cs              -- data-transfer object for cross-thread packet delivery
+  ENet/
+    PacketFragmenter.cs        -- splits oversized packets into fragments; reassembles on receive
   Opcodes/
     DisconnectOpcode.cs        -- Disconnected/Maintenance/Restarting/Stopping/Timeout/Kicked/Banned
     ENetClientOpcode.cs        -- internal queue commands for client worker thread
@@ -89,6 +91,7 @@ ENetLow
 | `Ban(uint id)` | Kick with `Banned` opcode |
 | `KickAll / BanAll` | Batch variants |
 | `IsRunning` | Interlocked flag |
+| `ConnectedPeerCount` | Thread-safe connected peer count (interlocked) |
 
 ### Registering server-side packet handlers
 ```csharp
@@ -166,9 +169,16 @@ GamePacket  (abstract)
 
 ### Wire format
 ```
-[opcode: 1 byte][payload: variable]
+[opcode: 2 bytes (ushort LE)][payload: variable]
 ```
-Max packet size: **8192 bytes**. Packets exceeding this are silently dropped.
+Max packet size: **8192 bytes**. Packets exceeding this are automatically fragmented by
+`PacketFragmenter` and reassembled at the receiver before dispatch (see Packet Fragmentation below).
+
+> **Opcode size**: The wire opcode is always `ushort` (2 bytes) regardless of the registry
+> backing type. The backing type only controls which values are assigned to user packets:
+> `byte` → opcodes 0–254 (255 reserved); `ushort` → opcodes 0–65534 (65535 reserved).
+> The last value of each type is `PacketRegistry.FragmentOpcode` and is never assigned
+> to a user-defined packet.
 
 ### Serialization
 - `GamePacket.Write()` — calls `Write(PacketWriter)` (generated) and caches `byte[]`.
@@ -186,6 +196,11 @@ Max packet size: **8192 bytes**. Packets exceeding this are silently dropped.
 - Generates `Write(PacketWriter)` / `Read(PacketReader)` partial methods for each packet type.
 - Opcode backing type defaults to `byte`; customize with `[PacketRegistry(typeof(ushort))]`.
 - `[NetExclude]` on a property/field skips it in generated serialization.
+- The generated `PacketRegistry` class also exposes:
+  - `ClientPacketTypesWire` / `ServerPacketTypesWire` — `Dictionary<ushort, Type>` used by
+    the ENet receive path for wire-format opcode lookups (always `ushort` regardless of backing type).
+  - `FragmentOpcode` — `const ushort` equal to the max value of the configured backing type;
+    reserved and never assigned to any user packet.
 
 **Opcode stability**: Adding, removing, or renaming packet types changes all opcode assignments.
 Client and server must always be built from the same source.
@@ -196,6 +211,44 @@ Client and server must always be built from the same source.
 PacketRegistry.ClientPacketInfo[typeof(CPacketPlayerPosition)].Opcode
 PacketRegistry.ServerPacketInfo[typeof(SPacketPlayerPositions)].Opcode
 ```
+
+---
+
+## Packet Fragmentation
+
+`PacketFragmenter` (`ENet/PacketFragmenter.cs`) transparently handles packets that would
+exceed `GamePacket.MaxSize = 8192` bytes.
+
+### Sender (ENetServer / ENetClient outgoing queue)
+When the serialized byte array exceeds `MaxSize`, it is split into fragments:
+```
+[fragment opcode: 2 bytes]  PacketRegistry.FragmentOpcode
+[streamId: 2 bytes]         identifies this logical message (wraps around ushort)
+[fragIndex: 2 bytes]        0-based fragment index
+[totalFrags: 2 bytes]       total fragment count
+[payload: up to 8184 bytes] fragment slice of the original data
+```
+Header is 8 bytes, so each fragment carries up to **8184 bytes** of payload.
+Small packets (< `MaxSize`) are sent as-is with zero overhead.
+
+### Receiver (ENetServer / ENetClient incoming queue)
+When a packet arrives, the first 2 bytes are checked against `PacketRegistry.FragmentOpcode`.
+- **Fragment**: stored in `_reassemblyBuffers` keyed by `(peerId, streamId)`. Once all fragments
+  arrive, the orignal byte sequence is reassembled and dispatched normally.
+- **Normal packet**: dispatched immediately.
+
+### Reserved opcode
+`PacketRegistry.FragmentOpcode` equals the maximum value of the configured opcode type:
+- `[PacketRegistry]` (byte) → `FragmentOpcode = 255`
+- `[PacketRegistry(typeof(ushort))]` → `FragmentOpcode = 65535`
+
+PacketGen validates at code-generation time that no user packet is ever assigned this value.
+
+### Packet size example
+`SPacketPlayerPositions` with N subscribers:
+- Wire size = `2 (opcode) + 4 (count) + N × 12 (id:4 + x:4 + y:4)` bytes
+- At N = 680: 8186 bytes — fits in one packet (≤ 8192)
+- At N = 681: 8198 bytes — split into 2 fragments automatically
 
 ---
 
@@ -260,7 +313,7 @@ This is the **critical optimization** that lets the system scale to hundreds of 
 | `GameServer` | `Server/GameServer.cs` | Registers packet handlers; manages `_players`, `_positionSubscribers`, `_positions` |
 | `LocalPlayer` | `LocalPlayer.cs` | Input → movement → throttled position sends |
 | `RemotePlayers` | `RemotePlayers.cs` | Creates/lerps ColorRect nodes for remote peers |
-| `WorldStressTest` | `WorldStressTest.cs` | UI-driven bot spawner; spawns `BotClient` instances and ticks them |
+| `WorldStressTest` | `WorldStressTest.cs` | UI-driven bot spawner; spawns `BotClient` instances and ticks them; shows live stats (status, active bots, elapsed time, connected peers, spawn rate) |
 | `BotClient` | `WorldStressTest.cs` (nested) | One `GameClient` per bot; orbits in a circle; sends position at configurable interval |
 
 ### Key constants
@@ -305,7 +358,8 @@ Use as a copy-paste starting point for a new example.
 - **Opcode determinism**: Opcodes are assigned by sorted fully-qualified type name. Renaming or adding a packet type changes all opcodes — always rebuild both client and server together.
 - **HandlePackets() is mandatory**: Call it from `_Process` on the Godot main thread. Packets accumulate silently in the queue if omitted.
 - **StartServer / StartClient create new instances**: After calling these, `Net.Server` and `Net.Client` point to new objects. Unsubscribe from old instances first or use `Net.ServerCreated` / `Net.ClientCreated` events.
-- **MaxSize 8192**: Any packet over this is dropped at the ENet receive handler without an exception.
+- **MaxSize 8192**: Packets larger than this are automatically fragmented by `PacketFragmenter`. No user code needed. Small packets are unaffected.
+- **Fragment opcode reservation**: `PacketRegistry.FragmentOpcode` is always the max value of the configured opcode type. PacketGen will throw at generation time if any user packet would be assigned this value.
 - **Bot subscription**: Bots MUST set `IsPositionSubscriber = false` before connecting. If they subscribe, they receive all position broadcasts and will cause O(N) outgoing traffic per position update.
 - **Server packet handlers run on ENet thread**: Do not access Godot scene nodes from a server packet handler. Queue work to the main thread if Godot API access is needed.
 - **`BroadcastPositions` serializes once, unicasts N times**: The `SPacketPlayerPositions` byte array is shared across all subscriber unicasts — do not modify `_positions` during the loop.
