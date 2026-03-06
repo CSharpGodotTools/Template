@@ -1,27 +1,88 @@
 #!/usr/bin/env bash
-# pre-commit: syncs root .editorconfig to all subproject roots whenever it is staged.
+# pre-commit: syncs root .editorconfig and builds any changed subproject DLLs/nupkgs.
+# Must be pre-commit (not post-commit) because GitHub Desktop (libgit2) only fires pre-commit.
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
+LIBS="$REPO_ROOT/Template/Framework/Libraries"
+STAGED="$(git diff --cached --name-only)"
 
-# Only act when the root .editorconfig is part of this commit
-if ! git diff --cached --name-only | grep -q "^\.editorconfig$"; then
-    exit 0
+# ---------------------------------------------------------------------------
+# 1. Sync root .editorconfig to all subproject roots when it is staged
+# ---------------------------------------------------------------------------
+if echo "$STAGED" | grep -q "^\.editorconfig$"; then
+    echo "[pre-commit] .editorconfig staged; syncing to subproject roots..."
+    for dir in "Template" "Template.GodotUtils" "Template.PacketGen" "Template.Visualize"; do
+        dest="$REPO_ROOT/$dir/.editorconfig"
+        cp "$REPO_ROOT/.editorconfig" "$dest"
+        git add "$dest"
+        echo "  staged $dir/.editorconfig"
+    done
 fi
 
-echo "[pre-commit] .editorconfig staged; syncing to subproject roots..."
+# ---------------------------------------------------------------------------
+# 2. Build GodotUtils and copy DLLs when any of its files are staged
+# ---------------------------------------------------------------------------
+if echo "$STAGED" | grep -q "^Template\.GodotUtils/"; then
+    echo "[pre-commit] Building GodotUtils..."
+    if dotnet build "$REPO_ROOT/Template.GodotUtils/GodotUtils.csproj" -p:BuildExtras=true; then
+        git add "$LIBS/GodotUtils.dll" "$LIBS/GodotUtils.xml" 2>/dev/null
+        echo "[pre-commit] GodotUtils built and staged."
+    else
+        echo "[pre-commit] GodotUtils build FAILED — aborting commit." >&2
+        exit 1
+    fi
+fi
 
-SUBPROJECTS=(
-    "Template"
-    "Template.GodotUtils"
-    "Template.PacketGen"
-    "Template.Visualize"
-)
+# ---------------------------------------------------------------------------
+# 3. Build Visualize and copy DLLs when any of its files are staged
+#    (GodotUtils is built first above if both are staged)
+# ---------------------------------------------------------------------------
+if echo "$STAGED" | grep -q "^Template\.Visualize/"; then
+    echo "[pre-commit] Building Visualize..."
+    if dotnet build "$REPO_ROOT/Template.Visualize/Visualize.csproj" -p:BuildExtras=true; then
+        git add "$LIBS/Visualize.dll" "$LIBS/Visualize.xml" 2>/dev/null
+        echo "[pre-commit] Visualize built and staged."
+    else
+        echo "[pre-commit] Visualize build FAILED — aborting commit." >&2
+        exit 1
+    fi
+fi
 
-for dir in "${SUBPROJECTS[@]}"; do
-    dest="$REPO_ROOT/$dir/.editorconfig"
-    cp "$REPO_ROOT/.editorconfig" "$dest"
-    git add "$dest"
-    echo "  staged $dir/.editorconfig"
-done
+# ---------------------------------------------------------------------------
+# 4. Build PacketGen nupkg when any of its files are staged
+# ---------------------------------------------------------------------------
+if echo "$STAGED" | grep -q "^Template\.PacketGen/"; then
+    echo "[pre-commit] Building PacketGen..."
+    local_proj="$REPO_ROOT/Template.PacketGen/PacketGen/PacketGen.csproj"
+
+    # Bump the patch version before building so the nupkg carries the new version
+    current_version="$(grep -oP '(?<=<Version>)[^<]+' "$local_proj" | head -1)"
+    if [ -n "$current_version" ]; then
+        major="${current_version%%.*}"
+        rest="${current_version#*.}"
+        minor="${rest%%.*}"
+        patch="${rest#*.}"
+        next_version="$major.$minor.$((patch + 1))"
+        sed -i "s|<Version>$current_version</Version>|<Version>$next_version</Version>|" "$local_proj"
+        git add "$local_proj"
+        echo "[pre-commit] PacketGen version bumped $current_version → $next_version."
+    fi
+
+    out_dir="$REPO_ROOT/Template.PacketGen/PacketGen/bin/Release/netstandard2.0"
+    if dotnet build "$local_proj" -c Release; then
+        new_nupkg="$(find "$out_dir" -maxdepth 1 -name "PacketGen.*.nupkg" | head -1)"
+        if [ -z "$new_nupkg" ]; then
+            echo "[pre-commit] No PacketGen nupkg found after build — aborting commit." >&2
+            exit 1
+        fi
+        find "$LIBS" -maxdepth 1 -name "PacketGen.*.nupkg" -delete
+        cp "$new_nupkg" "$LIBS/"
+        git add "$LIBS/"PacketGen.*.nupkg 2>/dev/null
+        echo "[pre-commit] $(basename "$new_nupkg") staged."
+    else
+        echo "[pre-commit] PacketGen build FAILED — aborting commit." >&2
+        exit 1
+    fi
+fi
 
 exit 0

@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
-# post-commit: builds GodotUtils/Visualize DLLs and PacketGen nupkg for commits touching those subprojects.
-
-REPO_ROOT="$(git rev-parse --show-toplevel)"
-LIBS="$REPO_ROOT/Template/Framework/Libraries"
-CHANGED="$(git diff-tree --no-commit-id -r HEAD --name-only)"
+# post-commit: intentionally empty.
+# Build logic was moved to pre-commit because GitHub Desktop (libgit2) does not
+# invoke post-commit hooks.
 
 build_godotutils() {
     echo "[post-commit] Building GodotUtils..."
