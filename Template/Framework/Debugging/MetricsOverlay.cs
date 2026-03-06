@@ -274,7 +274,8 @@ public partial class MetricsOverlay : CanvasLayer
 
         public override void _Ready()
         {
-            _maxRefreshRate = DisplayServer.ScreenGetRefreshRate();
+            float refreshRate = DisplayServer.ScreenGetRefreshRate();
+            _maxRefreshRate = refreshRate > 0 ? refreshRate : 60f;
         }
 
         public void UpdateData(float[] data, int index)
