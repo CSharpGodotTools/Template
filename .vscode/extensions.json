@@ -1,0 +1,20 @@
+{
+    "recommendations": [
+        // Nice red highlight for breakpoint lines
+        "ericgomez.breakpoint-highlight",
+        // Microsoft C# extension
+        "ms-dotnettools.csharp",
+        // Adds 'New C# Class' context option
+        "kreativ-software.csharpextensions",
+        // Allows you to import your own background image
+        "unthrottled.doki-theme",
+        // Auto sync with projects root .editorconfig
+        "EditorConfig.EditorConfig",
+        // Show realtime errors when editing scripts
+        "usernamehw.errorlens",
+        // Trigger GitHub actions from within VSCode
+        "github.vscode-github-actions",
+        // Delete all whitespace characters on backspace
+        "jasonlhy.hungry-delete"
+    ]
+}

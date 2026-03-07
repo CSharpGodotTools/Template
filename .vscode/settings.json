@@ -1,0 +1,7 @@
+{
+    "csharpextensions.useFileScopedNamespace": true,
+    "dotnet.defaultSolution": "Template.sln",
+    "github-actions.workflows.pinned.workflows": [
+        ".github/workflows/release.yml"
+    ],
+}
