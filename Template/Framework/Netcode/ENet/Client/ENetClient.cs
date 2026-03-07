@@ -101,7 +101,7 @@ public abstract class ENetClient : ENetLow
         Interlocked.Exchange(ref _connected, 1);
         MainThreadCommands.Enqueue(new Cmd<GodotOpcode>(GodotOpcode.Connected));
         _logAggregator.RecordConnect(netEvent.Peer.ID);
-        TryInvoke(() => OnConnected());
+        TryInvoke(OnConnected);
     }
 
     /// <summary>
@@ -114,7 +114,7 @@ public abstract class ENetClient : ENetLow
 
         OnDisconnectCleanup(netEvent.Peer);
         _logAggregator.RecordDisconnect(netEvent.Peer.ID);
-        TryInvoke(() => OnDisconnected());
+        TryInvoke(OnDisconnected);
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public abstract class ENetClient : ENetLow
 
         OnDisconnectCleanup(netEvent.Peer);
         _logAggregator.RecordTimeout(netEvent.Peer.ID);
-        TryInvoke(() => OnTimedOut());
+        TryInvoke(OnTimedOut);
     }
 
     /// <summary>
