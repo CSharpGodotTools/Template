@@ -30,6 +30,7 @@ layout_mode = 2
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 0
+theme_override_constants/separation = 6
 alignment = 1
 
 [node name="General" type="Button" parent="Margin/HBox/Nav" unique_id=777027908]
