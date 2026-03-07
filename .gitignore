@@ -26,6 +26,7 @@
 **/.vscode/*
 !/.vscode/settings.json
 !/.vscode/extensions.json
+!/.vscode/mcp.json
 
 # Rider
 **/.idea/*
@@ -36,6 +37,9 @@
 **/enet.so
 **/libenet.dylib
 **/enet.dylib
+
+# MCP
+.serena/
 
 # Mac OS Files
 **/.DS_Store
