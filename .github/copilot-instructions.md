@@ -88,10 +88,13 @@ Initiate a final poll with the user to ask for any final changes.
 
 ## §2 Additional Rules
 
+### Important
+
+* Follow all rules in the `.editorconfig`
+
 ### Naming
 
 * No abbreviated type names.
-* Private fields: `_camelCase`. Constants: `PascalCase`.
 * For PascalCase use for e.g. `Ui` not `UI`.
 * All type names max 22 characters.
 
