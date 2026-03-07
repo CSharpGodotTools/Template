@@ -90,8 +90,12 @@ if $build_packetgen; then
     echo "[pre-commit] Building PacketGen..."
 
     proj="$REPO_ROOT/Template.PacketGen/PacketGen/PacketGen.csproj"
+    template_csproj="$REPO_ROOT/Template/Template.csproj"
+    out_dir="$REPO_ROOT/Template.PacketGen/PacketGen/bin/Release"
 
     current_version="$(grep -o '<Version>[^<]*</Version>' "$proj" | head -1 | sed 's/<[^>]*>//g')"
+
+    next_version=""
 
     if [ -n "$current_version" ]; then
         major="${current_version%%.*}"
@@ -102,28 +106,30 @@ if $build_packetgen; then
         next_version="$major.$minor.$((patch+1))"
 
         sed -i "s|<Version>$current_version</Version>|<Version>$next_version</Version>|" "$proj"
-
         git add "$proj"
+
+        # Keep Template.csproj PacketGen reference in sync with the new version
+        sed -i "s|<PackageReference Include=\"PacketGen\" Version=\"[^\"]*\"|<PackageReference Include=\"PacketGen\" Version=\"$next_version\"|" "$template_csproj"
+        git add "$template_csproj"
 
         echo "[pre-commit] PacketGen version $current_version → $next_version"
     fi
 
+    # Stage deletion of any old tracked nupkgs and remove from filesystem before building
+    git -C "$REPO_ROOT" rm --cached -f --ignore-unmatch "Template/Framework/Libraries/PacketGen.*.nupkg" 2>/dev/null || true
+    find "$LIBS" -maxdepth 1 -name "PacketGen.*.nupkg" -delete || true
+
     dotnet_cmd build "$proj" -c Release --no-restore
 
-    out_dir="$REPO_ROOT/Template.PacketGen/PacketGen/bin/Release"
+    new_pkg="$out_dir/PacketGen.$next_version.nupkg"
 
-    new_pkg="$(find "$out_dir" -maxdepth 1 -name "PacketGen.*.nupkg" | head -1)"
-
-    if [ -z "$new_pkg" ]; then
-        echo "[pre-commit] ERROR: PacketGen nupkg not found"
+    if [ ! -f "$new_pkg" ]; then
+        echo "[pre-commit] ERROR: PacketGen nupkg not found at $new_pkg"
         exit 1
     fi
 
-    find "$LIBS" -maxdepth 1 -name "PacketGen.*.nupkg" -delete || true
-
     cp "$new_pkg" "$LIBS/"
-
-    git add "$LIBS"/PacketGen.*.nupkg
+    git add "$LIBS/PacketGen.$next_version.nupkg"
 fi
 
 echo "[pre-commit] ✓ complete"
