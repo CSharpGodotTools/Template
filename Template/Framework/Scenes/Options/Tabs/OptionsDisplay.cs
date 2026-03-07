@@ -1,6 +1,8 @@
 using Godot;
 using GodotUtils;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 using static Godot.DisplayServer;
 using WindowMode = GodotUtils.WindowMode;
@@ -17,10 +19,33 @@ public class OptionsDisplay : IDisposable
     private Action<WindowMode> _selectWindowModeAction;
 
     // Window Size
-    private LineEdit _resX, _resY;
+    private OptionButton _windowSizeDropdown;
+    private Button _windowSizeCustomBtn;
+    private PopupPanel _customSizePopup;
+    private LineEdit _popupResX, _popupResY;
     private int _prevNumX, _prevNumY;
-    private readonly int _minResolution = 36;
+    private List<Vector2I> _availableWindowSizes = [];
     private readonly Options _options;
+
+    // Maximum slider steps for the render-resolution slider; mirrors the max_value set in the scene.
+    private const int ResolutionSteps = 36;
+
+    // Common display sizes, sorted by area; filtered at runtime against screen resolution.
+    private static readonly Vector2I[] BaseWindowSizes =
+    [
+        new(800, 600),    // 4:3
+        new(1024, 768),   // 4:3
+        new(1280, 720),   // 16:9
+        new(1280, 960),   // 4:3
+        new(1366, 768),   // 16:9
+        new(1600, 900),   // 16:9
+        new(1600, 1200),  // 4:3
+        new(1920, 1080),  // 16:9
+        new(2560, 1080),  // 21:9
+        new(2560, 1440),  // 16:9
+        new(3440, 1440),  // 21:9
+        new(3840, 2160),  // 4K 16:9
+    ];
 
     // Nodes
     private readonly HSlider _sliderMaxFps;
@@ -28,7 +53,6 @@ public class OptionsDisplay : IDisposable
     private readonly HSlider _resolutionSlider;
     private readonly OptionButton _vsyncMode;
     private readonly OptionButton _windowMode;
-    private readonly Button _windowSizeApply;
 
     public OptionsDisplay(Options options, Button displayBtn)
     {
@@ -38,7 +62,6 @@ public class OptionsDisplay : IDisposable
         _resolutionSlider = options.GetNode<HSlider>("%Resolution");
         _vsyncMode = options.GetNode<OptionButton>("%VSyncMode");
         _windowMode = options.GetNode<OptionButton>("%WindowMode");
-        _windowSizeApply = options.GetNode<Button>("%WindowSizeApply");
         _resourceOptions = GameFramework.Settings;
 
         SetupMaxFps(displayBtn);
@@ -53,13 +76,15 @@ public class OptionsDisplay : IDisposable
         _sliderMaxFps.ValueChanged -= OnMaxFpsValueChanged;
         _sliderMaxFps.DragEnded -= OnMaxFpsDragEnded;
 
-        _resX.TextChanged -= OnWindowWidthTextChanged;
-        _resX.TextSubmitted -= OnWindowWidthTextSubmitted;
+        _windowSizeDropdown.ItemSelected -= OnWindowSizeDropdownItemSelected;
+        _windowSizeCustomBtn.Pressed -= OnWindowSizeCustomPressed;
 
-        _resY.TextChanged -= OnWindowHeightTextChanged;
-        _resY.TextSubmitted -= OnWindowHeightTextSubmitted;
+        _popupResX.TextChanged -= OnWindowWidthTextChanged;
+        _popupResX.TextSubmitted -= OnWindowWidthTextSubmitted;
 
-        _windowSizeApply.Pressed -= OnWindowSizeApplyPressed;
+        _popupResY.TextChanged -= OnWindowHeightTextChanged;
+        _popupResY.TextSubmitted -= OnWindowHeightTextSubmitted;
+
         _windowMode.ItemSelected -= OnWindowModeItemSelected;
 
         GameFramework.Options.WindowModeChanged -= _selectWindowModeAction;
@@ -83,26 +108,141 @@ public class OptionsDisplay : IDisposable
 
     private void SetupWindowSize(Button displayBtn)
     {
-        _resX = _options.GetNode<LineEdit>("%WindowWidth");
-        _resY = _options.GetNode<LineEdit>("%WindowHeight");
+        _windowSizeDropdown = _options.GetNode<OptionButton>("%WindowSizeDropdown");
+        _windowSizeCustomBtn = _options.GetNode<Button>("%WindowSizeCustom");
 
-        _resX.FocusNeighborLeft = displayBtn.GetPath();
+        _windowSizeDropdown.FocusNeighborLeft = displayBtn.GetPath();
 
-        _resX.TextChanged += OnWindowWidthTextChanged;
-        _resX.TextSubmitted += OnWindowWidthTextSubmitted;
+        PopulateWindowSizeDropdown();
+        CreateCustomSizePopup();
 
-        _resY.TextChanged += OnWindowHeightTextChanged;
-        _resY.TextSubmitted += OnWindowHeightTextSubmitted;
+        bool isWindowed = _resourceOptions.WindowMode == WindowMode.Windowed;
+        _windowSizeDropdown.Disabled = !isWindowed;
+        _windowSizeCustomBtn.Disabled = !isWindowed;
+
+        _windowSizeDropdown.ItemSelected += OnWindowSizeDropdownItemSelected;
+        _windowSizeCustomBtn.Pressed += OnWindowSizeCustomPressed;
+    }
+
+    /// <summary>
+    /// Re-syncs the dropdown to reflect the current window size. Call when the Display tab becomes visible.
+    /// </summary>
+    public void RefreshWindowSizeDisplay()
+    {
+        PopulateWindowSizeDropdown();
 
         Vector2I winSize = DisplayServer.WindowGetSize();
+        SyncPopupLineEdits(winSize);
+    }
 
-        _prevNumX = winSize.X;
-        _prevNumY = winSize.Y;
+    /// <summary>
+    /// Updates the custom-size popup line edits to match the supplied window size.
+    /// Call every frame while the popup is open so dragging the window is reflected live.
+    /// </summary>
+    public void UpdatePopupIfOpen()
+    {
+        if (_customSizePopup == null || !_customSizePopup.Visible)
+            return;
 
-        _resX.Text = winSize.X + "";
-        _resY.Text = winSize.Y + "";
+        Vector2I winSize = DisplayServer.WindowGetSize();
+        SyncPopupLineEdits(winSize);
+    }
 
-        _windowSizeApply.Pressed += OnWindowSizeApplyPressed;
+    private void SyncPopupLineEdits(Vector2I size)
+    {
+        if (!GodotObject.IsInstanceValid(_popupResX) || !GodotObject.IsInstanceValid(_popupResY))
+            return;
+
+        _prevNumX = size.X;
+        _prevNumY = size.Y;
+        _popupResX.Text = size.X.ToString();
+        _popupResY.Text = size.Y.ToString();
+    }
+
+    private void PopulateWindowSizeDropdown()
+    {
+        Vector2I currentSize = DisplayServer.WindowGetSize();
+        Vector2I screenSize = DisplayServer.ScreenGetSize();
+
+        _windowSizeDropdown.Clear();
+        _availableWindowSizes = [.. BaseWindowSizes
+            .Where(s => s.X <= screenSize.X && s.Y <= screenSize.Y)
+            .OrderBy(s => s.X * s.Y)];
+
+        bool foundCurrent = false;
+
+        for (int i = 0; i < _availableWindowSizes.Count; i++)
+        {
+            Vector2I size = _availableWindowSizes[i];
+            _windowSizeDropdown.AddItem($"{size.X} x {size.Y}");
+
+            if (size == currentSize)
+            {
+                _windowSizeDropdown.Select(i);
+                foundCurrent = true;
+            }
+        }
+
+        if (!foundCurrent)
+        {
+            _windowSizeDropdown.AddItem($"{currentSize.X} x {currentSize.Y}");
+            _availableWindowSizes.Add(currentSize);
+            _windowSizeDropdown.Select(_availableWindowSizes.Count - 1);
+        }
+    }
+
+    private void CreateCustomSizePopup()
+    {
+        _customSizePopup = new PopupPanel();
+
+        MarginContainer margin = new MarginContainer();
+        margin.AddThemeConstantOverride("margin_left", 14);
+        margin.AddThemeConstantOverride("margin_top", 14);
+        margin.AddThemeConstantOverride("margin_right", 14);
+        margin.AddThemeConstantOverride("margin_bottom", 14);
+
+        VBoxContainer vbox = new VBoxContainer();
+        vbox.AddThemeConstantOverride("separation", 10);
+
+        HBoxContainer inputRow = new HBoxContainer();
+        inputRow.AddThemeConstantOverride("separation", 8);
+
+        Vector2I currentSize = DisplayServer.WindowGetSize();
+        _prevNumX = currentSize.X;
+        _prevNumY = currentSize.Y;
+
+        _popupResX = new LineEdit();
+        _popupResX.CustomMinimumSize = new Vector2(80, 0);
+        _popupResX.Alignment = HorizontalAlignment.Center;
+        _popupResX.Text = _prevNumX.ToString();
+
+        Label xLabel = new Label();
+        xLabel.Text = "x";
+
+        _popupResY = new LineEdit();
+        _popupResY.CustomMinimumSize = new Vector2(80, 0);
+        _popupResY.Alignment = HorizontalAlignment.Center;
+        _popupResY.Text = _prevNumY.ToString();
+
+        Button applyBtn = new Button();
+        applyBtn.Text = "APPLY";
+        applyBtn.Pressed += OnCustomSizeApplyPressed;
+
+        inputRow.AddChild(_popupResX);
+        inputRow.AddChild(xLabel);
+        inputRow.AddChild(_popupResY);
+
+        vbox.AddChild(inputRow);
+        vbox.AddChild(applyBtn);
+
+        margin.AddChild(vbox);
+        _customSizePopup.AddChild(margin);
+        _options.AddChild(_customSizePopup);
+
+        _popupResX.TextChanged += OnWindowWidthTextChanged;
+        _popupResX.TextSubmitted += OnWindowWidthTextSubmitted;
+        _popupResY.TextChanged += OnWindowHeightTextChanged;
+        _popupResY.TextSubmitted += OnWindowHeightTextSubmitted;
     }
 
     private void SetupWindowMode(Button displayBtn)
@@ -130,7 +270,7 @@ public class OptionsDisplay : IDisposable
     private void SetupResolution(Button displayBtn)
     {
         _resolutionSlider.FocusNeighborLeft = displayBtn.GetPath();
-        _resolutionSlider.Value = 1 + _minResolution - _resourceOptions.Resolution;
+        _resolutionSlider.Value = 1 + ResolutionSteps - _resourceOptions.Resolution;
         _resolutionSlider.ValueChanged += OnResolutionValueChanged;
     }
 
@@ -145,12 +285,14 @@ public class OptionsDisplay : IDisposable
     {
         DisplayServer.WindowSetSize(new Vector2I(_prevNumX, _prevNumY));
 
-        // Center window
+        // Center window on the current screen
         Vector2I winSize = DisplayServer.WindowGetSize();
         DisplayServer.WindowSetPosition(DisplayServer.ScreenGetSize() / 2 - winSize / 2);
 
         _resourceOptions.WindowWidth = winSize.X;
         _resourceOptions.WindowHeight = winSize.Y;
+
+        PopulateWindowSizeDropdown();
     }
 
     private void OnWindowModeItemSelected(long index)
@@ -171,35 +313,60 @@ public class OptionsDisplay : IDisposable
                 break;
         }
 
-        // Update UIWindowSize element on window mode change
-        Vector2I winSize = DisplayServer.WindowGetSize();
+        bool isWindowed = (WindowMode)index == WindowMode.Windowed;
+        _windowSizeDropdown.Disabled = !isWindowed;
+        _windowSizeCustomBtn.Disabled = !isWindowed;
 
-        _resX.Text = winSize.X + "";
-        _resY.Text = winSize.Y + "";
+        Vector2I winSize = DisplayServer.WindowGetSize();
         _prevNumX = winSize.X;
         _prevNumY = winSize.Y;
 
         _resourceOptions.WindowWidth = winSize.X;
         _resourceOptions.WindowHeight = winSize.Y;
+
+        PopulateWindowSizeDropdown();
+    }
+
+    private void OnWindowSizeDropdownItemSelected(long index)
+    {
+        Vector2I selected = _availableWindowSizes[(int)index];
+        _prevNumX = selected.X;
+        _prevNumY = selected.Y;
+        ApplyWindowSize();
+    }
+
+    private void OnWindowSizeCustomPressed()
+    {
+        Vector2I winSize = DisplayServer.WindowGetSize();
+        SyncPopupLineEdits(winSize);
+
+        // Position popup below the Custom button
+        Vector2I btnGlobal = (Vector2I)_windowSizeCustomBtn.GlobalPosition;
+        _customSizePopup.Popup(new Rect2I(btnGlobal.X, btnGlobal.Y + (int)_windowSizeCustomBtn.Size.Y, 0, 0));
+    }
+
+    private void OnCustomSizeApplyPressed()
+    {
+        _customSizePopup.Hide();
+        ApplyWindowSize();
     }
 
     private void OnWindowWidthTextChanged(string text)
     {
-        text.ValidateNumber(_resX, 0, ScreenGetSize().X, ref _prevNumX);
+        text.ValidateNumber(_popupResX, 0, ScreenGetSize().X, ref _prevNumX);
     }
 
     private void OnWindowHeightTextChanged(string text)
     {
-        text.ValidateNumber(_resY, 0, ScreenGetSize().Y, ref _prevNumY);
+        text.ValidateNumber(_popupResY, 0, ScreenGetSize().Y, ref _prevNumY);
     }
 
-    private void OnWindowWidthTextSubmitted(string text) => ApplyWindowSize();
-    private void OnWindowHeightTextSubmitted(string text) => ApplyWindowSize();
-    private void OnWindowSizeApplyPressed() => ApplyWindowSize();
+    private void OnWindowWidthTextSubmitted(string text) => OnCustomSizeApplyPressed();
+    private void OnWindowHeightTextSubmitted(string text) => OnCustomSizeApplyPressed();
 
     private void OnResolutionValueChanged(double value)
     {
-        _resourceOptions.Resolution = _minResolution - (int)value + 1;
+        _resourceOptions.Resolution = ResolutionSteps - (int)value + 1;
         OnResolutionChanged?.Invoke(_resourceOptions.Resolution);
     }
 

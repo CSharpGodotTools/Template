@@ -167,30 +167,16 @@ text = "WINDOW_SIZE"
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="WindowWidth" type="LineEdit" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox" unique_id=1613445481]
+[node name="WindowSizeDropdown" type="OptionButton" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox" unique_id=2001415164]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(185, 30)
 layout_mode = 2
-focus_neighbor_right = NodePath("../WindowHeight")
-text = "2540"
-alignment = 1
 
-[node name="Label" type="Label" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox" unique_id=1908575175]
-layout_mode = 2
-text = "x"
-
-[node name="WindowHeight" type="LineEdit" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox" unique_id=1014675677]
+[node name="WindowSizeCustom" type="Button" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox" unique_id=2001415165]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 0)
 layout_mode = 2
-focus_neighbor_left = NodePath("../WindowWidth")
-focus_neighbor_right = NodePath("../WindowSizeApply")
-text = "1440"
-alignment = 1
-
-[node name="WindowSizeApply" type="Button" parent="Margin/HBox/VBoxContainer/Content/Display/WindowSize/HBox" unique_id=1001415164]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(75, 0)
-layout_mode = 2
-text = "APPLY"
+text = "Custom"
 
 [node name="Resolution" type="HBoxContainer" parent="Margin/HBox/VBoxContainer/Content/Display" unique_id=1894498543]
 layout_mode = 2
@@ -204,7 +190,7 @@ text = "RESOLUTION"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
-focus_neighbor_top = NodePath("../../WindowSize/HBox/WindowWidth")
+focus_neighbor_top = NodePath("../../WindowSize/HBox/WindowSizeDropdown")
 min_value = 1.0
 max_value = 36.0
 value = 36.0

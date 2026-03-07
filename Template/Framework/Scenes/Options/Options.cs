@@ -43,6 +43,11 @@ public partial class Options : PanelContainer
         _optionsInput.HandleInput(@event);
     }
 
+    public override void _Process(double delta)
+    {
+        _optionsDisplay.UpdatePopupIfOpen();
+    }
+
     public override void _ExitTree()
     {
         _optionsNav.Dispose();
@@ -104,6 +109,7 @@ public partial class Options : PanelContainer
         if (Visible)
         {
             _navNode.GetNode<Button>(GameFramework.Options.GetCurrentTab()).GrabFocus();
+            _optionsDisplay.RefreshWindowSizeDisplay();
         }
     }
 }
