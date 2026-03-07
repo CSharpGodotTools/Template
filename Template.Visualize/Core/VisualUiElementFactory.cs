@@ -1,6 +1,5 @@
 #if DEBUG
 using Godot;
-using static Godot.Control;
 
 namespace GodotUtils.Debugging;
 

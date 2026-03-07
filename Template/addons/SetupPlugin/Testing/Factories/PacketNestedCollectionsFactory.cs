@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Template.Setup.Testing;
 
 public static class PacketNestedCollectionsFactory

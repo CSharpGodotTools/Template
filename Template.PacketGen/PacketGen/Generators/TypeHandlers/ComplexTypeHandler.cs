@@ -1,6 +1,5 @@
 using Microsoft.CodeAnalysis;
 using PacketGen.Generators.PacketGeneration;
-using PacketGen.Utilities;
 using System.Collections.Immutable;
 using System.Linq;
 

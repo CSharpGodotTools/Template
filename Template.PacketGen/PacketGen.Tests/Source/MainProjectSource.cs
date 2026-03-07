@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PacketGen.Tests;
+﻿namespace PacketGen.Tests;
 
 internal static class MainProjectSource
 {

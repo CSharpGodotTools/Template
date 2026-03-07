@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using PacketGen.Generators.PacketGeneration;
-using PacketGen.Utilities;
 using System.Collections.Generic;
 
 namespace PacketGen.Generators.TypeHandlers;

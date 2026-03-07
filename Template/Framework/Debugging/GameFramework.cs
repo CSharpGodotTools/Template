@@ -1,7 +1,6 @@
 ﻿using Framework.Debugging;
 using Framework.Ui;
 using Framework.Ui.Console;
-using System;
 
 namespace Framework;
 

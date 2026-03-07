@@ -2,7 +2,6 @@
 using PacketGen.Generators.Emitters;
 using PacketGen.Generators.PacketGeneration;
 using PacketGen.Generators.TypeHandlers;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 

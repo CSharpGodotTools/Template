@@ -1,5 +1,4 @@
 using Microsoft.CodeAnalysis;
-using PacketGen.Generators.PacketGeneration;
 using System.Collections.Generic;
 
 namespace PacketGen.Generators.Emitters;

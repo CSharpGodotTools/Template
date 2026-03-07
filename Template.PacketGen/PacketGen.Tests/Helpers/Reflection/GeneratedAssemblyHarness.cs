@@ -1,7 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace PacketGen.Tests;

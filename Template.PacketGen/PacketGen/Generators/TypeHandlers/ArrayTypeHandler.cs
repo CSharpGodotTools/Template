@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using PacketGen;
 using PacketGen.Generators.PacketGeneration;
 using PacketGen.Utilities;
 using System;

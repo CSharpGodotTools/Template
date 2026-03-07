@@ -2,7 +2,6 @@
 using Godot;
 using System.Collections.Generic;
 using System.Reflection;
-using static Godot.Control;
 
 namespace GodotUtils.Debugging;
 

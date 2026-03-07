@@ -1,6 +1,4 @@
-﻿using NUnit.Framework;
-
-namespace PacketGen.Tests;
+﻿namespace PacketGen.Tests;
 
 [SetUpFixture]
 internal sealed class GeneratedFilesFixture
