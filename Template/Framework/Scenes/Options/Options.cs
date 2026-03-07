@@ -1,4 +1,5 @@
 using Godot;
+using System.Linq;
 
 namespace Framework.Ui;
 
@@ -29,6 +30,8 @@ public partial class Options : PanelContainer
         VisibilityChanged += OnVisibilityChanged;
 
         GameFramework.Scene.PostSceneChanged += OnPostSceneChanged;
+
+        SetupPopupAnimations();
     }
 
     public override void _Input(InputEvent @event)
@@ -51,6 +54,39 @@ public partial class Options : PanelContainer
     }
 
     // Subscribers
+    private void SetupPopupAnimations()
+    {
+        SceneTree tree = GetTree();
+
+        foreach (OptionButton button in FindChildren("*", "OptionButton", true, false)
+                                        .Cast<OptionButton>())
+        {
+            Godot.PopupMenu popup = button.GetPopup();
+            popup.AboutToPopup += async () =>
+            {
+                await popup.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
+
+                if (!IsInstanceValid(popup) || !popup.Visible)
+                {
+                    return;
+                }
+
+                AnimatePopupIn(popup);
+            };
+        }
+    }
+
+    private static void AnimatePopupIn(Godot.PopupMenu popup)
+    {
+        Vector2I targetPosition = popup.Position;
+        popup.Position = new Vector2I(targetPosition.X, targetPosition.Y - 12);
+
+        Tween tween = popup.CreateTween();
+        tween.TweenProperty(popup, "position:y", (double)targetPosition.Y, 0.17)
+             .SetEase(Tween.EaseType.Out)
+             .SetTrans(Tween.TransitionType.Quad);
+    }
+
     private void OnPostSceneChanged()
     {
         if (Visible)
