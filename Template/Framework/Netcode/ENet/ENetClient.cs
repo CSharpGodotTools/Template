@@ -304,7 +304,7 @@ public abstract class ENetClient : ENetLow
         ushort opcode;
         try
         {
-            opcode = reader.ReadUShort();
+            opcode = PacketRegistry.ReadOpcodeFromReader(reader);
         }
         catch (EndOfStreamException exception)
         {

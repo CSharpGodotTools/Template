@@ -19,6 +19,14 @@ public abstract class ClientPacket : GamePacket
     /// </summary>
     public override ushort GetOpcode()
     {
-        return PacketRegistry.ClientPacketInfo[_packetType].Opcode;
+        return (ushort)PacketRegistry.ClientPacketInfo[_packetType].Opcode;
+    }
+
+    /// <summary>
+    /// Writes the opcode with the exact wire width configured in <see cref="PacketRegistryAttribute"/>.
+    /// </summary>
+    protected override void WriteOpcode(PacketWriter writer)
+    {
+        writer.Write(PacketRegistry.ClientPacketInfo[_packetType].Opcode);
     }
 }

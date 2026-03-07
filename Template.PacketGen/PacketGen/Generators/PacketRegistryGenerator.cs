@@ -105,6 +105,42 @@ internal static class PacketRegistryGenerator
         // The last value is reserved as the fragment opcode and never assigned to a user packet.
         string fragmentOpcodeValue = maxOpcode.ToString();
 
+        // Helpers used by the runtime for type-aware opcode serialization.
+        string readOpcodeExpression = idTypeName switch
+        {
+            "byte"   => "(ushort)reader.ReadByte()",
+            "sbyte"  => "(ushort)(byte)reader.ReadSByte()",
+            "short"  => "(ushort)reader.ReadShort()",
+            "ushort" => "reader.ReadUShort()",
+            "int"    => "(ushort)reader.ReadInt()",
+            "uint"   => "(ushort)reader.ReadUInt()",
+            _        => "reader.ReadUShort()"
+        };
+
+        string isFragmentExpression = idTypeName switch
+        {
+            "byte" or "sbyte" =>
+                "bytes.Length >= OpcodeSize && bytes[0] == unchecked((byte)FragmentOpcode)",
+            "short" or "ushort" =>
+                "bytes.Length >= OpcodeSize && (ushort)(bytes[0] | (bytes[1] << 8)) == unchecked((ushort)FragmentOpcode)",
+            "int" or "uint" =>
+                "bytes.Length >= OpcodeSize && unchecked((int)((uint)bytes[0] | ((uint)bytes[1] << 8) | ((uint)bytes[2] << 16) | ((uint)bytes[3] << 24))) == unchecked((int)FragmentOpcode)",
+            _ =>
+                "bytes.Length >= OpcodeSize && (ushort)(bytes[0] | (bytes[1] << 8)) == unchecked((ushort)FragmentOpcode)"
+        };
+
+        string writeFragmentStatements = idTypeName switch
+        {
+            "byte" or "sbyte" =>
+                "destination[0] = unchecked((byte)FragmentOpcode);",
+            "short" or "ushort" =>
+                "destination[0] = unchecked((byte)FragmentOpcode);\n        destination[1] = unchecked((byte)((ushort)FragmentOpcode >> 8));",
+            "int" or "uint" =>
+                "destination[0] = unchecked((byte)(uint)FragmentOpcode);\n        destination[1] = unchecked((byte)((uint)FragmentOpcode >> 8));\n        destination[2] = unchecked((byte)((uint)FragmentOpcode >> 16));\n        destination[3] = unchecked((byte)((uint)FragmentOpcode >> 24));",
+            _ =>
+                "destination[0] = unchecked((byte)FragmentOpcode);\n        destination[1] = unchecked((byte)((ushort)FragmentOpcode >> 8));"
+        };
+
         // Generate the source code
         string sourceCode = $$"""
 using System;
@@ -126,7 +162,26 @@ public partial class {{registryClassName}}
     /// Opcode reserved for packet fragmentation. Never assigned to a user-defined packet type.
     /// Always the maximum value of the configured opcode backing type.
     /// </summary>
-    public const ushort FragmentOpcode = {{fragmentOpcodeValue}};
+    public const {{idTypeName}} FragmentOpcode = {{fragmentOpcodeValue}};
+
+    /// <summary>Number of bytes occupied by one opcode on the wire.</summary>
+    public const int OpcodeSize = sizeof({{idTypeName}});
+
+    /// <summary>
+    /// Reads one opcode from <paramref name="reader"/>, consuming exactly <see cref="OpcodeSize"/> bytes.
+    /// Returns the value widened to ushort for lookup in <see cref="ClientPacketTypesWire"/> or <see cref="ServerPacketTypesWire"/>.
+    /// </summary>
+    public static ushort ReadOpcodeFromReader(PacketReader reader) => {{readOpcodeExpression}};
+
+    /// <summary>Returns true when the leading <see cref="OpcodeSize"/> bytes of <paramref name="bytes"/> match <see cref="FragmentOpcode"/>.</summary>
+    public static bool IsFragmentHeader(byte[] bytes) =>
+        {{isFragmentExpression}};
+
+    /// <summary>Writes <see cref="FragmentOpcode"/> into <paramref name="destination"/> starting at byte offset 0.</summary>
+    public static void WriteFragmentOpcodeToSpan(Span<byte> destination)
+    {
+        {{writeFragmentStatements}}
+    }
 
     static PacketRegistry()
     {

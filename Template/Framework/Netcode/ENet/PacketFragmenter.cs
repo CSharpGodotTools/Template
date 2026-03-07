@@ -4,56 +4,56 @@ using System.Buffers.Binary;
 namespace Framework.Netcode;
 
 // Fragment wire format (per ENet packet):
-//   [fragment opcode: 2 bytes]  PacketRegistry.FragmentOpcode (ushort LE) — never assigned by PacketGen
+//   [fragment opcode: PacketRegistry.OpcodeSize bytes]  PacketRegistry.FragmentOpcode — never assigned by PacketGen
 //   [streamId: 2 bytes]  identifies the source packet being fragmented
 //   [fragIndex: 2 bytes]  0-based index of this fragment
 //   [totalFrags: 2 bytes]  total number of fragments in the stream
 //   [payload:  up to MaxPayloadPerFragment bytes]
 //
-// The fragment opcode equals the maximum value of the opcode type chosen via [PacketRegistry]:
-//   byte  → 0x00FF (255)   ushort → 0xFFFF (65535)
-// PacketGen reserves this value and never assigns it to a user-defined packet type.
-//
-// Normal wire packets use the same 2-byte ushort opcode, so fragment detection is
-// a simple equality check against PacketRegistry.FragmentOpcode.
+// The opcode field width matches the type configured via [PacketRegistry]:
+//   byte → 1 byte (FragmentOpcode = 255)   ushort → 2 bytes (FragmentOpcode = 65535)
+// PacketGen reserves the maximum value of the backing type and never assigns it to a user-defined packet type.
 //
 // A packet whose serialized size exceeds GamePacket.MaxSize is split by the sender
 // into fragments, each within MaxSize. The receiver reassembles them before dispatch.
 internal static class PacketFragmenter
 {
-    private const int HeaderSize = 8;
+    private static int HeaderSize => PacketRegistry.OpcodeSize + 6;
 
     /// <summary>
     /// Maximum application-layer bytes that fit inside a single fragment packet.
     /// </summary>
-    public const int MaxPayloadPerFragment = GamePacket.MaxSize - HeaderSize;
+    public static int MaxPayloadPerFragment => GamePacket.MaxSize - HeaderSize;
 
     /// <summary>
     /// Returns true when <paramref name="bytes"/> begins with the fragment opcode.
     /// </summary>
     public static bool IsFragment(byte[] bytes) =>
         bytes.Length >= HeaderSize &&
-        BinaryPrimitives.ReadUInt16LittleEndian(bytes) == PacketRegistry.FragmentOpcode;
+        PacketRegistry.IsFragmentHeader(bytes);
 
     /// <summary>
     /// Splits <paramref name="data"/> into fragment packets, each ≤ <see cref="GamePacket.MaxSize"/>.
     /// </summary>
     public static byte[][] Fragment(byte[] data, ushort streamId)
     {
-        int totalFrags = (int)Math.Ceiling((double)data.Length / MaxPayloadPerFragment);
+        int opcodeSize = PacketRegistry.OpcodeSize;
+        int headerSize = HeaderSize;
+        int maxPayload = MaxPayloadPerFragment;
+        int totalFrags = (int)Math.Ceiling((double)data.Length / maxPayload);
         byte[][] fragments = new byte[totalFrags][];
 
         for (int i = 0; i < totalFrags; i++)
         {
-            int offset = i * MaxPayloadPerFragment;
-            int payloadSize = Math.Min(MaxPayloadPerFragment, data.Length - offset);
+            int offset = i * maxPayload;
+            int payloadSize = Math.Min(maxPayload, data.Length - offset);
 
-            byte[] frag = new byte[HeaderSize + payloadSize];
-            BinaryPrimitives.WriteUInt16LittleEndian(frag.AsSpan(0), PacketRegistry.FragmentOpcode);
-            BinaryPrimitives.WriteUInt16LittleEndian(frag.AsSpan(2), streamId);
-            BinaryPrimitives.WriteUInt16LittleEndian(frag.AsSpan(4), (ushort)i);
-            BinaryPrimitives.WriteUInt16LittleEndian(frag.AsSpan(6), (ushort)totalFrags);
-            data.AsSpan(offset, payloadSize).CopyTo(frag.AsSpan(HeaderSize));
+            byte[] frag = new byte[headerSize + payloadSize];
+            PacketRegistry.WriteFragmentOpcodeToSpan(frag.AsSpan(0));
+            BinaryPrimitives.WriteUInt16LittleEndian(frag.AsSpan(opcodeSize), streamId);
+            BinaryPrimitives.WriteUInt16LittleEndian(frag.AsSpan(opcodeSize + 2), (ushort)i);
+            BinaryPrimitives.WriteUInt16LittleEndian(frag.AsSpan(opcodeSize + 4), (ushort)totalFrags);
+            data.AsSpan(offset, payloadSize).CopyTo(frag.AsSpan(headerSize));
             fragments[i] = frag;
         }
 
@@ -78,9 +78,10 @@ internal static class PacketFragmenter
             return false;
         }
 
-        streamId = BinaryPrimitives.ReadUInt16LittleEndian(bytes.AsSpan(2));
-        fragIndex = BinaryPrimitives.ReadUInt16LittleEndian(bytes.AsSpan(4));
-        totalFragments = BinaryPrimitives.ReadUInt16LittleEndian(bytes.AsSpan(6));
+        int opcodeSize = PacketRegistry.OpcodeSize;
+        streamId = BinaryPrimitives.ReadUInt16LittleEndian(bytes.AsSpan(opcodeSize));
+        fragIndex = BinaryPrimitives.ReadUInt16LittleEndian(bytes.AsSpan(opcodeSize + 2));
+        totalFragments = BinaryPrimitives.ReadUInt16LittleEndian(bytes.AsSpan(opcodeSize + 4));
         return true;
     }
 
@@ -89,9 +90,10 @@ internal static class PacketFragmenter
     /// </summary>
     public static byte[] ExtractPayload(byte[] fragmentBytes)
     {
-        int payloadSize = fragmentBytes.Length - HeaderSize;
+        int headerSize = HeaderSize;
+        int payloadSize = fragmentBytes.Length - headerSize;
         byte[] payload = new byte[payloadSize];
-        fragmentBytes.AsSpan(HeaderSize, payloadSize).CopyTo(payload);
+        fragmentBytes.AsSpan(headerSize, payloadSize).CopyTo(payload);
         return payload;
     }
 }
