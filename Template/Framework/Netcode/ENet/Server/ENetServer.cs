@@ -13,7 +13,7 @@ namespace Framework.Netcode.Server;
 /// Base ENet server worker that owns peer tracking, incoming packet dispatch, and outgoing message queues.
 /// Extend <see cref="GodotServer"/> for game-level packet registration.
 /// </summary>
-public abstract class ENetServer : ENetLow
+public abstract partial class ENetServer : ENetLow
 {
     private const string LogTag = "Server";
 
@@ -41,8 +41,7 @@ public abstract class ENetServer : ENetLow
     /// Registers a handler for a specific client packet type.
     /// Handlers run on the ENet worker thread.
     /// </summary>
-    protected void OnPacket<TPacket>(Action<TPacket, uint> handler)
-        where TPacket : ClientPacket
+    protected void OnPacket<TPacket>(Action<TPacket, uint> handler) where TPacket : ClientPacket
     {
         ArgumentNullException.ThrowIfNull(handler);
 
@@ -145,6 +144,7 @@ public abstract class ENetServer : ENetLow
     protected sealed override void OnReceiveLow(Event netEvent)
     {
         Packet packet = netEvent.Packet;
+        
         if (packet.Length > GamePacket.MaxSize)
         {
             Log($"Tried to read packet from client of size {packet.Length} when max packet size is {GamePacket.MaxSize}");
@@ -161,10 +161,9 @@ public abstract class ENetServer : ENetLow
     protected void WorkerThread(ushort port, int maxClients)
     {
         Host host = TryCreateServerHost(port, maxClients);
+
         if (host == null)
-        {
             return;
-        }
 
         Host = host;
         Interlocked.Exchange(ref _running, 1);
@@ -190,15 +189,15 @@ public abstract class ENetServer : ENetLow
     {
         base.OnDisconnectCleanup(peer);
         if (_peers.Remove(peer.ID))
+        {
             Interlocked.Decrement(ref _connectedPeerCount);
+        }
     }
 
     private string BuildTimestampPrefix()
     {
         if (Options == null || !Options.ShowLogTimestamps)
-        {
             return string.Empty;
-        }
 
         return $"[{DateTime.Now:HH:mm:ss}] ";
     }
@@ -430,9 +429,7 @@ public abstract class ENetServer : ENetLow
     private void LogPacketReceived(Type packetType, uint clientId, ClientPacket packet)
     {
         if (!Options.PrintPacketReceived || IgnoredPackets.Contains(packetType))
-        {
             return;
-        }
 
         string packetData = string.Empty;
         if (Options.PrintPacketData)
@@ -529,58 +526,5 @@ public abstract class ENetServer : ENetLow
             Host.Broadcast(DefaultChannelId, ref enetPacket, excl);
         else
             Host.Broadcast(DefaultChannelId, ref enetPacket);
-    }
-
-    /// <summary>
-    /// Describes unit of work queued for the server worker thread.
-    /// </summary>
-    protected readonly struct OutgoingMessage
-    {
-        public byte[] Data { get; }
-        public bool IsBroadcast { get; }
-        public uint TargetPeerId { get; }
-        public uint ExcludePeerId { get; }
-        public bool HasExclusion { get; }
-
-        private OutgoingMessage(
-            byte[] data, bool isBroadcast,
-            uint targetPeerId, uint excludePeerId, bool hasExclusion)
-        {
-            Data = data;
-            IsBroadcast = isBroadcast;
-            TargetPeerId = targetPeerId;
-            ExcludePeerId = excludePeerId;
-            HasExclusion = hasExclusion;
-        }
-
-        /// <summary>
-        /// Creates a message targeting a single peer.
-        /// </summary>
-        public static OutgoingMessage Unicast(byte[] data, uint peerId)
-        {
-            return new OutgoingMessage(data, false, peerId, 0, false);
-        }
-
-        /// <summary>
-        /// Creates a broadcast message to all connected peers.
-        /// </summary>
-        public static OutgoingMessage Broadcast(byte[] data)
-        {
-            return new OutgoingMessage(data, true, 0, 0, false);
-        }
-
-        /// <summary>
-        /// Creates a broadcast message excluding one peer.
-        /// </summary>
-        public static OutgoingMessage BroadcastExcept(byte[] data, uint excludeId)
-        {
-            return new OutgoingMessage(data, true, 0, excludeId, true);
-        }
-    }
-
-    private readonly struct IncomingPacket
-    {
-        public Packet Packet { get; init; }
-        public Peer Peer { get; init; }
     }
 }
