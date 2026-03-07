@@ -2,24 +2,17 @@
 
 ## §1 Workflow
 
-1. Identify subproject: `Template`, `Template.GodotUtils`, `Template.PacketGen`, or `Template.Visualize`. If ambiguous, ask the user **before proceeding**.
-2. Work on your assigned task split across several small, atomic commits each with a clear description, max 200 chars (omit if trivial).
+1. Identify subproject: `Template`, `Template.GodotUtils`, `Template.PacketGen`, or `Template.Visualize`. If ambiguous or if you have other questions, ask the user **before proceeding**. 
+2. Work on your assigned task split across several small, atomic commits each with a clear message, optionally include description (max 200 chars) if not trivial change, 
+  - If making changes from a subproject other than `Template`, commit those changes so `.githooks/pre-commit` runs and `Template` sees the newly updated `dll` or `nupkg`.  
+  - If working on netcode, make sure you fully understand the code and docs (`.github/ARCHITECTURE/NETCODE.md` and `https://github.com/SoftwareGuy/ENet-CSharp/blob/master/DOCUMENTATION.md`) before making changes.  
+  - If working in a Godot project, run Godot MCP server if available. Ask user what scene to run if ambiguous. Add temporary test code to `Ready()`, this allows build logs to be retrieved much faster without waiting for the user to click on for e.g. a in-game ui button.
 3. Run `cd <project-folder> && dotnet build && dotnet test`. Fix all compiler errors. Repeat until no errors.
-4. Update .git/CHANGELOG.md with new changes.
+4. Append changes to the top of `.git/CHANGELOG.md`.
 
 ---
 
-## §2 Context
-
-* Godot Version: v4.6.1.stable.mono.official [14d19694e]
-* net10.0 latest C# version
-* ENet Docs: https://github.com/SoftwareGuy/ENet-CSharp/blob/master/DOCUMENTATION.md
-* Run Godot MCP server if available. Ask user what scene to run if ambiguous.
-* Use context7
-
----
-
-## §3 Rules
+## §2 Rules
 
 ### Naming
 
@@ -56,8 +49,8 @@ The following are banned in C#:
 * `var`.
 * `#region`.
 * Godot signals.
-* Trivial self evident null checks.
+* Self evident null checks.
 * Tuples (x, y). Create new class/struct type instead.
 * Avoid editing any test related scripts unless explicitly asked to.
 * Breaking API changes unless explicitly asked to.
-* Modifying or committing the AGENTS.md file.
+* Modifying, committing, or touching the AGENTS.md file; exclude it from all Git operations performed.
