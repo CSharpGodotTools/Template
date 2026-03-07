@@ -14,42 +14,20 @@ Use the poll whenever:
 Goal:
 Reduce assumptions by collecting several missing key details.
 
-### 2. Identify Subproject
-
-Determine which subproject the task belongs to:
-
-- `Template`
-- `Template.GodotUtils`
-- `Template.PacketGen`
-- `Template.Visualize`
-
-Rules:
-- If the correct subproject is **unclear**, ask for clarification in the poll.
-
-### 3. Implement Changes (Atomic Commits Required)
+### 2. Implement Changes (Atomic Commits Required)
 
 Implement the task using **small, atomic commits**.
 
 Commit rules:
-- Each commit **MUST have a clear message** e.g. `🔧 Refactored X script`, `🐛 Fixed X bug`, `🔥 Added X feature`.
-- Optional description allowed (max 200 chars) if the change is not trivial.
+- Each commit **MUST have a clear message** e.g. `🐛 Fixed X bug`, `🔥 Added X feature`, `Cleaned up X`.
+- Optional description (max 200 chars) if change is not trivial.
 - **Do not accumulate large uncommitted changes.**
 
 Cross-project rule:
 - If modifying a subproject **other than `Template`**, you **MUST commit the change** so `.githooks/pre-commit` runs.
 - This ensures `Template` receives the updated `dll` or `nupkg`.
 
-### 4. Special Rules
-
-#### Netcode Changes
-
-Before modifying netcode you **MUST read and understand**:
-
-- `.github/ARCHITECTURE/NETCODE.md`
-
-Failure to understand this document will likely produce incorrect changes.
-
-### 5. Build Verification
+### 3. Build Verification
 
 After making changes you **MUST verify the project builds**.
 
@@ -68,9 +46,9 @@ Rules:
 
 Do **not finish the task while errors remain**.
 
-### 6. Initiate Final Poll (DO NOT SKIP)
+### 4. Initiate Final Poll (DO NOT SKIP)
 
-Initiate a final poll with the user to ask for any final changes. If they request final changes, initiate the poll again one last time to confirm the user is happy with the new given changes.
+Initiate a final poll with the user to ask for any final changes.
 
 ---
 
@@ -84,15 +62,11 @@ For any codebase understanding, search, refactoring, or editing tasks in this pr
 
 **Always use Context7 MCP** when you need library/API documentation, code generation, setup or configuration steps, or when working with external packages/frameworks.
 
-This means you should automatically use the Context7 tools (resolve-library-id and get-library-docs) to fetch up-to-date, version-specific docs and examples without me having to explicitly say **"use context7"**.
+This means you should automatically use the Context7 tools (resolve-library-id and get-library-docs) to fetch up-to-date, version-specific docs and examples **without me having to explicitly say "use context7".**
 
-### Godot MCP
+### Godot
 
-When working inside a Godot project:
-
-1. Run the **Godot MCP server** if available.
-2. If the scene to run is **unclear**, **ask the user** through a poll.
-3. Add **temporary testing code inside `Ready()`** so behavior runs **automatically**.
+For testing Godot scenes run the **Godot MCP server**. If the scene to run is **unclear**, **ask the user** through a poll. Add **temporary testing code inside `Ready()`** so behavior runs **automatically**.
 
 ---
 
@@ -101,6 +75,10 @@ When working inside a Godot project:
 ### Important
 
 * Follow all rules in the `.editorconfig`
+
+### Netcode
+
+Before modifying netcode you **MUST read and understand** `.github/ARCHITECTURE/NETCODE.md`. Failure to understand this document will likely produce incorrect changes.
 
 ### Naming
 
@@ -114,7 +92,7 @@ When working inside a Godot project:
 * Separate logical blocks with blank lines.
 * Replace magic values with constants.
 * Comments wrap at ~100 characters; longer code lines need not break.
-* Expand braces to multiple lines; exception: very short one-liners.
+* Expand braces to multiple lines; exception: very short one-liners (`return;`).
 * No meta-comments in code ("moved from X", "refactored because Y").
 * Public API methods: human-readable XML doc comments.
 * Omit summary comments on trivial types (self-evident enums, etc.).
