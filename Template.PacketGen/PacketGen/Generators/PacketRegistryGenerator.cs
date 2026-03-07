@@ -43,8 +43,6 @@ internal static class PacketRegistryGenerator
         List<string> clientEntries = [];
         List<string> serverEntries = [];
 
-        HashSet<string> namespaces = [];
-
         // Process client packets
         foreach (INamedTypeSymbol symbol in clientSymbols)
         {
@@ -52,7 +50,8 @@ internal static class PacketRegistryGenerator
             if (clientOpcode >= maxOpcode)
                 throw new InvalidOperationException($"Client packet opcode overflow (max assignable {maxOpcode - 1} for type '{idTypeName}', {maxOpcode} is reserved for fragmentation)");
 
-            string typeName = symbol.Name;
+            // Use fully-qualified name to avoid ambiguity when two packets share a simple name across namespaces.
+            string typeName = symbol.ToDisplayString();
 
             clientEntries.Add($@"
             {{
@@ -66,9 +65,6 @@ internal static class PacketRegistryGenerator
             );
 
             clientOpcode++;
-
-            string namespaceName = symbol.ContainingNamespace.ToDisplayString();
-            namespaces.Add(namespaceName);
         }
 
         // Process server packets
@@ -78,7 +74,8 @@ internal static class PacketRegistryGenerator
             if (serverOpcode >= maxOpcode)
                 throw new InvalidOperationException($"Server packet opcode overflow (max assignable {maxOpcode - 1} for type '{idTypeName}', {maxOpcode} is reserved for fragmentation)");
 
-            string typeName = symbol.Name;
+            // Use fully-qualified name to avoid ambiguity when two packets share a simple name across namespaces.
+            string typeName = symbol.ToDisplayString();
 
             serverEntries.Add($@"
             {{
@@ -92,12 +89,7 @@ internal static class PacketRegistryGenerator
             );
 
             serverOpcode++;
-
-            string namespaceName = symbol.ContainingNamespace.ToDisplayString();
-            namespaces.Add(namespaceName);
         }
-
-        string usings = string.Join("\n", namespaces.OrderBy(ns => ns).Select(ns => $"using {ns};"));
 
         string registryNamespace = registryClassSymbol.ContainingNamespace.ToDisplayString();
         string registryClassName = registryClassSymbol.Name;
@@ -146,7 +138,6 @@ internal static class PacketRegistryGenerator
 using System;
 using System.Collections.Generic;
 using System.Linq;
-{{usings}}
 namespace {{registryNamespace}};
 
 public partial class {{registryClassName}}
