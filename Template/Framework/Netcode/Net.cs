@@ -16,6 +16,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
 {
     private const int ShutdownPollIntervalMs = 50;
     private const int DefaultMaxClients = 500;
+    private const int ENetMaximumPeers = 4096;
 
     private static readonly ENetOptions _defaultOptions = new()
     {
@@ -61,6 +62,9 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// </summary>
     public void StartServer(ushort port, int maxClients = DefaultMaxClients, ENetOptions options = null)
     {
+        if (maxClients >= ENetMaximumPeers)
+            throw new ArgumentException($"ENet only supports a maximum of {ENetMaximumPeers - 1} clients");
+
         options ??= _defaultOptions;
 
         if (!CanUseENet())
