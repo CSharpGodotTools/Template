@@ -5,6 +5,10 @@ namespace Framework.Ui;
 
 public partial class Options : PanelContainer
 {
+    // Constants
+    private const int PopupStartPosition = -12;
+    private const double PopupAnimationDuration = 0.17;
+
     // Fields
     private OptionsNav _optionsNav;
     private OptionsGeneral _optionsGeneral;
@@ -79,10 +83,10 @@ public partial class Options : PanelContainer
     private static void AnimatePopupIn(Godot.PopupMenu popup)
     {
         Vector2I targetPosition = popup.Position;
-        popup.Position = new Vector2I(targetPosition.X, targetPosition.Y - 12);
+        popup.Position = new Vector2I(targetPosition.X, targetPosition.Y + PopupStartPosition);
 
         Tween tween = popup.CreateTween();
-        tween.TweenProperty(popup, "position:y", (double)targetPosition.Y, 0.17)
+        tween.TweenProperty(popup, "position:y", (double)targetPosition.Y, PopupAnimationDuration)
              .SetEase(Tween.EaseType.Out)
              .SetTrans(Tween.TransitionType.Quad);
     }
