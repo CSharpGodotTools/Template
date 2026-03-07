@@ -49,6 +49,7 @@ public partial class OptionsManager : IDisposable
     {
         _autoloads = autoloads;
         _autoloads.PreQuit += SaveSettingsOnQuit;
+        _autoloads.GetTree().Root.SizeChanged += OnWindowResized;
     }
 
     public void Update()
@@ -62,6 +63,7 @@ public partial class OptionsManager : IDisposable
     public void Dispose()
     {
         _autoloads.PreQuit -= SaveSettingsOnQuit;
+        _autoloads.GetTree().Root.SizeChanged -= OnWindowResized;
     }
 
     public string GetCurrentTab()
@@ -238,6 +240,16 @@ public partial class OptionsManager : IDisposable
         // Set both 2D and 3D settings to the same value.
         ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_2d", _options.Antialiasing);
         ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_3d", _options.Antialiasing);
+    }
+
+    private void OnWindowResized()
+    {
+        if (DisplayServer.WindowGetMode() != DisplayServer.WindowMode.Windowed)
+            return;
+
+        Vector2I size = DisplayServer.WindowGetSize();
+        _options.WindowWidth = size.X;
+        _options.WindowHeight = size.Y;
     }
 
     private Task SaveSettingsOnQuit()
