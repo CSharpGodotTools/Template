@@ -1,9 +1,13 @@
+using ENet;
 using Framework.Netcode;
 using Godot;
 using GodotUtils;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Framework.Netcode.Examples.Topdown;
@@ -20,7 +24,9 @@ public partial class World
         private const ushort DefaultPort = 25565;
 
         private readonly World _world;
-        private readonly List<BotClient> _bots = [];
+        private readonly List<SharedBotHost> _botHosts = [];
+        private SharedBotHost _currentBotHost;
+        private int _totalBots;
         private readonly Button _startButton;
         private readonly Button _stopButton;
         private readonly LineEdit _targetClientsInput;
@@ -157,18 +163,13 @@ public partial class World
             }
 
             _spawnAccumulator += deltaSeconds;
-            while (_bots.Count < _targetClients && _spawnAccumulator >= _spawnIntervalSeconds)
+            while (_totalBots < _targetClients && _spawnAccumulator >= _spawnIntervalSeconds)
             {
                 _spawnAccumulator -= _spawnIntervalSeconds;
                 SpawnBot();
             }
 
             _elapsedSeconds += deltaSeconds;
-
-            foreach (BotClient bot in _bots)
-            {
-                bot.Tick(deltaSeconds);
-            }
 
             UpdateStatsUi();
         }
@@ -193,11 +194,19 @@ public partial class World
 
         private void SpawnBot()
         {
-            if (_bots.Count >= _targetClients)
+            if (_totalBots >= _targetClients)
                 return;
 
-            BotClient bot = new(_world.GetScreenCenter(), _circleRadius, _angularSpeed, _sendIntervalSeconds, _port);
-            _bots.Add(bot);
+            if (_currentBotHost == null || _currentBotHost.IsAtCapacity)
+            {
+                _currentBotHost = new SharedBotHost(
+                    "127.0.0.1", _port, _world.GetScreenCenter(),
+                    _circleRadius, _angularSpeed, _sendIntervalSeconds);
+                _botHosts.Add(_currentBotHost);
+            }
+
+            _currentBotHost.AddBot();
+            _totalBots++;
         }
 
         private void EnsureServerRunning()
@@ -241,7 +250,8 @@ public partial class World
         {
             if (TryGetNet(out Net<GameClient, GameServer> net))
             {
-                net.StartServer(_port, _targetClients, CreateSilentOptions());
+                // +1 reserves a peer slot for the local game client.
+                net.StartServer(_port, _targetClients + 1, CreateSilentOptions());
                 _serverStartedByStressTest = true;
                 _lastServerPort = _port;
                 _lastServerCapacity = _targetClients;
@@ -278,12 +288,14 @@ public partial class World
 
         private void StopBots()
         {
-            foreach (BotClient bot in _bots)
+            foreach (SharedBotHost host in _botHosts)
             {
-                bot.Stop();
+                host.Stop();
             }
 
-            _bots.Clear();
+            _botHosts.Clear();
+            _currentBotHost = null;
+            _totalBots = 0;
         }
 
         private void OnStartPressed()
@@ -377,7 +389,7 @@ public partial class World
                 status = "Running";
 
             _statusLabel.Text = status;
-            _activeBotsLabel.Text = $"{_bots.Count} / {_targetClients}";
+            _activeBotsLabel.Text = $"{_totalBots} / {_targetClients}";
 
             int minutes = (int)(_elapsedSeconds / 60f);
             int seconds = (int)(_elapsedSeconds % 60f);
@@ -392,64 +404,188 @@ public partial class World
             _spawnRateLabel.Text = spawnRate.ToString("F1", CultureInfo.InvariantCulture);
         }
 
-        private sealed class BotClient
+        private sealed class BotPeerState
         {
-            private readonly GameClient _client;
+            public Peer Peer { get; }
+            public bool SentSpawn { get; set; }
+            public float Angle { get; set; }
+            public float SendAccumulator { get; set; }
+
+            public BotPeerState(Peer peer)
+            {
+                Peer = peer;
+            }
+        }
+
+        // Manages up to MaxBotsPerHost ENet connections on a single OS thread, reducing
+        // thread count from O(bots) to O(bots / MaxBotsPerHost) for drastically less
+        // scheduling contention and fewer peer timeouts under high bot counts.
+        private sealed class SharedBotHost
+        {
+            public const int MaxBotsPerHost = 100;
+
+            // Liberal timeouts: bots are stress-test noise, not real players.
+            private const uint BotTimeoutMinMs = 10_000;
+            private const uint BotTimeoutMaxMs = 60_000;
+            private const uint BotPingIntervalMs = 5_000;
+            private const byte DefaultChannelId = 0;
+
+            private readonly ConcurrentQueue<int> _addQueue = new();
+            private readonly CancellationTokenSource _cts = new();
+            private readonly string _ip;
+            private readonly ushort _port;
             private readonly Vector2 _center;
             private readonly float _circleRadius;
             private readonly float _angularSpeed;
             private readonly float _sendIntervalSeconds;
-            private float _angle;
-            private float _sendAccumulator;
-            private bool _sentSpawn;
+            private int _botCount;
 
-            public BotClient(Vector2 center, float circleRadius, float angularSpeed, float sendIntervalSeconds, ushort port)
+            public int BotCount => Interlocked.CompareExchange(ref _botCount, 0, 0);
+            public bool IsAtCapacity => BotCount >= MaxBotsPerHost;
+
+            public SharedBotHost(string ip, ushort port, Vector2 center, float circleRadius,
+                float angularSpeed, float sendIntervalSeconds)
             {
+                _ip = ip;
+                _port = port;
                 _center = center;
                 _circleRadius = circleRadius;
                 _angularSpeed = angularSpeed;
                 _sendIntervalSeconds = sendIntervalSeconds;
 
-                // Bots do not need remote position data; opting out eliminates the bulk
-                // of server→client position traffic when many bots are connected.
-                _client = new GameClient { IsPositionSubscriber = false };
-
-                Task connectTask = _client.Connect("127.0.0.1", port, CreateSilentOptions());
-                _ = connectTask.ContinueWith(
-                    t => GameFramework.Logger.LogErr(t.Exception, "WorldStressTest"),
-                    TaskContinuationOptions.OnlyOnFaulted);
+                Task.Factory.StartNew(
+                    WorkerLoop,
+                    CancellationToken.None,
+                    TaskCreationOptions.LongRunning,
+                    TaskScheduler.Default);
             }
 
-            public void Tick(float deltaSeconds)
+            /// <summary>Thread-safe. Schedules a new bot connection on the worker thread.</summary>
+            public void AddBot()
             {
-                _client.HandlePackets();
-
-                if (!_client.IsConnected)
-                    return;
-
-                if (!_sentSpawn)
-                {
-                    Vector2 spawnPos = _center + new Vector2(Mathf.Cos(_angle), Mathf.Sin(_angle)) * _circleRadius;
-                    _client.SendPosition(spawnPos);
-
-                    _sentSpawn = true;
-                }
-
-                _angle += _angularSpeed * deltaSeconds;
-                _sendAccumulator += deltaSeconds;
-
-                if (_sendAccumulator < _sendIntervalSeconds)
-                    return;
-
-                _sendAccumulator = 0f;
-                Vector2 position = _center + new Vector2(Mathf.Cos(_angle), Mathf.Sin(_angle)) * _circleRadius;
-                _client.SendPosition(position);
+                _addQueue.Enqueue(0);
+                Interlocked.Increment(ref _botCount);
             }
 
+            /// <summary>Thread-safe. Signals the worker to stop all connections and exit.</summary>
             public void Stop()
             {
-                if (_client.IsRunning)
-                    _client.Stop();
+                _cts.Cancel();
+            }
+
+            private void WorkerLoop()
+            {
+                // Pre-serialize join packet once — same for every bot, never changes.
+                CPacketPlayerJoinLeave joinPacket = new() { Joined = true };
+                joinPacket.Write();
+                byte[] joinBytes = joinPacket.GetData();
+
+                // Reused for all position sends; safe because this loop is single-threaded.
+                CPacketPlayerPosition positionPacket = new();
+
+                Address serverAddress = new() { Port = _port };
+                serverAddress.SetHost(_ip);
+
+                using Host host = new();
+                host.Create(MaxBotsPerHost, 0);
+
+                Dictionary<uint, BotPeerState> states = [];
+                long lastTicks = Stopwatch.GetTimestamp();
+
+                while (!_cts.IsCancellationRequested)
+                {
+                    // Connect any pending bot-add requests.
+                    while (_addQueue.TryDequeue(out _))
+                    {
+                        Peer peer = host.Connect(serverAddress);
+                        peer.Timeout(0, BotTimeoutMinMs, BotTimeoutMaxMs);
+                        peer.PingInterval(BotPingIntervalMs);
+                    }
+
+                    // Compute elapsed time since the last iteration.
+                    long nowTicks = Stopwatch.GetTimestamp();
+                    float delta = (float)(nowTicks - lastTicks) / Stopwatch.Frequency;
+                    lastTicks = nowTicks;
+
+                    // Tick every connected bot peer (dictionary not modified here).
+                    foreach (BotPeerState state in states.Values)
+                    {
+                        if (!state.SentSpawn)
+                        {
+                            positionPacket.Position = ComputeOrbitPosition(state.Angle);
+                            positionPacket.Write();
+                            SendBytes(state.Peer, positionPacket.GetData());
+                            state.SentSpawn = true;
+                        }
+
+                        state.Angle += _angularSpeed * delta;
+                        state.SendAccumulator += delta;
+
+                        if (state.SendAccumulator < _sendIntervalSeconds)
+                            continue;
+
+                        state.SendAccumulator = 0f;
+                        positionPacket.Position = ComputeOrbitPosition(state.Angle);
+                        positionPacket.Write();
+                        SendBytes(state.Peer, positionPacket.GetData());
+                    }
+
+                    // Drain all queued events, then call Service once (mirrors ENetLow pattern).
+                    bool serviced = false;
+                    while (!serviced)
+                    {
+                        Event netEvent;
+                        if (host.CheckEvents(out netEvent) > 0)
+                        {
+                            // Queued event — process without consuming the Service budget.
+                        }
+                        else if (host.Service(15, out netEvent) > 0)
+                        {
+                            serviced = true;
+                        }
+                        else
+                        {
+                            break;
+                        }
+
+                        switch (netEvent.Type)
+                        {
+                            case EventType.Connect:
+                                states[netEvent.Peer.ID] = new BotPeerState(netEvent.Peer);
+                                SendBytes(netEvent.Peer, joinBytes);
+                                break;
+
+                            case EventType.Disconnect:
+                            case EventType.Timeout:
+                                states.Remove(netEvent.Peer.ID);
+                                break;
+
+                            case EventType.Receive:
+                                netEvent.Packet.Dispose();
+                                break;
+                        }
+                    }
+                }
+
+                // Disconnect all remaining peers before tearing down the host.
+                foreach (BotPeerState state in states.Values)
+                {
+                    state.Peer.DisconnectNow(0);
+                }
+
+                host.Flush();
+            }
+
+            private Vector2 ComputeOrbitPosition(float angle)
+            {
+                return _center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * _circleRadius;
+            }
+
+            private static void SendBytes(Peer peer, byte[] data)
+            {
+                Packet packet = default;
+                packet.Create(data, PacketFlags.Reliable);
+                peer.Send(DefaultChannelId, ref packet);
             }
         }
     }
