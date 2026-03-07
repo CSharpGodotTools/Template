@@ -46,23 +46,10 @@ Cross-project rule:
 Before modifying netcode you **MUST read and understand**:
 
 - `.github/ARCHITECTURE/NETCODE.md`
-- https://github.com/SoftwareGuy/ENet-CSharp/blob/master/DOCUMENTATION.md
 
-Failure to understand these documents will likely produce incorrect changes.
+Failure to understand this document will likely produce incorrect changes.
 
-#### Godot Projects
-
-When working inside a Godot project:
-
-1. Run the **Godot MCP server** if available.
-2. If the scene to run is **unclear**, **ask the user**.
-3. Add **temporary testing code inside `Ready()`**.
-
-Important:
-- Temporary code in `Ready()` is required so behavior runs **automatically**.
-- **NEVER rely on the user clicking UI buttons** or performing manual actions.
-
-### 5. Build Verification (Mandatory)
+### 5. Build Verification
 
 After making changes you **MUST verify the project builds**.
 
@@ -82,11 +69,34 @@ Rules:
 Do **not finish the task while errors remain**.
 
 ### 6. Initiate Final Poll (DO NOT SKIP)
-Initiate a final poll with the user to ask for any final changes.
+
+Initiate a final poll with the user to ask for any final changes. If they request final changes, initiate the poll again one last time to confirm the user is happy with the new given changes.
 
 ---
 
-## §2 Additional Rules
+## §2 MCP Servers
+
+### Serena
+
+For any codebase understanding, search, refactoring, or editing tasks in this project, **always use Serena MCP tools first** (symbol search, precise edits, LSP-powered analysis) before falling back to plain text or file reads. Assume Serena is configured and indexed.
+
+### Context7
+
+**Always use Context7 MCP** when you need library/API documentation, code generation, setup or configuration steps, or when working with external packages/frameworks.
+
+This means you should automatically use the Context7 tools (resolve-library-id and get-library-docs) to fetch up-to-date, version-specific docs and examples without me having to explicitly say **"use context7"**.
+
+### Godot MCP
+
+When working inside a Godot project:
+
+1. Run the **Godot MCP server** if available.
+2. If the scene to run is **unclear**, **ask the user** through a poll.
+3. Add **temporary testing code inside `Ready()`** so behavior runs **automatically**.
+
+---
+
+## §3 Additional Rules
 
 ### Important
 
