@@ -31,7 +31,7 @@ Rules:
 Implement the task using **small, atomic commits**.
 
 Commit rules:
-- Each commit **MUST have a clear message**.
+- Each commit **MUST have a clear message** e.g. `🔧 Refactored X script`, `🐛 Fixed X bug`, `🔥 Added X feature`.
 - Optional description allowed (max 200 chars) if the change is not trivial.
 - **Do not accumulate large uncommitted changes.**
 
@@ -81,15 +81,8 @@ Rules:
 
 Do **not finish the task while errors remain**.
 
-### 6. Update Changelog
-
-After completing the task:
-
-- Open `.git/CHANGELOG.md`
-- **Prepend** a summary of the changes to the **top** of the file.
-- Keep the entry concise and factual.
-
-This step is **required before finishing the task**.
+### 6. Initiate Final Poll (DO NOT SKIP)
+Initiate a final poll with the user to ask for any final changes.
 
 ---
 
