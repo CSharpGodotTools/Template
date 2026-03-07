@@ -223,6 +223,8 @@ internal sealed class PacketGenerationOrchestrator
 """
             : "";
 
+        string constructors = BuildConstructors(model);
+
         string sourceCode = $$"""
 {{usings}}
 
@@ -230,6 +232,7 @@ namespace {{model.NamespaceName}};
 
 public partial class {{model.ClassName}}
 {
+{{constructors}}
     public override void Write(PacketWriter writer)
     {
 {{string.Join("\n", writeLines.Select(line => indent8 + line))}}
@@ -268,6 +271,36 @@ public partial class {{model.ClassName}}
 """;
 
         return sourceCode;
+    }
+
+    private static string BuildConstructors(PacketGenerationModel model)
+    {
+        const string indent4 = "    ";
+        const string indent8 = "        ";
+
+        string emptyConstructor = $"{indent4}public {model.ClassName}() {{ }}";
+
+        string paramList = string.Join(", ", model.Properties.Select(p =>
+            $"{p.Type.ToDisplayString()} {ToCamelCase(p.Name)}"));
+
+        string assignments = string.Join("\n", model.Properties.Select(p =>
+            $"{indent8}{p.Name} = {ToCamelCase(p.Name)};"));
+
+        string paramsConstructor =
+            $"{indent4}public {model.ClassName}({paramList})\n" +
+            $"{indent4}{{\n" +
+            $"{assignments}\n" +
+            $"{indent4}}}";
+
+        return $"{emptyConstructor}\n\n{paramsConstructor}\n";
+    }
+
+    private static string ToCamelCase(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+            return name;
+
+        return char.ToLowerInvariant(name[0]) + name.Substring(1);
     }
 
     private static TypeHandlerRegistry BuildRegistry()
