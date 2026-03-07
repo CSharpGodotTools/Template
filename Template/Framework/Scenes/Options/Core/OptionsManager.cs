@@ -212,11 +212,12 @@ public partial class OptionsManager : IDisposable
 
         if (windowSize != Vector2I.Zero)
         {
-            DisplayServer.WindowSetSize(windowSize);
+            // Use Root.Size to update the RenderingServer viewport synchronously.
+            _autoloads.GetTree().Root.Size = windowSize;
 
             // center window
             Vector2I screenSize = DisplayServer.ScreenGetSize();
-            Vector2I winSize = DisplayServer.WindowGetSize();
+            Vector2I winSize = _autoloads.GetTree().Root.Size;
             DisplayServer.WindowSetPosition(screenSize / 2 - winSize / 2);
         }
     }
