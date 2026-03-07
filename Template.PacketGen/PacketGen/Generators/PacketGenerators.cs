@@ -1,5 +1,4 @@
-﻿// Test Comment 2
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using PacketGen.Generators;
 
 namespace PacketGen;
