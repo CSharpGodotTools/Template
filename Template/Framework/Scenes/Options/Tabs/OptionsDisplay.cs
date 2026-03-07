@@ -283,10 +283,13 @@ public class OptionsDisplay : IDisposable
 
     private void ApplyWindowSize()
     {
-        DisplayServer.WindowSetSize(new Vector2I(_prevNumX, _prevNumY));
+        // Set Root.Size instead of DisplayServer.WindowSetSize so the RenderingServer
+        // viewport is updated synchronously in this frame, not deferred via the OS
+        // window-resize event (which can be one or more frames late on Wayland/X11).
+        _options.GetTree().Root.Size = new Vector2I(_prevNumX, _prevNumY);
 
         // Center window on the current screen
-        Vector2I winSize = DisplayServer.WindowGetSize();
+        Vector2I winSize = _options.GetTree().Root.Size;
         DisplayServer.WindowSetPosition(DisplayServer.ScreenGetSize() / 2 - winSize / 2);
 
         _resourceOptions.WindowWidth = winSize.X;
