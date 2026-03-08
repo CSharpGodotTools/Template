@@ -53,8 +53,7 @@ public abstract class GamePacket
     public abstract ushort GetOpcode();
 
     /// <summary>
-    /// Writes the opcode bytes into <paramref name="writer"/> using the exact wire width
-    /// configured via <see cref="PacketRegistryAttribute"/>.
+    /// Writes the opcode bytes using the wire width configured via <see cref="PacketRegistryAttribute"/>.
     /// </summary>
     protected abstract void WriteOpcode(PacketWriter writer);
 

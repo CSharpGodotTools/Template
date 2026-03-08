@@ -10,8 +10,10 @@ namespace PacketGen.Generators.TypeHandlers;
 /// </summary>
 internal sealed class ArrayTypeHandler(TypeHandlerRegistry registry) : ITypeHandler
 {
+    /// <inheritdoc/>
     public bool CanHandle(ITypeSymbol type) => type is IArrayTypeSymbol;
 
+    /// <inheritdoc/>
     public void EmitWrite(WriteContext ctx, string valueExpression, string indent, int depth)
     {
         IArrayTypeSymbol arrayType = (IArrayTypeSymbol)ctx.Shared.Type;
@@ -55,6 +57,7 @@ internal sealed class ArrayTypeHandler(TypeHandlerRegistry registry) : ITypeHand
             ctx.Shared.OutputLines.Add($"{indent}#endregion");
     }
 
+    /// <inheritdoc/>
     public void EmitRead(ReadContext ctx, string indent, int depth, string? rootName)
     {
         IArrayTypeSymbol arrayType = (IArrayTypeSymbol)ctx.Shared.Type;
@@ -110,11 +113,16 @@ internal sealed class ArrayTypeHandler(TypeHandlerRegistry registry) : ITypeHand
             ctx.Shared.OutputLines.Add($"{indent}#endregion");
     }
 
+    /// <summary>
+    /// Builds a jagged-array allocation expression such as <c>int[count][]</c> or
+    /// <c>int[count][][]</c> by walking the element-type chain to determine nesting depth.
+    /// </summary>
     private static string BuildJaggedArrayAllocation(IArrayTypeSymbol arrayType, string countVar)
     {
         int jaggedDepth = 0;
         ITypeSymbol element = arrayType;
 
+        // Walk down the element-type chain to count how many jagged dimensions exist
         while (element is IArrayTypeSymbol array)
         {
             if (array.Rank != 1)
@@ -126,6 +134,7 @@ internal sealed class ArrayTypeHandler(TypeHandlerRegistry registry) : ITypeHand
 
         string elementTypeName = element.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
 
+        // Append empty bracket pairs for each additional jagged dimension beyond the outermost
         string suffix = string.Empty;
         for (int i = 0; i < jaggedDepth - 1; i++)
             suffix += "[]";

@@ -19,6 +19,7 @@ public class PacketWriter : IDisposable
 
     private static readonly ConcurrentDictionary<Type, PacketMemberMap> _structMemberCache = new();
 
+    /// <summary>The backing in-memory stream containing the serialized bytes.</summary>
     public MemoryStream Stream { get; } = new();
 
     private readonly BinaryWriter _writer;
@@ -32,8 +33,7 @@ public class PacketWriter : IDisposable
     }
 
     /// <summary>
-    /// Legacy reflection-based write fallback retained for compatibility.
-    /// PacketGen generates packet read/write source and should be preferred for packet serialization.
+    /// Legacy reflection-based write; prefer PacketGen-generated Write methods for packet serialization.
     /// </summary>
     public void Write<T>(T value)
     {
@@ -86,11 +86,17 @@ public class PacketWriter : IDisposable
         throw new NotImplementedException($"PacketWriter: {valueType} is not a supported type.");
     }
 
+    /// <summary>
+    /// Returns <c>true</c> for primitive types, <see cref="string"/>, and <see cref="decimal"/>.
+    /// </summary>
     private static bool IsPrimitiveLike(Type type)
     {
         return type.IsPrimitive || type == typeof(string) || type == typeof(decimal);
     }
 
+    /// <summary>
+    /// Writes a primitive-like value directly to the underlying binary writer.
+    /// </summary>
     private void WritePrimitive<T>(T value)
     {
         switch (value)
@@ -115,12 +121,18 @@ public class PacketWriter : IDisposable
         }
     }
 
+    /// <summary>
+    /// Writes a <see cref="Vector2"/> as two consecutive <see cref="float"/> values.
+    /// </summary>
     private void WriteVector2(Vector2 vector)
     {
         Write(vector.X);
         Write(vector.Y);
     }
 
+    /// <summary>
+    /// Writes a <see cref="Vector3"/> as three consecutive <see cref="float"/> values.
+    /// </summary>
     private void WriteVector3(Vector3 vector)
     {
         Write(vector.X);
@@ -128,11 +140,17 @@ public class PacketWriter : IDisposable
         Write(vector.Z);
     }
 
+    /// <summary>
+    /// Writes an enum value as a single <see cref="byte"/>.
+    /// </summary>
     private void WriteEnum<T>(T value)
     {
         Write((byte)Convert.ChangeType(value, typeof(byte)));
     }
 
+    /// <summary>
+    /// Writes an array as a length-prefixed sequence of elements.
+    /// </summary>
     private void WriteArray(Array array)
     {
         Write(array.Length);
@@ -143,6 +161,9 @@ public class PacketWriter : IDisposable
         }
     }
 
+    /// <summary>
+    /// Delegates writing of supported generic types (<see cref="List{T}"/>, <see cref="Dictionary{TKey, TValue}"/>) to specialized overloads.
+    /// </summary>
     private void WriteGeneric(object value, Type valueType)
     {
         Type genericDefinition = valueType.GetGenericTypeDefinition();
@@ -162,6 +183,9 @@ public class PacketWriter : IDisposable
         throw new NotImplementedException($"PacketWriter: {valueType} is not a supported generic type.");
     }
 
+    /// <summary>
+    /// Writes a list as a length-prefixed sequence of elements.
+    /// </summary>
     private void WriteList(IList list)
     {
         Write(list.Count);
@@ -172,6 +196,9 @@ public class PacketWriter : IDisposable
         }
     }
 
+    /// <summary>
+    /// Writes a dictionary as a count-prefixed sequence of key-value pairs.
+    /// </summary>
     private void WriteDictionary(IDictionary dictionary)
     {
         Write(dictionary.Count);
@@ -183,6 +210,9 @@ public class PacketWriter : IDisposable
         }
     }
 
+    /// <summary>
+    /// Writes all public fields and eligible properties of a struct or class in metadata token order.
+    /// </summary>
     private void WriteStructOrClass<T>(T value, Type valueType)
     {
         PacketMemberMap members = GetMembersForStructOrClass(valueType);
@@ -198,6 +228,9 @@ public class PacketWriter : IDisposable
         }
     }
 
+    /// <summary>
+    /// Returns a cached map of public fields and eligible properties for a struct or class type.
+    /// </summary>
     private static PacketMemberMap GetMembersForStructOrClass(Type type)
     {
         return _structMemberCache.GetOrAdd(type, static cachedType =>
@@ -219,6 +252,9 @@ public class PacketWriter : IDisposable
         });
     }
 
+    /// <summary>
+    /// Returns <c>true</c> for readable properties not decorated with <see cref="NetExcludeAttribute"/>.
+    /// </summary>
     private static bool ShouldIncludePropertyForWrite(PropertyInfo property)
     {
         return property.CanRead

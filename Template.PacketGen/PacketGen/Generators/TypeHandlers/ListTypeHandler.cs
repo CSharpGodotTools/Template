@@ -9,17 +9,20 @@ namespace PacketGen.Generators.TypeHandlers;
 /// </summary>
 internal sealed class ListTypeHandler(TypeHandlerRegistry registry) : ITypeHandler
 {
+    /// <inheritdoc/>
     public bool CanHandle(ITypeSymbol type)
     {
         return type is INamedTypeSymbol named && named.IsGenericType && named.Name == "List";
     }
 
+    /// <inheritdoc/>
     public void EmitWrite(WriteContext ctx, string valueExpression, string indent, int depth)
     {
         INamedTypeSymbol namedType = (INamedTypeSymbol)ctx.Shared.Type;
         ITypeSymbol elementType = namedType.TypeArguments[0];
 
         string countVar = $"{valueExpression}.Count";
+        // Unique loop index per depth avoids variable name collisions in nested collections
         string loopIndex = $"i{depth}";
         string elementAccess = $"{valueExpression}[{loopIndex}]";
 
@@ -50,6 +53,7 @@ internal sealed class ListTypeHandler(TypeHandlerRegistry registry) : ITypeHandl
             ctx.Shared.OutputLines.Add($"{indent}#endregion");
     }
 
+    /// <inheritdoc/>
     public void EmitRead(ReadContext ctx, string indent, int depth, string? rootName)
     {
         ctx.Shared.Namespaces.Add("System.Collections.Generic");

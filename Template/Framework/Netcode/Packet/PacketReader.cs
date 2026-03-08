@@ -143,8 +143,7 @@ public class PacketReader : IDisposable
     public Vector3 ReadVector3() => new(ReadFloat(), ReadFloat(), ReadFloat());
 
     /// <summary>
-    /// Legacy reflection-based read fallback retained for compatibility.
-    /// PacketGen generates packet read/write source and should be preferred for packet serialization.
+    /// Legacy reflection-based read; prefer PacketGen-generated Read methods for packet deserialization.
     /// </summary>
     public T Read<T>()
     {
@@ -153,8 +152,7 @@ public class PacketReader : IDisposable
     }
 
     /// <summary>
-    /// Legacy reflection-based read fallback retained for compatibility.
-    /// PacketGen generates packet read/write source and should be preferred for packet serialization.
+    /// Legacy reflection-based read; prefer PacketGen-generated Read methods for packet deserialization.
     /// </summary>
     public object Read(Type type)
     {
@@ -164,6 +162,9 @@ public class PacketReader : IDisposable
         return readMethod.Invoke(this, null);
     }
 
+    /// <summary>
+    /// Dispatches a read call to the appropriate typed reader based on the runtime type.
+    /// </summary>
     private T ReadTyped<T>(Type type)
     {
         if (IsPrimitiveLike(type))
@@ -205,11 +206,17 @@ public class PacketReader : IDisposable
         throw new NotImplementedException($"PacketReader: {type} is not a supported type.");
     }
 
+    /// <summary>
+    /// Returns <c>true</c> for primitive types, <see cref="string"/>, and <see cref="decimal"/>.
+    /// </summary>
     private static bool IsPrimitiveLike(Type type)
     {
         return type.IsPrimitive || type == typeof(string) || type == typeof(decimal);
     }
 
+    /// <summary>
+    /// Reads a primitive-like value from the underlying binary reader.
+    /// </summary>
     private T ReadPrimitive<T>(Type type)
     {
         if (type == typeof(byte)) return (T)(object)ReadByte();
@@ -230,11 +237,17 @@ public class PacketReader : IDisposable
         throw new NotImplementedException($"PacketReader: {type} is not a supported primitive type.");
     }
 
+    /// <summary>
+    /// Reads an enum value from a single byte.
+    /// </summary>
     private T ReadEnum<T>()
     {
         return (T)Enum.ToObject(typeof(T), ReadByte());
     }
 
+    /// <summary>
+    /// Delegates reading of supported generic types (<see cref="List{T}"/>, <see cref="Dictionary{TKey, TValue}"/>) to specialized overloads.
+    /// </summary>
     private T ReadGeneric<T>(Type genericType)
     {
         Type genericDefinition = genericType.GetGenericTypeDefinition();
@@ -252,6 +265,9 @@ public class PacketReader : IDisposable
         throw new NotImplementedException($"PacketReader: {genericType} is not a supported generic type.");
     }
 
+    /// <summary>
+    /// Reads a length-prefixed list of elements.
+    /// </summary>
     private T ReadList<T>(Type listType)
     {
         Type valueType = listType.GetGenericArguments()[0];
@@ -266,6 +282,9 @@ public class PacketReader : IDisposable
         return (T)list;
     }
 
+    /// <summary>
+    /// Reads a count-prefixed sequence of key-value pairs into a dictionary.
+    /// </summary>
     private T ReadDictionary<T>(Type dictionaryType)
     {
         Type keyType = dictionaryType.GetGenericArguments()[0];
@@ -283,6 +302,9 @@ public class PacketReader : IDisposable
         return (T)dictionary;
     }
 
+    /// <summary>
+    /// Reads a length-prefixed array of elements.
+    /// </summary>
     private Array ReadArray(Type elementType)
     {
         int count = ReadInt();
@@ -295,6 +317,9 @@ public class PacketReader : IDisposable
         return array;
     }
 
+    /// <summary>
+    /// Reads all public fields and eligible properties of a struct or class in metadata token order.
+    /// </summary>
     private T ReadStructOrClass<T>(Type type)
     {
         object instance = Activator.CreateInstance(type);
@@ -313,6 +338,9 @@ public class PacketReader : IDisposable
         return (T)instance;
     }
 
+    /// <summary>
+    /// Returns a cached map of public fields and eligible properties for a struct or class type.
+    /// </summary>
     private static PacketMemberMap GetMembersForStructOrClass(Type type)
     {
         return _structMemberCache.GetOrAdd(type, static cachedType =>
@@ -334,6 +362,9 @@ public class PacketReader : IDisposable
         });
     }
 
+    /// <summary>
+    /// Returns <c>true</c> for writable properties not decorated with <see cref="NetExcludeAttribute"/>.
+    /// </summary>
     private static bool ShouldIncludePropertyForRead(PropertyInfo property)
     {
         return property.CanWrite

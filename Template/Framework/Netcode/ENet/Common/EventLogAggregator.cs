@@ -6,7 +6,7 @@ namespace Framework.Netcode;
 
 /// <summary>
 /// Base class for event aggregation that coalesces rapid lifecycle events into summarized log messages.
-/// Provides common timing, windowing, and formatting infrastructure. Derived classes manage their own thread safety.
+/// Provides common timing, windowing, and formatting infrastructure.
 /// </summary>
 internal abstract class EventLogAggregator
 {

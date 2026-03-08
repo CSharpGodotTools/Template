@@ -7,7 +7,7 @@ namespace Framework.Netcode.Client;
 
 /// <summary>
 /// Coalesces rapid client lifecycle events into summarised log messages.
-/// Thread-safe: shared across all client worker threads.
+/// Shared across all client worker threads.
 /// </summary>
 internal sealed class ClientLogAggregator : EventLogAggregator
 {

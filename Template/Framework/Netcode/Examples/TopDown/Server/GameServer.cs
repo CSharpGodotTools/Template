@@ -3,7 +3,7 @@ using Framework.Netcode.Server;
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 
 namespace Framework.Netcode.Examples.Topdown;
 
@@ -11,13 +11,8 @@ public partial class GameServer : GodotServer
 {
     private const int PositionBroadcastIntervalMs = 100;
 
-    // Precompute tick interval once to avoid per-call multiplication.
-    private static readonly long _broadcastIntervalTicks =
-        (long)(PositionBroadcastIntervalMs * (double)Stopwatch.Frequency / 1000.0);
-
     private readonly HashSet<uint> _players = [];
     private readonly Dictionary<uint, Vector2> _positions = [];
-    private long _lastPositionBroadcastTicks;
 
     protected override void RegisterPackets()
     {
@@ -44,10 +39,15 @@ public partial class GameServer : GodotServer
 
     private void OnPlayerPosition(PacketFromPeer<CPacketPlayerPosition> peer)
     {
-        if (!_players.Contains(peer.PeerId))
+        UpdatePlayerPosition(peer.PeerId, peer.Packet.Position);
+    }
+
+    private void UpdatePlayerPosition(uint peerId, Vector2 position)
+    {
+        if (!_players.Contains(peerId))
             return;
 
-        _positions[peer.PeerId] = peer.Packet.Position;
+        _positions[peerId] = position;
         BroadcastPositions();
     }
 
@@ -56,24 +56,30 @@ public partial class GameServer : GodotServer
         if (!_players.Add(peerId))
             return;
 
-        // Tell the new player their own ID.
+        NotifySelfJoined(peerId);
+        BroadcastPlayerJoin(peerId);
+        SendExistingPlayersTo(peerId);
+        SendPositionsSnapshotTo(peerId);
+    }
+
+    private void NotifySelfJoined(uint peerId)
+    {
         Send(new SPacketPlayerJoinedLeaved
         {
             Id = peerId,
             Joined = true,
             IsLocal = true
         }, peerId);
+    }
 
-        // Tell everyone else about the new player.
+    private void BroadcastPlayerJoin(uint peerId)
+    {
         Broadcast(new SPacketPlayerJoinedLeaved
         {
             Id = peerId,
             Joined = true,
             IsLocal = false
         }, peerId);
-
-        SendExistingPlayersTo(peerId);
-        SendPositionsSnapshotTo(peerId);
     }
 
     private void RemovePlayer(uint playerId)
@@ -82,23 +88,37 @@ public partial class GameServer : GodotServer
             return;
 
         _positions.Remove(playerId);
-        Broadcast(new SPacketPlayerJoinedLeaved { Id = playerId, Joined = false });
+        BroadcastPlayerLeave(playerId);
         BroadcastPositions(force: true);
+    }
+
+    private void BroadcastPlayerLeave(uint playerId)
+    {
+        Broadcast(new SPacketPlayerJoinedLeaved { Id = playerId, Joined = false });
     }
 
     private void SendExistingPlayersTo(uint peerId)
     {
+        Send(peerId, BuildJoinPackets(except: peerId));
+    }
+
+    /// <summary>
+    /// Create a sequence of <see cref="SPacketPlayerJoinedLeaved"/> packets
+    /// representing every player on the server except the supplied ID.
+    /// </summary>
+    private IEnumerable<ServerPacket> BuildJoinPackets(uint except)
+    {
         foreach (uint playerId in _players)
         {
-            if (playerId != peerId)
+            if (playerId == except)
+                continue;
+
+            yield return new SPacketPlayerJoinedLeaved
             {
-                Send(new SPacketPlayerJoinedLeaved
-                {
-                    Id = playerId,
-                    Joined = true,
-                    IsLocal = false
-                }, peerId);
-            }
+                Id = playerId,
+                Joined = true,
+                IsLocal = false
+            };
         }
     }
 
@@ -110,36 +130,15 @@ public partial class GameServer : GodotServer
 
     private void BroadcastPositions(bool force = false)
     {
-        if (!CanBroadcastPositions(force) || _players.Count == 0)
+        if (_players.Count == 0)
             return;
 
-        // Use the new Send overload which handles the one‑time serialization
-        // internally. This keeps the game‑writer's code simple while still
-        // avoiding per‑peer allocations.
-        Send(new SPacketPlayerPositions { Positions = _positions }, _players);
-    }
-
-    private bool CanBroadcastPositions(bool force)
-    {
-        long now = Stopwatch.GetTimestamp();
-        if (force)
-        {
-            _lastPositionBroadcastTicks = now;
-            return true;
-        }
-
-        if (_lastPositionBroadcastTicks == 0)
-        {
-            _lastPositionBroadcastTicks = now;
-            return true;
-        }
-
-        if (now - _lastPositionBroadcastTicks < _broadcastIntervalTicks)
-        {
-            return false;
-        }
-
-        _lastPositionBroadcastTicks = now;
-        return true;
+        // throttle the payload automatically by packet type; helper returns true
+        // iff the packet was enqueued (return value ignored).
+        SendThrottled(
+            new SPacketPlayerPositions { Positions = _positions },
+            _players,
+            PositionBroadcastIntervalMs,
+            force);
     }
 }

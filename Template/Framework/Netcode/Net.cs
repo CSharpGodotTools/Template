@@ -30,8 +30,13 @@ public class Net<TGameClient, TGameServer> : IDisposable
     private long _shutdownStarted;
     private int _disposed;
 
+    /// <summary>Raised when a new server instance is created.</summary>
     public event Action<GodotServer> ServerCreated;
+
+    /// <summary>Raised when a new client instance is created.</summary>
     public event Action<GodotClient> ClientCreated;
+
+    /// <summary>Raised when a client instance is stopped and destroyed.</summary>
     public event Action<GodotClient> ClientDestroyed;
 
     /// <summary>
@@ -39,9 +44,16 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// </summary>
     public static int HeartbeatPosition { get; } = 20;
 
+    /// <summary>The active server instance.</summary>
     public GodotServer Server { get; private set; }
+
+    /// <summary>The active client instance.</summary>
     public GodotClient Client { get; private set; }
+
+    /// <summary>Port the current server is listening on.</summary>
     public ushort ServerPort { get; private set; }
+
+    /// <summary>Maximum concurrent clients for the current server.</summary>
     public int ServerMaxClients { get; private set; }
 
     /// <summary>
@@ -130,6 +142,9 @@ public class Net<TGameClient, TGameServer> : IDisposable
         ClientDestroyed?.Invoke(Client);
     }
 
+    /// <summary>
+    /// Attempts to initialize the ENet native library. Returns <c>false</c> if the DLL is missing.
+    /// </summary>
     private static bool TryInitializeEnet()
     {
         try
@@ -144,6 +159,9 @@ public class Net<TGameClient, TGameServer> : IDisposable
         }
     }
 
+    /// <summary>
+    /// Gracefully stops both server and client workers, then deinitializes ENet.
+    /// </summary>
     private async Task StopThreads()
     {
         if (Interlocked.CompareExchange(ref _shutdownStarted, 1, 0) != 0)
@@ -171,6 +189,9 @@ public class Net<TGameClient, TGameServer> : IDisposable
         }
     }
 
+    /// <summary>
+    /// Returns <c>true</c> when ENet is initialized; logs a warning and returns <c>false</c> otherwise.
+    /// </summary>
     private bool CanUseENet()
     {
         if (_enetInitialized)
@@ -182,6 +203,9 @@ public class Net<TGameClient, TGameServer> : IDisposable
         return false;
     }
 
+    /// <summary>
+    /// Creates a copy of the default ENet logging options.
+    /// </summary>
     private static ENetOptions CloneDefaultOptions()
     {
         return new ENetOptions
@@ -194,6 +218,9 @@ public class Net<TGameClient, TGameServer> : IDisposable
         };
     }
 
+    /// <summary>
+    /// Stops the server and polls until the worker thread has fully exited.
+    /// </summary>
     private async Task StopServerIfRunning()
     {
         if (!Server.IsRunning)
@@ -209,6 +236,9 @@ public class Net<TGameClient, TGameServer> : IDisposable
         }
     }
 
+    /// <summary>
+    /// Stops the client and polls until the worker thread has fully exited.
+    /// </summary>
     private async Task StopClientIfRunning()
     {
         if (!Client.IsRunning)

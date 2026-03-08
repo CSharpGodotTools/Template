@@ -8,8 +8,13 @@ namespace PacketGen;
 /// </summary>
 internal static class PacketGenerators
 {
+    /// <summary>Shared orchestrator instance reused across generation calls.</summary>
     private static readonly PacketGenerationOrchestrator _orchestrator = new();
 
+    /// <summary>
+    /// Generates the partial class source for a single packet symbol, or <c>null</c> if generation
+    /// is not applicable (e.g. the packet already defines its own Write/Read methods).
+    /// </summary>
     public static string? GetSource(Compilation compilation, INamedTypeSymbol symbol)
     {
         return _orchestrator.GenerateSource(compilation, symbol);

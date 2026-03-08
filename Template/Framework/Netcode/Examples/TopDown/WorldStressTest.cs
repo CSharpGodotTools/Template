@@ -464,14 +464,14 @@ public partial class World
                     TaskScheduler.Default);
             }
 
-            /// <summary>Thread-safe. Schedules a new bot connection on the worker thread.</summary>
+            /// <summary>Schedules a new bot connection on the worker thread.</summary>
             public void AddBot()
             {
                 _addQueue.Enqueue(0);
                 Interlocked.Increment(ref _botCount);
             }
 
-            /// <summary>Thread-safe. Signals the worker to stop all connections and exit.</summary>
+            /// <summary>Signals the worker to stop all connections and exit.</summary>
             public void Stop()
             {
                 _cts.Cancel();

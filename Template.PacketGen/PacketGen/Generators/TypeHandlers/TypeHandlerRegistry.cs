@@ -11,21 +11,28 @@ internal sealed class TypeHandlerRegistry
 {
     private readonly List<ITypeHandler> _handlers = [];
 
+    /// <summary>Creates an empty registry; call <see cref="SetHandlers"/> before use.</summary>
     public TypeHandlerRegistry()
     {
     }
 
+    /// <summary>Creates a registry pre-loaded with the given handlers.</summary>
     public TypeHandlerRegistry(IEnumerable<ITypeHandler> handlers)
     {
         _handlers.AddRange(handlers);
     }
 
+    /// <summary>Replaces all registered handlers with the provided set (first match wins during dispatch).</summary>
     public void SetHandlers(IEnumerable<ITypeHandler> handlers)
     {
         _handlers.Clear();
         _handlers.AddRange(handlers);
     }
 
+    /// <summary>
+    /// Finds the first handler that can handle <c>ctx.Shared.Type</c> and calls
+    /// <see cref="ITypeHandler.EmitWrite"/>. Returns <c>false</c> and emits a diagnostic if no handler matches.
+    /// </summary>
     public bool TryEmitWrite(WriteContext ctx, string valueExpression, string indent, int depth)
     {
         ITypeSymbol type = ctx.Shared.Type;
@@ -43,6 +50,10 @@ internal sealed class TypeHandlerRegistry
         return false;
     }
 
+    /// <summary>
+    /// Finds the first handler that can handle <c>ctx.Shared.Type</c> and calls
+    /// <see cref="ITypeHandler.EmitRead"/>. Returns <c>false</c> and emits a diagnostic if no handler matches.
+    /// </summary>
     public bool TryEmitRead(ReadContext ctx, string indent, int depth, string? rootName)
     {
         ITypeSymbol type = ctx.Shared.Type;

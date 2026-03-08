@@ -33,13 +33,12 @@ public abstract partial class ENetServer : ENetLow
     private int _connectedPeerCount;
 
     /// <summary>
-    /// Number of currently connected peers. Thread safe.
+    /// Number of currently connected peers.
     /// </summary>
     public int ConnectedPeerCount => Interlocked.CompareExchange(ref _connectedPeerCount, 0, 0);
 
     /// <summary>
-    /// Registers a handler for a specific client packet type.
-    /// Handlers run on the ENet worker thread.
+    /// Registers a handler for incoming <typeparamref name="TPacket"/> packets, dispatched on the ENet worker thread.
     /// </summary>
     protected void OnPacket<TPacket>(Action<PacketFromPeer<TPacket>> handler) where TPacket : ClientPacket
     {
@@ -50,7 +49,7 @@ public abstract partial class ENetServer : ENetLow
     }
 
     /// <summary>
-    /// Log a message as the server. This function is thread safe.
+    /// Logs a message as the server.
     /// </summary>
     public sealed override void Log(object message, BBColor color = BBColor.Gray)
     {
@@ -59,7 +58,7 @@ public abstract partial class ENetServer : ENetLow
     }
 
     /// <summary>
-    /// Kick everyone on the server with a specified opcode. Thread safe.
+    /// Kick everyone on the server with a specified opcode.
     /// </summary>
     public void KickAll(DisconnectOpcode opcode)
     {
@@ -67,7 +66,7 @@ public abstract partial class ENetServer : ENetLow
     }
 
     /// <summary>
-    /// Enqueues a send/broadcast command for the worker thread. Thread safe.
+    /// Enqueues a send/broadcast command for the worker thread.
     /// </summary>
     protected void EnqueueOutgoing(OutgoingMessage message)
     {
@@ -75,7 +74,7 @@ public abstract partial class ENetServer : ENetLow
     }
 
     /// <summary>
-    /// Requests a graceful server shutdown from any thread. Thread safe.
+    /// Requests a graceful server shutdown from any thread.
     /// </summary>
     protected void RequestStop()
     {
@@ -83,7 +82,7 @@ public abstract partial class ENetServer : ENetLow
     }
 
     /// <summary>
-    /// Requests a peer kick from any thread. Thread safe.
+    /// Requests a peer kick from any thread.
     /// </summary>
     protected void RequestKick(uint peerId, DisconnectOpcode opcode)
     {
@@ -91,7 +90,7 @@ public abstract partial class ENetServer : ENetLow
     }
 
     /// <summary>
-    /// Requests a kick-all from any thread. Thread safe.
+    /// Requests a kick-all from any thread.
     /// </summary>
     protected void RequestKickAll(DisconnectOpcode opcode) => KickAll(opcode);
 
@@ -195,6 +194,9 @@ public abstract partial class ENetServer : ENetLow
         }
     }
 
+    /// <summary>
+    /// Returns a formatted timestamp prefix when timestamp logging is enabled.
+    /// </summary>
     private string BuildTimestampPrefix()
     {
         if (Options == null || !Options.ShowLogTimestamps)
@@ -203,6 +205,9 @@ public abstract partial class ENetServer : ENetLow
         return $"[{DateTime.Now:HH:mm:ss}] ";
     }
 
+    /// <summary>
+    /// Creates and binds an ENet host on the specified port. Returns <c>null</c> if the port is already in use.
+    /// </summary>
     private Host TryCreateServerHost(ushort port, int maxClients)
     {
         Host host = new();
@@ -221,6 +226,9 @@ public abstract partial class ENetServer : ENetLow
         return host;
     }
 
+    /// <summary>
+    /// Drains the ENet command queue and executes pending stop, kick, and kick-all commands.
+    /// </summary>
     private void ProcessENetCommands()
     {
         while (_enetCmds.TryDequeue(out Cmd<ENetServerOpcode> command))
@@ -242,6 +250,9 @@ public abstract partial class ENetServer : ENetLow
         }
     }
 
+    /// <summary>
+    /// Disconnects all peers and cancels the worker token to begin shutdown.
+    /// </summary>
     private void HandleStopCommand()
     {
         if (CTS.IsCancellationRequested)
@@ -254,6 +265,9 @@ public abstract partial class ENetServer : ENetLow
         CTS.Cancel();
     }
 
+    /// <summary>
+    /// Disconnects a single peer immediately using the specified opcode.
+    /// </summary>
     private void HandleKickCommand(Cmd<ENetServerOpcode> command)
     {
         uint peerId = (uint)command.Data[0];
@@ -272,12 +286,18 @@ public abstract partial class ENetServer : ENetLow
         TryInvokePeerDisconnected(peerId);
     }
 
+    /// <summary>
+    /// Disconnects all peers using the opcode carried in the command.
+    /// </summary>
     private void HandleKickAllCommand(Cmd<ENetServerOpcode> command)
     {
         DisconnectOpcode opcode = (DisconnectOpcode)command.Data[0];
         DisconnectAllPeers(opcode);
     }
 
+    /// <summary>
+    /// Issues <c>DisconnectNow</c> to every tracked peer and clears all peer state.
+    /// </summary>
     private void DisconnectAllPeers(DisconnectOpcode opcode)
     {
         foreach (Peer peer in _peers.Values)
@@ -291,6 +311,9 @@ public abstract partial class ENetServer : ENetLow
         _reassemblyBuffers.Clear();
     }
 
+    /// <summary>
+    /// Drains the incoming packet queue, reassembling fragments and dispatching complete payloads.
+    /// </summary>
     private void ProcessIncomingPackets()
     {
         while (_incoming.TryDequeue(out IncomingPacket queued))
@@ -311,6 +334,9 @@ public abstract partial class ENetServer : ENetLow
         }
     }
 
+    /// <summary>
+    /// Accumulates a fragment into the per-peer reassembly buffer and dispatches the full payload when complete.
+    /// </summary>
     private void HandleFragmentBytes(byte[] fragmentBytes, Peer peer)
     {
         if (!PacketFragmenter.TryReadHeader(fragmentBytes, out ushort streamId, out ushort fragIndex, out ushort totalFragments))
@@ -336,6 +362,9 @@ public abstract partial class ENetServer : ENetLow
         DispatchIncomingBytes(buffer.Assemble(), peer);
     }
 
+    /// <summary>
+    /// Decodes a wire opcode, looks up a registered handler, and invokes it for a complete incoming payload.
+    /// </summary>
     private void DispatchIncomingBytes(byte[] bytes, Peer peer)
     {
         PacketReader reader = new(bytes);
@@ -372,6 +401,9 @@ public abstract partial class ENetServer : ENetLow
         }
     }
 
+    /// <summary>
+    /// Reads the wire opcode and resolves the matching <see cref="ClientPacket"/> type from the registry.
+    /// </summary>
     private bool TryGetPacketAndType(PacketReader packetReader, out ClientPacket clientPacket, out Type packetType)
     {
         ushort opcode;
@@ -398,6 +430,9 @@ public abstract partial class ENetServer : ENetLow
         return true;
     }
 
+    /// <summary>
+    /// Deserializes a client packet from the reader. Returns <c>false</c> on malformed data.
+    /// </summary>
     private static bool TryReadPacket(ClientPacket clientPacket, PacketReader packetReader, out string errorMessage)
     {
         try
@@ -413,6 +448,9 @@ public abstract partial class ENetServer : ENetLow
         }
     }
 
+    /// <summary>
+    /// Invokes a registered client packet handler, catching and logging any exceptions.
+    /// </summary>
     private static bool TryInvokePacketHandler(Action<PacketFromPeer<ClientPacket>> handler, PacketFromPeer<ClientPacket> peer)
     {
         try
@@ -427,6 +465,9 @@ public abstract partial class ENetServer : ENetLow
         }
     }
 
+    /// <summary>
+    /// Logs an incoming packet when packet-received logging is enabled.
+    /// </summary>
     private void LogPacketReceived(Type packetType, uint clientId, ClientPacket packet)
     {
         if (!Options.PrintPacketReceived || IgnoredPackets.Contains(packetType))
@@ -441,6 +482,9 @@ public abstract partial class ENetServer : ENetLow
         Log($"Received packet: {packetType.Name} from client {clientId}{packetData}");
     }
 
+    /// <summary>
+    /// Removes peer state and invokes <see cref="OnPeerDisconnected"/> for a disconnect or timeout event.
+    /// </summary>
     private void HandlePeerDisconnected(Event netEvent, Action<uint> logEvent)
     {
         uint peerId = netEvent.Peer.ID;
@@ -450,6 +494,9 @@ public abstract partial class ENetServer : ENetLow
         logEvent(peerId);
     }
 
+    /// <summary>
+    /// Safely invokes <see cref="OnPeerDisconnected"/>, catching and logging any exceptions.
+    /// </summary>
     private void TryInvokePeerDisconnected(uint peerId)
     {
         try
@@ -462,6 +509,9 @@ public abstract partial class ENetServer : ENetLow
         }
     }
 
+    /// <summary>
+    /// Drains the outgoing queue and transmits each message over ENet.
+    /// </summary>
     private void ProcessOutgoingPackets()
     {
         while (_outgoing.TryDequeue(out OutgoingMessage message))
@@ -484,6 +534,9 @@ public abstract partial class ENetServer : ENetLow
         }
     }
 
+    /// <summary>
+    /// Sends a message to a single peer, fragmenting automatically when needed.
+    /// </summary>
     private void SendUnicast(OutgoingMessage message)
     {
         if (!_peers.TryGetValue(message.TargetPeerId, out Peer peer))
@@ -504,6 +557,9 @@ public abstract partial class ENetServer : ENetLow
         peer.Send(DefaultChannelId, ref enetPacket);
     }
 
+    /// <summary>
+    /// Broadcasts a message to all peers (or all except one), fragmenting when needed.
+    /// </summary>
     private void SendBroadcast(OutgoingMessage message)
     {
         if (message.Data.Length > GamePacket.MaxSize)

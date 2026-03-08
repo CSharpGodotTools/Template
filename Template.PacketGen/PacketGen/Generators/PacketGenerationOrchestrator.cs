@@ -12,6 +12,7 @@ namespace PacketGen.Generators;
 /// </summary>
 internal sealed class PacketGenerationOrchestrator
 {
+    // Standard polynomial hash constants used in emitted GetHashCode / deep-hash helpers.
     private const int HashSeedValue = 17;
     private const int HashMultiplierPrimary = 397;
     private const int HashMultiplierSecondary = 31;
@@ -273,6 +274,10 @@ public partial class {{model.ClassName}}
         return sourceCode;
     }
 
+    /// <summary>
+    /// Emits a default (parameterless) constructor and a full-parameter constructor for the packet class.
+    /// The default constructor assigns <c>null!</c> to all reference-type properties to satisfy nullable analysis.
+    /// </summary>
     private static string BuildConstructors(PacketGenerationModel model)
     {
         const string indent4 = "    ";
@@ -295,6 +300,7 @@ public partial class {{model.ClassName}}
         return $"{emptyConstructor}\n\n{paramsConstructor}\n";
     }
 
+    /// <summary>Converts a PascalCase property name to a camelCase constructor parameter name.</summary>
     private static string ToCamelCase(string name)
     {
         if (string.IsNullOrEmpty(name))
@@ -303,6 +309,7 @@ public partial class {{model.ClassName}}
         return char.ToLowerInvariant(name[0]) + name.Substring(1);
     }
 
+    /// <summary>Constructs and returns a <see cref="TypeHandlerRegistry"/> pre-loaded with all built-in type handlers in dispatch priority order.</summary>
     private static TypeHandlerRegistry BuildRegistry()
     {
         TypeHandlerRegistry registry = new();

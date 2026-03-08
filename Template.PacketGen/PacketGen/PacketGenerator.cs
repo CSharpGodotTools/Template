@@ -10,6 +10,9 @@ namespace PacketGen;
 [Generator(LanguageNames.CSharp)]
 public sealed class PacketGenerator : IIncrementalGenerator
 {
+    /// <summary>
+    /// Registers incremental generation pipelines for per-packet source and the registry class.
+    /// </summary>
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         IncrementalValuesProvider<INamedTypeSymbol> packetSymbols = GetPacketSymbols(context);
@@ -32,6 +35,9 @@ public sealed class PacketGenerator : IIncrementalGenerator
         GeneratePacketRegistryClass(context, registryInput);
     }
 
+    /// <summary>
+    /// Builds a provider that yields all <see cref="ClientPacket"/> and <see cref="ServerPacket"/> subclasses in the compilation.
+    /// </summary>
     private static IncrementalValuesProvider<INamedTypeSymbol> GetPacketSymbols(IncrementalGeneratorInitializationContext context)
     {
         return context.SyntaxProvider.CreateSyntaxProvider(
@@ -45,6 +51,9 @@ public sealed class PacketGenerator : IIncrementalGenerator
             .Select(static (symbol, _) => symbol!);
     }
 
+    /// <summary>
+    /// Registers per-packet source generation: emits a <c>.g.cs</c> partial class for each packet symbol.
+    /// </summary>
     private static void GenerateSourceForPacketScripts(IncrementalGeneratorInitializationContext context, IncrementalValuesProvider<INamedTypeSymbol> packetSymbols, IncrementalValueProvider<Compilation> compilation)
     {
         context.RegisterSourceOutput(
@@ -121,11 +130,17 @@ public sealed class PacketGenerator : IIncrementalGenerator
             .Select(static (s, _) => s!);
     }
 
+    /// <summary>
+    /// Returns <c>true</c> if <paramref name="symbol"/> inherits from a class named <paramref name="baseTypeName"/>.
+    /// </summary>
     private static bool IsPacketType(INamedTypeSymbol symbol)
     {
         return InheritsFrom(symbol, "ClientPacket") || InheritsFrom(symbol, "ServerPacket");
     }
 
+    /// <summary>
+    /// Walks the base-type chain checking for a class with the given name.
+    /// </summary>
     private static bool InheritsFrom(INamedTypeSymbol symbol, string baseTypeName)
     {
         INamedTypeSymbol? current = symbol.BaseType;
@@ -142,6 +157,9 @@ public sealed class PacketGenerator : IIncrementalGenerator
         return false;
     }
 
+    /// <summary>
+    /// Converts a fully-qualified type name to a safe file hint name by replacing non-alphanumeric characters with underscores.
+    /// </summary>
     private static string BuildHintName(INamedTypeSymbol symbol)
     {
         string fullName = symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);

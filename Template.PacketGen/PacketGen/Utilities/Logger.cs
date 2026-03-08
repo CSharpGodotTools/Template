@@ -4,6 +4,11 @@ using System.ComponentModel;
 
 namespace PacketGen;
 
+/// <summary>
+/// Roslyn diagnostic logger for PacketGen. Must be initialised via <see cref="Init"/> at the start of
+/// each <see cref="SourceProductionContext"/> callback before calling any other method.
+/// Diagnostics IDs: PKT0001 (info), PKT0002 (warning), PKT0003 (error).
+/// </summary>
 internal static class Logger
 {
     private const string Category = "PacketGen";
@@ -38,6 +43,7 @@ internal static class Logger
     private static SourceProductionContext _context;
     private static bool _initialized;
 
+    /// <summary>Must be called at the start of every <see cref="SourceProductionContext"/> callback to bind the logger to the current context.</summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static void Init(SourceProductionContext context)
     {
@@ -45,21 +51,25 @@ internal static class Logger
         _initialized = true;
     }
 
+    /// <summary>Reports an error diagnostic for the given symbol location.</summary>
     public static void Err(ISymbol symbol, string? message)
     {
         Log(symbol, message, _errorDescriptor);
     }
 
+    /// <summary>Reports a warning diagnostic for the given symbol location.</summary>
     public static void Warn(ISymbol symbol, string? message)
     {
         Log(symbol, message, _warningDescriptor);
     }
 
+    /// <summary>Reports an informational diagnostic with no associated symbol location.</summary>
     public static void Info(string? message)
     {
         Info(null, message);
     }
 
+    /// <summary>Reports an informational diagnostic, optionally anchored to a symbol location.</summary>
     public static void Info(ISymbol? symbol, string? message)
     {
         Log(symbol, message, _infoDescriptor);

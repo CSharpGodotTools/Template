@@ -9,13 +9,16 @@ namespace PacketGen.Generators.TypeHandlers;
 /// </summary>
 internal sealed class PrimitiveTypeHandler : ITypeHandler
 {
+    /// <inheritdoc/>
     public bool CanHandle(ITypeSymbol type) => ReadMethodSuffix.Get(type) != null;
 
+    /// <inheritdoc/>
     public void EmitWrite(WriteContext ctx, string valueExpression, string indent, int depth)
     {
         ctx.Shared.OutputLines.Add($"{indent}writer.Write({valueExpression});");
     }
 
+    /// <inheritdoc/>
     public void EmitRead(ReadContext ctx, string indent, int depth, string? rootName)
     {
         string? suffix = ReadMethodSuffix.Get(ctx.Shared.Type);

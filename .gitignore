@@ -38,8 +38,11 @@
 **/libenet.dylib
 **/enet.dylib
 
-# MCP
+# Copilot
 .serena/
+.github/copilot-instructions.md
+.github/agents/
+.github/instructions/
 
 # Mac OS Files
 **/.DS_Store

@@ -8,13 +8,16 @@ namespace PacketGen.Generators.TypeHandlers;
 /// </summary>
 internal sealed class DictionaryTypeHandler(TypeHandlerRegistry registry) : ITypeHandler
 {
+    /// <inheritdoc/>
     public bool CanHandle(ITypeSymbol type)
     {
         return type is INamedTypeSymbol named && named.IsGenericType && named.Name == "Dictionary";
     }
 
+    /// <inheritdoc/>
     public void EmitWrite(WriteContext ctx, string valueExpression, string indent, int depth)
     {
+        // Unique loop variable name per nesting depth prevents shadowing in nested collections
         string kvVar = $"kv{depth}";
         INamedTypeSymbol namedType = (INamedTypeSymbol)ctx.Shared.Type;
         ITypeSymbol keyType = namedType.TypeArguments[0];
@@ -48,6 +51,7 @@ internal sealed class DictionaryTypeHandler(TypeHandlerRegistry registry) : ITyp
             ctx.Shared.OutputLines.Add($"{indent}#endregion");
     }
 
+    /// <inheritdoc/>
     public void EmitRead(ReadContext ctx, string indent, int depth, string? rootName)
     {
         ctx.Shared.Namespaces.Add("System.Collections.Generic");

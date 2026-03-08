@@ -26,8 +26,7 @@ public abstract class GodotClient : ENetClient
     protected abstract void RegisterPackets();
 
     /// <summary>
-    /// Registers a handler for a specific server packet type.
-    /// Handlers run on the Godot main thread.
+    /// Registers a handler for incoming <typeparamref name="TPacket"/> packets, dispatched on the Godot main thread.
     /// </summary>
     protected void OnPacket<TPacket>(Action<TPacket> handler)
         where TPacket : ServerPacket
@@ -38,34 +37,27 @@ public abstract class GodotClient : ENetClient
     }
 
     /// <summary>
-    /// Fires when the client connects to the server. Thread safe.
+    /// Fires when the client connects to the server.
     /// </summary>
     public event Action Connected;
 
     /// <summary>
-    /// Fires when the client disconnects or times out from the server. Thread safe.
+    /// Fires when the client disconnects or times out from the server.
     /// </summary>
     public event Action<DisconnectOpcode> Disconnected;
 
     /// <summary>
-    /// Fires when the client times out from the server. Thread safe.
+    /// Fires when the client times out from the server.
     /// </summary>
     public event Action TimedOut;
 
     /// <summary>
-    /// Is the client connected to the server? Thread safe.
+    /// Is the client connected to the server?
     /// </summary>
     public bool IsConnected => Interlocked.Read(ref _connected) == 1;
 
     /// <summary>
-    /// <para>
-    /// Thread-safe connect entrypoint. IP can be set to "127.0.0.1" for localhost and
-    /// port can be set to values such as 25565.
-    /// </para>
-    ///
-    /// <para>
-    /// Options contains logging controls. Ignored packets skip logging output.
-    /// </para>
+    /// Connects to the server at <paramref name="ip"/>:<paramref name="port"/>. Options control logging; types in ignoredPackets are excluded.
     /// </summary>
     public async Task Connect(string ip, ushort port, ENetOptions options = default, params Type[] ignoredPackets)
     {
@@ -100,7 +92,7 @@ public abstract class GodotClient : ENetClient
     }
 
     /// <summary>
-    /// Stop the client. This function is thread safe.
+    /// Stop the client.
     /// </summary>
     public sealed override void Stop()
     {
@@ -114,7 +106,7 @@ public abstract class GodotClient : ENetClient
     }
 
     /// <summary>
-    /// Sends a packet to the server. Packets are reliable by default. Thread safe.
+    /// Sends a packet to the server. Packets are reliable by default.
     /// </summary>
     public void Send(ClientPacket packet)
     {
@@ -140,6 +132,9 @@ public abstract class GodotClient : ENetClient
         ProcessGodotCommands();
     }
 
+    /// <summary>
+    /// Reads and dispatches pending server packets from the relay queue.
+    /// </summary>
     private void ProcessGodotPackets()
     {
         while (MainThreadPackets.TryDequeue(out PacketData packetData))
@@ -172,6 +167,9 @@ public abstract class GodotClient : ENetClient
         }
     }
 
+    /// <summary>
+    /// Reads and dispatches pending lifecycle commands (connected, disconnected, timeout) from the relay queue.
+    /// </summary>
     private void ProcessGodotCommands()
     {
         while (MainThreadCommands.TryDequeue(out Cmd<GodotOpcode> command))
@@ -194,6 +192,9 @@ public abstract class GodotClient : ENetClient
         }
     }
 
+    /// <summary>
+    /// Logs an incoming server packet when packet-received logging is enabled.
+    /// </summary>
     private void LogReceivedPacket(Type packetType, ServerPacket packet)
     {
         if (!Options.PrintPacketReceived || IgnoredPackets.Contains(packetType))
@@ -210,6 +211,9 @@ public abstract class GodotClient : ENetClient
         Log($"Received packet: {packetType.Name}{packetData}");
     }
 
+    /// <summary>
+    /// Logs an outgoing packet when packet-sent logging is enabled.
+    /// </summary>
     private void LogOutgoing(ClientPacket packet)
     {
         Type packetType = packet.GetType();
@@ -228,6 +232,9 @@ public abstract class GodotClient : ENetClient
         Log($"Sent packet: {packetType.Name} {FormatByteSize(packet.GetSize())}{packetData}");
     }
 
+    /// <summary>
+    /// Invokes an action, catching and logging any exceptions thrown during event dispatch.
+    /// </summary>
     private static void TryInvoke(Action action)
     {
         try

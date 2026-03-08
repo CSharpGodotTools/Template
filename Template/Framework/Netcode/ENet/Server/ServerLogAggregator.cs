@@ -6,7 +6,7 @@ namespace Framework.Netcode.Server;
 
 /// <summary>
 /// Coalesces rapid server lifecycle events into summarised log messages.
-/// Not thread-safe: expected to run on a single ENet worker thread.
+/// Expected to run on a single ENet worker thread.
 /// </summary>
 internal sealed class ServerLogAggregator : EventLogAggregator
 {

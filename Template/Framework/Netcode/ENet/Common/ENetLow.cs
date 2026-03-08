@@ -14,13 +14,21 @@ public abstract class ENetLow
     protected const byte DefaultChannelId = 0;
     private const int WorkerPollTimeoutMs = 15;
 
+    /// <summary>ENet host handle managed by the concrete transport.</summary>
     protected Host Host { get; set; }
+
+    /// <summary>Cancels the worker loop on shutdown.</summary>
     protected CancellationTokenSource CTS { get; set; }
+
+    /// <summary>Logging and diagnostic settings for this transport.</summary>
     protected ENetOptions Options { get; set; }
+
+    /// <summary>Packet types excluded from verbose logging output.</summary>
     protected HashSet<Type> IgnoredPackets { get; private set; } = [];
 
     protected long _running;
 
+    /// <summary>True while the worker thread is active.</summary>
     public bool IsRunning => Interlocked.Read(ref _running) == 1;
 
     /// <summary>
@@ -69,6 +77,9 @@ public abstract class ENetLow
         Host.Flush();
     }
 
+    /// <summary>
+    /// Polls the ENet host and dispatches all pending events for this tick.
+    /// </summary>
     private void PumpNetworkEvents()
     {
         bool hasServiced = false;
@@ -84,6 +95,10 @@ public abstract class ENetLow
         }
     }
 
+    /// <summary>
+    /// Attempts to retrieve the next pending ENet event via <c>CheckEvents</c> then <c>Service</c>.
+    /// </summary>
+    /// <returns><c>true</c> when an event is available in <paramref name="netEvent"/>.</returns>
     private bool TryGetNextEvent(out Event netEvent, out bool hasServiced)
     {
         if (Host.CheckEvents(out netEvent) > 0)
@@ -102,6 +117,9 @@ public abstract class ENetLow
         return false;
     }
 
+    /// <summary>
+    /// Routes a low-level ENet event to the matching lifecycle hook.
+    /// </summary>
     private void DispatchEvent(Event netEvent)
     {
         switch (netEvent.Type)
@@ -128,7 +146,7 @@ public abstract class ENetLow
     }
 
     /// <summary>
-    /// Processes thread-safe queues owned by the concrete transport.
+    /// Processes queues owned by the concrete transport.
     /// </summary>
     protected abstract void ConcurrentQueues();
 
@@ -153,9 +171,7 @@ public abstract class ENetLow
     protected abstract void OnReceiveLow(Event netEvent);
 
     /// <summary>
-    /// Formats the number of bytes into a readable string. For example if <paramref name="bytes"/>
-    /// is 1 then "1 byte" is returned. If <paramref name="bytes"/> is 2 then "2 bytes" is returned.
-    /// An empty string is returned if printing the packet size is disabled in the options.
+    /// Returns a human-readable byte-count string (e.g. "1 byte", "2 bytes"). Returns empty when byte-size logging is disabled.
     /// </summary>
     protected string FormatByteSize(long bytes)
     {

@@ -25,7 +25,10 @@ public abstract class ENetClient : ENetLow
     private ushort _streamCounter;
     private readonly Dictionary<ushort, FragmentBuffer> _reassemblyBuffers = [];
 
+    /// <summary>Relay queue for lifecycle commands that must be processed on the Godot main thread.</summary>
     protected ConcurrentQueue<Cmd<GodotOpcode>> MainThreadCommands { get; } = new();
+
+    /// <summary>Relay queue for incoming packet data that must be dispatched on the Godot main thread.</summary>
     protected ConcurrentQueue<PacketData> MainThreadPackets { get; } = new();
     protected long _connected;
 
@@ -49,10 +52,11 @@ public abstract class ENetClient : ENetLow
     /// </summary>
     protected virtual uint PeerTimeoutMaximumMs { get; } = 5000;
 
+    /// <summary>ENet peer ID assigned by the server for this connection.</summary>
     public uint PeerId => _peer.ID;
 
     /// <summary>
-    /// Log messages as the client. Thread safe.
+    /// Logs a message as the client.
     /// </summary>
     public sealed override void Log(object message, BBColor color = BBColor.Gray)
     {
@@ -72,8 +76,7 @@ public abstract class ENetClient : ENetLow
     }
 
     /// <summary>
-    /// Called on the worker thread when the connection is established.
-    /// Use this to send initial packets such as join requests.
+    /// Called on the worker thread when the connection is established; override to send initial packets.
     /// </summary>
     protected virtual void OnConnected()
     {
@@ -187,6 +190,9 @@ public abstract class ENetClient : ENetLow
         }
     }
 
+    /// <summary>
+    /// Returns a formatted timestamp prefix when timestamp logging is enabled.
+    /// </summary>
     private string BuildTimestampPrefix()
     {
         if (Options == null || !Options.ShowLogTimestamps)
@@ -197,6 +203,9 @@ public abstract class ENetClient : ENetLow
         return $"[{DateTime.Now:HH:mm:ss}] ";
     }
 
+    /// <summary>
+    /// Drains the ENet command queue and executes pending disconnect commands.
+    /// </summary>
     private void ProcessENetCommands()
     {
         while (_enetCmds.TryDequeue(out Cmd<ENetClientOpcode> command))
@@ -210,6 +219,9 @@ public abstract class ENetClient : ENetLow
         }
     }
 
+    /// <summary>
+    /// Sends a disconnect request to the server peer.
+    /// </summary>
     private void HandleDisconnectCommand()
     {
         if (CTS.IsCancellationRequested)
@@ -221,11 +233,17 @@ public abstract class ENetClient : ENetLow
         _peer.Disconnect((uint)DisconnectOpcode.Disconnected);
     }
 
+    /// <summary>
+    /// Enqueues a disconnected lifecycle command for the Godot main thread.
+    /// </summary>
     private void QueueDisconnectedCommand(DisconnectOpcode opcode)
     {
         MainThreadCommands.Enqueue(new Cmd<GodotOpcode>(GodotOpcode.Disconnected, opcode));
     }
 
+    /// <summary>
+    /// Drains the incoming packet queue, reassembling fragments and staging data for main-thread dispatch.
+    /// </summary>
     private void ProcessIncomingPackets()
     {
         while (_incoming.TryDequeue(out Packet packet))
@@ -248,6 +266,9 @@ public abstract class ENetClient : ENetLow
         }
     }
 
+    /// <summary>
+    /// Accumulates a fragment and stages the reassembled payload for main-thread dispatch when complete.
+    /// </summary>
     private void HandleFragmentBytes(byte[] fragmentBytes)
     {
         if (!PacketFragmenter.TryReadHeader(fragmentBytes, out ushort streamId, out ushort fragIndex, out ushort totalFragments))
@@ -271,6 +292,9 @@ public abstract class ENetClient : ENetLow
         MainThreadPackets.Enqueue(packetData);
     }
 
+    /// <summary>
+    /// Reads the wire opcode and builds a <see cref="PacketData"/> record ready for main-thread dispatch.
+    /// </summary>
     private bool TryCreatePacketData(byte[] bytes, out PacketData packetData)
     {
         packetData = null;
@@ -296,6 +320,9 @@ public abstract class ENetClient : ENetLow
         return true;
     }
 
+    /// <summary>
+    /// Reads the opcode from the reader and resolves the matching <see cref="ServerPacket"/> type.
+    /// </summary>
     private bool TryReadPacketType(PacketReader reader, out Type packetType)
     {
         packetType = null;
@@ -320,6 +347,9 @@ public abstract class ENetClient : ENetLow
         return true;
     }
 
+    /// <summary>
+    /// Drains the outgoing queue and transmits each payload over ENet, fragmenting when needed.
+    /// </summary>
     private void ProcessOutgoingPackets()
     {
         while (_outgoing.TryDequeue(out byte[] data))
@@ -348,7 +378,7 @@ public abstract class ENetClient : ENetLow
     }
 
     /// <summary>
-    /// Enqueues serialized packet data for sending on the worker thread. Thread safe.
+    /// Enqueues serialized packet data for sending on the worker thread.
     /// </summary>
     protected void EnqueueOutgoing(byte[] data)
     {
@@ -356,13 +386,16 @@ public abstract class ENetClient : ENetLow
     }
 
     /// <summary>
-    /// Requests a graceful disconnect from the worker thread. Thread safe.
+    /// Requests a graceful disconnect from the worker thread.
     /// </summary>
     protected void RequestDisconnect()
     {
         _enetCmds.Enqueue(new Cmd<ENetClientOpcode>(ENetClientOpcode.Disconnect));
     }
 
+    /// <summary>
+    /// Builds an ENet <see cref="Address"/> from an IP string and port number.
+    /// </summary>
     private static Address CreateAddress(string ip, ushort port)
     {
         Address address = new() { Port = port };
@@ -370,6 +403,9 @@ public abstract class ENetClient : ENetLow
         return address;
     }
 
+    /// <summary>
+    /// Invokes an action, catching and logging any exceptions thrown by the worker-thread hook.
+    /// </summary>
     private static void TryInvoke(Action action)
     {
         try

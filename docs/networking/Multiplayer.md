@@ -22,18 +22,15 @@ public partial class GameClient : GodotClient
 {
     public GameClient()
     {
-        RegisterPacketHandler<SPlayerPositions>(packet =>
+        OnPacket<SPlayerPositions>(packet =>
         {
             Log($"Received {packet.Positions.Count} player positions");
         });
     }
 
-    protected override void OnConnect(Event netEvent)
+    protected override void OnConnected()
     {
-        Send(new CPlayerJoined
-        {
-            Username = "Valk"
-        });
+        Send(new CPlayerJoined("Valk"));
     }
 }
 ```
@@ -43,26 +40,21 @@ Create a script with the following that extends from `GodotServer`.
 ```cs
 public partial class GameServer : GodotServer
 {
-    public Dictionary<uint, Vector2> Players { get; } = [];
+    public Dictionary<uint, Vector2> Players { get; } = new();
 
     public GameServer()
     {
-        RegisterPacketHandler<CPlayerJoined>(OnPlayerJoined);
-    }
-
-    private void OnPlayerJoined(CPlayerJoined packet, Peer peer)
-    {
-        Players[peer.ID] = Vector2.Zero;
-
-        Send(new SPlayerPositions
+        OnPacket<CPlayerJoined>(peer =>
         {
-            Positions = Players
-        }, peer);
+            Players[peer.PeerId] = Vector2.Zero;
+
+            Send(new SPlayerPositions(Players), peer.PeerId);
+        });
     }
 
-    protected override void OnPeerDisconnect(Event netEvent)
+    protected override void OnPeerDisconnected(uint peerId)
     {
-        Players.Remove(netEvent.Peer.ID);
+        Players.Remove(peerId);
     }
 }
 ```
@@ -90,7 +82,7 @@ Notice the `SPacketHello` packet has only 12 bytes. 10 for the characters in "Wh
 <img width="462" height="192" alt="image" src="https://github.com/user-attachments/assets/8cf2e996-f065-4fe0-b3a9-0c7f79c699a8" />
 
 > [!IMPORTANT]
-> MacOS has not been tested and may require a [[Custom ENet Build|Custom-ENet-Builds]].
+> MacOS has not been tested and may require a [Custom ENet Build](CustomENetBuilds.md).
 
 ## Further Reading
 - [Packets](Packets.md)

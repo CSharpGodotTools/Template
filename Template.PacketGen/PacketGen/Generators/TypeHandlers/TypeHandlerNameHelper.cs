@@ -7,12 +7,20 @@ namespace PacketGen.Generators.TypeHandlers;
 /// </summary>
 internal static class TypeHandlerNameHelper
 {
+    /// <summary>
+    /// Builds a unique local variable name from a seed expression, a semantic role (e.g. "Count", "Index"),
+    /// and a nesting depth to avoid collisions in nested loops.
+    /// </summary>
     public static string BuildName(string seed, string role, int depth)
     {
         string normalizedSeed = Normalize(seed);
         return $"{normalizedSeed}{role}{depth}";
     }
 
+    /// <summary>
+    /// Strips non-alphanumeric characters, ensures the result starts with a letter or underscore,
+    /// and lower-cases the first character to produce a valid camelCase identifier.
+    /// </summary>
     private static string Normalize(string seed)
     {
         StringBuilder builder = new(seed.Length);

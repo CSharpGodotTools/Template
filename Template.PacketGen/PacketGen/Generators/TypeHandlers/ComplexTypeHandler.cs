@@ -10,8 +10,10 @@ namespace PacketGen.Generators.TypeHandlers;
 /// </summary>
 internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHandler
 {
+    /// <summary>Safety ceiling on recursive type traversal to prevent infinite loops on circular references.</summary>
     private const int MaxTraversalDepth = 24;
 
+    /// <inheritdoc/>
     public bool CanHandle(ITypeSymbol type)
     {
         if (type is not INamedTypeSymbol namedType)
@@ -62,6 +64,7 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
         return false;
     }
 
+    /// <inheritdoc/>
     public void EmitWrite(WriteContext ctx, string valueExpression, string indent, int depth)
     {
         if (depth > MaxTraversalDepth)
@@ -86,6 +89,7 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
         }
     }
 
+    /// <inheritdoc/>
     public void EmitRead(ReadContext ctx, string indent, int depth, string? rootName)
     {
         if (depth > MaxTraversalDepth)
@@ -111,6 +115,7 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
         }
     }
 
+    /// <summary>Emits write code for a <c>Nullable&lt;T&gt;</c> struct, writing a bool flag followed by the inner value if present.</summary>
     private void EmitNullableValueWrite(WriteContext ctx, INamedTypeSymbol nullableType, string valueExpression, string indent, int depth)
     {
         ITypeSymbol innerType = nullableType.TypeArguments[0];
@@ -126,6 +131,7 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
         ctx.Shared.OutputLines.Add($"{indent}}}");
     }
 
+    /// <summary>Emits write code for a class type, writing a not-null bool flag followed by all properties if non-null.</summary>
     private void EmitClassWrite(WriteContext ctx, INamedTypeSymbol classType, string valueExpression, string indent, int depth)
     {
         ctx.Shared.OutputLines.Add($"{indent}writer.Write({valueExpression} is not null);");
@@ -137,11 +143,13 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
         ctx.Shared.OutputLines.Add($"{indent}}}");
     }
 
+    /// <summary>Emits write code for a struct type — structs are never null so no presence flag is needed.</summary>
     private void EmitStructWrite(WriteContext ctx, INamedTypeSymbol structType, string valueExpression, string indent, int depth)
     {
         EmitWritableMembers(ctx, structType, valueExpression, indent, depth + 1);
     }
 
+    /// <summary>Emits read code for a <c>Nullable&lt;T&gt;</c> struct: reads a bool flag, then the inner value if true.</summary>
     private void EmitNullableValueRead(ReadContext ctx, INamedTypeSymbol nullableType, string indent, int depth, string nameSeed)
     {
         ITypeSymbol innerType = nullableType.TypeArguments[0];
@@ -167,6 +175,7 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
         ctx.Shared.OutputLines.Add($"{indent}}}");
     }
 
+    /// <summary>Emits read code for a class type: reads a presence bool, then instantiates and populates the class if true.</summary>
     private void EmitClassRead(ReadContext ctx, INamedTypeSymbol classType, string indent, int depth, string nameSeed)
     {
         string typeName = classType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
@@ -190,6 +199,7 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
         ctx.Shared.OutputLines.Add($"{indent}}}");
     }
 
+    /// <summary>Emits read code for a struct type — instantiates a new struct and reads all properties into it.</summary>
     private void EmitStructRead(ReadContext ctx, INamedTypeSymbol structType, string indent, int depth, string nameSeed)
     {
         string typeName = structType.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
@@ -204,6 +214,7 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
         ctx.Shared.OutputLines.Add($"{indent}{ctx.TargetExpression} = {valueName};");
     }
 
+    /// <summary>Emits write calls for all serializable properties of the type.</summary>
     private void EmitWritableMembers(WriteContext ctx, INamedTypeSymbol type, string valueExpression, string indent, int depth)
     {
         ImmutableArray<IPropertySymbol> properties = GetSerializableProperties(type);
@@ -270,6 +281,7 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
         return builder.ToImmutable();
     }
 
+    /// <summary>Returns <c>null</c> or <c>default!</c> depending on whether the type is already annotated nullable.</summary>
     private static string GetNullAssignment(ITypeSymbol type)
     {
         if (type.NullableAnnotation == NullableAnnotation.Annotated)
@@ -280,6 +292,7 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
         return "default!";
     }
 
+    /// <summary>Returns <c>true</c> if the type is <c>Nullable&lt;T&gt;</c>.</summary>
     private static bool IsNullableValueType(INamedTypeSymbol namedType)
     {
         return namedType.OriginalDefinition.SpecialType == SpecialType.System_Nullable_T;
