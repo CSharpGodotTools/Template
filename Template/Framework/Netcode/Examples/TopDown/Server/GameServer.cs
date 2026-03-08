@@ -113,16 +113,10 @@ public partial class GameServer : GodotServer
         if (!CanBroadcastPositions(force) || _players.Count == 0)
             return;
 
-        // Serialise once and enqueue a unicast per player to avoid redundant copies.
-        // The core transport will fragment automatically if the payload exceeds MaxSize.
-        SPacketPlayerPositions packet = new() { Positions = _positions };
-        packet.Write();
-        byte[] data = packet.GetData();
-
-        foreach (uint playerId in _players)
-        {
-            EnqueueOutgoing(OutgoingMessage.Unicast(data, playerId));
-        }
+        // Use the new Send overload which handles the one‑time serialization
+        // internally. This keeps the game‑writer's code simple while still
+        // avoiding per‑peer allocations.
+        Send(new SPacketPlayerPositions { Positions = _positions }, _players);
     }
 
     private bool CanBroadcastPositions(bool force)

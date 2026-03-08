@@ -11,7 +11,9 @@ Everything below is what `GodotServer` exposes as an API to you.
 
 `void Stop()` - Stop the server.
 
-`void Send(ServerPacket packet, Peer peer)` - Send a packet to a single client.
+`void Send(ServerPacket packet, uint peerId)` - Send a packet to a single client.
+
+`void Send(ServerPacket packet, IEnumerable<uint> peerIds)` - Send a packet to a collection of peers. The packet is serialized once and the resulting bytes are reused for each unicast, making this overload efficient for broadcasting to a list you already maintain.
 
 `void Broadcast(ServerPacket packet, params Peer[] clients)` - Broadcast a packet. If `clients.Length == 0`, it broadcasts to everyone. If `clients.Length == 1`, it broadcasts to everyone except that peer. If `clients.Length > 1`, it broadcasts to only those peers.
 

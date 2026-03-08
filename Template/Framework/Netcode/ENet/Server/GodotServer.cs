@@ -1,5 +1,6 @@
 using GodotUtils;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -114,6 +115,26 @@ public abstract class GodotServer : ENetServer
         packet.Write();
         LogSend(packet, $"to client {peerId}");
         EnqueueOutgoing(OutgoingMessage.Unicast(packet.GetData(), peerId));
+    }
+
+    /// <summary>
+    /// Serialize <paramref name="packet"/> once and send it to each ID in the
+    /// provided collection. Null or empty sequences are ignored. Thread safe.
+    /// </summary>
+    public void Send(ServerPacket packet, IEnumerable<uint> peerIds)
+    {
+        ArgumentNullException.ThrowIfNull(packet);
+        if (peerIds == null)
+            return;
+
+        packet.Write();
+        LogSend(packet, $"to {nameof(peerIds)}");
+        byte[] data = packet.GetData();
+
+        foreach (uint peerId in peerIds)
+        {
+            EnqueueOutgoing(OutgoingMessage.Unicast(data, peerId));
+        }
     }
 
     /// <summary>
