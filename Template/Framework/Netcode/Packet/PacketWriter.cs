@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using SysVector2 = System.Numerics.Vector2;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -56,6 +57,12 @@ public class PacketWriter : IDisposable
         if (valueType == typeof(Vector3))
         {
             WriteVector3((Vector3)(object)value);
+            return;
+        }
+
+        if (valueType == typeof(SysVector2))
+        {
+            WriteVector2Numerics((SysVector2)(object)value);
             return;
         }
 
@@ -125,6 +132,15 @@ public class PacketWriter : IDisposable
     /// Writes a <see cref="Vector2"/> as two consecutive <see cref="float"/> values.
     /// </summary>
     private void WriteVector2(Vector2 vector)
+    {
+        Write(vector.X);
+        Write(vector.Y);
+    }
+
+    /// <summary>
+    /// Writes a <see cref="System.Numerics.Vector2"/> as two consecutive <see cref="float"/> values.
+    /// </summary>
+    private void WriteVector2Numerics(SysVector2 vector)
     {
         Write(vector.X);
         Write(vector.Y);

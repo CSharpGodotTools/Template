@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using SysVector2 = System.Numerics.Vector2;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -143,6 +144,11 @@ public class PacketReader : IDisposable
     public Vector3 ReadVector3() => new(ReadFloat(), ReadFloat(), ReadFloat());
 
     /// <summary>
+    /// Reads a <see cref="System.Numerics.Vector2"/> value.
+    /// </summary>
+    public SysVector2 ReadVector2Numerics() => new(ReadFloat(), ReadFloat());
+
+    /// <summary>
     /// Legacy reflection-based read; prefer PacketGen-generated Read methods for packet deserialization.
     /// </summary>
     public T Read<T>()
@@ -180,6 +186,11 @@ public class PacketReader : IDisposable
         if (type == typeof(Vector3))
         {
             return (T)(object)ReadVector3();
+        }
+
+        if (type == typeof(SysVector2))
+        {
+            return (T)(object)ReadVector2Numerics();
         }
 
         if (type.IsGenericType)

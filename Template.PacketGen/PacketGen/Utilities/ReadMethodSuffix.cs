@@ -20,6 +20,7 @@ internal static class ReadMethodSuffix
             "byte[]" => "Bytes",
             "Godot.Vector2" => "Vector2",
             "Godot.Vector3" => "Vector3",
+            "System.Numerics.Vector2" => "Vector2Numerics",
 
             _ => typeSymbol.SpecialType switch
             {
