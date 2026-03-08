@@ -67,11 +67,11 @@ public abstract partial class AutoloadsFramework : Node
 
     public sealed override void _Ready()
     {
-        CommandLineArgs.Initialize();
         Commands.RegisterAll();
 
         OptionsManager = new OptionsManager(this);
         AudioManager = new AudioManager(this);
+        CommandLineArgs.Initialize();
 
 #if DEBUG
         _visualizeAutoload = new VisualizeAutoload();
