@@ -12,9 +12,6 @@ public class GameClient : GodotClient
 
     protected override void OnConnected()
     {
-        Send(new CPacketPlayerPosition
-        {
-            Position = new Vector2(100, 100)
-        });
+        Send(new CPacketPlayerPosition(new Vector2(100, 100)));
     }
 }
