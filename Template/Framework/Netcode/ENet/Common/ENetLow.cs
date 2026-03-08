@@ -1,4 +1,5 @@
 using ENet;
+using GodotUtils;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -164,6 +165,14 @@ public abstract class ENetLow
         }
 
         return $"({bytes} byte{(bytes == 1 ? "" : "s")}) ";
+    }
+
+    /// <summary>
+    /// Logs a <see cref="GamePacket"/> as formatted JSON.
+    /// </summary>
+    public void Log(GamePacket packet, BBColor color = BBColor.Gray)
+    {
+        Log($"\n{packet.ToFormattedString()}", color);
     }
 
     /// <summary>
