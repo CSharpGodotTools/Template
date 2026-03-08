@@ -66,7 +66,7 @@ public partial class OptionsInput
                 Action = _action,
                 Row = this,
                 Button = btn,
-                InputEvent = null,
+                InputEvent = null!,
                 IsPlus = true
             };
 

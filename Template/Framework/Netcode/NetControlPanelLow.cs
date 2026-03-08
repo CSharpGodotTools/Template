@@ -9,19 +9,19 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     where TGameClient : GodotClient, new()
     where TGameServer : GodotServer, new()
 {
-    [Export] private LineEdit _usernameLineEdit;
-    [Export] private LineEdit _ipLineEdit;
-    [Export] private Button _startServerBtn;
-    [Export] private Button _stopServerBtn;
-    [Export] private Button _startClientBtn;
-    [Export] private Button _stopClientBtn;
+    [Export] private LineEdit _usernameLineEdit = null!;
+    [Export] private LineEdit _ipLineEdit = null!;
+    [Export] private Button _startServerBtn = null!;
+    [Export] private Button _stopServerBtn = null!;
+    [Export] private Button _startClientBtn = null!;
+    [Export] private Button _stopClientBtn = null!;
 
     private string _username = string.Empty;
     private ushort _port;
-    private string _ip;
-    private GodotClient _subscribedClient;
+    private string _ip = null!;
+    private GodotClient? _subscribedClient;
 
-    public Net<TGameClient, TGameServer> Net { get; private set; }
+    public Net<TGameClient, TGameServer>? Net { get; private set; }
     public ushort CurrentPort => _port;
     public int CurrentMaxClients => DefaultMaxClients;
 
@@ -53,7 +53,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
         UnsubscribeFromClient(_subscribedClient);
         UnbindUiEvents();
         UnbindNetEvents();
-        Net.Dispose();
+        Net?.Dispose();
         Net = null;
     }
 
@@ -104,8 +104,8 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     {
         if (Net != null)
         {
-            Net.ClientCreated += OnClientCreated;
-            Net.ClientDestroyed += OnClientDestroyed;
+            Net!.ClientCreated += OnClientCreated;
+            Net!.ClientDestroyed += OnClientDestroyed;
         }
     }
 
@@ -113,29 +113,29 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     {
         if (Net != null)
         {
-            Net.ClientCreated -= OnClientCreated;
-            Net.ClientDestroyed -= OnClientDestroyed;
+            Net!.ClientCreated -= OnClientCreated;
+            Net!.ClientDestroyed -= OnClientDestroyed;
         }
     }
 
     private void OnStartServerPressed()
     {
-        Net.StartServer(_port, DefaultMaxClients, Options);
+        Net!.StartServer(_port, DefaultMaxClients, Options);
     }
 
     private void OnStopServerPressed()
     {
-        Net.StopServer();
+        Net!.StopServer();
     }
 
     private void OnStartClientBtnPressed()
     {
-        Net.StartClient(_ip, _port);
+        Net!.StartClient(_ip!, _port);
     }
 
     private void OnStopClientBtnPressed()
     {
-        Net.StopClient();
+        Net!.StopClient();
     }
 
     private void OnIpChanged(string text)
@@ -177,7 +177,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
         }
     }
 
-    private void UnsubscribeFromClient(GodotClient client)
+    private void UnsubscribeFromClient(GodotClient? client)
     {
         if (client != null)
         {
@@ -193,7 +193,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 
     private void OnClientConnected()
     {
-        if (!Net.Server.IsRunning)
+        if (!Net!.Server.IsRunning)
         {
             DisableServerButtons();
         }

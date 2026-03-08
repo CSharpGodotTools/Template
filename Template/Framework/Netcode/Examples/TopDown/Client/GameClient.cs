@@ -16,10 +16,10 @@ public partial class GameClient : GodotClient
         OnPacket<SPacketPlayerPositions>(OnPlayerPositions);
     }
 
-    public event Action LocalPlayerReady;
-    public event Action<uint> RemotePlayerJoined;
-    public event Action<uint> RemotePlayerLeft;
-    public event Action<IReadOnlyDictionary<uint, Vector2>> RemotePositionsUpdated;
+    public event Action? LocalPlayerReady;
+    public event Action<uint>? RemotePlayerJoined;
+    public event Action<uint>? RemotePlayerLeft;
+    public event Action<IReadOnlyDictionary<uint, Vector2>>? RemotePositionsUpdated;
 
     protected override void OnConnected()
     {

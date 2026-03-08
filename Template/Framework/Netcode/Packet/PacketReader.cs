@@ -13,8 +13,8 @@ public class PacketReader : IDisposable
 {
     private sealed class PacketMemberMap
     {
-        public FieldInfo[] Fields { get; init; }
-        public PropertyInfo[] Properties { get; init; }
+        public required FieldInfo[] Fields { get; init; }
+        public required PropertyInfo[] Properties { get; init; }
     }
 
     private static readonly MethodInfo _genericReadMethod = typeof(PacketReader)
@@ -159,7 +159,7 @@ public class PacketReader : IDisposable
         ArgumentNullException.ThrowIfNull(type);
 
         MethodInfo readMethod = _genericReadMethod.MakeGenericMethod(type);
-        return readMethod.Invoke(this, null);
+        return readMethod.Invoke(this, null)!;
     }
 
     /// <summary>
@@ -194,8 +194,8 @@ public class PacketReader : IDisposable
 
         if (type.IsArray)
         {
-            Type elementType = type.GetElementType();
-            return (T)(object)ReadArray(elementType);
+            Type? elementType = type.GetElementType();
+            return (T)(object)ReadArray(elementType!);
         }
 
         if (type.IsValueType || type.IsClass)
@@ -271,7 +271,7 @@ public class PacketReader : IDisposable
     private T ReadList<T>(Type listType)
     {
         Type valueType = listType.GetGenericArguments()[0];
-        IList list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(valueType));
+        IList list = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(valueType))!;
 
         int count = ReadInt();
         for (int index = 0; index < count; index++)
@@ -289,7 +289,7 @@ public class PacketReader : IDisposable
     {
         Type keyType = dictionaryType.GetGenericArguments()[0];
         Type valueType = dictionaryType.GetGenericArguments()[1];
-        IDictionary dictionary = (IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(keyType, valueType));
+        IDictionary dictionary = (IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(keyType, valueType))!;
 
         int count = ReadInt();
         for (int index = 0; index < count; index++)
@@ -322,7 +322,7 @@ public class PacketReader : IDisposable
     /// </summary>
     private T ReadStructOrClass<T>(Type type)
     {
-        object instance = Activator.CreateInstance(type);
+        object instance = Activator.CreateInstance(type)!;
         PacketMemberMap members = GetMembersForStructOrClass(type);
 
         foreach (FieldInfo field in members.Fields)

@@ -3,6 +3,7 @@ using Godot;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ public partial class World
 
         private readonly World _world;
         private readonly List<SharedBotHost> _botHosts = [];
-        private SharedBotHost _currentBotHost;
+        private SharedBotHost? _currentBotHost;
         private int _totalBots;
         private readonly Button _startButton;
         private readonly Button _stopButton;
@@ -185,7 +186,7 @@ public partial class World
 
             // Force-disconnect all peers from the server side so ConnectedPeerCount
             // resets immediately rather than draining slowly via bot-side disconnects.
-            if (TryGetNet(out Net<GameClient, GameServer> net) && net.Server != null)
+            if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Server != null)
                 net.Server.KickAll(DisconnectOpcode.Stopping);
 
             _world.SetProcess(true);
@@ -218,7 +219,7 @@ public partial class World
 
         private void EnsureServerRunning()
         {
-            if (TryGetNet(out Net<GameClient, GameServer> net) && net.Server != null && !net.Server.IsRunning)
+            if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Server != null && !net.Server.IsRunning)
             {
                 StartServerWithSettings();
             }
@@ -228,7 +229,7 @@ public partial class World
         {
             if (IsServerRunning())
             {
-                if (TryGetNet(out Net<GameClient, GameServer> net))
+                if (TryGetNet(out Net<GameClient, GameServer>? net))
                 {
                     _port = net.ServerPort;
                 }
@@ -237,7 +238,7 @@ public partial class World
 
         private void EnsureLocalClientRunning()
         {
-            if (TryGetNet(out Net<GameClient, GameServer> net) && net.Client != null && !net.Client.IsRunning)
+            if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Client != null && !net.Client.IsRunning)
             {
                 net.StartClient("127.0.0.1", _port);
             }
@@ -245,7 +246,7 @@ public partial class World
 
         private bool IsServerRunning()
         {
-            if (TryGetNet(out Net<GameClient, GameServer> net) && net.Server != null)
+            if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Server != null)
             {
                 return net.Server.IsRunning;
             }
@@ -255,7 +256,7 @@ public partial class World
 
         private void StartServerWithSettings()
         {
-            if (TryGetNet(out Net<GameClient, GameServer> net))
+            if (TryGetNet(out Net<GameClient, GameServer>? net))
             {
                 // +1 reserves a peer slot for the local game client.
                 net.StartServer(_port, _targetClients + 1, CreateSilentOptions());
@@ -267,7 +268,7 @@ public partial class World
 
         private bool ShouldRestartServer()
         {
-            if (!TryGetNet(out Net<GameClient, GameServer> net) || net.Server == null || !net.Server.IsRunning)
+            if (!TryGetNet(out Net<GameClient, GameServer>? net) || net.Server == null || !net.Server.IsRunning)
                 return false;
 
             if (!_serverStartedByStressTest)
@@ -284,7 +285,7 @@ public partial class World
 
         private void RequestServerRestart()
         {
-            if (TryGetNet(out Net<GameClient, GameServer> net) && net.Server != null && _serverStartedByStressTest)
+            if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Server != null && _serverStartedByStressTest)
             {
                 _serverRestartPending = true;
                 _paused = true;
@@ -372,7 +373,7 @@ public partial class World
             };
         }
 
-        private bool TryGetNet(out Net<GameClient, GameServer> net)
+        private bool TryGetNet([NotNullWhen(true)] out Net<GameClient, GameServer>? net)
         {
             net = null;
             if (_world._netControlPanel != null)
@@ -403,7 +404,7 @@ public partial class World
             _elapsedLabel.Text = $"{minutes:D2}:{seconds:D2}";
 
             int peerCount = 0;
-            if (TryGetNet(out Net<GameClient, GameServer> net) && net.Server != null)
+            if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Server != null)
                 peerCount = net.Server.ConnectedPeerCount;
             _peersLabel.Text = peerCount.ToString(CultureInfo.InvariantCulture);
         }

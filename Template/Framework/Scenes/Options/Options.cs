@@ -10,14 +10,14 @@ public partial class Options : PanelContainer
     private const double PopupAnimationDuration = 0.17;
 
     // Fields
-    private OptionsNav _optionsNav;
-    private OptionsGeneral _optionsGeneral;
-    private OptionsDisplay _optionsDisplay;
-    private OptionsGraphics _optionsGraphics;
-    private OptionsAudio _optionsAudio;
-    private OptionsInput _optionsInput;
-    private OptionsCustom _optionsCustom;
-    private Node _navNode;
+    private OptionsNav _optionsNav = null!;
+    private OptionsGeneral _optionsGeneral = null!;
+    private OptionsDisplay _optionsDisplay = null!;
+    private OptionsGraphics _optionsGraphics = null!;
+    private OptionsAudio _optionsAudio = null!;
+    private OptionsInput _optionsInput = null!;
+    private OptionsCustom _optionsCustom = null!;
+    private Node _navNode = null!;
 
     // Godot Overrides
     public override void _Ready()

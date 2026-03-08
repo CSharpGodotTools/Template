@@ -13,7 +13,7 @@ public class Profiler
     // API
     public static void Start(string key)
     {
-        if (!_entries.TryGetValue(key, out ProfilerEntry entry))
+        if (!_entries.TryGetValue(key, out ProfilerEntry? entry))
         {
             entry = new ProfilerEntry();
             _entries[key] = entry;
@@ -24,7 +24,7 @@ public class Profiler
 
     public static void Stop(string key, int accuracy = DefaultAccuracy)
     {
-        if (!_entries.TryGetValue(key, out ProfilerEntry entry))
+        if (!_entries.TryGetValue(key, out ProfilerEntry? entry))
         {
             GD.PrintErr($"Profiler key '{key}' was not started.");
             return;
@@ -44,7 +44,7 @@ public class Profiler
 
     public static void StopProcess(string key)
     {
-        if (!_entries.TryGetValue(key, out ProfilerEntry entry))
+        if (!_entries.TryGetValue(key, out ProfilerEntry? entry))
         {
             GD.PrintErr($"Profiler key '{key}' was not started.");
             return;
@@ -56,7 +56,7 @@ public class Profiler
     // Private Methods
     private static void StartMonitor(string key, int accuracy, Action<string, Func<object>> registerAction)
     {
-        if (!_entries.TryGetValue(key, out ProfilerEntry entry))
+        if (!_entries.TryGetValue(key, out ProfilerEntry? entry))
         {
             entry = new ProfilerEntry();
             _entries[key] = entry;

@@ -33,9 +33,9 @@ internal static class VisualHandler
     {
         if (property.CanWrite)
         {
-            object convertedValue = ConvertValue(value, property.PropertyType);
+            object? convertedValue = ConvertValue(value, property.PropertyType);
 
-            MethodInfo setter = property.SetMethod;
+            MethodInfo? setter = property.SetMethod;
             if (setter != null && setter.IsStatic)
             {
                 property.SetValue(null, convertedValue);
@@ -53,7 +53,7 @@ internal static class VisualHandler
 
     private static void SetFieldValue(FieldInfo field, object target, object value)
     {
-        object convertedValue = ConvertValue(value, field.FieldType);
+        object? convertedValue = ConvertValue(value, field.FieldType);
 
         if (field.IsStatic)
         {
@@ -65,14 +65,14 @@ internal static class VisualHandler
         }
     }
 
-    public static T GetMemberValue<T>(MemberInfo member, object node)
+    public static T? GetMemberValue<T>(MemberInfo member, object node)
     {
         if (member == null)
         {
             return default;
         }
 
-        object value = GetMemberValue(member, node);
+        object? value = GetMemberValue(member, node);
 
         if (value == null)
         {
@@ -87,9 +87,9 @@ internal static class VisualHandler
         return (T)value;
     }
 
-    public static object GetMemberValue(MemberInfo member, object obj)
+    public static object? GetMemberValue(MemberInfo member, object? obj)
     {
-        return member switch
+        return (member switch
         {
             FieldInfo fieldInfo when fieldInfo.IsStatic => fieldInfo.GetValue(null),
             FieldInfo fieldInfo => fieldInfo.GetValue(obj),
@@ -98,10 +98,10 @@ internal static class VisualHandler
             PropertyInfo propertyInfo => propertyInfo.GetValue(obj),
 
             _ => throw new ArgumentException("[Visualize] Member must be a field or property.")
-        };
+        });
     }
 
-    private static object ConvertValue(object value, Type targetType)
+    private static object? ConvertValue(object value, Type targetType)
     {
         if (value == null)
         {

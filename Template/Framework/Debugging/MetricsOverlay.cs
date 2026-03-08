@@ -28,13 +28,13 @@ public partial class MetricsOverlay : CanvasLayer
     private readonly Dictionary<string, Func<string>> _currentMetrics = [];
     private readonly float[] _fpsBuffer = new float[MaxFpsBuffer];
 
-    private PanelContainer _panel;
-    private VBoxContainer _mainContainer;
-    private VBoxContainer _metricsContainer;
-    private VBoxContainer _variablesContainer;
-    private FpsGraph _fpsGraph;
-    private Button _metricsHeader;
-    private Button _variablesHeader;
+    private PanelContainer _panel = null!;
+    private VBoxContainer _mainContainer = null!;
+    private VBoxContainer _metricsContainer = null!;
+    private VBoxContainer _variablesContainer = null!;
+    private FpsGraph _fpsGraph = null!;
+    private Button _metricsHeader = null!;
+    private Button _variablesHeader = null!;
 
     private float _cachedFps;
     private int _fpsIndex;

@@ -66,12 +66,12 @@ public class ModLoaderUi
 
             jsonFileContents = jsonFileContents.Replace("*", "Any");
 
-            if (!TryDeserializeModInfo(modJson, jsonFileContents, options, out ModInfo modInfo))
+            if (!TryDeserializeModInfo(modJson, jsonFileContents, options, out ModInfo? modInfo))
             {
                 goto Next;
             }
 
-            modInfo.Normalize();
+            modInfo!.Normalize();
 
             if (string.IsNullOrWhiteSpace(modInfo.Id))
             {
@@ -123,7 +123,7 @@ public class ModLoaderUi
         string modJsonPath,
         string jsonFileContents,
         JsonSerializerOptions options,
-        out ModInfo modInfo)
+        out ModInfo? modInfo)
     {
         try
         {
@@ -196,7 +196,7 @@ public class ModLoaderUi
         {
             try
             {
-                object instance = Activator.CreateInstance(type);
+                object? instance = Activator.CreateInstance(type);
                 if (instance is IModEntrypoint entrypoint)
                 {
                     entrypoint.OnLoad(context);
@@ -225,12 +225,14 @@ public class ModLoaderUi
         }
         catch (ReflectionTypeLoadException exception)
         {
-            foreach (Exception loaderException in exception.LoaderExceptions)
+            foreach (Exception? loaderException in exception.LoaderExceptions)
             {
+                if (loaderException is null)
+                    continue;
                 GameFramework.Logger.LogErr(loaderException, $"Managed mod '{modId}' failed to resolve one or more types");
             }
 
-            Type[] loadableTypes = [.. exception.Types.Where(type => type != null)];
+            Type[] loadableTypes = [.. (exception.Types ?? []).OfType<Type>()];
             return loadableTypes;
         }
     }
@@ -253,19 +255,19 @@ public class ModLoaderUi
             _resolver = new AssemblyDependencyResolver(mainAssemblyPath);
             _sharedAssemblies = new Dictionary<string, Assembly>(StringComparer.Ordinal)
             {
-                [typeof(IModEntrypoint).Assembly.GetName().Name] = typeof(IModEntrypoint).Assembly,
-                [typeof(Node).Assembly.GetName().Name] = typeof(Node).Assembly
+                [typeof(IModEntrypoint).Assembly.GetName().Name!] = typeof(IModEntrypoint).Assembly,
+                [typeof(Node).Assembly.GetName().Name!] = typeof(Node).Assembly
             };
         }
 
-        protected override Assembly Load(AssemblyName assemblyName)
+        protected override Assembly? Load(AssemblyName assemblyName)
         {
-            if (_sharedAssemblies.TryGetValue(assemblyName.Name, out Assembly sharedAssembly))
+            if (_sharedAssemblies.TryGetValue(assemblyName.Name!, out Assembly? sharedAssembly))
             {
                 return sharedAssembly;
             }
 
-            string assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
+            string? assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
             if (!string.IsNullOrWhiteSpace(assemblyPath))
             {
                 return LoadFromAssemblyPath(assemblyPath);

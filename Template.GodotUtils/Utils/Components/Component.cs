@@ -9,8 +9,8 @@ namespace GodotUtils;
 public class Component : IDisposable
 {
     protected Node Owner;
-    private ComponentManager _componentManager;
-    private SceneTree _deferredTree;
+    private ComponentManager _componentManager = null!;
+    private SceneTree? _deferredTree;
     private bool _disposed;
 
     /// <summary>
@@ -137,7 +137,7 @@ public class Component : IDisposable
 
     private void OnDeferredOnce()
     {
-        _deferredTree.ProcessFrame -= OnDeferredOnce;
+        _deferredTree!.ProcessFrame -= OnDeferredOnce;
         _deferredTree = null;
         Deferred();
     }

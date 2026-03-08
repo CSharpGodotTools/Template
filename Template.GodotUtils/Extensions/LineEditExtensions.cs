@@ -20,7 +20,7 @@ public static class LineEditExtensions
 
         if (!filter(lineEdit.Text))
         {
-            string previousText = _prevTexts.TryGetValue(id, out string value) ? value : "";
+            string? previousText = _prevTexts.TryGetValue(id, out string? value) ? value : "";
             lineEdit.Text = previousText;
             lineEdit.CaretColumn = previousText.Length;
             return previousText;

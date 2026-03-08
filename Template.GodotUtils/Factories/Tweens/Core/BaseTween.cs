@@ -25,7 +25,7 @@ public abstract class BaseTween<TSelf> where TSelf : BaseTween<TSelf>
     /// <summary>
     /// The active property tweener used for transition and ease settings.
     /// </summary>
-    protected PropertyTweener _tweener;
+    protected PropertyTweener? _tweener;
 
     /// <summary>
     /// Creates a tween bound to the provided node.
@@ -157,7 +157,7 @@ public abstract class BaseTween<TSelf> where TSelf : BaseTween<TSelf>
     /// </summary>
     public TSelf SetTrans(TransitionType transType)
     {
-        return UpdateTweener(nameof(SetTrans), () => _tweener.SetTrans(transType));
+        return UpdateTweener(nameof(SetTrans), () => _tweener!.SetTrans(transType));
     }
 
     /// <summary>
@@ -165,7 +165,7 @@ public abstract class BaseTween<TSelf> where TSelf : BaseTween<TSelf>
     /// </summary>
     public TSelf SetEase(EaseType easeType)
     {
-        return UpdateTweener(nameof(SetEase), () => _tweener.SetEase(easeType));
+        return UpdateTweener(nameof(SetEase), () => _tweener!.SetEase(easeType));
     }
 
     /// <summary>

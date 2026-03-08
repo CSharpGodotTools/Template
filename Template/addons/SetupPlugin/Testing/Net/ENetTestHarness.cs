@@ -17,7 +17,7 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
 
     public TestServer<TPacket> Server { get; }
     public TestClient Client { get; }
-    public Task ConnectTask { get; private set; }
+    public Task ConnectTask { get; private set; } = null!;
 
     private static int _enetRefCount;
 
@@ -28,7 +28,7 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
         Client = new TestClient();
     }
 
-    public async Task<bool> ConnectAsync(TimeSpan timeout, ENetOptions options = null)
+    public async Task<bool> ConnectAsync(TimeSpan timeout, ENetOptions? options = null)
     {
         options ??= new ENetOptions();
         Console.WriteLine("[Test] Starting server...");

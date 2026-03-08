@@ -16,8 +16,8 @@ internal sealed class OptionsHotkeysService
 {
     private const string PathHotkeys = "user://hotkeys.tres";
 
-    private Godot.Collections.Dictionary<StringName, Godot.Collections.Array<InputEvent>> _defaultHotkeys;
-    private ResourceHotkeys _hotkeys;
+    private Godot.Collections.Dictionary<StringName, Godot.Collections.Array<InputEvent>> _defaultHotkeys = null!;
+    private ResourceHotkeys _hotkeys = null!;
 
     public ResourceHotkeys Hotkeys => _hotkeys;
 
@@ -151,7 +151,7 @@ internal sealed class OptionsHotkeysService
 
         foreach (KeyValuePair<StringName, Godot.Collections.Array<InputEvent>> pair in dict1)
         {
-            if (!dict2.TryGetValue(pair.Key, out Godot.Collections.Array<InputEvent> dict2Events))
+            if (!dict2.TryGetValue(pair.Key, out Godot.Collections.Array<InputEvent>? dict2Events))
                 return false;
 
             if (!InputEventsAreEqual(pair.Value, dict2Events))

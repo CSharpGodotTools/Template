@@ -14,17 +14,17 @@ public static class TextEditExtensions
     /// <summary>
     /// Filters text input by reverting to the last valid value.
     /// </summary>
-    public static string Filter(this TextEdit textEdit, Func<string, bool> filter)
+    public static string? Filter(this TextEdit textEdit, Func<string, bool> filter)
     {
         string text = textEdit.Text;
         ulong id = textEdit.GetInstanceId();
 
         if (string.IsNullOrWhiteSpace(text))
-            return _prevTexts.TryGetValue(id, out string value) ? value : null;
+            return _prevTexts.TryGetValue(id, out string? value) ? value : null;
 
         if (!filter(text))
         {
-            if (!_prevTexts.TryGetValue(id, out string value))
+            if (!_prevTexts.TryGetValue(id, out string? value))
             {
                 textEdit.ChangeTextEditText("");
                 return null;

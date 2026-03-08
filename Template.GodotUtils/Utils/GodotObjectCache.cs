@@ -18,7 +18,7 @@ public class GodotObjectCache<TValue> where TValue : GodotObject
     {
         ulong key = obj.GetInstanceId();
 
-        if (_cache.TryGetValue(key, out TValue value))
+        if (_cache.TryGetValue(key, out TValue? value))
             return value;
 
         _cache.Add(key, obj);

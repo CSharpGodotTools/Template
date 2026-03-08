@@ -9,8 +9,8 @@ internal sealed class LocalPlayer
     private const float SendEpsilonSq = 0.25f;
 
     private readonly World _world;
-    private GameClient _client;
-    private ColorRect _node;
+    private GameClient? _client;
+    private ColorRect? _node;
     private float _sendAccumulator;
     private Vector2 _lastSentPosition;
 
@@ -109,7 +109,7 @@ internal sealed class LocalPlayer
 
         _sendAccumulator = 0f;
         _lastSentPosition = position;
-        _client.SendPosition(position);
+        _client!.SendPosition(position);
     }
 
     private bool HasSignificantMovement(Vector2 position)

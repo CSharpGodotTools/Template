@@ -67,7 +67,7 @@ internal static partial class VisualControlTypes
 
         foreach (MemberDescriptor member in members)
         {
-            object initialValue = VisualHandler.GetMemberValue(member.Member, context.InitialValue);
+            object? initialValue = VisualHandler.GetMemberValue(member.Member, context.InitialValue);
 
             VisualControlInfo control = CreateControlForType(member.MemberType, member.Member, new VisualControlContext(initialValue, v =>
             {
@@ -76,8 +76,8 @@ internal static partial class VisualControlTypes
                     return;
                 }
 
-                VisualHandler.SetMemberValue(member.Member, context.InitialValue, v);
-                context.ValueChanged(context.InitialValue);
+                VisualHandler.SetMemberValue(member.Member, context.InitialValue!, v);
+                context.ValueChanged(context.InitialValue!);
             }));
 
             if (control.VisualControl == null)
@@ -120,7 +120,7 @@ internal static partial class VisualControlTypes
             object[] providedValues = new object[paramInfos.Length];
 
             HBoxContainer hboxParams = VisualMethods.CreateMethodParameterControls(method, providedValues);
-            Button button = VisualMethods.CreateMethodButton(method, context.InitialValue, paramInfos, providedValues);
+            Button button = VisualMethods.CreateMethodButton(method, context.InitialValue!, paramInfos, providedValues);
 
             vbox.AddChild(hboxParams);
             vbox.AddChild(button);
@@ -185,8 +185,8 @@ internal sealed class ClassControl(Control container, List<VisualControlTypes.Me
     {
         foreach (VisualControlTypes.MemberControlBinding binding in bindings)
         {
-            object memberValue = VisualHandler.GetMemberValue(binding.Member, value);
-            binding.Control.SetValue(memberValue);
+            object? memberValue = VisualHandler.GetMemberValue(binding.Member, value);
+            binding.Control.SetValue(memberValue!);
         }
     }
 

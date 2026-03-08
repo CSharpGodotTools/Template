@@ -18,7 +18,7 @@ public class CommandLineArgs
         // Loop through arguments to find the position argument
         foreach (string arg in args)
         {
-            if (!windowSettings.TryGetValue(arg, out WindowSettings settings))
+            if (!windowSettings.TryGetValue(arg, out WindowSettings? settings))
                 continue;
 
             // Set the window size

@@ -31,13 +31,13 @@ public class Net<TGameClient, TGameServer> : IDisposable
     private int _disposed;
 
     /// <summary>Raised when a new server instance is created.</summary>
-    public event Action<GodotServer> ServerCreated;
+    public event Action<GodotServer>? ServerCreated;
 
     /// <summary>Raised when a new client instance is created.</summary>
-    public event Action<GodotClient> ClientCreated;
+    public event Action<GodotClient>? ClientCreated;
 
     /// <summary>Raised when a client instance is stopped and destroyed.</summary>
-    public event Action<GodotClient> ClientDestroyed;
+    public event Action<GodotClient>? ClientDestroyed;
 
     /// <summary>
     /// Byte offset within a packet reserved for the heartbeat sequence number.
@@ -63,7 +63,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     {
         _enetInitialized = TryInitializeEnet();
 
-        Autoloads.Instance.PreQuit += StopThreads;
+        Autoloads.Instance!.PreQuit += StopThreads;
 
         Client = new TGameClient();
         Server = new TGameServer();
@@ -72,7 +72,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Creates and starts a new server instance.
     /// </summary>
-    public void StartServer(ushort port, int maxClients = DefaultMaxClients, ENetOptions options = null)
+    public void StartServer(ushort port, int maxClients = DefaultMaxClients, ENetOptions? options = null)
     {
         if (maxClients >= ENetMaximumPeers)
             throw new ArgumentException($"ENet only supports a maximum of {ENetMaximumPeers - 1} clients");
@@ -273,7 +273,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
             return;
         }
 
-        Autoloads.Instance.PreQuit -= StopThreads;
+        Autoloads.Instance!.PreQuit -= StopThreads;
 
         if (Interlocked.Read(ref _shutdownStarted) == 0)
         {

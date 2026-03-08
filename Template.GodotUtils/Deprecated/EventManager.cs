@@ -33,7 +33,7 @@ namespace GodotUtils.Deprecated;
 // 
 // Events.Player.Notify(EventPlayer.OnPlayerSpawn, new PlayerSpawnArgs(name, location, player));
 // <typeparam name="TEvent">The event type enum to be used. For example 'EventPlayer' enum.</typeparam>
-public class EventManager<TEvent>
+public class EventManager<TEvent> where TEvent : notnull
 {
     private readonly Dictionary<TEvent, List<Listener>> _eventListeners = [];
 
@@ -58,7 +58,7 @@ public class EventManager<TEvent>
     /// </summary>
     public void RemoveListeners(TEvent eventType, string id = "")
     {
-        if (!_eventListeners.TryGetValue(eventType, out List<Listener> listeners))
+        if (!_eventListeners.TryGetValue(eventType, out List<Listener>? listeners))
             throw new InvalidOperationException($"Tried to remove listener of event type '{eventType}' from an event type that has not even been defined yet");
 
         for (int i = listeners.Count - 1; i >= 0; i--)
@@ -81,7 +81,7 @@ public class EventManager<TEvent>
     /// </summary>
     public void Notify(TEvent eventType, params object[] args)
     {
-        if (!_eventListeners.TryGetValue(eventType, out List<Listener> value))
+        if (!_eventListeners.TryGetValue(eventType, out List<Listener>? value))
         {
             return;
         }
@@ -94,7 +94,7 @@ public class EventManager<TEvent>
 
     private void AddListenerInternal(TEvent eventType, Action<object[]> action, string id)
     {
-        if (!_eventListeners.TryGetValue(eventType, out List<Listener> listeners))
+        if (!_eventListeners.TryGetValue(eventType, out List<Listener>? listeners))
         {
             listeners = [];
             _eventListeners.Add(eventType, listeners);

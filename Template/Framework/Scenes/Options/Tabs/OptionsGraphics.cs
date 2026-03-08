@@ -6,11 +6,11 @@ namespace Framework.Ui;
 public class OptionsGraphics : IDisposable
 {
     // Events
-    public event Action<int> AntialiasingChanged;
+    public event Action<int> AntialiasingChanged = null!;
 
     // Fields
     private readonly ResourceOptions _resourceOptions;
-    private OptionButton _antialiasing;
+    private OptionButton _antialiasing = null!;
     private readonly Options _options;
     private readonly OptionButton _optionBtnQualityPreset;
 

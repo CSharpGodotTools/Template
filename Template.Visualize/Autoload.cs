@@ -5,7 +5,7 @@ namespace GodotUtils.Debugging;
 
 internal partial class Autoload : Node
 {
-    private VisualizeAutoload _visualizeAutoload;
+    private VisualizeAutoload _visualizeAutoload = null!;
 
     public override void _EnterTree()
     {

@@ -7,15 +7,15 @@ public class PacketData
     /// <summary>
     /// Reusable packet instance used to deserialize payload data on the Godot thread.
     /// </summary>
-    public ServerPacket HandlePacket { get; set; }
+    public required ServerPacket HandlePacket { get; set; }
 
     /// <summary>
     /// Reader instance owning the payload data for this packet.
     /// </summary>
-    public PacketReader PacketReader { get; set; }
+    public required PacketReader PacketReader { get; set; }
 
     /// <summary>
     /// Packet runtime type used for handler dispatch.
     /// </summary>
-    public Type Type { get; set; }
+    public required Type Type { get; set; }
 }

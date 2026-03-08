@@ -7,7 +7,7 @@ internal static partial class VisualControlTypes
 {
     private static VisualControlInfo VisualBool(VisualControlContext context)
     {
-        CheckBox checkBox = new() { ButtonPressed = (bool)context.InitialValue };
+        CheckBox checkBox = new() { ButtonPressed = (bool)context.InitialValue! };
         checkBox.Toggled += value => context.ValueChanged(value);
 
         return new VisualControlInfo(new BoolControl(checkBox));

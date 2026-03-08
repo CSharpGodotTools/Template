@@ -7,7 +7,7 @@ public partial class World : Node
     private const int Port = 25565;
     private const string Ip = "127.0.0.1";
 
-    private Net<GameClient, GameServer> _net;
+    private Net<GameClient, GameServer> _net = null!;
 
     public override void _Ready()
     {

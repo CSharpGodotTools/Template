@@ -11,7 +11,7 @@ internal static class VisualMemberElementBuilder
     {
         foreach (MemberInfo member in members)
         {
-            Control element = CreateMemberInfoElement(member, node);
+            Control? element = CreateMemberInfoElement(member, node);
 
             if (element != null)
             {
@@ -20,9 +20,9 @@ internal static class VisualMemberElementBuilder
         }
     }
 
-    private static Control CreateMemberInfoElement(MemberInfo member, Node node)
+    private static Control? CreateMemberInfoElement(MemberInfo member, Node node)
     {
-        object initialValue = VisualHandler.GetMemberValue(member, node);
+        object? initialValue = VisualHandler.GetMemberValue(member, node);
 
         if (initialValue == null)
         {

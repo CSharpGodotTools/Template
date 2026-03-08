@@ -2,6 +2,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -22,12 +23,12 @@ internal sealed class ReadonlyMemberBinder
 
         foreach (string visualMember in visualizeMembers)
         {
-            if (!TryCreateMemberAccessor(node, visualMember, out MemberAccessor accessor))
+            if (!TryCreateMemberAccessor(node, visualMember, out MemberAccessor? accessor))
             {
                 continue;
             }
 
-            object initialValue = accessor.GetValue(node);
+            object? initialValue = accessor.GetValue(node);
 
             if (initialValue != null)
             {
@@ -40,18 +41,18 @@ internal sealed class ReadonlyMemberBinder
         }
     }
 
-    private static bool TryCreateMemberAccessor(Node node, string visualMember, out MemberAccessor accessor)
+    private static bool TryCreateMemberAccessor(Node node, string visualMember, [NotNullWhen(true)] out MemberAccessor? accessor)
     {
         BindingFlags memberTypes = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
 
-        PropertyInfo property = node.GetType().GetProperty(visualMember, memberTypes);
+        PropertyInfo? property = node.GetType().GetProperty(visualMember, memberTypes);
         if (property != null && property.GetGetMethod(true) != null)
         {
             accessor = new MemberAccessor(visualMember, property, property.PropertyType);
             return true;
         }
 
-        FieldInfo field = node.GetType().GetField(visualMember, memberTypes);
+        FieldInfo? field = node.GetType().GetField(visualMember, memberTypes);
         if (field != null)
         {
             accessor = new MemberAccessor(visualMember, field, field.FieldType);
@@ -68,7 +69,7 @@ internal sealed class ReadonlyMemberBinder
 
         while (true)
         {
-            object value = accessor.GetValue(node);
+            object? value = accessor.GetValue(node);
 
             if (value != null)
             {
@@ -106,7 +107,11 @@ internal sealed class ReadonlyMemberBinder
 
         _updateActions.Add(() =>
         {
-            visualControlInfo.VisualControl.SetValue(accessor.GetValue(node));
+            object? current = accessor.GetValue(node);
+            if (current is not null)
+            {
+                visualControlInfo.VisualControl.SetValue(current);
+            }
         });
 
         HBoxContainer hbox = new()
@@ -126,7 +131,7 @@ internal sealed class ReadonlyMemberBinder
         public MemberInfo Member { get; } = member ?? throw new ArgumentNullException(nameof(member));
         public Type MemberType { get; } = memberType ?? throw new ArgumentNullException(nameof(memberType));
 
-        public object GetValue(Node node) => VisualHandler.GetMemberValue(Member, node);
+        public object? GetValue(Node node) => VisualHandler.GetMemberValue(Member, node);
     }
 }
 #endif

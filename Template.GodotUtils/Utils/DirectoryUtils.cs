@@ -72,9 +72,9 @@ public static class DirectoryUtils
     /// </code>
     /// </summary>
     /// <returns>Returns the full path to the file or null if the file is not found</returns>
-    public static string FindFile(string directory, string fileName)
+    public static string? FindFile(string directory, string fileName)
     {
-        string foundPath = null;
+        string? foundPath = null;
 
         Traverse(directory, entry =>
         {

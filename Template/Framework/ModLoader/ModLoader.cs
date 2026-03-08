@@ -8,13 +8,13 @@ namespace Framework.Ui;
 public partial class ModLoader : Node
 {
     // Nodes
-    private Label _uiName;
-    private Label _uiModVersion;
-    private Label _uiGameVersion;
-    private Label _uiDependencies;
-    private Label _uiDescription;
-    private Label _uiAuthors;
-    private Label _uiIncompatibilities;
+    private Label _uiName = null!;
+    private Label _uiModVersion = null!;
+    private Label _uiGameVersion = null!;
+    private Label _uiDependencies = null!;
+    private Label _uiDescription = null!;
+    private Label _uiAuthors = null!;
+    private Label _uiIncompatibilities = null!;
 
     // Godot Overrides
     public override void _Ready()
@@ -90,7 +90,7 @@ public partial class ModLoader : Node
     {
         //OS.CreateProcess(OS.GetExecutablePath(), null);
         OS.CreateInstance(null);
-        await Autoloads.Instance.ExitGame();
+        await Autoloads.Instance!.ExitGame();
     }
 
     private static void OnOpenModsFolderPressed()

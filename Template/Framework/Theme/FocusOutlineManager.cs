@@ -12,9 +12,9 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
 
     // Variables
     private NavigationMethod _lastNavigation = NavigationMethod.Mouse;
-    private Viewport _viewport;
-    private Control _currentFocus;
-    private Control _outline;
+    private Viewport _viewport = null!;
+    private Control? _currentFocus;
+    private Control _outline = null!;
     private readonly Node _owner = owner;
     private float _time;
 

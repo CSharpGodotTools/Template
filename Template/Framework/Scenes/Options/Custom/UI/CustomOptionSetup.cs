@@ -43,19 +43,19 @@ internal static class CustomOptionSetup
             return;
 
         // Dispose the existing binding when re‑registering an option
-        if (custom.Bindings.TryGetValue(option.Id, out IDisposable existing))
+        if (custom.Bindings.TryGetValue(option.Id, out IDisposable? existing))
         {
             existing.Dispose();
             custom.Bindings.Remove(option.Id);
         }
 
         // Delegate UI creation to the appropriate binding type
-        IDisposable binding = option.Type switch
+        IDisposable? binding = option.Type switch
         {
-            CustomOptionType.Slider => SliderBinding.Create(tabContainer, navButton, option.Slider),
-            CustomOptionType.Dropdown => DropdownBinding.Create(tabContainer, navButton, option.Dropdown),
-            CustomOptionType.LineEdit => LineEditBinding.Create(tabContainer, navButton, option.LineEdit),
-            CustomOptionType.Toggle => ToggleBinding.Create(tabContainer, navButton, option.Toggle),
+            CustomOptionType.Slider => SliderBinding.Create(tabContainer, navButton, option.Slider!),
+            CustomOptionType.Dropdown => DropdownBinding.Create(tabContainer, navButton, option.Dropdown!),
+            CustomOptionType.LineEdit => LineEditBinding.Create(tabContainer, navButton, option.LineEdit!),
+            CustomOptionType.Toggle => ToggleBinding.Create(tabContainer, navButton, option.Toggle!),
             _ => null
         };
 
@@ -73,7 +73,7 @@ internal static class CustomOptionSetup
 
     internal static Button GetNavButton(OptionsTab tab, OptionsNav nav)
     {
-        Button result = tab switch
+        Button? result = tab switch
         {
             OptionsTab.General => nav.GeneralButton,
             OptionsTab.Gameplay => nav.GameplayButton,

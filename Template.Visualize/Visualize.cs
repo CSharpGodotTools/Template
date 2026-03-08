@@ -35,20 +35,20 @@ public static class Visualize
     {
         ArgumentNullException.ThrowIfNull(node);
 
-        VBoxContainer vbox = GetOrCreateVBoxContainer(node);
+        VBoxContainer? vbox = GetOrCreateVBoxContainer(node);
 
         if (vbox != null)
             AddLabel(vbox, message, fadeTime);
     }
 
-    private static VBoxContainer GetOrCreateVBoxContainer(Node node)
+    private static VBoxContainer? GetOrCreateVBoxContainer(Node node)
     {
-        VisualizeAutoload autoload = VisualizeAutoload.Instance;
+        VisualizeAutoload? autoload = VisualizeAutoload.Instance;
 
         if (autoload == null)
             return null;
 
-        if (autoload.TryGetLogContainer(node, out VBoxContainer vbox))
+        if (autoload.TryGetLogContainer(node, out VBoxContainer? vbox))
             return vbox;
 
         if (node is not Control and not Node2D)

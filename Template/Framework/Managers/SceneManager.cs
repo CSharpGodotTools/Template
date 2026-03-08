@@ -9,17 +9,17 @@ namespace Framework;
 public class SceneManager
 {
     // Events
-    public event Action PreSceneChanged;
-    public event Action PostSceneChanged;
+    public event Action? PreSceneChanged;
+    public event Action? PostSceneChanged;
 
     // Config
     public const int DefaultSceneFadeDuration = 2;
 
     // Variables
-    private MenuScenes _menuScenes;
-    private SceneTree _tree;
-    private AutoloadsFramework _autoloads;
-    private Node _currentScene;
+    private MenuScenes _menuScenes = null!;
+    private SceneTree _tree = null!;
+    private AutoloadsFramework _autoloads = null!;
+    private Node _currentScene = null!;
 
     public SceneManager(AutoloadsFramework autoloads, MenuScenes scenes)
     {
@@ -117,7 +117,7 @@ public class SceneManager
         _autoloads.CallDeferred(nameof(AutoloadsFramework.DeferredSwitchSceneProxy), scenePath, Variant.From(transType));
     }
 
-    private void FadeTo(TransColor transColor, double duration, Action finished = null)
+    private void FadeTo(TransColor transColor, double duration, Action? finished = null)
     {
         // Add canvas layer to scene
         CanvasLayer canvasLayer = new()

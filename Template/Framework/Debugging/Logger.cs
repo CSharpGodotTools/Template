@@ -18,10 +18,10 @@ namespace Framework;
  */
 public class Logger : IDisposable
 {
-    public event Action<string> MessageLogged;
+    public event Action<string>? MessageLogged;
 
     private readonly ConcurrentQueue<LogInfo> _messages = [];
-    private readonly GameConsole _console;
+    private readonly GameConsole _console = null!;
     private int _queuedCount;
     private int _droppedCount;
     private int _dropSummaryPending;
@@ -94,9 +94,9 @@ public class Logger : IDisposable
     /// </summary>
     public void LogErr(
         Exception e,
-        string hint = default,
+        string? hint = null,
         BBColor color = BBColor.Red,
-        [CallerFilePath] string filePath = default,
+        [CallerFilePath] string? filePath = null,
         [CallerLineNumber] int lineNumber = 0)
     {
         LogDetailed(LoggerOpcode.Exception, $"[Error] {(string.IsNullOrWhiteSpace(hint) ? "" : $"'{hint}' ")}{e.Message}{e.StackTrace}", color, true, filePath, lineNumber);
@@ -109,7 +109,7 @@ public class Logger : IDisposable
         object message,
         BBColor color = BBColor.Magenta,
         bool trace = true,
-        [CallerFilePath] string filePath = default,
+        [CallerFilePath] string? filePath = null,
         [CallerLineNumber] int lineNumber = 0)
     {
         LogDetailed(LoggerOpcode.Debug, $"[Debug] {message}", color, trace, filePath, lineNumber);
@@ -143,7 +143,7 @@ public class Logger : IDisposable
     {
         int processed = 0;
 
-        while (processed < MaxLogsPerFrame && _messages.TryDequeue(out LogInfo result))
+        while (processed < MaxLogsPerFrame && _messages.TryDequeue(out LogInfo? result))
         {
             Interlocked.Decrement(ref _queuedCount);
             processed++;
@@ -169,7 +169,7 @@ public class Logger : IDisposable
                 PrintErr(result.Data.Message);
 
                 if (result.Data is LogMessageTrace exceptionData && exceptionData.ShowTrace)
-                    PrintErr(exceptionData.TracePath);
+                    PrintErr(exceptionData.TracePath!);
 
                 break;
 
@@ -177,7 +177,7 @@ public class Logger : IDisposable
                 Print(result.Data.Message, result.Color);
 
                 if (result.Data is LogMessageTrace debugData && debugData.ShowTrace)
-                    Print(debugData.TracePath, BBColor.DarkGray);
+                    Print(debugData.TracePath!, BBColor.DarkGray);
 
                 break;
         }
@@ -189,7 +189,7 @@ public class Logger : IDisposable
     /// <summary>
     /// Logs a message that may contain trace information
     /// </summary>
-    private void LogDetailed(LoggerOpcode opcode, string message, BBColor color, bool trace, string filePath, int lineNumber)
+    private void LogDetailed(LoggerOpcode opcode, string message, BBColor color, bool trace, string? filePath, int lineNumber)
     {
         string sourceFile = Path.GetFileName(filePath)!;
         string tracePath = $"  at {sourceFile}:{lineNumber}";
@@ -265,11 +265,11 @@ public class Logger : IDisposable
         public string Message { get; set; } = message;
     }
 
-    private class LogMessageTrace(string message, bool trace = true, string tracePath = default) : LogMessage(message)
+    private class LogMessageTrace(string message, bool trace = true, string? tracePath = null) : LogMessage(message)
     {
         // Show the Trace Information for the Message
         public bool ShowTrace { get; set; } = trace;
-        public string TracePath { get; set; } = tracePath;
+        public string? TracePath { get; set; } = tracePath;
     }
 
     private enum LoggerOpcode

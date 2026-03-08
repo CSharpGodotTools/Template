@@ -31,7 +31,7 @@ public static class PrintExtensions
     /// <summary>
     /// Converts a collection to a formatted string.
     /// </summary>
-    public static string ToFormattedString<T>(this IEnumerable<T> value, bool newLine = true)
+    public static string? ToFormattedString<T>(this IEnumerable<T> value, bool newLine = true)
     {
         if (value == null)
         {
@@ -96,7 +96,7 @@ public static class PrintExtensions
                     prop.Ignored = true;
                 }
 
-                if (prop.PropertyType == ignoredProp || prop.PropertyType.IsSubclassOf(ignoredProp))
+                if (prop.PropertyType != null && (prop.PropertyType == ignoredProp || prop.PropertyType.IsSubclassOf(ignoredProp)))
                 {
                     prop.Ignored = true;
                 }

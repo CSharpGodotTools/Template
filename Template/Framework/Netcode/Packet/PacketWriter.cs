@@ -13,8 +13,8 @@ public class PacketWriter : IDisposable
 {
     private sealed class PacketMemberMap
     {
-        public FieldInfo[] Fields { get; init; }
-        public PropertyInfo[] Properties { get; init; }
+        public required FieldInfo[] Fields { get; init; }
+        public required PropertyInfo[] Properties { get; init; }
     }
 
     private static readonly ConcurrentDictionary<Type, PacketMemberMap> _structMemberCache = new();
@@ -117,7 +117,7 @@ public class PacketWriter : IDisposable
             case decimal primitive: _writer.Write(primitive); break;
 
             default:
-                throw new NotImplementedException($"PacketWriter: {value.GetType()} is not a supported primitive type.");
+                throw new NotImplementedException($"PacketWriter: {value!.GetType()} is not a supported primitive type.");
         }
     }
 
@@ -145,7 +145,7 @@ public class PacketWriter : IDisposable
     /// </summary>
     private void WriteEnum<T>(T value)
     {
-        Write((byte)Convert.ChangeType(value, typeof(byte)));
+        Write((byte)Convert.ChangeType(value, typeof(byte))!);
     }
 
     /// <summary>

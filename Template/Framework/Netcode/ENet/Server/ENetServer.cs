@@ -160,7 +160,7 @@ public abstract partial class ENetServer : ENetLow
     /// </summary>
     protected void WorkerThread(ushort port, int maxClients)
     {
-        Host host = TryCreateServerHost(port, maxClients);
+        Host? host = TryCreateServerHost(port, maxClients);
 
         if (host == null)
             return;
@@ -208,7 +208,7 @@ public abstract partial class ENetServer : ENetLow
     /// <summary>
     /// Creates and binds an ENet host on the specified port. Returns <c>null</c> if the port is already in use.
     /// </summary>
-    private Host TryCreateServerHost(ushort port, int maxClients)
+    private Host? TryCreateServerHost(ushort port, int maxClients)
     {
         Host host = new();
 
@@ -231,7 +231,7 @@ public abstract partial class ENetServer : ENetLow
     /// </summary>
     private void ProcessENetCommands()
     {
-        while (_enetCmds.TryDequeue(out Cmd<ENetServerOpcode> command))
+        while (_enetCmds.TryDequeue(out Cmd<ENetServerOpcode>? command))
         {
             switch (command.Opcode)
             {
@@ -342,13 +342,13 @@ public abstract partial class ENetServer : ENetLow
         if (!PacketFragmenter.TryReadHeader(fragmentBytes, out ushort streamId, out ushort fragIndex, out ushort totalFragments))
             return;
 
-        if (!_reassemblyBuffers.TryGetValue(peer.ID, out Dictionary<ushort, FragmentBuffer> peerBuffers))
+        if (!_reassemblyBuffers.TryGetValue(peer.ID, out Dictionary<ushort, FragmentBuffer>? peerBuffers))
         {
             peerBuffers = [];
             _reassemblyBuffers[peer.ID] = peerBuffers;
         }
 
-        if (!peerBuffers.TryGetValue(streamId, out FragmentBuffer buffer))
+        if (!peerBuffers.TryGetValue(streamId, out FragmentBuffer? buffer))
         {
             buffer = new FragmentBuffer(totalFragments);
             peerBuffers[streamId] = buffer;
@@ -371,29 +371,29 @@ public abstract partial class ENetServer : ENetLow
 
         try
         {
-            if (!TryGetPacketAndType(reader, out ClientPacket packet, out Type packetType))
+            if (!TryGetPacketAndType(reader, out ClientPacket? packet, out Type? packetType))
             {
                 return;
             }
 
-            if (!TryReadPacket(packet, reader, out string errorMessage))
+            if (!TryReadPacket(packet!, reader, out string? errorMessage))
             {
                 Log($"Received malformed packet: {errorMessage} (Ignoring)");
                 return;
             }
 
-            if (!_clientPacketHandlers.TryGetValue(packetType, out Action<PacketFromPeer<ClientPacket>> handler))
+            if (!_clientPacketHandlers.TryGetValue(packetType!, out Action<PacketFromPeer<ClientPacket>>? handler))
             {
-                Log($"No handler registered for client packet {packetType.Name} (Ignoring)");
+                Log($"No handler registered for client packet {packetType!.Name} (Ignoring)");
                 return;
             }
 
-            if (!TryInvokePacketHandler(handler, new PacketFromPeer<ClientPacket> { Packet = packet, PeerId = peer.ID }))
+            if (!TryInvokePacketHandler(handler, new PacketFromPeer<ClientPacket> { Packet = packet!, PeerId = peer.ID }))
             {
                 return;
             }
 
-            LogPacketReceived(packetType, peer.ID, packet);
+            LogPacketReceived(packetType!, peer.ID, packet!);
         }
         finally
         {
@@ -404,7 +404,7 @@ public abstract partial class ENetServer : ENetLow
     /// <summary>
     /// Reads the wire opcode and resolves the matching <see cref="ClientPacket"/> type from the registry.
     /// </summary>
-    private bool TryGetPacketAndType(PacketReader packetReader, out ClientPacket clientPacket, out Type packetType)
+    private bool TryGetPacketAndType(PacketReader packetReader, out ClientPacket? clientPacket, out Type? packetType)
     {
         ushort opcode;
         try

@@ -7,7 +7,7 @@ namespace GodotUtils;
 /// A generic cache manager that stores and retrieves objects based on a key.
 /// If the object associated with the key does not exist, it creates and caches it.
 /// </summary>
-public class CacheManager<TKey, TValue>
+public class CacheManager<TKey, TValue> where TKey : notnull
 {
     private readonly Dictionary<TKey, TValue> _cache = [];
 
@@ -16,7 +16,7 @@ public class CacheManager<TKey, TValue>
     /// </summary>
     public TValue Get(TKey key, Func<TValue> createFunc)
     {
-        if (_cache.TryGetValue(key, out TValue value))
+        if (_cache.TryGetValue(key, out TValue? value))
             return value;
 
         value = createFunc();

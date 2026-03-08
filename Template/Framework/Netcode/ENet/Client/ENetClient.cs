@@ -208,7 +208,7 @@ public abstract class ENetClient : ENetLow
     /// </summary>
     private void ProcessENetCommands()
     {
-        while (_enetCmds.TryDequeue(out Cmd<ENetClientOpcode> command))
+        while (_enetCmds.TryDequeue(out Cmd<ENetClientOpcode>? command))
         {
             switch (command.Opcode)
             {
@@ -259,10 +259,10 @@ public abstract class ENetClient : ENetLow
                 continue;
             }
 
-            if (!TryCreatePacketData(bytes, out PacketData packetData))
+            if (!TryCreatePacketData(bytes, out PacketData? packetData))
                 continue;
 
-            MainThreadPackets.Enqueue(packetData);
+            MainThreadPackets.Enqueue(packetData!);
         }
     }
 
@@ -274,7 +274,7 @@ public abstract class ENetClient : ENetLow
         if (!PacketFragmenter.TryReadHeader(fragmentBytes, out ushort streamId, out ushort fragIndex, out ushort totalFragments))
             return;
 
-        if (!_reassemblyBuffers.TryGetValue(streamId, out FragmentBuffer buffer))
+        if (!_reassemblyBuffers.TryGetValue(streamId, out FragmentBuffer? buffer))
         {
             buffer = new FragmentBuffer(totalFragments);
             _reassemblyBuffers[streamId] = buffer;
@@ -286,21 +286,21 @@ public abstract class ENetClient : ENetLow
 
         _reassemblyBuffers.Remove(streamId);
 
-        if (!TryCreatePacketData(buffer.Assemble(), out PacketData packetData))
+        if (!TryCreatePacketData(buffer.Assemble(), out PacketData? packetData))
             return;
 
-        MainThreadPackets.Enqueue(packetData);
+        MainThreadPackets.Enqueue(packetData!);
     }
 
     /// <summary>
     /// Reads the wire opcode and builds a <see cref="PacketData"/> record ready for main-thread dispatch.
     /// </summary>
-    private bool TryCreatePacketData(byte[] bytes, out PacketData packetData)
+    private bool TryCreatePacketData(byte[] bytes, out PacketData? packetData)
     {
         packetData = null;
         PacketReader reader = new(bytes);
 
-        if (!TryReadPacketType(reader, out Type packetType))
+        if (!TryReadPacketType(reader, out Type? packetType))
         {
             reader.Dispose();
             return false;
@@ -309,10 +309,10 @@ public abstract class ENetClient : ENetLow
         // The packet registry vends a shared singleton per packet type. Handlers must not
         // retain a reference to this instance across processing boundaries — the same object
         // is reused and mutated for every subsequent packet of the same type.
-        ServerPacket handlerPacket = PacketRegistry.ServerPacketInfo[packetType].Instance;
+        ServerPacket handlerPacket = PacketRegistry.ServerPacketInfo[packetType!].Instance;
         packetData = new PacketData
         {
-            Type = packetType,
+            Type = packetType!,
             PacketReader = reader,
             HandlePacket = handlerPacket
         };
@@ -323,7 +323,7 @@ public abstract class ENetClient : ENetLow
     /// <summary>
     /// Reads the opcode from the reader and resolves the matching <see cref="ServerPacket"/> type.
     /// </summary>
-    private bool TryReadPacketType(PacketReader reader, out Type packetType)
+    private bool TryReadPacketType(PacketReader reader, out Type? packetType)
     {
         packetType = null;
 
@@ -352,7 +352,7 @@ public abstract class ENetClient : ENetLow
     /// </summary>
     private void ProcessOutgoingPackets()
     {
-        while (_outgoing.TryDequeue(out byte[] data))
+        while (_outgoing.TryDequeue(out byte[]? data))
         {
             try
             {

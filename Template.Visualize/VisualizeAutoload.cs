@@ -7,7 +7,7 @@ namespace GodotUtils.Debugging;
 
 public sealed class VisualizeAutoload : IDisposable
 {
-    public static VisualizeAutoload Instance { get; private set; }
+    public static VisualizeAutoload? Instance { get; private set; }
 
     private readonly Dictionary<Node, VBoxContainer> _visualNodes = [];
     private readonly Dictionary<Node, VBoxContainer> _visualNodesWithoutAttribute = [];
@@ -20,7 +20,7 @@ public sealed class VisualizeAutoload : IDisposable
         Instance = this;
     }
 
-    public bool TryGetLogContainer(Node node, out VBoxContainer vbox)
+    public bool TryGetLogContainer(Node node, out VBoxContainer? vbox)
     {
         ArgumentNullException.ThrowIfNull(node);
         return _visualNodes.TryGetValue(node, out vbox);
@@ -38,7 +38,7 @@ public sealed class VisualizeAutoload : IDisposable
         ArgumentNullException.ThrowIfNull(node);
         ArgumentNullException.ThrowIfNull(factory);
 
-        if (!_visualNodesWithoutAttribute.TryGetValue(node, out VBoxContainer vbox))
+        if (!_visualNodesWithoutAttribute.TryGetValue(node, out VBoxContainer? vbox))
         {
             vbox = factory();
             _visualNodesWithoutAttribute[node] = vbox;

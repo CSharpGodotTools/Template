@@ -10,7 +10,7 @@ public partial class OptionsInput
         public required StringName Action { get; init; }
         public required HotkeyRow Row { get; init; }
         public required Button Button { get; init; }
-        public InputEvent InputEvent { get; init; }
+        public required InputEvent InputEvent { get; init; }
         public bool IsPlus { get; init; }
     }
 }

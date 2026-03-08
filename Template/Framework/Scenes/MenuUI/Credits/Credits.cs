@@ -25,12 +25,12 @@ public partial class Credits : Node
     private const int NumSpeedSettings = 3;
 
     // Fields
-    private VBoxContainer _credits;
-    private SceneManager _scene;
+    private VBoxContainer _credits = null!;
+    private SceneManager _scene = null!;
     private Vector2 _startingCreditsPosition;
-    private Button _btnPause;
-    private Button _btnSpeed;
-    private Button _btnReverse;
+    private Button _btnPause = null!;
+    private Button _btnSpeed = null!;
+    private Button _btnReverse = null!;
     private float _speed = StartingSpeed;
     private bool _paused;
     private byte _curSpeedSetting = 1;

@@ -6,9 +6,9 @@ namespace __TEMPLATE__.FPS;
 
 public partial class Player : CharacterBody3D
 {
-    [Export] private Camera3D _camera;
-    [Export] private PopupMenu _popupMenu;
-    [Export] private PlayerMovementConfig _movementConfig;
+    [Export] private Camera3D _camera = null!;
+    [Export] private PopupMenu _popupMenu = null!;
+    [Export] private PlayerMovementConfig _movementConfig = null!;
 
     private readonly ComponentHost _components = new();
 

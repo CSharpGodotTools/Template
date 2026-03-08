@@ -3,7 +3,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<ImplicitUsings>disable</ImplicitUsings>
-		<Nullable>disable</Nullable>
+		<Nullable>enable</Nullable>
 		<RootNamespace>GodotUtils</RootNamespace>
 		<OutputPath>$(SolutionDir)bin\</OutputPath>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>

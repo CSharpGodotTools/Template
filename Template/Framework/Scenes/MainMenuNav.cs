@@ -6,12 +6,12 @@ namespace Framework.Ui;
 public partial class MainMenuNav : Node
 {
     // Exports
-    [Export] private PackedScene _gameScene;
+    [Export] private PackedScene _gameScene = null!;
 
     // Fields
-    private SceneManager _scene;
-    private Viewport _viewport;
-    private Button _playBtn;
+    private SceneManager _scene = null!;
+    private Viewport _viewport = null!;
+    private Button _playBtn = null!;
     private bool _focusWasNeverChanged = true;
 
     // Godot Overrides
@@ -81,7 +81,7 @@ public partial class MainMenuNav : Node
 
     private async static void OnQuitPressed()
     {
-        await Autoloads.Instance.ExitGame();
+        await Autoloads.Instance!.ExitGame();
     }
 
     private static void OnDiscordPressed()

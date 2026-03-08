@@ -13,11 +13,11 @@ namespace Framework.Ui;
 public partial class OptionsManager : IDisposable
 {
     // Events
-    public event Action<WindowMode> WindowModeChanged;
-    internal event Action<RegisteredSliderOption> SliderOptionRegistered;
-    internal event Action<RegisteredDropdownOption> DropdownOptionRegistered;
-    internal event Action<RegisteredLineEditOption> LineEditOptionRegistered;
-    internal event Action<RegisteredToggleOption> ToggleOptionRegistered;
+    public event Action<WindowMode> WindowModeChanged = null!;
+    internal event Action<RegisteredSliderOption> SliderOptionRegistered = null!;
+    internal event Action<RegisteredDropdownOption> DropdownOptionRegistered = null!;
+    internal event Action<RegisteredLineEditOption> LineEditOptionRegistered = null!;
+    internal event Action<RegisteredToggleOption> ToggleOptionRegistered = null!;
 
     // Fields
     private readonly OptionsSettingsStore _settingsStore = new();
@@ -26,7 +26,7 @@ public partial class OptionsManager : IDisposable
 
     private ResourceOptions _options;
     private string _currentOptionsTab = "General";
-    private AutoloadsFramework _autoloads;
+    private AutoloadsFramework _autoloads = null!;
 
     public OptionsManager(AutoloadsFramework autoloads)
     {

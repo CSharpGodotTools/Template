@@ -11,7 +11,7 @@ public class ComponentManager
     /// <summary>
     /// Gets the active component manager instance.
     /// </summary>
-    public static ComponentManager Instance { get; private set; }
+    public static ComponentManager Instance { get; private set; } = null!;
 
     private readonly ComponentGroup _process = new();
     private readonly ComponentGroup _processPaused = new();

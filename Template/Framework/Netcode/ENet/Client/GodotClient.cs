@@ -35,17 +35,17 @@ public abstract class GodotClient : ENetClient
     /// <summary>
     /// Fires when the client connects to the server.
     /// </summary>
-    public event Action Connected;
+    public event Action? Connected;
 
     /// <summary>
     /// Fires when the client disconnects or times out from the server.
     /// </summary>
-    public event Action<DisconnectOpcode> Disconnected;
+    public event Action<DisconnectOpcode>? Disconnected;
 
     /// <summary>
     /// Fires when the client times out from the server.
     /// </summary>
-    public event Action TimedOut;
+    public event Action? TimedOut;
 
     /// <summary>
     /// Is the client connected to the server?
@@ -55,7 +55,7 @@ public abstract class GodotClient : ENetClient
     /// <summary>
     /// Connects to the server at <paramref name="ip"/>:<paramref name="port"/>. Options control logging; types in ignoredPackets are excluded.
     /// </summary>
-    public async Task Connect(string ip, ushort port, ENetOptions options = default, params Type[] ignoredPackets)
+    public async Task Connect(string ip, ushort port, ENetOptions? options = null, params Type[] ignoredPackets)
     {
         if (IsRunning)
         {
@@ -133,7 +133,7 @@ public abstract class GodotClient : ENetClient
     /// </summary>
     private void ProcessGodotPackets()
     {
-        while (MainThreadPackets.TryDequeue(out PacketData packetData))
+        while (MainThreadPackets.TryDequeue(out PacketData? packetData))
         {
             PacketReader packetReader = packetData.PacketReader;
             ServerPacket packet = packetData.HandlePacket;
@@ -143,7 +143,7 @@ public abstract class GodotClient : ENetClient
             {
                 packet.Read(packetReader);
 
-                if (!_serverPacketHandlers.TryGetValue(packetType, out Action<ServerPacket> handler))
+                if (!_serverPacketHandlers.TryGetValue(packetType, out Action<ServerPacket>? handler))
                 {
                     Log($"No handler registered for server packet {packetType.Name} (Ignoring)");
                     continue;
@@ -168,7 +168,7 @@ public abstract class GodotClient : ENetClient
     /// </summary>
     private void ProcessGodotCommands()
     {
-        while (MainThreadCommands.TryDequeue(out Cmd<GodotOpcode> command))
+        while (MainThreadCommands.TryDequeue(out Cmd<GodotOpcode>? command))
         {
             switch (command.Opcode)
             {

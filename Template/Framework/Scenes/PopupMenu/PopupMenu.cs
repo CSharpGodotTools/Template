@@ -10,26 +10,26 @@ namespace Framework.Ui;
 public partial class PopupMenu : Control
 {
     // Exports
-    [Export] private PackedScene _optionsPrefab;
+    [Export] private PackedScene _optionsPrefab = null!;
 
     // Events
-    public event Action Opened;
-    public event Action Closed;
-    public event Action OptionsOpened;
-    public event Action OptionsClosed;
-    public event Action MainMenuBtnPressed;
+    public event Action? Opened;
+    public event Action? Closed;
+    public event Action? OptionsOpened;
+    public event Action? OptionsClosed;
+    public event Action? MainMenuBtnPressed;
 
     // Nodes
-    private Button _resumeBtn;
-    private Button _restartBtn;
-    private Button _optionsBtn;
-    private Button _mainMenuBtn;
-    private Button _quitBtn;
+    private Button _resumeBtn = null!;
+    private Button _restartBtn = null!;
+    private Button _optionsBtn = null!;
+    private Button _mainMenuBtn = null!;
+    private Button _quitBtn = null!;
 
-    private VBoxContainer _nav;
-    private GameConsole _console;
-    private Options _options;
-    private Control _menu;
+    private VBoxContainer _nav = null!;
+    private GameConsole _console = null!;
+    private Options _options = null!;
+    private Control _menu = null!;
 
     // Godot Overrides
     public override void _Ready()
@@ -183,6 +183,6 @@ public partial class PopupMenu : Control
 
     private void OnQuitPressed()
     {
-        TaskUtils.FireAndForget(Autoloads.Instance.ExitGame);
+        TaskUtils.FireAndForget(Autoloads.Instance!.ExitGame);
     }
 }

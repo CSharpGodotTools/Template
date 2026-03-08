@@ -18,12 +18,12 @@ public class Commands
     private static void CommandHelp(string[] args)
     {
         IEnumerable<string> cmds = GameFramework.Console.GetCommands().Select(x => x.Name);
-        GameFramework.Logger.Log(cmds.ToFormattedString());
+        GameFramework.Logger.Log(cmds.ToFormattedString()!);
     }
 
     private async static void CommandQuit(string[] args)
     {
-        await Autoloads.Instance.ExitGame();
+        await Autoloads.Instance!.ExitGame();
     }
 
     private static void CommandDebug(string[] args)

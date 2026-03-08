@@ -61,7 +61,7 @@ public static class StringExtensions
     /// <summary>
     /// Uppercases words with length less than or equal to <paramref name="maxLength"/>.
     /// </summary>
-    public static string SmallWordsToUpper(this string v, int maxLength = 2, Func<string, bool> filter = null)
+    public static string SmallWordsToUpper(this string v, int maxLength = 2, Func<string, bool>? filter = null)
     {
         string[] words = v.Split(' ');
 

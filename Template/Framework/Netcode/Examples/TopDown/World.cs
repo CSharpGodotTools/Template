@@ -8,11 +8,11 @@ public partial class World : Node2D
 {
     private const float PlayerSize = 18f;
 
-    private NetControlPanel _netControlPanel;
-    private GameClient _client;
-    private WorldStressTest _stressTest;
-    private LocalPlayer _localPlayer;
-    private RemotePlayers _remotePlayers;
+    private NetControlPanel _netControlPanel = null!;
+    private GameClient? _client;
+    private WorldStressTest _stressTest = null!;
+    private LocalPlayer _localPlayer = null!;
+    private RemotePlayers _remotePlayers = null!;
 
     public override void _Ready()
     {
@@ -21,8 +21,8 @@ public partial class World : Node2D
         _remotePlayers = new RemotePlayers(this);
         _stressTest = new WorldStressTest(this);
 
-        _netControlPanel.Net.ClientCreated += OnClientCreated;
-        _netControlPanel.Net.ClientDestroyed += OnClientDestroyed;
+        _netControlPanel.Net!.ClientCreated += OnClientCreated;
+        _netControlPanel.Net!.ClientDestroyed += OnClientDestroyed;
         RefreshProcessingState();
     }
 

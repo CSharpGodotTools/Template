@@ -37,7 +37,7 @@ internal static class VisualMethods
 
             if (control.VisualControl != null)
             {
-                hboxParams.AddChild(new Label { Text = VisualText.ToDisplayName(paramInfo.Name) });
+                hboxParams.AddChild(new Label { Text = VisualText.ToDisplayName(paramInfo.Name!) });
                 hboxParams.AddChild(control.VisualControl.Control);
             }
         }
@@ -49,7 +49,7 @@ internal static class VisualMethods
     {
         foreach (MethodInfo method in methods)
         {
-            Type declaringType = method.DeclaringType;
+            Type? declaringType = method.DeclaringType;
             if (declaringType != null && declaringType.IsSubclassOf(typeof(GodotObject)))
             {
                 ParameterInfo[] paramInfos = method.GetParameters();
@@ -89,7 +89,7 @@ internal static class VisualMethods
         // Examples of Value Types: https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types#kinds-of-value-types-and-type-constraints
         if (type.IsValueType)
         {
-            return Activator.CreateInstance(type);
+            return Activator.CreateInstance(type)!;
         }
         // Examples of Reference Types: https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types
         else if (type == typeof(string))
@@ -97,7 +97,7 @@ internal static class VisualMethods
             return string.Empty;
         }
 
-        return null;
+        return null!;
     }
 }
 #endif

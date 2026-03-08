@@ -23,7 +23,7 @@ public static class PacketBatchRunner
         }
 
         int received = 0;
-        Exception mismatch = null;
+        Exception? mismatch = null;
         TPacket expected = createPacket();
 
         await using ENetTestHarness<TPacket> harness = new((packet, _) =>

@@ -6,9 +6,9 @@ namespace GodotUtils.Debugging;
 internal partial class ExampleScene : Node
 {
     [Export] private int _cameraSpeed = 5;
-    [Export] private PackedScene _spriteExampleScene;
+    [Export] private PackedScene _spriteExampleScene = null!;
 
-    private Camera2D _camera;
+    private Camera2D _camera = null!;
 
     public override void _Ready()
     {

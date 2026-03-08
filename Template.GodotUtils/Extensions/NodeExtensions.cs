@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System;
 
@@ -55,7 +56,7 @@ public static class NodeExtensions
     /// <summary>
     /// Gets a node of type <typeparamref name="T"/> from the current scene by path.
     /// </summary>
-    public static T GetSceneNode<T>(this Node node, string path) where T : Node
+    public static T? GetSceneNode<T>(this Node node, string path) where T : Node
     {
         return node.GetTree().CurrentScene.GetNode<T>(path);
     }
@@ -63,7 +64,7 @@ public static class NodeExtensions
     /// <summary>
     /// Gets a node of type <typeparamref name="T"/> from the current scene.
     /// </summary>
-    public static T GetSceneNode<T>(this Node node) where T : Node
+    public static T? GetSceneNode<T>(this Node node) where T : Node
     {
         return node.GetTree().CurrentScene.GetNode<T>(recursive: false);
     }
@@ -92,7 +93,7 @@ public static class NodeExtensions
     /// <summary>
     /// Attempts to find a child node of type <typeparamref name="T"/>.
     /// </summary>
-    public static bool TryGetNode<T>(this Node node, out T foundNode, bool recursive = true) where T : Node
+    public static bool TryGetNode<T>(this Node node, [NotNullWhen(true)] out T? foundNode, bool recursive = true) where T : Node
     {
         foundNode = FindNode<T>(node.GetChildren(), recursive);
         return foundNode != null;
@@ -109,7 +110,7 @@ public static class NodeExtensions
     /// <summary>
     /// Finds a child node of type <typeparamref name="T"/>.
     /// </summary>
-    public static T GetComponent<T>(this Node node, bool recursive = true) where T : Node
+    public static T? GetComponent<T>(this Node node, bool recursive = true) where T : Node
     {
         return GetNode<T>(node, recursive);
     }
@@ -117,12 +118,12 @@ public static class NodeExtensions
     /// <summary>
     /// Finds a child node of type <typeparamref name="T"/>.
     /// </summary>
-    public static T GetNode<T>(this Node node, bool recursive = true) where T : Node
+    public static T? GetNode<T>(this Node node, bool recursive = true) where T : Node
     {
         return FindNode<T>(node.GetChildren(), recursive);
     }
 
-    private static T FindNode<T>(Godot.Collections.Array<Node> children, bool recursive = true) where T : Node
+    private static T? FindNode<T>(Godot.Collections.Array<Node> children, bool recursive = true) where T : Node
     {
         foreach (Node child in children)
         {
@@ -131,7 +132,7 @@ public static class NodeExtensions
 
             if (recursive)
             {
-                T val = FindNode<T>(child.GetChildren());
+                T? val = FindNode<T>(child.GetChildren());
 
                 if (val is not null)
                     return val;

@@ -18,13 +18,13 @@ internal static partial class VisualControlTypes
 
         foreach (object item in Enum.GetValues(type))
         {
-            optionButton.AddItem(VisualText.ToSpacedName(item.ToString()));
+            optionButton.AddItem(VisualText.ToSpacedName(item.ToString()!));
         }
 
         optionButton.ItemSelected += index =>
         {
-            object selectedValue = Enum.GetValues(type).GetValue(index);
-            context.ValueChanged(selectedValue);
+            object? selectedValue = Enum.GetValues(type).GetValue(index);
+            context.ValueChanged(selectedValue!);
             optionButton.ReleaseFocus();
         };
 
@@ -34,7 +34,7 @@ internal static partial class VisualControlTypes
             optionButton.Select(selectedIndex);
         }
 
-        Select(context.InitialValue);
+        Select(context.InitialValue!);
 
         return new VisualControlInfo(new OptionButtonEnumControl(optionButton, Select));
     }

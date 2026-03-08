@@ -34,8 +34,8 @@ internal static class VisualTitleBarBuilder
 
         hbox.AddChild(title);
 
-        Button readonlyBtn = null;
-        Button mutableBtn = null;
+        Button? readonlyBtn = null;
+        Button? mutableBtn = null;
 
         if (readonlyMembers != null)
         {

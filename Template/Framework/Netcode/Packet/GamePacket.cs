@@ -9,7 +9,7 @@ public abstract class GamePacket
 {
     public const int MaxSize = 8192;
 
-    private byte[] _data;
+    private byte[] _data = null!;
     private long _size;
 
     /// <summary>

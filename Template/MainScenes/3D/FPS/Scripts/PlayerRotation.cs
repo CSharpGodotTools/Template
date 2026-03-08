@@ -7,7 +7,7 @@ namespace __TEMPLATE__.FPS;
 
 public class PlayerRotation(Player player, Camera3D camera) : Component(player)
 {
-    public event Action<float> YawChanged;
+    public event Action<float>? YawChanged;
 
     private const float HalfPi = Mathf.Pi * 0.5f;
     private float _yaw;

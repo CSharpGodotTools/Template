@@ -8,7 +8,7 @@ public sealed class PacketCapture<T>
     private readonly TaskCompletionSource<bool> _tcs =
         new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-    public T Packet { get; private set; }
+    public T Packet { get; private set; } = default!;
     public bool IsSet => _tcs.Task.IsCompleted;
 
     public void Set(T packet)

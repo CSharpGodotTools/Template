@@ -71,7 +71,7 @@ public static class RayCast2DExtensions
     /// <summary>
     /// Returns the first colliding raycast in the collection.
     /// </summary>
-    public static RayCast2D GetAnyRayCastCollider(this RayCast2D[] raycasts)
+    public static RayCast2D? GetAnyRayCastCollider(this RayCast2D[] raycasts)
     {
         foreach (RayCast2D raycast in raycasts)
         {

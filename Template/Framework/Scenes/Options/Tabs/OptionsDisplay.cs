@@ -12,17 +12,17 @@ namespace Framework.Ui;
 public class OptionsDisplay : IDisposable
 {
     // Events
-    public event Action<int> OnResolutionChanged;
+    public event Action<int> OnResolutionChanged = null!;
 
     // Fields
     private readonly ResourceOptions _resourceOptions;
-    private Action<WindowMode> _selectWindowModeAction;
+    private Action<WindowMode> _selectWindowModeAction = null!;
 
     // Window Size
-    private OptionButton _windowSizeDropdown;
-    private Button _windowSizeCustomBtn;
-    private PopupPanel _customSizePopup;
-    private LineEdit _popupResX, _popupResY;
+    private OptionButton _windowSizeDropdown = null!;
+    private Button _windowSizeCustomBtn = null!;
+    private PopupPanel _customSizePopup = null!;
+    private LineEdit _popupResX = null!, _popupResY = null!;
     private int _prevNumX, _prevNumY;
     private List<Vector2I> _availableWindowSizes = [];
     private readonly Options _options;

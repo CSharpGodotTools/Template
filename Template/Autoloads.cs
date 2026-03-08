@@ -2,7 +2,7 @@ namespace Framework;
 
 public partial class Autoloads : AutoloadsFramework
 {
-    public static Autoloads Instance { get; private set; }
+    public static Autoloads? Instance { get; private set; }
 
     // For example:
     // public WorldManager WorldManager { get; private set; }

@@ -15,12 +15,12 @@ public class OptionsNav : IDisposable
     public Button AudioButton => _audioButton;
     public Button InputButton => _inputButton;
 
-    private Button _generalButton;
-    private Button _gameplayButton;
-    private Button _displayButton;
-    private Button _graphicsButton;
-    private Button _audioButton;
-    private Button _inputButton;
+    private Button _generalButton = null!;
+    private Button _gameplayButton = null!;
+    private Button _displayButton = null!;
+    private Button _graphicsButton = null!;
+    private Button _audioButton = null!;
+    private Button _inputButton = null!;
 
     // Fields
     private readonly Godot.Collections.Array<Node> _navBtns;
@@ -125,13 +125,13 @@ public class OptionsNav : IDisposable
 
     public bool TryGetTabContainer(OptionsTab tab, out VBoxContainer container)
     {
-        if (_tabs.TryGetValue(tab.ToString(), out Control tabControl) && tabControl is VBoxContainer tabContainer)
+        if (_tabs.TryGetValue(tab.ToString(), out Control? tabControl) && tabControl is VBoxContainer tabContainer)
         {
             container = tabContainer;
             return true;
         }
 
-        container = null;
+        container = null!;
         return false;
     }
 

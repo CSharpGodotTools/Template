@@ -11,7 +11,7 @@ internal static partial class VisualControlTypes
     /// <summary>
     /// Creates a control for the given member type and context
     /// </summary>
-    public static VisualControlInfo CreateControlForType(Type type, MemberInfo memberInfo, VisualControlContext context)
+    public static VisualControlInfo CreateControlForType(Type type, MemberInfo? memberInfo, VisualControlContext context)
     {
         VisualControlInfo info = type switch
         {
@@ -65,8 +65,8 @@ internal interface IVisualControl
     void SetEditable(bool editable);
 }
 
-internal sealed class VisualControlInfo(IVisualControl visualControl)
+internal sealed class VisualControlInfo(IVisualControl? visualControl)
 {
-    public IVisualControl VisualControl { get; } = visualControl;
+    public IVisualControl? VisualControl { get; } = visualControl;
 }
 #endif

@@ -53,15 +53,15 @@ internal static class ParameterConverter
     {
         if (type == typeof(string))
         {
-            return null;
+            return null!;
         }
 
         if (type.IsValueType)
         {
-            return Activator.CreateInstance(type);
+            return Activator.CreateInstance(type)!;
         }
 
-        return null;
+        return null!;
     }
 }
 #endif

@@ -82,7 +82,7 @@ internal sealed class PacketGenerationOrchestrator
         string deepEqualsHelper = needsDeepEquals
             ? $$"""
 
-    private static bool DeepEquals(object left, object right)
+    private static bool DeepEquals(object? left, object? right)
     {
         if (object.ReferenceEquals(left, right))
             return true;
@@ -166,7 +166,7 @@ internal sealed class PacketGenerationOrchestrator
         string deepHashHelper = needsDeepHash
             ? $$"""
 
-    private static int DeepHash(object value)
+    private static int DeepHash(object? value)
     {
         if (value is null)
             return 0;
@@ -227,6 +227,7 @@ internal sealed class PacketGenerationOrchestrator
         string constructors = BuildConstructors(model);
 
         string sourceCode = $$"""
+#nullable enable
 {{usings}}
 
 namespace {{model.NamespaceName}};
@@ -244,7 +245,7 @@ public partial class {{model.ClassName}}
 {{string.Join("\n", readLines.Select(line => indent8 + line))}}
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (object.ReferenceEquals(this, obj))
             return true;
@@ -283,7 +284,17 @@ public partial class {{model.ClassName}}
         const string indent4 = "    ";
         const string indent8 = "        ";
 
-        string emptyConstructor = $"{indent4}public {model.ClassName}() {{ }}";
+        var refTypeProps = model.Properties.Where(p => !p.Type.IsValueType).ToList();
+        string emptyConstructor;
+        if (refTypeProps.Count == 0)
+        {
+            emptyConstructor = $"{indent4}public {model.ClassName}() {{ }}";
+        }
+        else
+        {
+            string nullInits = string.Join("\n", refTypeProps.Select(p => $"{indent8}{p.Name} = null!;"));
+            emptyConstructor = $"{indent4}public {model.ClassName}()\n{indent4}{{\n{nullInits}\n{indent4}}}";
+        }
 
         string paramList = string.Join(", ", model.Properties.Select(p =>
             $"{p.Type.ToDisplayString()} {ToCamelCase(p.Name)}"));

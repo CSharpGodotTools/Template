@@ -18,8 +18,8 @@ public partial class OptionsInput
 
         private readonly Dictionary<StringName, HotkeyRow> _rows = [];
 
-        public event Action<HotkeyButtonInfo> HotkeyPressed;
-        public event Action<HotkeyButtonInfo> PlusPressed;
+        public event Action<HotkeyButtonInfo> HotkeyPressed = null!;
+        public event Action<HotkeyButtonInfo> PlusPressed = null!;
 
         public HotkeyListView(
             VBoxContainer content,
@@ -84,7 +84,7 @@ public partial class OptionsInput
 
         public void ReplaceButton(HotkeyButtonInfo info, InputEvent newEvent)
         {
-            if (!_rows.TryGetValue(info.Action, out HotkeyRow row))
+            if (!_rows.TryGetValue(info.Action, out HotkeyRow? row))
                 return;
 
             row.ReplaceButton(info, newEvent);
@@ -92,13 +92,13 @@ public partial class OptionsInput
 
         public void AddPlusButton(StringName action)
         {
-            if (_rows.TryGetValue(action, out HotkeyRow row))
+            if (_rows.TryGetValue(action, out HotkeyRow? row))
                 row.AddPlusButton();
         }
 
         public void FocusPlusButton(StringName action)
         {
-            if (_rows.TryGetValue(action, out HotkeyRow row))
+            if (_rows.TryGetValue(action, out HotkeyRow? row))
                 row.FocusPlusButton();
         }
 

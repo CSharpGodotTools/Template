@@ -10,7 +10,7 @@ internal static partial class VisualControlTypes
     private static VisualControlInfo VisualList(Type type, VisualControlContext context)
     {
         Type elementType = type.GetGenericArguments()[0];
-        IList list = context.InitialValue as IList ?? (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(elementType));
+        IList list = context.InitialValue as IList ?? (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(elementType))!;
         return CreateIndexedCollectionControl(
             elementType,
             () => list.Count,

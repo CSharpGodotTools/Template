@@ -11,10 +11,10 @@ public partial class OptionsInput
         private readonly string _removeHotkeyAction;
         private readonly string _fullscreenAction;
 
-        private HotkeyButtonInfo _current;
+        private HotkeyButtonInfo? _current;
         private bool _listeningOnPlus;
         private bool _actionSuppressed;
-        private StringName _suppressedAction;
+        private StringName _suppressedAction = null!;
 
         public HotkeyEditor(HotkeyStore store, HotkeyListView view, string removeHotkeyAction, string fullscreenAction)
         {
@@ -72,10 +72,10 @@ public partial class OptionsInput
 
         private void RemoveCurrentHotkey()
         {
-            StringName action = _current.Action;
+            StringName action = _current!.Action;
 
-            _store.RemoveEvent(action, _current.InputEvent);
-            HotkeyListView.RemoveButton(_current);
+            _store.RemoveEvent(action, _current!.InputEvent);
+            HotkeyListView.RemoveButton(_current!);
             _view.FocusPlusButton(action);
 
             Clear();
@@ -83,17 +83,17 @@ public partial class OptionsInput
 
         private void CancelListening()
         {
-            if (_current.IsPlus)
-                HotkeyListView.RemoveButton(_current);
+            if (_current!.IsPlus)
+                HotkeyListView.RemoveButton(_current!);
             else
-                HotkeyListView.RestoreListening(_current);
+                HotkeyListView.RestoreListening(_current!);
 
             Clear();
         }
 
         private void ApplyNewInput(InputEvent @event)
         {
-            StringName action = _current.Action;
+            StringName action = _current!.Action;
 
             if (action == _fullscreenAction && @event is InputEventMouseButton)
                 return;
@@ -108,8 +108,8 @@ public partial class OptionsInput
                 return;
             }
 
-            _view.ReplaceButton(_current, persistentEvent);
-            _store.ReplaceEvent(action, _current.InputEvent, persistentEvent);
+            _view.ReplaceButton(_current!, persistentEvent);
+            _store.ReplaceEvent(action, _current!.InputEvent, persistentEvent);
             _view.FocusPlusButton(action);
 
             Clear();
@@ -117,10 +117,10 @@ public partial class OptionsInput
 
         private void HandleDuplicate(StringName action)
         {
-            if (_current.IsPlus)
-                HotkeyListView.RemoveButton(_current);
+            if (_current!.IsPlus)
+                HotkeyListView.RemoveButton(_current!);
             else
-                HotkeyListView.RestoreListening(_current);
+                HotkeyListView.RestoreListening(_current!);
 
             _view.FocusPlusButton(action);
             Clear();

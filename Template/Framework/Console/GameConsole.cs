@@ -12,12 +12,12 @@ public partial class GameConsole : Node
     private readonly ConsoleHistory _history = new();
     private readonly Queue<string> _pendingMessages = [];
 
-    private PanelContainer _mainContainer;
-    private PopupPanel _settingsPopup;
-    private CheckBox _settingsAutoScroll;
-    private TextEdit _feed;
-    private LineEdit _input;
-    private Button _settingsBtn;
+    private PanelContainer _mainContainer = null!;
+    private PopupPanel _settingsPopup = null!;
+    private CheckBox _settingsAutoScroll = null!;
+    private TextEdit _feed = null!;
+    private LineEdit _input = null!;
+    private Button _settingsBtn = null!;
 
     private bool _autoScroll = true;
     private bool _isReady;
@@ -119,7 +119,7 @@ public partial class GameConsole : Node
 
     private void FlushPendingMessages()
     {
-        while (_pendingMessages.TryDequeue(out string message))
+        while (_pendingMessages.TryDequeue(out string? message))
         {
             AppendMessage(message);
         }

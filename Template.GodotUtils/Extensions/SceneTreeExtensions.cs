@@ -10,7 +10,7 @@ public static class SceneTreeExtensions
     /// <summary>
     /// Returns the current scene as the specified type.
     /// </summary>
-    public static T GetCurrentScene<T>(this SceneTree tree) where T : Node
+    public static T? GetCurrentScene<T>(this SceneTree tree) where T : Node
     {
         return tree.CurrentScene as T;
     }

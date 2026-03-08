@@ -15,10 +15,10 @@ public class AudioManager : IDisposable
 
     // Variables
     private readonly RandomNumberGenerator _randomNumberGenerator = new();
-    private NodePool<AudioStreamPlayer2D> _sfxPool;
-    private AudioStreamPlayer _musicPlayer;
-    private ResourceOptions _options;
-    private AutoloadsFramework _autoloads;
+    private NodePool<AudioStreamPlayer2D> _sfxPool = null!;
+    private AudioStreamPlayer _musicPlayer = null!;
+    private ResourceOptions _options = null!;
+    private AutoloadsFramework _autoloads = null!;
     private float _lastPitch;
 
     /// <summary>

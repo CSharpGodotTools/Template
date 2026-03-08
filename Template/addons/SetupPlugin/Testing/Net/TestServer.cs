@@ -7,7 +7,7 @@ namespace Template.Setup.Testing;
 public sealed class TestServer<TPacket> : GodotServer
     where TPacket : ClientPacket
 {
-    private readonly Action<TPacket, uint> _onPacket;
+    private readonly Action<TPacket, uint> _onPacket = null!;
 
     public TestServer(Action<TPacket, uint> onPacket)
     {

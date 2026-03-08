@@ -17,17 +17,17 @@ namespace Framework.Netcode.Examples.Topdown.Server
         /// <summary>
         /// Fired when a player is added successfully (not called if already present).
         /// </summary>
-        public event Action<uint> PlayerJoined;
+        public event Action<uint>? PlayerJoined;
 
         /// <summary>
         /// Fired when a player is removed successfully (not called if not present).
         /// </summary>
-        public event Action<uint> PlayerLeft;
+        public event Action<uint>? PlayerLeft;
 
         /// <summary>
         /// Fired whenever an existing player's position is updated.
         /// </summary>
-        public event Action<uint, Vector2> PositionUpdated;
+        public event Action<uint, Vector2>? PositionUpdated;
 
         /// <summary>
         /// Adds a player ID. Returns true if the player was new.

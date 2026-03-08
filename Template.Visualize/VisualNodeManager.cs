@@ -15,14 +15,14 @@ internal sealed class VisualNodeManager
     {
         ArgumentNullException.ThrowIfNull(node);
 
-        VisualData visualData = VisualizeAttributeHandler.RetrieveData(node);
+        VisualData? visualData = VisualizeAttributeHandler.RetrieveData(node);
 
         if (visualData != null)
         {
             (Control visualPanel, IReadOnlyList<Action> actions) = VisualUI.CreateVisualPanel(visualData, readonlyMembers);
 
             ulong instanceId = node.GetInstanceId();
-            Node positionalNode = GetClosestParentOfType(node, _positionNodeTypes);
+            Node? positionalNode = GetClosestParentOfType(node, _positionNodeTypes);
 
             if (positionalNode == null)
             {
@@ -69,7 +69,7 @@ internal sealed class VisualNodeManager
     {
         ulong instanceId = node.GetInstanceId();
 
-        if (_nodeTrackers.TryGetValue(instanceId, out VisualNodeInfo info))
+        if (_nodeTrackers.TryGetValue(instanceId, out VisualNodeInfo? info))
         {
             // GetParent to queue free the CanvasLayer this VisualControl is a child of
             info.VisualControl.GetParent().QueueFree();
@@ -79,7 +79,7 @@ internal sealed class VisualNodeManager
         VisualizeAutoload.Instance?.UnregisterNode(node);
     }
 
-    private static bool TryGetGlobalPosition(Node node, out Vector2 position)
+    private static bool TryGetGlobalPosition(Node? node, out Vector2 position)
     {
         if (node is Node2D node2D)
         {
@@ -97,7 +97,7 @@ internal sealed class VisualNodeManager
         return false;
     }
 
-    private static Node GetClosestParentOfType(Node node, params Type[] typesToCheck)
+    private static Node? GetClosestParentOfType(Node node, params Type[] typesToCheck)
     {
         if (IsNodeOfType(node, typesToCheck))
             return node;

@@ -5,7 +5,7 @@ namespace Framework.Netcode.Examples.Topdown;
 
 public partial class SPacketPlayerPositions : ServerPacket
 {
-    public Dictionary<uint, Vector2> Positions { get; set; }
+    public Dictionary<uint, Vector2> Positions { get; set; } = null!;
 
     public override void Write(PacketWriter writer)
     {

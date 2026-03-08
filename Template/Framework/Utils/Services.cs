@@ -27,10 +27,10 @@ public class Services(AutoloadsFramework autoloads)
     public T Get<T>()
     {
         Type serviceType = typeof(T);
-        if (!_services.TryGetValue(serviceType, out Node service))
+        if (!_services.TryGetValue(serviceType, out Node? service))
             throw new InvalidOperationException($"Unable to obtain service '{serviceType.Name}'.");
 
-        return (T)(object)service;
+        return (T)(object)service!;
     }
 
     /// <summary>
@@ -91,6 +91,6 @@ public class Services(AutoloadsFramework autoloads)
     /// </summary>
     public override string ToString()
     {
-        return _services.ToFormattedString();
+        return _services.ToFormattedString()!;
     }
 }

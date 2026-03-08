@@ -5,7 +5,7 @@ namespace Framework;
 
 public partial class GameComponentManager : Node
 {
-    private ComponentManager _componentManager;
+    private ComponentManager _componentManager = null!;
 
     // Godot Overrides
     public override void _EnterTree()

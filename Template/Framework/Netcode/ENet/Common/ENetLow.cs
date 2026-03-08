@@ -15,13 +15,13 @@ public abstract class ENetLow
     private const int WorkerPollTimeoutMs = 15;
 
     /// <summary>ENet host handle managed by the concrete transport.</summary>
-    protected Host Host { get; set; }
+    protected Host Host { get; set; } = null!;
 
     /// <summary>Cancels the worker loop on shutdown.</summary>
-    protected CancellationTokenSource CTS { get; set; }
+    protected CancellationTokenSource CTS { get; set; } = null!;
 
     /// <summary>Logging and diagnostic settings for this transport.</summary>
-    protected ENetOptions Options { get; set; }
+    protected ENetOptions Options { get; set; } = null!;
 
     /// <summary>Packet types excluded from verbose logging output.</summary>
     protected HashSet<Type> IgnoredPackets { get; private set; } = [];

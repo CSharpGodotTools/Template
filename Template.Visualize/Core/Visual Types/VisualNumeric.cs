@@ -10,18 +10,18 @@ internal static partial class VisualControlTypes
 {
     private const double DefaultStepValue = 0.005;
 
-    private static VisualControlInfo VisualNumeric(Type type, MemberInfo memberInfo, VisualControlContext context)
+    private static VisualControlInfo VisualNumeric(Type type, MemberInfo? memberInfo, VisualControlContext context)
     {
         SpinBox control;
 
-        if (memberInfo != null && TryGetExportAttributeRange(memberInfo, out ExportAttributeRange range))
+        if (memberInfo != null && TryGetExportAttributeRange(memberInfo, out ExportAttributeRange? range))
         {
             control = new SpinBox()
             {
                 Alignment = HorizontalAlignment.Center,
-                MinValue = range.MinValue,
-                MaxValue = range.MaxValue,
-                Step = range.StepValue,
+                MinValue = range!.MinValue,
+                MaxValue = range!.MaxValue,
+                Step = range!.StepValue,
             };
         }
         else
@@ -43,9 +43,9 @@ internal static partial class VisualControlTypes
     /// <summary>
     /// Checks if the member has [Export(PropertyHint.Range, "0, 1, 0.1")] and gets the min, max, and step values.
     /// </summary>
-    private static bool TryGetExportAttributeRange(MemberInfo memberInfo, out ExportAttributeRange exportAttributeRange)
+    private static bool TryGetExportAttributeRange(MemberInfo memberInfo, out ExportAttributeRange? exportAttributeRange)
     {
-        ExportAttribute exportAttribute = memberInfo.GetCustomAttribute<ExportAttribute>();
+        ExportAttribute? exportAttribute = memberInfo.GetCustomAttribute<ExportAttribute>();
         exportAttributeRange = null;
 
         if (exportAttribute == null || exportAttribute.Hint != PropertyHint.Range)

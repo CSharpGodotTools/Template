@@ -7,7 +7,7 @@
         <!--Prevent use of the global usings feature-->
         <ImplicitUsings>false</ImplicitUsings>
         <RootNamespace>Template</RootNamespace>
-        <Nullable>disable</Nullable>
+        <Nullable>enable</Nullable>
         <!-- gdUnit4 requires this -->
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <!-- Disable warnings -->

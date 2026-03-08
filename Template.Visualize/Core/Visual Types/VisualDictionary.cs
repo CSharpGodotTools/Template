@@ -21,11 +21,11 @@ internal static partial class VisualControlTypes
         object defaultKey = VisualMethods.CreateDefaultValue(keyType);
         object defaultValue = VisualMethods.CreateDefaultValue(valueType);
 
-        IDictionary dictionary = context.InitialValue as IDictionary ?? (IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(keyType, valueType));
+        IDictionary dictionary = context.InitialValue as IDictionary ?? (IDictionary)Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(keyType, valueType))!;
 
         foreach (DictionaryEntry entry in dictionary)
         {
-            AddEntry(entry.Key, entry.Value);
+            AddEntry(entry.Key, entry.Value!);
         }
 
         addButton.Pressed += () =>
@@ -66,12 +66,12 @@ internal static partial class VisualControlTypes
                     throw new ArgumentException($"[Visualize] Type mismatch: Expected {keyType}, got {v.GetType()}");
                 }
 
-                object currentValue = dictionary[currentKey];
+                object? currentValue = dictionary[currentKey];
                 dictionary.Remove(currentKey);
                 dictionary[v] = currentValue;
                 currentKey = v;
                 context.ValueChanged(dictionary);
-                valueControl.VisualControl.SetValue(defaultValue);
+                valueControl.VisualControl?.SetValue(defaultValue);
             }));
 
             if (keyControl.VisualControl == null || valueControl.VisualControl == null)

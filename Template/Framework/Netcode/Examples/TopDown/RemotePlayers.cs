@@ -26,7 +26,7 @@ internal sealed class RemotePlayers
     {
         _trackedIds.Remove(id);
 
-        if (_players.Remove(id, out ColorRect playerNode))
+        if (_players.Remove(id, out ColorRect? playerNode))
         {
             playerNode.QueueFree();
         }
@@ -54,7 +54,7 @@ internal sealed class RemotePlayers
             if (!_trackedIds.Contains(positionEntry.Key))
                 continue;
 
-            if (!_players.TryGetValue(positionEntry.Key, out ColorRect playerNode))
+            if (!_players.TryGetValue(positionEntry.Key, out ColorRect? playerNode))
             {
                 playerNode = World.CreatePlayerRect(new Color(1f, 0.55f, 0.2f));
                 playerNode.Name = $"Player_{positionEntry.Key}";
@@ -78,7 +78,7 @@ internal sealed class RemotePlayers
 
         foreach (KeyValuePair<uint, Vector2> positionEntry in _targetPositions)
         {
-            if (_players.TryGetValue(positionEntry.Key, out ColorRect playerNode))
+            if (_players.TryGetValue(positionEntry.Key, out ColorRect? playerNode))
             {
                 playerNode.Position = playerNode.Position.Lerp(positionEntry.Value, interpolation);
             }

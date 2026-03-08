@@ -14,7 +14,7 @@ internal static class VisualizeAttributeHandler
 {
     private static readonly BindingFlags _flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
-    public static VisualData RetrieveData(Node specificNode)
+    public static VisualData? RetrieveData(Node specificNode)
     {
         Type type = specificNode.GetType();
 

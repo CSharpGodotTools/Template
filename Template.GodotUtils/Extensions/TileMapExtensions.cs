@@ -15,7 +15,7 @@ public static class TileMapExtensions
         TileData tileData = tileMap.GetCellTileData(tileCoordinates);
 
         if (tileData == null)
-            return default;
+            return default!;
 
         T data = tileData.GetCustomData(customDataLayerName).As<T>();
         return data;

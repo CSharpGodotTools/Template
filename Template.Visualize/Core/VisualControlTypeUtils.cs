@@ -20,7 +20,7 @@ internal static partial class VisualControlTypes
             throw new ArgumentOutOfRangeException(nameof(index), index, $"[Visualize] Index was out of range");
         }
 
-        Array dest = Array.CreateInstance(source.GetType().GetElementType(), source.Length - 1);
+        Array dest = Array.CreateInstance(source.GetType().GetElementType()!, source.Length - 1);
         Array.Copy(source, 0, dest, 0, index);
         Array.Copy(source, index + 1, dest, index, source.Length - index - 1);
 
@@ -31,7 +31,7 @@ internal static partial class VisualControlTypes
     {
         ArgumentNullException.ThrowIfNull(source);
 
-        Type elementType = source.GetType().GetElementType();
+        Type elementType = source.GetType().GetElementType()!;
         Array dest = Array.CreateInstance(elementType, source.Length + 1);
         Array.Copy(source, dest, source.Length);
         dest.SetValue(value, dest.Length - 1);
@@ -64,7 +64,7 @@ internal static partial class VisualControlTypes
 
     private static VisualControlInfo CreateTextControl(VisualControlContext context, Func<string, object> parse, Func<object, string> stringify)
     {
-        string initialText = stringify(context.InitialValue);
+        string initialText = stringify(context.InitialValue!);
         LineEdit lineEdit = new() { Text = initialText };
         lineEdit.TextChanged += text => context.ValueChanged(parse(text));
 
@@ -77,9 +77,10 @@ internal static partial class VisualControlTypes
         Type componentType,
         Func<T, double[]> getComponents,
         Func<T, int, double, T> setComponent)
+        where T : notnull
     {
         HBoxContainer container = new();
-        T currentValue = (T)context.InitialValue;
+        T currentValue = (T)context.InitialValue!;
         double[] components = getComponents(currentValue);
         SpinBox[] spinBoxes = new SpinBox[labels.Length];
 
@@ -106,7 +107,7 @@ internal static partial class VisualControlTypes
     private static VisualControlInfo CreateIndexedCollectionControl(
         Type elementType,
         Func<int> getCount,
-        Func<int, object> getValue,
+        Func<int, object?> getValue,
         Action<int, object> setValue,
         Action<object> addValue,
         Action<int> removeValue,
@@ -117,7 +118,7 @@ internal static partial class VisualControlTypes
         Button addButton = new() { Text = "+" };
         const string IndexMetaKey = "Visualize_Index";
 
-        void AddEntry(object value, int index)
+        void AddEntry(object? value, int index)
         {
             HBoxContainer row = new();
             row.SetMeta(IndexMetaKey, index);
@@ -131,7 +132,7 @@ internal static partial class VisualControlTypes
             if (control.VisualControl == null)
                 return;
 
-            control.VisualControl.SetValue(value);
+            control.VisualControl.SetValue(value!);
 
             Button removeButton = new() { Text = "-" };
             removeButton.Pressed += () =>

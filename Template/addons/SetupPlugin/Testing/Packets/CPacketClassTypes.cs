@@ -6,11 +6,11 @@ namespace Template.Setup.Testing;
 
 public sealed class AbilityState
 {
-    public string AbilityId { get; set; }
+    public string AbilityId { get; set; } = null!;
     public int CooldownTicks { get; set; }
     public bool IsEnabled { get; set; }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not AbilityState other)
         {
@@ -35,11 +35,11 @@ public sealed class AbilityState
 public sealed class PlayerClassState
 {
     public int PlayerId { get; set; }
-    public string DisplayName { get; set; }
-    public AbilityState PrimaryAbility { get; set; }
-    public AbilityState SecondaryAbility { get; set; }
+    public string DisplayName { get; set; } = null!;
+    public AbilityState PrimaryAbility { get; set; } = null!;
+    public AbilityState SecondaryAbility { get; set; } = null!;
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (obj is not PlayerClassState other)
         {

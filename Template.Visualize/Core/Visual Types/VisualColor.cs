@@ -7,7 +7,7 @@ internal static partial class VisualControlTypes
 {
     private static VisualControlInfo VisualColor(VisualControlContext context)
     {
-        Color initialColor = (Color)context.InitialValue;
+        Color initialColor = (Color)context.InitialValue!;
 
         ColorPickerButton colorPickerButton = ColorPickerButtonFactory.Create(initialColor);
         colorPickerButton.ColorChanged += color => context.ValueChanged(color);

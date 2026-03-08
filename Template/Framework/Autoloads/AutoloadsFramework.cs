@@ -20,26 +20,26 @@ namespace Framework;
 public abstract partial class AutoloadsFramework : Node
 {
     // Exports
-    [Export] private MenuScenes _scenes;
+    [Export] private MenuScenes _scenes = null!;
 
     // Events
-    public event Func<Task> PreQuit;
+    public event Func<Task>? PreQuit;
 
     // Autoloads
     // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
-    public GameComponentManager ComponentManager { get; private set; }
-    public GameConsole          GameConsole      { get; private set; }
-    public AudioManager         AudioManager     { get; private set; }
-    public OptionsManager       OptionsManager   { get; private set; }
-    public Services             Services         { get; private set; }
-    public MetricsOverlay       MetricsOverlay   { get; private set; }
-    public SceneManager         SceneManager     { get; private set; }
-    public Profiler             Profiler         { get; private set; }
-    public FocusOutlineManager  FocusOutline     { get; private set; }
-    public Logger Logger { get; private set; }
+    public GameComponentManager ComponentManager { get; private set; } = null!;
+    public GameConsole          GameConsole      { get; private set; } = null!;
+    public AudioManager         AudioManager     { get; private set; } = null!;
+    public OptionsManager       OptionsManager   { get; private set; } = null!;
+    public Services             Services         { get; private set; } = null!;
+    public MetricsOverlay       MetricsOverlay   { get; private set; } = null!;
+    public SceneManager         SceneManager     { get; private set; } = null!;
+    public Profiler             Profiler         { get; private set; } = null!;
+    public FocusOutlineManager  FocusOutline     { get; private set; } = null!;
+    public Logger               Logger           { get; private set; } = null!;
 
 #if DEBUG
-    private VisualizeAutoload _visualizeAutoload;
+    private VisualizeAutoload _visualizeAutoload = null!;
 #endif
 
     protected abstract void EnterTree();

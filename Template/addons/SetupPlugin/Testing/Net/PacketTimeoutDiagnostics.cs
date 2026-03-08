@@ -62,7 +62,7 @@ public static class PacketTimeoutDiagnostics
         Type packetType,
         bool checkValues)
     {
-        object value = GetStaticMemberValue(registryType, memberName);
+        object? value = GetStaticMemberValue(registryType, memberName);
         if (value is null)
         {
             return $"{memberName}=<missing>.";
@@ -93,16 +93,16 @@ public static class PacketTimeoutDiagnostics
         return $"{memberName}=<{value.GetType().Name}>.";
     }
 
-    private static object GetStaticMemberValue(Type type, string memberName)
+    private static object? GetStaticMemberValue(Type type, string memberName)
     {
         const BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-        PropertyInfo prop = type.GetProperty(memberName, flags);
+        PropertyInfo? prop = type.GetProperty(memberName, flags);
         if (prop != null)
         {
             return prop.GetValue(null);
         }
 
-        FieldInfo field = type.GetField(memberName, flags);
+        FieldInfo? field = type.GetField(memberName, flags);
         if (field != null)
         {
             return field.GetValue(null);

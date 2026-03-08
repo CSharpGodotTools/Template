@@ -10,7 +10,7 @@ public partial class RotationComponent : Node
     [Export] private float _speed = 1.5f;
 
     // Variables
-    private Node2D _parent;
+    private Node2D _parent = null!;
 
     // Godot Overrides
     public override void _Ready()
