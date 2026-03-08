@@ -12,7 +12,7 @@ public partial class GameServer : GodotServer
     private const int PositionBroadcastIntervalMs = 100;
 
     // Precompute tick interval once to avoid per-call multiplication.
-    private static readonly long BroadcastIntervalTicks =
+    private static readonly long _broadcastIntervalTicks =
         (long)(PositionBroadcastIntervalMs * (double)Stopwatch.Frequency / 1000.0);
 
     private readonly HashSet<uint> _players = [];
@@ -162,7 +162,7 @@ public partial class GameServer : GodotServer
             return true;
         }
 
-        if (now - _lastPositionBroadcastTicks < BroadcastIntervalTicks)
+        if (now - _lastPositionBroadcastTicks < _broadcastIntervalTicks)
         {
             return false;
         }

@@ -87,9 +87,7 @@ public partial class GameClient : GodotClient
         }
 
         if (IsLocalPlayer(packet.Id))
-        {
             return;
-        }
 
         RemotePlayerJoined?.Invoke(packet.Id);
     }
@@ -97,9 +95,7 @@ public partial class GameClient : GodotClient
     private void HandleLocalPlayerJoined(uint id)
     {
         if (!TrySetLocalIdentity(id))
-        {
             return;
-        }
 
         LocalPlayerReady?.Invoke(LocalId);
         FlushPendingPositions();
@@ -108,9 +104,7 @@ public partial class GameClient : GodotClient
     private void HandlePlayerLeft(uint id)
     {
         if (IsLocalPlayer(id))
-        {
             return;
-        }
 
         _remotePositions.Remove(id);
         _pendingPositions.Remove(id);
@@ -142,9 +136,7 @@ public partial class GameClient : GodotClient
     {
         // Skip all work when nothing is listening — the common case for bots.
         if (RemotePositionsUpdated == null)
-        {
             return;
-        }
 
         uint localId = LocalId;
         _remotePositions.Clear();
