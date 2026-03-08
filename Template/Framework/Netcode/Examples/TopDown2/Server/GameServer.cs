@@ -1,3 +1,4 @@
+using Framework.Netcode;
 using Framework.Netcode.Server;
 
 namespace Framework.Netcode.Examples.TopDown2;
@@ -9,8 +10,8 @@ public class GameServer : GodotServer
         OnPacket<CPacketPlayerPosition>(OnReceivePlayerPosition);
     }
 
-    private void OnReceivePlayerPosition(CPacketPlayerPosition position, uint peerId)
+    private void OnReceivePlayerPosition(PacketFromPeer<CPacketPlayerPosition> peer)
     {
-        Log(position);
+        Log(peer.Packet);
     }
 }

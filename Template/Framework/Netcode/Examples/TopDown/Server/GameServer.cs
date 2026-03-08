@@ -1,5 +1,7 @@
+using Framework.Netcode;
 using Framework.Netcode.Server;
 using Godot;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -28,35 +30,31 @@ public partial class GameServer : GodotServer
         RemovePlayer(peerId);
     }
 
-    private void OnPlayerJoinLeave(CPacketPlayerJoinLeave packet, uint peerId)
+    private void OnPlayerJoinLeave(PacketFromPeer<CPacketPlayerJoinLeave> peer)
     {
-        if (packet.Joined)
+        if (peer.Packet.Joined)
         {
-            AddPlayer(peerId);
+            AddPlayer(peer.PeerId);
         }
         else
         {
-            RemovePlayer(peerId);
+            RemovePlayer(peer.PeerId);
         }
     }
 
-    private void OnPlayerPosition(CPacketPlayerPosition packet, uint peerId)
+    private void OnPlayerPosition(PacketFromPeer<CPacketPlayerPosition> peer)
     {
-        if (!_players.Contains(peerId))
-        {
+        if (!_players.Contains(peer.PeerId))
             return;
-        }
 
-        _positions[peerId] = packet.Position;
+        _positions[peer.PeerId] = peer.Packet.Position;
         BroadcastPositions();
     }
 
     private void AddPlayer(uint peerId)
     {
         if (!_players.Add(peerId))
-        {
             return;
-        }
 
         // Tell the new player their own ID.
         Send(new SPacketPlayerJoinedLeaved
@@ -81,9 +79,7 @@ public partial class GameServer : GodotServer
     private void RemovePlayer(uint playerId)
     {
         if (!_players.Remove(playerId))
-        {
             return;
-        }
 
         _positions.Remove(playerId);
         Broadcast(new SPacketPlayerJoinedLeaved { Id = playerId, Joined = false });
@@ -115,9 +111,7 @@ public partial class GameServer : GodotServer
     private void BroadcastPositions(bool force = false)
     {
         if (!CanBroadcastPositions(force) || _players.Count == 0)
-        {
             return;
-        }
 
         // Serialise once and enqueue a unicast per player to avoid redundant copies.
         // The core transport will fragment automatically if the payload exceeds MaxSize.

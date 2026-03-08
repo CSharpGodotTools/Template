@@ -23,8 +23,8 @@ public sealed class TestServer<TPacket> : GodotServer
         
     }
 
-    private void HandlePacket(TPacket packet, uint peerId)
+    private void HandlePacket(PacketFromPeer<TPacket> peer)
     {
-        _onPacket(packet, peerId);
+        _onPacket(peer.Packet, peer.PeerId);
     }
 }

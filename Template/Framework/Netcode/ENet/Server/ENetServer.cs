@@ -20,7 +20,7 @@ public abstract partial class ENetServer : ENetLow
     private readonly ConcurrentQueue<Cmd<ENetServerOpcode>> _enetCmds = new();
     private readonly ConcurrentQueue<IncomingPacket> _incoming = new();
     private readonly ConcurrentQueue<OutgoingMessage> _outgoing = new();
-    private readonly ConcurrentDictionary<Type, Action<ClientPacket, uint>> _clientPacketHandlers = new();
+    private readonly ConcurrentDictionary<Type, Action<PacketFromPeer<ClientPacket>>> _clientPacketHandlers = new();
 
     /// <summary>
     /// Peer lookup. Only accessed on the ENet worker thread.
@@ -41,11 +41,12 @@ public abstract partial class ENetServer : ENetLow
     /// Registers a handler for a specific client packet type.
     /// Handlers run on the ENet worker thread.
     /// </summary>
-    protected void OnPacket<TPacket>(Action<TPacket, uint> handler) where TPacket : ClientPacket
+    protected void OnPacket<TPacket>(Action<PacketFromPeer<TPacket>> handler) where TPacket : ClientPacket
     {
         ArgumentNullException.ThrowIfNull(handler);
 
-        _clientPacketHandlers[typeof(TPacket)] = (packet, peerId) => handler((TPacket)packet, peerId);
+        _clientPacketHandlers[typeof(TPacket)] = peer =>
+            handler(new PacketFromPeer<TPacket> { Packet = (TPacket)peer.Packet, PeerId = peer.PeerId });
     }
 
     /// <summary>
@@ -352,13 +353,13 @@ public abstract partial class ENetServer : ENetLow
                 return;
             }
 
-            if (!_clientPacketHandlers.TryGetValue(packetType, out Action<ClientPacket, uint> handler))
+            if (!_clientPacketHandlers.TryGetValue(packetType, out Action<PacketFromPeer<ClientPacket>> handler))
             {
                 Log($"No handler registered for client packet {packetType.Name} (Ignoring)");
                 return;
             }
 
-            if (!TryInvokePacketHandler(handler, packet, peer.ID))
+            if (!TryInvokePacketHandler(handler, new PacketFromPeer<ClientPacket> { Packet = packet, PeerId = peer.ID }))
             {
                 return;
             }
@@ -412,11 +413,11 @@ public abstract partial class ENetServer : ENetLow
         }
     }
 
-    private static bool TryInvokePacketHandler(Action<ClientPacket, uint> handler, ClientPacket packet, uint peerId)
+    private static bool TryInvokePacketHandler(Action<PacketFromPeer<ClientPacket>> handler, PacketFromPeer<ClientPacket> peer)
     {
         try
         {
-            handler(packet, peerId);
+            handler(peer);
             return true;
         }
         catch (Exception exception)
