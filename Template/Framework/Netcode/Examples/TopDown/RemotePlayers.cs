@@ -8,6 +8,7 @@ internal sealed class RemotePlayers
     private const float RemoteLerpSpeed = 6f;
 
     private readonly World _world;
+    private readonly HashSet<uint> _trackedIds = [];
     private readonly Dictionary<uint, ColorRect> _players = [];
     private readonly Dictionary<uint, Vector2> _targetPositions = [];
 
@@ -18,12 +19,13 @@ internal sealed class RemotePlayers
 
     public void EnsureRemote(uint id)
     {
-        // node creation occurs when the first position update arrives
-        // (see UpdateTargets).
+        _trackedIds.Add(id);
     }
 
     public void Remove(uint id)
     {
+        _trackedIds.Remove(id);
+
         if (_players.Remove(id, out ColorRect playerNode))
         {
             playerNode.QueueFree();
@@ -34,6 +36,8 @@ internal sealed class RemotePlayers
 
     public void ClearAll()
     {
+        _trackedIds.Clear();
+
         foreach (ColorRect playerNode in _players.Values)
         {
             playerNode.QueueFree();
@@ -47,10 +51,16 @@ internal sealed class RemotePlayers
     {
         foreach (KeyValuePair<uint, Vector2> positionEntry in positions)
         {
-            ColorRect playerNode = EnsurePlayerNode(positionEntry.Key);
-            if (!_targetPositions.ContainsKey(positionEntry.Key))
+            if (!_trackedIds.Contains(positionEntry.Key))
+                continue;
+
+            if (!_players.TryGetValue(positionEntry.Key, out ColorRect playerNode))
             {
+                playerNode = World.CreatePlayerRect(new Color(1f, 0.55f, 0.2f));
+                playerNode.Name = $"Player_{positionEntry.Key}";
                 playerNode.Position = positionEntry.Value;
+                _players[positionEntry.Key] = playerNode;
+                _world.AddChild(playerNode);
             }
 
             _targetPositions[positionEntry.Key] = positionEntry.Value;
@@ -74,19 +84,5 @@ internal sealed class RemotePlayers
             }
         }
     }
-
-    private ColorRect EnsurePlayerNode(uint id)
-    {
-        if (_players.TryGetValue(id, out ColorRect existingNode))
-        {
-            return existingNode;
-        }
-
-        ColorRect playerNode = World.CreatePlayerRect(new Color(1f, 0.55f, 0.2f));
-        playerNode.Name = $"Player_{id}";
-        playerNode.Position = _world.GetScreenCenter();
-        _players[id] = playerNode;
-        _world.AddChild(playerNode);
-        return playerNode;
-    }
 }
+

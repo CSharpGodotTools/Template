@@ -7,8 +7,6 @@ namespace Framework.Netcode.Examples.Topdown;
 
 public partial class GameServer : GodotServer
 {
-    // Clients that opt in to receiving position broadcasts, typically human players only.
-    // Bots never subscribe, which eliminates the majority of outgoing position traffic.
     private const int PositionBroadcastIntervalMs = 100;
 
     // Precompute tick interval once to avoid per-call multiplication.
@@ -16,7 +14,6 @@ public partial class GameServer : GodotServer
         (long)(PositionBroadcastIntervalMs * (double)Stopwatch.Frequency / 1000.0);
 
     private readonly HashSet<uint> _players = [];
-    private readonly HashSet<uint> _positionSubscribers = [];
     private readonly Dictionary<uint, Vector2> _positions = [];
     private long _lastPositionBroadcastTicks;
 
@@ -24,7 +21,6 @@ public partial class GameServer : GodotServer
     {
         OnPacket<CPacketPlayerJoinLeave>(OnPlayerJoinLeave);
         OnPacket<CPacketPlayerPosition>(OnPlayerPosition);
-        OnPacket<CPacketSubscribePositions>(OnSubscribePositions);
     }
 
     protected override void OnPeerDisconnected(uint peerId)
@@ -55,17 +51,6 @@ public partial class GameServer : GodotServer
         BroadcastPositions();
     }
 
-    private void OnSubscribePositions(CPacketSubscribePositions packet, uint peerId)
-    {
-        if (!_players.Contains(peerId) || !_positionSubscribers.Add(peerId))
-        {
-            return;
-        }
-
-        // Send the current snapshot so the subscriber is immediately up to date.
-        SendPositionsSnapshotTo(peerId);
-    }
-
     private void AddPlayer(uint peerId)
     {
         if (!_players.Add(peerId))
@@ -90,7 +75,7 @@ public partial class GameServer : GodotServer
         }, peerId);
 
         SendExistingPlayersTo(peerId);
-        // Position snapshot is deferred until the client sends CPacketSubscribePositions.
+        SendPositionsSnapshotTo(peerId);
     }
 
     private void RemovePlayer(uint playerId)
@@ -101,7 +86,6 @@ public partial class GameServer : GodotServer
         }
 
         _positions.Remove(playerId);
-        _positionSubscribers.Remove(playerId);
         Broadcast(new SPacketPlayerJoinedLeaved { Id = playerId, Joined = false });
         BroadcastPositions(force: true);
     }
@@ -130,20 +114,20 @@ public partial class GameServer : GodotServer
 
     private void BroadcastPositions(bool force = false)
     {
-        if (!CanBroadcastPositions(force) || _positionSubscribers.Count == 0)
+        if (!CanBroadcastPositions(force) || _players.Count == 0)
         {
             return;
         }
 
-        // Serialise once and enqueue a unicast per subscriber to avoid redundant copies.
+        // Serialise once and enqueue a unicast per player to avoid redundant copies.
         // The core transport will fragment automatically if the payload exceeds MaxSize.
         SPacketPlayerPositions packet = new() { Positions = _positions };
         packet.Write();
         byte[] data = packet.GetData();
 
-        foreach (uint subscriberId in _positionSubscribers)
+        foreach (uint playerId in _players)
         {
-            EnqueueOutgoing(OutgoingMessage.Unicast(data, subscriberId));
+            EnqueueOutgoing(OutgoingMessage.Unicast(data, playerId));
         }
     }
 
