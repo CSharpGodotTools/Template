@@ -27,6 +27,9 @@ var _apply_button: Button
 var _content_container: VBoxContainer
 var _game_name_preview: Label
 var _status_label: Label
+var _dev_tools_status_label: Label
+var _cleanup_uids_button: Button
+var _cleanup_feedback_timer: Timer
 
 var _selected_project_type: String = ""
 var _selected_template_type: String = ""
@@ -104,12 +107,30 @@ func _create_controls() -> void:
 
 	_game_name_validator = GameNameValidator.new(_game_name_preview, _feedback_reset_timer, _game_name_line_edit)
 
+	_dev_tools_status_label = Label.new()
+	_dev_tools_status_label.autowrap_mode = TextServer.AutowrapMode.AUTOWRAP_WORD_SMART
+	_dev_tools_status_label.visible = false
+
+	_cleanup_uids_button = Button.new()
+	_cleanup_uids_button.text = "Cleanup uids"
+	_cleanup_uids_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	_cleanup_uids_button.custom_minimum_size = Vector2(200, 0)
+
+	_cleanup_feedback_timer = Timer.new()
+	_cleanup_feedback_timer.wait_time = 5.0
+	_cleanup_feedback_timer.one_shot = true
+
 	var editor_main_screen: Node = EditorInterface.get_editor_main_screen()
 	editor_main_screen.add_child(_confirm_restart_dialog)
 
 	_set_controls_enabled(false)
 
 func _build_layout() -> void:
+	var tab_container = TabContainer.new()
+	add_child(tab_container)
+
+	# Setup Tab
+	var setup_tab = VBoxContainer.new()
 	_content_container = VBoxContainer.new()
 	_content_container.add_child(_status_label)
 	_content_container.add_child(_game_name_preview)
@@ -128,9 +149,32 @@ func _build_layout() -> void:
 
 	margin_container.add_child(_content_container)
 
-	add_child(_feedback_reset_timer)
-	add_child(margin_container)
-	add_child(_apply_button)
+	setup_tab.add_child(_feedback_reset_timer)
+	setup_tab.add_child(margin_container)
+	setup_tab.add_child(_apply_button)
+
+	tab_container.add_child(setup_tab)
+	tab_container.set_tab_title(0, "Setup")
+
+	# Dev Tools Tab
+	var dev_tools_tab = VBoxContainer.new()
+
+	var dev_tools_margin: MarginContainer = MarginContainer.new()
+	dev_tools_margin.add_theme_constant_override("margin_left", MARGIN_PADDING)
+	dev_tools_margin.add_theme_constant_override("margin_top", MARGIN_PADDING)
+	dev_tools_margin.add_theme_constant_override("margin_right", MARGIN_PADDING)
+	dev_tools_margin.add_theme_constant_override("margin_bottom", MARGIN_PADDING)
+
+	var dev_tools_content: VBoxContainer = VBoxContainer.new()
+	dev_tools_content.add_child(_dev_tools_status_label)
+	dev_tools_margin.add_child(dev_tools_content)
+
+	dev_tools_tab.add_child(_cleanup_feedback_timer)
+	dev_tools_tab.add_child(dev_tools_margin)
+	dev_tools_tab.add_child(_cleanup_uids_button)
+
+	tab_container.add_child(dev_tools_tab)
+	tab_container.set_tab_title(1, "Dev Tools")
 
 func _register_events() -> void:
 	if _events_registered:
@@ -144,6 +188,8 @@ func _register_events() -> void:
 	_default_clear_color_picker.color_changed.connect(_on_default_clear_color_changed)
 	_anti_aliasing_options.item_selected.connect(_on_anti_aliasing_item_selected)
 	_apply_button.pressed.connect(_on_apply_pressed)
+	_cleanup_uids_button.pressed.connect(_on_cleanup_uids_pressed)
+	_cleanup_feedback_timer.timeout.connect(_on_cleanup_feedback_timer_timeout)
 	_events_registered = true
 	
 func _unregister_events() -> void:
@@ -175,6 +221,12 @@ func _unregister_events() -> void:
 
 	if _apply_button.is_connected("pressed", Callable(self, "_on_apply_pressed")):
 		_apply_button.pressed.disconnect(Callable(self, "_on_apply_pressed"))
+
+	if _cleanup_uids_button != null and _cleanup_uids_button.is_connected("pressed", Callable(self, "_on_cleanup_uids_pressed")):
+		_cleanup_uids_button.pressed.disconnect(Callable(self, "_on_cleanup_uids_pressed"))
+
+	if _cleanup_feedback_timer != null and _cleanup_feedback_timer.is_connected("timeout", Callable(self, "_on_cleanup_feedback_timer_timeout")):
+		_cleanup_feedback_timer.timeout.disconnect(Callable(self, "_on_cleanup_feedback_timer_timeout"))
 
 func _release_restart_dialog() -> void:
 	if _confirm_restart_dialog == null:
@@ -375,3 +427,65 @@ func _on_apply_pressed() -> void:
 		return
 
 	_confirm_restart_dialog.popup_centered()
+
+func _on_cleanup_uids_pressed() -> void:
+	_cleanup_uids_button.disabled = true
+
+	var project_root: String = ProjectSettings.globalize_path(PROJECT_ROOT_PATH)
+	var removed_count: int = _cleanup_uid_files_recursive(project_root)
+
+	if removed_count > 0:
+		_set_dev_tools_status("Removed %d old uid files." % removed_count)
+	else:
+		_set_dev_tools_status("All uid files are good. No action needed.")
+
+	_cleanup_feedback_timer.start()
+	_cleanup_uids_button.disabled = false
+
+func _cleanup_uid_files_recursive(directory: String) -> int:
+	var dir: DirAccess = DirAccess.open(directory)
+	if dir == null:
+		return 0
+
+	var removed_count: int = 0
+	var subdirectories: Array[String] = []
+	var files_in_dir: Array[String] = []
+
+	dir.list_dir_begin()
+	var file_name: String = dir.get_next()
+
+	while file_name != "":
+		if not file_name.begins_with("."):
+			var full_path: String = directory.path_join(file_name)
+			if dir.current_is_dir():
+				subdirectories.append(full_path)
+			else:
+				files_in_dir.append(file_name)
+
+		file_name = dir.get_next()
+
+	dir.list_dir_end()
+
+	for uid_file in files_in_dir:
+		if not uid_file.ends_with(".uid"):
+			continue
+
+		var expected_file: String = uid_file.trim_suffix(".uid")
+		if files_in_dir.has(expected_file):
+			continue
+
+		DirAccess.remove_absolute(directory.path_join(uid_file))
+		removed_count += 1
+
+	for subdirectory in subdirectories:
+		removed_count += _cleanup_uid_files_recursive(subdirectory)
+
+	return removed_count
+
+func _set_dev_tools_status(text: String) -> void:
+	_dev_tools_status_label.text = text
+	_dev_tools_status_label.visible = not text.is_empty()
+	_dev_tools_status_label.modulate = Color(0.6, 0.95, 0.6)
+
+func _on_cleanup_feedback_timer_timeout() -> void:
+	_set_dev_tools_status("")
