@@ -130,8 +130,8 @@ public abstract class GodotServer : ENetServer
         }
     }
 
-    // Throttling state keyed by developer-supplied identifier.
-    private readonly Dictionary<string, long> _lastThrottleTicks = new();
+    // Throttling state keyed by packet opcode.
+    private readonly Dictionary<ushort, long> _lastThrottleTicks = new();
 
     /// <summary>
     /// Returns <c>true</c> and updates the last-send timestamp when the throttle interval has elapsed.
@@ -160,7 +160,7 @@ public abstract class GodotServer : ENetServer
     {
         ArgumentNullException.ThrowIfNull(packet);
 
-        string key = packet.GetType().FullName;
+        ushort key = packet.GetOpcode();
         if (force || CanThrottle(key, intervalMs))
         {
             sendAction();
