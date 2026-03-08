@@ -17,13 +17,9 @@ public abstract class GodotServer : ENetServer
 
     protected GodotServer()
     {
-        RegisterPackets();
+        // subclasses may register packet handlers in their own constructors
     }
 
-    /// <summary>
-    /// Register all packet handlers for this server.
-    /// </summary>
-    protected abstract void RegisterPackets();
 
     /// <summary>
     /// Starts the server on <paramref name="port"/>. Options control logging; types in ignoredPackets are excluded from log output.

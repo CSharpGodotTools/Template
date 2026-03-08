@@ -12,6 +12,12 @@ public partial class GameClient : GodotClient
     private uint _localId;
     private bool _hasLocalId;
 
+    public GameClient()
+    {
+        OnPacket<SPacketPlayerJoinedLeaved>(OnPlayerJoinedLeaved);
+        OnPacket<SPacketPlayerPositions>(OnPlayerPositions);
+    }
+
     public event Action<uint> LocalPlayerReady;
     public event Action<uint> RemotePlayerJoined;
     public event Action<uint> RemotePlayerLeft;
@@ -20,11 +26,6 @@ public partial class GameClient : GodotClient
     public bool HasLocalId => _hasLocalId;
     public uint LocalId => _localId;
 
-    protected override void RegisterPackets()
-    {
-        OnPacket<SPacketPlayerJoinedLeaved>(OnPlayerJoinedLeaved);
-        OnPacket<SPacketPlayerPositions>(OnPlayerPositions);
-    }
 
     protected override void OnConnected()
     {

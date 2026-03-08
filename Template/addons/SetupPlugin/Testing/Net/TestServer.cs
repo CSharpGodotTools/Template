@@ -18,10 +18,6 @@ public sealed class TestServer<TPacket> : GodotServer
         }
     }
 
-    protected override void RegisterPackets()
-    {
-        
-    }
 
     private void HandlePacket(PacketFromPeer<TPacket> peer)
     {

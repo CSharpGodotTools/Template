@@ -14,8 +14,15 @@ public partial class GameServer : GodotServer
 
     private readonly PlayerManager _manager = new();
 
-    protected override void RegisterPackets()
+
+    protected override void OnPeerDisconnected(uint peerId)
     {
+        _manager.Remove(peerId);
+    }
+
+    public GameServer()
+    {
+        // packet registration moved here from base class hook
         OnPacket<CPacketPlayerJoinLeave>(peer =>
         {
             if (peer.Packet.Joined)
@@ -26,15 +33,7 @@ public partial class GameServer : GodotServer
 
         OnPacket<CPacketPlayerPosition>(peer =>
             _manager.UpdatePosition(peer.PeerId, peer.Packet.Position));
-    }
 
-    protected override void OnPeerDisconnected(uint peerId)
-    {
-        _manager.Remove(peerId);
-    }
-
-    public GameServer()
-    {
         _manager.PlayerJoined += peerId =>
         {
             NotifySelfJoined(peerId);

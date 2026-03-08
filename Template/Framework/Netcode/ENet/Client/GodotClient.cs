@@ -17,13 +17,9 @@ public abstract class GodotClient : ENetClient
 
     protected GodotClient()
     {
-        RegisterPackets();
+        // subclasses should register packet handlers in their constructors
     }
 
-    /// <summary>
-    /// Register all packet handlers for this client.
-    /// </summary>
-    protected abstract void RegisterPackets();
 
     /// <summary>
     /// Registers a handler for incoming <typeparamref name="TPacket"/> packets, dispatched on the Godot main thread.

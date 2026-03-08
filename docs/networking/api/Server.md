@@ -29,7 +29,7 @@ Everything below is what `GodotServer` exposes as an API to you.
 
 `void Broadcast(ServerPacket packet, params Peer[] clients)` - Broadcast a packet. If `clients.Length == 0`, it broadcasts to everyone. If `clients.Length == 1`, it broadcasts to everyone except that peer. If `clients.Length > 1`, it broadcasts to only those peers.
 
-`void RegisterPacketHandler<TPacket>(Action<TPacket, Peer> handler)` - Register and handle a received `ClientPacket`. _(Protected method for server subclasses.)_
+`void RegisterPacketHandler<TPacket>(Action<TPacket, Peer> handler)` - Register and handle a received `ClientPacket`. _(Protected method for server subclasses; call in your constructor.)_
 
 `void Log(object message, BBColor color = BBColor.Gray)` - Log a message as the server. _Using `GD.Print` may lead to crashes if printing from multiple threads so always use `Log`._
 

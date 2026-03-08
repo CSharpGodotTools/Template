@@ -5,7 +5,7 @@ namespace Framework.Netcode.Examples.TopDown2;
 
 public class GameServer : GodotServer
 {
-    protected override void RegisterPackets()
+    public GameServer()
     {
         OnPacket<CPacketPlayerPosition>(OnReceivePlayerPosition);
     }
