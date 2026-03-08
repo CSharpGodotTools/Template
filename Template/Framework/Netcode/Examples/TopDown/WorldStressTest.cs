@@ -36,7 +36,6 @@ public partial class World
         private readonly Label _activeBotsLabel;
         private readonly Label _elapsedLabel;
         private readonly Label _peersLabel;
-        private readonly Label _spawnRateLabel;
 
         private int _targetClients = DefaultTargetClients;
         private float _spawnIntervalSeconds = DefaultSpawnIntervalSeconds;
@@ -70,7 +69,6 @@ public partial class World
             _activeBotsLabel = _world.GetNode<Label>("%ActiveBotsLabel");
             _elapsedLabel = _world.GetNode<Label>("%ElapsedLabel");
             _peersLabel = _world.GetNode<Label>("%PeersLabel");
-            _spawnRateLabel = _world.GetNode<Label>("%SpawnRateLabel");
 
             _targetClientsInput.TextSubmitted += OnTargetClientsChanged;
 
@@ -124,7 +122,12 @@ public partial class World
         public void Tick(float deltaSeconds)
         {
             if (!_started)
+            {
+                if (IsServerRunning())
+                    UpdateStatsUi();
+
                 return;
+            }
 
             if (_serverRestartPending)
             {
@@ -179,6 +182,13 @@ public partial class World
             _serverRestartPending = false;
             _elapsedSeconds = 0f;
             _world.ClearRemotePlayers();
+
+            // Force-disconnect all peers from the server side so ConnectedPeerCount
+            // resets immediately rather than draining slowly via bot-side disconnects.
+            if (TryGetNet(out Net<GameClient, GameServer> net) && net.Server != null)
+                net.Server.KickAll(DisconnectOpcode.Stopping);
+
+            _world.SetProcess(true);
             UpdateStatsUi();
         }
 
@@ -396,9 +406,6 @@ public partial class World
             if (TryGetNet(out Net<GameClient, GameServer> net) && net.Server != null)
                 peerCount = net.Server.ConnectedPeerCount;
             _peersLabel.Text = peerCount.ToString(CultureInfo.InvariantCulture);
-
-            float spawnRate = _spawnIntervalSeconds > 0f ? 1f / _spawnIntervalSeconds : 0f;
-            _spawnRateLabel.Text = spawnRate.ToString("F1", CultureInfo.InvariantCulture);
         }
 
         private sealed class BotPeerState

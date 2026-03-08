@@ -169,7 +169,8 @@ public partial class World : Node2D
             && _localPlayer != null
             && _localPlayer.HasLocalPlayer;
 
+        bool serverRunning = _netControlPanel?.Net?.Server?.IsRunning == true;
         bool stressTestRunning = _stressTest != null && _stressTest.IsRunning;
-        SetProcess(stressTestRunning || hasReadyNetworkPlayer);
+        SetProcess(stressTestRunning || hasReadyNetworkPlayer || serverRunning);
     }
 }

@@ -83,8 +83,8 @@ text = "Valk"
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -270.0
-offset_right = 460.0
+offset_top = -310.0
+offset_right = 390.0
 grow_vertical = 0
 
 [node name="Margin" type="MarginContainer" parent="CanvasLayer/Stress Test Interface" unique_id=1593357506]
@@ -96,9 +96,11 @@ theme_override_constants/margin_bottom = 5
 
 [node name="VBox" type="VBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin" unique_id=1537152856]
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="ButtonsHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox" unique_id=300000001]
 layout_mode = 2
+theme_override_constants/separation = 6
 
 [node name="StartStressTest" type="Button" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ButtonsHBox" unique_id=298884260]
 unique_name_in_owner = true
@@ -114,13 +116,15 @@ text = "Stop Stress Test"
 
 [node name="ContentHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox" unique_id=300000002]
 layout_mode = 2
+theme_override_constants/separation = 16
 
 [node name="ConfigVBox" type="VBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox" unique_id=300000003]
 layout_mode = 2
-size_flags_horizontal = 3
+theme_override_constants/separation = 4
 
 [node name="TargetClientsHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox" unique_id=1398343313]
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox/TargetClientsHBox" unique_id=1815662368]
 layout_mode = 2
@@ -129,11 +133,12 @@ text = "Bots:"
 [node name="TargetClients" type="LineEdit" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox/TargetClientsHBox" unique_id=902379042]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+custom_minimum_size = Vector2(65, 0)
 text = "10"
 
 [node name="SpawnIntervalHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox" unique_id=2083141955]
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox/SpawnIntervalHBox" unique_id=353241087]
 layout_mode = 2
@@ -142,11 +147,12 @@ text = "Spawn Interval (s):"
 [node name="SpawnInterval" type="LineEdit" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox/SpawnIntervalHBox" unique_id=129580334]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+custom_minimum_size = Vector2(65, 0)
 text = "0.3"
 
 [node name="CircleRadiusHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox" unique_id=110936771]
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox/CircleRadiusHBox" unique_id=1290921221]
 layout_mode = 2
@@ -155,11 +161,12 @@ text = "Circle Radius:"
 [node name="CircleRadius" type="LineEdit" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox/CircleRadiusHBox" unique_id=640293245]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+custom_minimum_size = Vector2(65, 0)
 text = "90"
 
 [node name="AngularSpeedHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox" unique_id=1470209133]
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox/AngularSpeedHBox" unique_id=1002193850]
 layout_mode = 2
@@ -168,11 +175,12 @@ text = "Angular Speed:"
 [node name="AngularSpeed" type="LineEdit" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox/AngularSpeedHBox" unique_id=169419820]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+custom_minimum_size = Vector2(65, 0)
 text = "1.0472"
 
 [node name="SendIntervalHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox" unique_id=1600213279]
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox/SendIntervalHBox" unique_id=883918362]
 layout_mode = 2
@@ -181,11 +189,12 @@ text = "Send Interval (s):"
 [node name="SendInterval" type="LineEdit" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox/SendIntervalHBox" unique_id=1156330906]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+custom_minimum_size = Vector2(65, 0)
 text = "0.05"
 
 [node name="PortHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox" unique_id=1549290449]
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="Label" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox/PortHBox" unique_id=1736271153]
 layout_mode = 2
@@ -194,15 +203,14 @@ text = "Port:"
 [node name="StressPort" type="LineEdit" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/ConfigVBox/PortHBox" unique_id=2058741920]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 3
+custom_minimum_size = Vector2(65, 0)
 text = "25565"
 
-[node name="Separator" type="VSeparator" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox" unique_id=300000004]
-layout_mode = 2
 
 [node name="StatsVBox" type="VBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox" unique_id=300000005]
 custom_minimum_size = Vector2(130, 0)
 layout_mode = 2
+theme_override_constants/separation = 3
 
 [node name="StatsTitle" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/StatsVBox" unique_id=300000006]
 layout_mode = 2
@@ -212,6 +220,7 @@ theme_override_colors/font_color = Color(0.7, 0.9, 1, 1)
 
 [node name="StatusHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/StatsVBox" unique_id=300000007]
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="StatusKeyLabel" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/StatsVBox/StatusHBox" unique_id=300000008]
 layout_mode = 2
@@ -225,6 +234,7 @@ text = "Idle"
 
 [node name="ActiveBotsHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/StatsVBox" unique_id=300000010]
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="ActiveBotsKeyLabel" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/StatsVBox/ActiveBotsHBox" unique_id=300000011]
 layout_mode = 2
@@ -238,6 +248,7 @@ text = "0 / 0"
 
 [node name="ElapsedHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/StatsVBox" unique_id=300000013]
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="ElapsedKeyLabel" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/StatsVBox/ElapsedHBox" unique_id=300000014]
 layout_mode = 2
@@ -251,6 +262,7 @@ text = "00:00"
 
 [node name="PeersHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/StatsVBox" unique_id=300000016]
 layout_mode = 2
+theme_override_constants/separation = 8
 
 [node name="PeersKeyLabel" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/StatsVBox/PeersHBox" unique_id=300000017]
 layout_mode = 2
@@ -262,15 +274,3 @@ layout_mode = 2
 size_flags_horizontal = 3
 text = "0"
 
-[node name="SpawnRateHBox" type="HBoxContainer" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/StatsVBox" unique_id=300000019]
-layout_mode = 2
-
-[node name="SpawnRateKeyLabel" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/StatsVBox/SpawnRateHBox" unique_id=300000020]
-layout_mode = 2
-text = "Spawn/s:"
-
-[node name="SpawnRateLabel" type="Label" parent="CanvasLayer/Stress Test Interface/Margin/VBox/ContentHBox/StatsVBox/SpawnRateHBox" unique_id=300000021]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "0.0"
