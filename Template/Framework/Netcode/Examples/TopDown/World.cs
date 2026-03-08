@@ -134,7 +134,7 @@ public partial class World : Node2D
         RefreshProcessingState();
     }
 
-    private void OnLocalPlayerReady(uint localId)
+    private void OnLocalPlayerReady()
     {
         _localPlayer.EnsureLocalPlayer();
         RefreshProcessingState();
@@ -165,7 +165,6 @@ public partial class World : Node2D
     {
         bool hasReadyNetworkPlayer = _client != null
             && _client.IsConnected
-            && _client.HasLocalId
             && _localPlayer != null
             && _localPlayer.HasLocalPlayer;
 

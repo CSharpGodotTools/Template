@@ -8,9 +8,7 @@ namespace Framework.Netcode.Examples.Topdown;
 public partial class GameClient : GodotClient
 {
     private readonly Dictionary<uint, Vector2> _remotePositions = [];
-    private readonly Dictionary<uint, Vector2> _pendingPositions = [];
-    private uint _localId;
-    private bool _hasLocalId;
+    private uint? _localPlayerId;
 
     public GameClient()
     {
@@ -18,14 +16,10 @@ public partial class GameClient : GodotClient
         OnPacket<SPacketPlayerPositions>(OnPlayerPositions);
     }
 
-    public event Action<uint> LocalPlayerReady;
+    public event Action LocalPlayerReady;
     public event Action<uint> RemotePlayerJoined;
     public event Action<uint> RemotePlayerLeft;
     public event Action<IReadOnlyDictionary<uint, Vector2>> RemotePositionsUpdated;
-
-    public bool HasLocalId => _hasLocalId;
-    public uint LocalId => _localId;
-
 
     protected override void OnConnected()
     {
@@ -34,9 +28,8 @@ public partial class GameClient : GodotClient
 
     protected override void OnDisconnected()
     {
-        ResetLocalIdentity();
+        _localPlayerId = null;
         _remotePositions.Clear();
-        _pendingPositions.Clear();
     }
 
     public void SendPosition(Vector2 position)
@@ -58,11 +51,8 @@ public partial class GameClient : GodotClient
 
     private void OnPlayerPositions(SPacketPlayerPositions packet)
     {
-        if (!HasLocalId)
-        {
-            CachePendingPositions(packet.Positions);
+        if (!_localPlayerId.HasValue)
             return;
-        }
 
         ApplyRemotePositions(packet.Positions);
     }
@@ -71,54 +61,24 @@ public partial class GameClient : GodotClient
     {
         if (packet.IsLocal)
         {
-            HandleLocalPlayerJoined(packet.Id);
+            _localPlayerId = packet.Id;
+            LocalPlayerReady?.Invoke();
             return;
         }
 
-        if (IsLocalPlayer(packet.Id))
+        if (packet.Id == _localPlayerId)
             return;
 
         RemotePlayerJoined?.Invoke(packet.Id);
     }
 
-    private void HandleLocalPlayerJoined(uint id)
-    {
-        if (!TrySetLocalIdentity(id))
-            return;
-
-        LocalPlayerReady?.Invoke(LocalId);
-        FlushPendingPositions();
-    }
-
     private void HandlePlayerLeft(uint id)
     {
-        if (IsLocalPlayer(id))
+        if (id == _localPlayerId)
             return;
 
         _remotePositions.Remove(id);
-        _pendingPositions.Remove(id);
         RemotePlayerLeft?.Invoke(id);
-    }
-
-    private void CachePendingPositions(IReadOnlyDictionary<uint, Vector2> positions)
-    {
-        _pendingPositions.Clear();
-
-        foreach (KeyValuePair<uint, Vector2> entry in positions)
-        {
-            _pendingPositions[entry.Key] = entry.Value;
-        }
-    }
-
-    private void FlushPendingPositions()
-    {
-        if (_pendingPositions.Count == 0)
-        {
-            return;
-        }
-
-        ApplyRemotePositions(_pendingPositions);
-        _pendingPositions.Clear();
     }
 
     private void ApplyRemotePositions(IReadOnlyDictionary<uint, Vector2> positions)
@@ -127,7 +87,7 @@ public partial class GameClient : GodotClient
         if (RemotePositionsUpdated == null)
             return;
 
-        uint localId = LocalId;
+        uint localId = _localPlayerId!.Value;
         _remotePositions.Clear();
 
         foreach (KeyValuePair<uint, Vector2> entry in positions)
@@ -140,24 +100,5 @@ public partial class GameClient : GodotClient
 
         // Pass the internal dictionary directly — callers must not retain the reference.
         RemotePositionsUpdated.Invoke(_remotePositions);
-    }
-
-    private bool IsLocalPlayer(uint playerId)
-    {
-        return HasLocalId && playerId == LocalId;
-    }
-
-    private bool TrySetLocalIdentity(uint localId)
-    {
-        bool hasChanged = !_hasLocalId || _localId != localId;
-        _localId = localId;
-        _hasLocalId = true;
-        return hasChanged;
-    }
-
-    private void ResetLocalIdentity()
-    {
-        _hasLocalId = false;
-        _localId = 0;
     }
 }
