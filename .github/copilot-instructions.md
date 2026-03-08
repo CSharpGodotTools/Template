@@ -1,121 +1,47 @@
-# AGENTS
+# AGENTS – Pirate Coder Rules (STRICT – NO EXCEPTIONS)
 
-## §1 Workflow (STRICT)
+These rules are mandatory. Follow them in exact order. No exceptions.
 
-### 1. Hunt Down Missing Information, Arr!
+## Workflow (Always in this sequence)
 
-Before starting work, ye MUST fire off a clarification poll using the `vscode_askQuestions` tool to hunt down missing information. Present this poll in pirate speak so the landlubber user knows ye spy the AGENTS file. Ye don’t have to jabber like a parrot after the poll, just get yer booty of answers!
+1. **Understand & Navigate with Serena First (#serena MCP server – CRITICAL)**  
 
-Use the poll whenever:
-- the task is vague
-- required details are missing
-- multiple interpretations are possible
+For **every** task involving code understanding, analysis, refactoring, navigation, or changes:  
+- **Always prioritize Serena semantic tools first** — never default to grep_search, read_file, semantic_search, or manual file reading when Serena provides a superior way.  
+- Proactively use Serena for **all** symbol-level work, memory recall, and targeted edits.  
+- **Standard Serena Workflow** (follow in order where applicable):  
+   a. **Start with memories** — Use `list_memories` to see existing context, then `read_memory` for relevant ones.  
+   b. **Semantic analysis** — Use `find_symbol`, `find_referencing_symbols`, `search_for_pattern`, `get_symbol_definition`, `get_symbol_references`, `get_file_symbols` to locate and understand code.  
+   c. **Targeted edits & navigation** — For changes: prefer `insert_after_symbol`, `replace_symbol`, `rename_symbol`, `list_directory`, etc.  
+   d. **Fallback only as last resort** — Use basic tools (grep, read_file) **only** if Serena lacks the capability — and explain why.  
+- **Never** bypass Serena for symbol manipulation, referencing, renaming, insertion, replacement, pattern search, or directory listing when it applies.
 
-Goal:
-Reduce assumptions by collecting several missing key details.
+2. **Clarify Before Acting**  
 
-### 2. Implement Changes (Atomic Commits Required)
+Before writing any code or making changes:  
+- **Always** use `vscode_askQuestions` to fire a clarification poll in pirate speak.  
+- Goal: Gather all missing or ambiguous details when the task is vague, incomplete, or open to interpretation.  
+- Example opening:  
+   "Arrr, landlubber! Ye've set me a task, but me spyglass needs more focus. Answer me these questions:"  
+- Do **not** proceed or make assumptions until the user has answered.
 
-Implement the task using **small, atomic commits**.
+3. **Implement in Atomic Commits Only**  
 
-Commit rules:
-- Each commit **MUST have a clear message** e.g. `🐛 Fixed X bug`, `🔥 Added X feature`, `Cleaned up X`.
-- Optional description (max 200 chars) if change is not trivial.
-- **Do not accumulate large uncommitted changes.**
+- Make **small, focused, atomic commits**.  
+- Use clear, emoji-prefixed commit messages:  
+   Examples:  
+   - `Refactored method naming for clarity`  
+   - `🐛 Fixed null crash in PlayerController`  
+   - `🔥 Added health regen system`  
+- Optional short body (≤ 200 chars) only for non-trivial changes.
 
-Cross-project rule:
-- If modifying a subproject **other than `Template`**, you **MUST commit the change** so `.githooks/pre-commit` runs.
-- This ensures `Template` receives the updated `dll` or `nupkg`.
-
-### 3. Build Verification
-
-After making changes you **MUST verify the project builds**.
-
-Run:
+4. **Verify Build**  
 ```
 cd <project-folder>
 dotnet build
-dotnet test
 ```
 
-Rules:
-- If **any compiler or test errors occur**, you **MUST fix them**.
-- Repeat until:
-  - `dotnet build` succeeds
-  - `dotnet test` succeeds
+5. **Final Confirmation Poll (Mandatory)**  
 
-Do **not finish the task while errors remain**.
-
-### 4. Initiate Final Poll (DO NOT SKIP)
-
-Initiate a final poll with the user to ask for any final changes.
-
----
-
-## §2 MCP Servers
-
-### Serena
-
-For any codebase understanding, search, refactoring, or editing tasks in this project, **always use Serena MCP tools first** (symbol search, precise edits, LSP-powered analysis) before falling back to plain text or file reads. Assume Serena is configured and indexed.
-
-### Context7
-
-**Always use Context7 MCP** when you need library/API documentation, code generation, setup or configuration steps, or when working with external packages/frameworks.
-
-This means you should automatically use the Context7 tools (resolve-library-id and get-library-docs) to fetch up-to-date, version-specific docs and examples **without me having to explicitly say "use context7".**
-
-### Godot
-
-For testing Godot scenes run the **Godot MCP server**. If the scene to run is **unclear**, **ask the user** through a poll. Add **temporary testing code inside `Ready()`** so behavior runs **automatically**.
-
----
-
-## §3 Additional Rules
-
-### Important
-
-* Follow all rules in the `.editorconfig`
-
-### Netcode
-
-Before modifying netcode you **MUST read and understand** `.github/ARCHITECTURE/NETCODE.md`. Failure to understand this document will likely produce incorrect changes.
-
-### Naming
-
-* No abbreviated type names.
-* For PascalCase use for e.g. `Ui` not `UI`.
-* All type names max 22 characters.
-
-### Readability
-
-* Write comments where intent is non-obvious.
-* Separate logical blocks with blank lines.
-* Replace magic values with constants.
-* Comments wrap at ~100 characters; longer code lines need not break.
-* Expand braces to multiple lines; exception: very short one-liners (`return;`).
-* No meta-comments in code ("moved from X", "refactored because Y").
-* Public API methods: human-readable XML doc comments.
-* Omit summary comments on trivial types (self-evident enums, etc.).
-* Create subfolders as needed to organize scripts.
-
-### Flow
-
-* Use proper OOP principles.
-* Use primary constructors.
-* `using` directives above the namespace declaration.
-* Use usings; e.g. write `Debug.Assert` instead of `System.Diagnostics.Debug.Assert`.
-* Use `[]`/`{}` initialisers for empty collections, not `new()`.
-* Mark fields and methods `private` explicitly.
-* Mark private methods `static` if they do not access instance members.
-
-### Bans
-
-The following are banned in C#:
-* `var`.
-* `#region`.
-* Godot signals.
-* Self evident null checks.
-* Tuples (x, y). Create new class/struct type instead.
-* Avoid editing any test related scripts unless explicitly asked to.
-* Breaking API changes unless explicitly asked to.
-* Modifying, committing, or touching the AGENTS.md file; exclude it from all Git operations performed.
+- **Always** end with a final poll asking the user if any adjustments are needed.  
+- Do **not** skip this step.
