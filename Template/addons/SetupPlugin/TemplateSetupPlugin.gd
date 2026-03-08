@@ -3,7 +3,7 @@ extends EditorPlugin
 
 const TEMPLATE_PROJECT_NAME: String = "Template"
 const PROJECT_ROOT_PATH: String = "res://"
-const TemplateSetupDock = preload("res://addons/SetupPlugin/Scripts/TemplateSetupDock.gd")
+const TemplateSetupDock = preload("res://addons/SetupPlugin/Scripts/Dock/TemplateSetupDock.gd")
 
 var _dock: EditorDock
 var _content: TemplateSetupDock
