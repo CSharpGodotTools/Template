@@ -154,13 +154,7 @@ public partial class PopupMenu : Control
     private void HidePopupMenu() => _menu.Hide();
 
     // Subscribers
-    private void OnResumePressed()
-    {
-        Hide();
-        GetTree().Paused = false;
-        Closed?.Invoke();
-        GameFramework.FocusOutline.ClearFocus();
-    }
+    private void OnResumePressed() => ResumeGame();
 
     private void OnRestartPressed()
     {

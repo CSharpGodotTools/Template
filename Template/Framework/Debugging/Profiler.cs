@@ -26,7 +26,7 @@ public class Profiler
     {
         if (!_entries.TryGetValue(key, out ProfilerEntry? entry))
         {
-            GD.PrintErr($"Profiler key '{key}' was not started.");
+            LogMissingKey(key);
             return;
         }
 
@@ -46,7 +46,7 @@ public class Profiler
     {
         if (!_entries.TryGetValue(key, out ProfilerEntry? entry))
         {
-            GD.PrintErr($"Profiler key '{key}' was not started.");
+            LogMissingKey(key);
             return;
         }
 
@@ -54,6 +54,9 @@ public class Profiler
     }
 
     // Private Methods
+    private static void LogMissingKey(string key) =>
+        GD.PrintErr($"Profiler key '{key}' was not started.");
+
     private static void StartMonitor(string key, int accuracy, Action<string, Func<object>> registerAction)
     {
         if (!_entries.TryGetValue(key, out ProfilerEntry? entry))

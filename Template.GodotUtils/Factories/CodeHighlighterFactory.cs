@@ -14,6 +14,9 @@ public static class CodeHighlighterFactory
     private const string _darkGray = "434048";
     private const string _lightLilac = "a59fff";
 
+    private static readonly string[] _keywords =
+        ["var", "true", "false", "new", "private", "public", "protected", "internal", "void"];
+
     /// <summary>
     /// Builds a default highlighter with keyword and token colors.
     /// </summary>
@@ -32,7 +35,7 @@ public static class CodeHighlighterFactory
             },
         };
 
-        string[] keywords = ["var", "true", "false", "new", "private", "public", "protected", "internal", "void"];
+        string[] keywords = _keywords;
 
         foreach (string keyword in keywords)
         {

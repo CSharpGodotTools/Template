@@ -110,6 +110,7 @@ public static class NodeExtensions
     /// <summary>
     /// Finds a child node of type <typeparamref name="T"/>.
     /// </summary>
+    [Obsolete("Use GetNode<T>() instead.")]
     public static T? GetComponent<T>(this Node node, bool recursive = true) where T : Node
     {
         return GetNode<T>(node, recursive);

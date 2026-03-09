@@ -18,6 +18,7 @@ internal sealed class ReadonlyMemberBinder
     {
         if (visualizeMembers == null)
         {
+            GD.PrintErr($"[Visualize] AddReadonlyControls called with null members on node '{node?.Name}'");
             return;
         }
 

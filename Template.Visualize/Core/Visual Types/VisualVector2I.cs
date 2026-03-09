@@ -14,13 +14,14 @@ internal static partial class VisualControlTypes
             value => [value.X, value.Y],
             (value, index, component) =>
             {
-                if (index == 0)
+                switch (index)
                 {
-                    value.X = (int)component;
-                }
-                else
-                {
-                    value.Y = (int)component;
+                    case 0:
+                        value.X = (int)component;
+                        break;
+                    default:
+                        value.Y = (int)component;
+                        break;
                 }
 
                 return value;

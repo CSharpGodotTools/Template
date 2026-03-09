@@ -9,6 +9,7 @@ namespace Framework;
 public class SceneManager
 {
     // Events
+    private const int SceneTransitionLayer = 10;
     public event Action? PreSceneChanged;
     public event Action? PostSceneChanged;
 
@@ -122,7 +123,7 @@ public class SceneManager
         // Add canvas layer to scene
         CanvasLayer canvasLayer = new()
         {
-            Layer = 10 // render on top of everything else
+            Layer = SceneTransitionLayer
         };
 
         _currentScene.AddChild(canvasLayer);

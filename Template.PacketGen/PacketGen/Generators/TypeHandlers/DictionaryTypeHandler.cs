@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using PacketGen.Generators.PacketGeneration;
+using PacketGen.Utilities;
 
 namespace PacketGen.Generators.TypeHandlers;
 
@@ -9,10 +10,8 @@ namespace PacketGen.Generators.TypeHandlers;
 internal sealed class DictionaryTypeHandler(TypeHandlerRegistry registry) : ITypeHandler
 {
     /// <inheritdoc/>
-    public bool CanHandle(ITypeSymbol type)
-    {
-        return type is INamedTypeSymbol named && named.IsGenericType && named.Name == "Dictionary";
-    }
+    public bool CanHandle(ITypeSymbol type) =>
+        type is INamedTypeSymbol named && named.IsGenericType && TypeSymbolHelper.IsDictionary(named);
 
     /// <inheritdoc/>
     public void EmitWrite(WriteContext ctx, string valueExpression, string indent, int depth)
@@ -22,8 +21,8 @@ internal sealed class DictionaryTypeHandler(TypeHandlerRegistry registry) : ITyp
         INamedTypeSymbol namedType = (INamedTypeSymbol)ctx.Shared.Type;
         ITypeSymbol keyType = namedType.TypeArguments[0];
         ITypeSymbol valueType = namedType.TypeArguments[1];
-        string keyTypeName = keyType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("global::", string.Empty);
-        string valueTypeName = valueType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Replace("global::", string.Empty);
+        string keyTypeName = TypeSymbolHelper.ToTypeName(keyType);
+        string valueTypeName = TypeSymbolHelper.ToTypeName(valueType);
 
         ctx.Shared.Namespaces.Add("System.Collections.Generic");
 

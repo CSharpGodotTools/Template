@@ -48,7 +48,6 @@ public class Services(AutoloadsFramework autoloads)
         if (_services.ContainsKey(serviceType))
             throw new InvalidOperationException($"There can only be one service of type '{serviceType.Name}'.");
 
-        //GD.Print($"Registering service: {node.GetType().Name}");
         AddService(node);
     }
 

@@ -11,6 +11,10 @@ namespace GodotUtils.Debugging;
 internal static partial class VisualControlTypes
 {
     // Helper method to remove an element from an array
+    private const double FloatStep = 0.1;
+    private const double DecimalStep = 0.01;
+    private const double IntStep = 1;
+
     private static Array RemoveAt(this Array source, int index)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -51,11 +55,11 @@ internal static partial class VisualControlTypes
             Alignment = HorizontalAlignment.Center,
             Step = type switch
             {
-                _ when type == typeof(float) => 0.1,
-                _ when type == typeof(double) => 0.1,
-                _ when type == typeof(decimal) => 0.01,
-                _ when type == typeof(int) => 1,
-                _ => 1
+                _ when type == typeof(float) => FloatStep,
+                _ when type == typeof(double) => FloatStep,
+                _ when type == typeof(decimal) => DecimalStep,
+                _ when type == typeof(int) => IntStep,
+                _ => IntStep
             }
         };
 

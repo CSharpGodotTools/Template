@@ -10,10 +10,8 @@ namespace PacketGen.Generators.TypeHandlers;
 internal sealed class ListTypeHandler(TypeHandlerRegistry registry) : ITypeHandler
 {
     /// <inheritdoc/>
-    public bool CanHandle(ITypeSymbol type)
-    {
-        return type is INamedTypeSymbol named && named.IsGenericType && named.Name == "List";
-    }
+    public bool CanHandle(ITypeSymbol type) =>
+        type is INamedTypeSymbol named && named.IsGenericType && TypeSymbolHelper.IsList(named);
 
     /// <inheritdoc/>
     public void EmitWrite(WriteContext ctx, string valueExpression, string indent, int depth)

@@ -68,8 +68,10 @@ public static class Sprite2DExtensions
     {
         Image img = GetTextureImage(sprite, out Vector2I size);
 
-        // Might not work with all sprites but works with ninja.
-        // The -2 offset that is
+        // Scans from the bottom of the sprite upward along the vertical center column (size.X / 2)
+        // to find how many fully-transparent rows exist at the bottom.
+        // Assumption: the sprite's opaque area passes through the center column — may give wrong
+        // results for asymmetric sprites.
         int diff = 0;
 
         for (int y = size.Y - 1; y >= 0; y--)

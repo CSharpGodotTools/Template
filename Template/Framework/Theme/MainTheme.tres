@@ -8,16 +8,16 @@
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hr7yw"]
 content_margin_left = 12.0
 content_margin_right = 12.0
-bg_color = Color(0.10, 0.18, 0.18, 1)
+bg_color = Color(0.1, 0.18, 0.18, 1)
 border_width_bottom = 4
-border_color = Color(0.0, 0.52, 0.50, 1)
+border_color = Color(0, 0.52, 0.5, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_cevqf"]
-bg_color = Color(0.0, 0.72, 0.70, 1)
+bg_color = Color(0, 0.72, 0.7, 1)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
@@ -29,19 +29,19 @@ border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.10, 0.10, 0.13, 1)
+border_color = Color(0.1, 0.1, 0.13, 1)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxEmpty_cevqf"]
-bg_color = Color(0.0, 0.0, 0.0, 0.0)
+bg_color = Color(0, 0, 0, 0)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.0, 0.72, 0.70, 1)
+border_color = Color(0, 0.72, 0.7, 1)
 corner_radius_top_left = 6
 corner_radius_top_right = 6
 corner_radius_bottom_right = 6
@@ -58,7 +58,7 @@ border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.16, 0.16, 0.20, 1)
+border_color = Color(0.16, 0.16, 0.2, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -77,6 +77,6 @@ OptionButton/styles/focus = SubResource("StyleBoxEmpty_xsdux")
 OptionButton/styles/hover = SubResource("StyleBoxFlat_hr7yw")
 OptionButton/styles/normal = ExtResource("1_tk1xn")
 OptionButton/styles/pressed = SubResource("StyleBoxFlat_hr7yw")
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_0ldbu")
 PopupMenu/styles/hover = SubResource("StyleBoxFlat_hr7yw")
 PopupMenu/styles/panel = SubResource("StyleBoxFlat_popup")
-PanelContainer/styles/panel = SubResource("StyleBoxFlat_0ldbu")

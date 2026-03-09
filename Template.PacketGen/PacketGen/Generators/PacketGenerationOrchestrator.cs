@@ -14,7 +14,6 @@ internal sealed class PacketGenerationOrchestrator
 {
     // Standard polynomial hash constants used in emitted GetHashCode / deep-hash helpers.
     private const int HashSeedValue = 17;
-    private const int HashMultiplierPrimary = 397;
     private const int HashMultiplierSecondary = 31;
 
     /// <summary>

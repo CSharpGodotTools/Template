@@ -41,7 +41,6 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         else if (@event is InputEventKey || @event is InputEventJoypadButton)
         {
             _lastNavigation = NavigationMethod.KeyboardOrGamepad;
-            //_lastInputTime = (float)(Time.GetTicksUsec() / 1_000_000.0);
         }
     }
 

@@ -7,6 +7,7 @@ namespace GodotUtils;
 /// </summary>
 public static class ColorPickerButtonFactory
 {
+    private const int DefaultButtonSize = 30;
     /// <summary>
     /// Creates a <see cref="ColorPickerButton"/> with <paramref name="defaultColor"/>.
     /// </summary>
@@ -14,7 +15,7 @@ public static class ColorPickerButtonFactory
     {
         ColorPickerButton button = new()
         {
-            CustomMinimumSize = Vector2.One * 30
+            CustomMinimumSize = Vector2.One * DefaultButtonSize
         };
 
         button.PickerCreated += OnPickerCreated;
