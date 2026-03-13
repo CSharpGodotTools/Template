@@ -3,7 +3,13 @@ using GodotUtils;
 
 namespace Framework.Ui;
 
-public partial class FocusOutlineManager(Node owner) : Component(owner)
+public interface IFocusManager : IComponentNode
+{
+    T GetNode<T>(NodePath path) where T : class;
+    Viewport GetViewport();
+}
+
+public partial class FocusOutlineManager(IFocusManager owner) : Component(owner)
 {
     // Config
     private readonly float _flashSpeed = 4f;
@@ -15,7 +21,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
     private Viewport _viewport = null!;
     private Control? _currentFocus;
     private Control _outline = null!;
-    private readonly Node _owner = owner;
+    private readonly IFocusManager _owner = owner;
     private float _time;
 
     // Godot Overrides
