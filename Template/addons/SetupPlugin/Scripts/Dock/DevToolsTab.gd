@@ -9,6 +9,7 @@ const LABEL_PADDING: int = 120
 const MARGIN_PADDING: int = 30
 const FEEDBACK_DURATION: float = 5.0
 const CS8632_SUPPRESSION: String = "dotnet_diagnostic.CS8632.severity = none # The annotation for nullable reference types should only be used in code within a '#nullable' annotations context."
+const IDE0370_SUPPRESSION: String = "dotnet_diagnostic.IDE0370.severity = none # Disable the IDE suggestion to enable nullable reference types."
 
 const ANTI_ALIASING_PATH_2D: String = "rendering/anti_aliasing/quality/msaa_2d"
 const ANTI_ALIASING_PATH_3D: String = "rendering/anti_aliasing/quality/msaa_3d"
@@ -227,7 +228,7 @@ func _on_nullable_pressed() -> void:
 	var new_state: bool = not currently_enabled
 
 	_set_csproj_nullable(new_state)
-	_set_editorconfig_cs8632(not new_state)
+	_set_editorconfig_suppressions(not new_state)
 	_update_nullable_button_text()
 
 	var state_text: String = "enabled" if new_state else "disabled"
@@ -253,7 +254,7 @@ func _set_csproj_nullable(enable: bool) -> void:
 	write_file.store_string(content)
 	write_file.close()
 
-func _set_editorconfig_cs8632(suppress: bool) -> void:
+func _set_editorconfig_suppressions(suppress: bool) -> void:
 	var path: String = ProjectSettings.globalize_path(EDITORCONFIG_PATH)
 	var file: FileAccess = FileAccess.open(path, FileAccess.READ)
 	if file == null:
@@ -262,22 +263,21 @@ func _set_editorconfig_cs8632(suppress: bool) -> void:
 	file.close()
 
 	if suppress:
-		if content.contains(CS8632_SUPPRESSION):
-			return
-		# Insert after the CA1816 line in the "Suppressed suggestions" section
 		var lines: PackedStringArray = content.split("\n")
 		var result: PackedStringArray = []
 		for line in lines:
 			result.append(line)
 			if line.begins_with("dotnet_diagnostic.CA1816.severity = none"):
-				result.append(CS8632_SUPPRESSION)
+				if not content.contains(CS8632_SUPPRESSION):
+					result.append(CS8632_SUPPRESSION)
+				if not content.contains(IDE0370_SUPPRESSION):
+					result.append(IDE0370_SUPPRESSION)
 		content = "\n".join(result)
 	else:
-		# Remove the CS8632 suppression line
 		var lines: PackedStringArray = content.split("\n")
 		var result: PackedStringArray = []
 		for line in lines:
-			if not line.begins_with("dotnet_diagnostic.CS8632.severity = none"):
+			if not (line.begins_with("dotnet_diagnostic.CS8632.severity = none") or line.begins_with("dotnet_diagnostic.IDE0370.severity = none")):
 				result.append(line)
 		content = "\n".join(result)
 
