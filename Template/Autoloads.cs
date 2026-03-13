@@ -9,7 +9,6 @@ public partial class Autoloads : AutoloadsFramework
 
     protected override void EnterTree()
     {
-        throw new System.Exception("TEST");
         Instance = this;
         // WorldManager = new WorldManager();
     }
