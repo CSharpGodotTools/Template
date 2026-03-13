@@ -1981,21 +1981,6 @@
             Unregisters a component from all processing types.
             </summary>
         </member>
-        <member name="T:GodotUtils.IComponentHost">
-            <summary>
-            Defines component host operations.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.IComponentHost.Add(GodotUtils.Component)">
-            <summary>
-            Adds a component to the host.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.IComponentHost.SetActive(System.Boolean)">
-            <summary>
-            Sets active state on all hosted components.
-            </summary>
-        </member>
         <member name="T:GodotUtils.CursorUtils">
             <summary>
             Utility class for handling cursor-related operations in a 2D Godot scene.

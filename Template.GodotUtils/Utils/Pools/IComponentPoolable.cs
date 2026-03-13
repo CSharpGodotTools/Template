@@ -10,7 +10,7 @@ public interface IComponentPoolable<TNode> where TNode : CanvasItem, IComponentP
     /// <summary>
     /// Gets the component host for the node.
     /// </summary>
-    IComponentHost Components { get; }
+    ComponentHost Components { get; }
 
     /// <summary>
     /// Invoked when a new <typeparamref name="TNode"/> is created.

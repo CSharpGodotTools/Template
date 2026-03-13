@@ -5,7 +5,7 @@ namespace GodotUtils;
 /// <summary>
 /// Holds and manages a set of components.
 /// </summary>
-public class ComponentHost : IComponentHost
+public class ComponentHost
 {
     private readonly List<Component> _components = [];
 
