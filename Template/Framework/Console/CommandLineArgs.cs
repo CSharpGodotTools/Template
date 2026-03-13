@@ -10,6 +10,9 @@ public class CommandLineArgs
 {
     public static void Initialize()
     {
+        if (Engine.IsEmbeddedInEditor())
+            return;
+
         // Get command-line arguments
         string[] args = OS.GetCmdlineArgs();
 

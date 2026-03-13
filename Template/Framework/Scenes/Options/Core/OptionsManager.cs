@@ -208,6 +208,9 @@ public partial class OptionsManager : IDisposable
 
     private void SetWinSize()
     {
+        if (Engine.IsEmbeddedInEditor())
+            return;
+
         Vector2I windowSize = new(_options.WindowWidth, _options.WindowHeight);
 
         if (windowSize != Vector2I.Zero)
