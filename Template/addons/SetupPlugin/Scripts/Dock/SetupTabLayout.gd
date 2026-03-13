@@ -2,7 +2,6 @@
 class_name SetupTabLayout
 extends VBoxContainer
 
-const DEFAULT_CLEAR_COLOR_PATH: String = "rendering/environment/defaults/default_clear_color"
 const LABEL_PADDING: int = 120
 const MARGIN_PADDING: int = 30
 
@@ -13,8 +12,6 @@ var _game_name_validator: GameNameValidator
 var _template_type: OptionButton
 var _project_type: OptionButton
 var _game_name_line_edit: LineEdit
-var _default_clear_color_picker: ColorPickerButton
-var _anti_aliasing_options: OptionButton
 var _apply_button: Button
 var _content_container: VBoxContainer
 var _game_name_preview: Label
@@ -46,15 +43,6 @@ func _create_controls() -> void:
 	_project_type = OptionButton.new()
 	_template_type = OptionButton.new()
 
-	_default_clear_color_picker = ColorPickerButton.new()
-	_default_clear_color_picker.custom_minimum_size = Vector2(75, 35)
-	_default_clear_color_picker.color = ProjectSettings.get_setting(DEFAULT_CLEAR_COLOR_PATH)
-
-	_anti_aliasing_options = OptionButton.new()
-	_anti_aliasing_options.add_item("Disabled (Fastest)")
-	_anti_aliasing_options.add_item("2x (Average)")
-	_anti_aliasing_options.add_item("4x (Slow)")
-	_anti_aliasing_options.add_item("8x (Slowest)")
 
 	_apply_button = Button.new()
 	_apply_button.text = "Run Setup"
@@ -76,9 +64,6 @@ func _build_layout() -> void:
 	_add_labeled_control("Project Name", _game_name_line_edit)
 	_add_labeled_control("Project", _project_type)
 	_add_labeled_control("Template", _template_type)
-	_add_labeled_control("Anti Aliasing", _anti_aliasing_options)
-	_add_labeled_control("Clear Color", _default_clear_color_picker)
-
 	var margin_container: MarginContainer = MarginContainer.new()
 	margin_container.add_theme_constant_override("margin_left", MARGIN_PADDING)
 	margin_container.add_theme_constant_override("margin_top", MARGIN_PADDING)
@@ -104,7 +89,6 @@ func _set_controls_enabled(enabled: bool) -> void:
 	_game_name_line_edit.editable = enabled
 	_project_type.disabled = not enabled
 	_template_type.disabled = not enabled
-	_default_clear_color_picker.disabled = not enabled
 	_apply_button.disabled = not enabled
 
 func _set_status(text: String, is_error: bool) -> void:

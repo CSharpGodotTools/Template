@@ -24,8 +24,6 @@ func _register_events() -> void:
 	_game_name_line_edit.text_changed.connect(_on_project_name_changed)
 	_project_type.item_selected.connect(_on_project_type_selected)
 	_template_type.item_selected.connect(_on_template_type_selected)
-	_default_clear_color_picker.color_changed.connect(_on_default_clear_color_changed)
-	_anti_aliasing_options.item_selected.connect(_on_anti_aliasing_item_selected)
 	_apply_button.pressed.connect(_on_apply_pressed)
 	_events_registered = true
 
@@ -49,12 +47,6 @@ func _unregister_events() -> void:
 
 	if _template_type.is_connected("item_selected", Callable(self, "_on_template_type_selected")):
 		_template_type.item_selected.disconnect(Callable(self, "_on_template_type_selected"))
-
-	if _default_clear_color_picker.is_connected("color_changed", Callable(self, "_on_default_clear_color_changed")):
-		_default_clear_color_picker.color_changed.disconnect(Callable(self, "_on_default_clear_color_changed"))
-
-	if _anti_aliasing_options.is_connected("item_selected", Callable(self, "_on_anti_aliasing_item_selected")):
-		_anti_aliasing_options.item_selected.disconnect(Callable(self, "_on_anti_aliasing_item_selected"))
 
 	if _apply_button.is_connected("pressed", Callable(self, "_on_apply_pressed")):
 		_apply_button.pressed.disconnect(Callable(self, "_on_apply_pressed"))
@@ -80,15 +72,7 @@ func _on_template_type_selected(index: int) -> void:
 
 	_selected_template_type = _template_type.get_item_text(index)
 
-func _on_default_clear_color_changed(color: Color) -> void:
-	if not _ensure_runtime_state_valid("DefaultClearColorChanged"):
-		return
 
-	ProjectSettings.set_setting(DEFAULT_CLEAR_COLOR_PATH, color)
-	ProjectSettings.save()
-
-func _on_anti_aliasing_item_selected(index: int) -> void:
-	_set_anti_aliasing_type(index)
 
 func _on_confirmed() -> void:
 	if not _ensure_runtime_state_valid("Confirmed"):

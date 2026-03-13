@@ -5,13 +5,20 @@ extends VBoxContainer
 const PROJECT_ROOT_PATH: String = "res://"
 const CSPROJ_PATH: String = "res://Template.csproj"
 const EDITORCONFIG_PATH: String = "res://.editorconfig"
+const LABEL_PADDING: int = 120
 const MARGIN_PADDING: int = 30
 const FEEDBACK_DURATION: float = 5.0
 const CS8632_SUPPRESSION: String = "dotnet_diagnostic.CS8632.severity = none # The annotation for nullable reference types should only be used in code within a '#nullable' annotations context."
 
+const ANTI_ALIASING_PATH_2D: String = "rendering/anti_aliasing/quality/msaa_2d"
+const ANTI_ALIASING_PATH_3D: String = "rendering/anti_aliasing/quality/msaa_3d"
+const DEFAULT_CLEAR_COLOR_PATH: String = "rendering/environment/defaults/default_clear_color"
+
 var _status_label: Label
 var _cleanup_uids_button: Button
 var _nullable_button: Button
+var _anti_aliasing_options: OptionButton
+var _clear_color_picker: ColorPickerButton
 var _feedback_timer: Timer
 var _events_registered: bool
 
@@ -31,12 +38,27 @@ func _create_controls() -> void:
 	_cleanup_uids_button = Button.new()
 	_cleanup_uids_button.text = "Cleanup uids"
 	_cleanup_uids_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_cleanup_uids_button.custom_minimum_size = Vector2(200, 0)
+	_cleanup_uids_button.custom_minimum_size = Vector2(150, 0)
 
 	_nullable_button = Button.new()
 	_nullable_button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	_nullable_button.custom_minimum_size = Vector2(200, 0)
+	_nullable_button.custom_minimum_size = Vector2(150, 0)
 	_update_nullable_button_text()
+
+	# moved from setup tab
+	_clear_color_picker = ColorPickerButton.new()
+	_clear_color_picker.custom_minimum_size = Vector2(75, 35)
+	_clear_color_picker.color = ProjectSettings.get_setting(DEFAULT_CLEAR_COLOR_PATH)
+
+	_anti_aliasing_options = OptionButton.new()
+	_anti_aliasing_options.add_item("Disabled (Fastest)")
+	_anti_aliasing_options.add_item("2x (Average)")
+	_anti_aliasing_options.add_item("4x (Slow)")
+	_anti_aliasing_options.add_item("8x (Slowest)")
+	# initialize from current project settings (prefer 2D value)
+	var current_aa: int = ProjectSettings.get_setting(ANTI_ALIASING_PATH_2D)
+	if typeof(current_aa) == TYPE_INT and current_aa >= 0 and current_aa < _anti_aliasing_options.get_item_count():
+		_anti_aliasing_options.select(current_aa)
 
 	_feedback_timer = Timer.new()
 	_feedback_timer.wait_time = FEEDBACK_DURATION
@@ -45,6 +67,21 @@ func _create_controls() -> void:
 func _build_layout() -> void:
 	var content: VBoxContainer = VBoxContainer.new()
 	content.add_child(_status_label)
+
+	var left_col: VBoxContainer = VBoxContainer.new()
+	_add_labeled_control("Clear Color", _clear_color_picker, left_col)
+	_add_labeled_control("Anti Aliasing", _anti_aliasing_options, left_col)
+
+	var right_col: VBoxContainer = VBoxContainer.new()
+	right_col.add_child(_cleanup_uids_button)
+	right_col.add_child(_nullable_button)
+
+	var row: HBoxContainer = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 100)
+	row.add_child(left_col)
+	row.add_child(right_col)
+
+	content.add_child(row)
 
 	var margin: MarginContainer = MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", MARGIN_PADDING)
@@ -55,8 +92,6 @@ func _build_layout() -> void:
 
 	add_child(_feedback_timer)
 	add_child(margin)
-	add_child(_cleanup_uids_button)
-	add_child(_nullable_button)
 
 func _register_events() -> void:
 	if _events_registered:
@@ -64,6 +99,8 @@ func _register_events() -> void:
 
 	_cleanup_uids_button.pressed.connect(_on_cleanup_uids_pressed)
 	_nullable_button.pressed.connect(_on_nullable_pressed)
+	_clear_color_picker.color_changed.connect(_on_clear_color_changed)
+	_anti_aliasing_options.item_selected.connect(_on_anti_aliasing_item_selected)
 	_feedback_timer.timeout.connect(_on_feedback_timer_timeout)
 	_events_registered = true
 
@@ -78,6 +115,12 @@ func _unregister_events() -> void:
 
 	if _nullable_button != null and _nullable_button.is_connected("pressed", Callable(self, "_on_nullable_pressed")):
 		_nullable_button.pressed.disconnect(Callable(self, "_on_nullable_pressed"))
+
+	if _clear_color_picker != null and _clear_color_picker.is_connected("color_changed", Callable(self, "_on_clear_color_changed")):
+		_clear_color_picker.color_changed.disconnect(Callable(self, "_on_clear_color_changed"))
+
+	if _anti_aliasing_options != null and _anti_aliasing_options.is_connected("item_selected", Callable(self, "_on_anti_aliasing_item_selected")):
+		_anti_aliasing_options.item_selected.disconnect(Callable(self, "_on_anti_aliasing_item_selected"))
 
 	if _feedback_timer != null and _feedback_timer.is_connected("timeout", Callable(self, "_on_feedback_timer_timeout")):
 		_feedback_timer.timeout.disconnect(Callable(self, "_on_feedback_timer_timeout"))
@@ -135,6 +178,16 @@ func _cleanup_uid_files_recursive(directory: String) -> int:
 
 	return removed_count
 
+func _add_labeled_control(label_text: String, control: Control, container: VBoxContainer) -> void:
+	var row: HBoxContainer = HBoxContainer.new()
+	var label: Label = Label.new()
+	label.text = "%s:" % label_text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	label.custom_minimum_size = Vector2(LABEL_PADDING, 0)
+	row.add_child(label)
+	row.add_child(control)
+	container.add_child(row)
+
 func _set_status(text: String) -> void:
 	_status_label.text = text
 	_status_label.visible = not text.is_empty()
@@ -142,6 +195,17 @@ func _set_status(text: String) -> void:
 
 func _on_feedback_timer_timeout() -> void:
 	_set_status("")
+
+# ── Clear color / anti aliasing controls ───────────────────────────────────────
+
+func _on_clear_color_changed(color: Color) -> void:
+	ProjectSettings.set_setting(DEFAULT_CLEAR_COLOR_PATH, color)
+	ProjectSettings.save()
+
+func _on_anti_aliasing_item_selected(index: int) -> void:
+	# apply to both 2D and 3D settings; dev tools are not project-type specific
+	ProjectSettings.set_setting(ANTI_ALIASING_PATH_2D, index)
+	ProjectSettings.set_setting(ANTI_ALIASING_PATH_3D, index)
 
 # ── Nullable toggle ──────────────────────────────────────────────────────────
 
