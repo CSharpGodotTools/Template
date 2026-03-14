@@ -1,6 +1,4 @@
-using Godot;
-
-namespace __TEMPLATE__;
+namespace Godot;
 
 [InputMap]
 public static partial class InputActions
