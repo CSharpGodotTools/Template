@@ -23,6 +23,7 @@ var _anti_aliasing_options: OptionButton
 var _clear_color_picker: ColorPickerButton
 var _update_from_main_button: Button
 var _update_from_release_button: Button
+var _view_template_repo_button: Button
 var _feedback_timer: Timer
 
 func _create_controls() -> void:
@@ -56,6 +57,7 @@ func _create_controls() -> void:
 
 	_update_from_main_button = _create_fill_button("Update From Main Branch")
 	_update_from_release_button = _create_fill_button("Update From Latest Release")
+	_view_template_repo_button = _create_button("View Template Repository")
 
 	_clear_color_picker = ColorPickerButton.new()
 	_clear_color_picker.custom_minimum_size = Vector2(75, 35)
@@ -97,7 +99,7 @@ func _build_dev_tab() -> VBoxContainer:
 	dev_tab.add_theme_constant_override("separation", 8)
 	dev_tab.add_child(_create_row([_copy_debugger_errors_button], 0))
 	dev_tab.add_child(_create_row([_include_stack_trace_checkbox, _use_short_type_names_checkbox], 12))
-	dev_tab.add_child(_create_row([_cleanup_uids_button, _nullable_button, _remove_empty_folders_button], 8))
+	dev_tab.add_child(_create_row([_cleanup_uids_button, _nullable_button, _remove_empty_folders_button, _view_template_repo_button], 8))
 	dev_tab.add_child(_create_row([_close_all_scene_tabs_button, _restart_editor_button], 8))
 	dev_tab.add_child(_status_label)
 	return dev_tab
@@ -120,6 +122,13 @@ func _build_update_tab() -> VBoxContainer:
 	update_tab.add_theme_constant_override("separation", 8)
 	update_tab.add_child(_create_row([_update_from_main_button], 0))
 	update_tab.add_child(_create_row([_update_from_release_button], 0))
+	var warning_label: RichTextLabel = RichTextLabel.new()
+	warning_label.bbcode_enabled = true
+	warning_label.text = "Remember to back up your project [b]before[/b] updating!"
+	warning_label.fit_content = true
+	warning_label.scroll_active = false
+	warning_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	update_tab.add_child(warning_label)
 	return update_tab
 
 func _create_row(controls: Array[Control], separation: int) -> HBoxContainer:

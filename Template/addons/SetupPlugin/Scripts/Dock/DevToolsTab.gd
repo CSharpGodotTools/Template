@@ -34,7 +34,7 @@ func _project_root() -> String:
 func _register_events() -> void:
 	if _events_registered:
 		return
-	for pair in [[_cleanup_uids_button, _on_cleanup_uids_pressed], [_nullable_button, _on_nullable_pressed], [_remove_empty_folders_button, _on_remove_empty_folders_pressed], [_copy_debugger_errors_button, _on_copy_debugger_errors_pressed], [_close_all_scene_tabs_button, _on_close_all_scene_tabs_pressed], [_restart_editor_button, _on_restart_editor_pressed], [_expand_to_level_button, _on_expand_to_level_pressed], [_fully_expand_button, _on_fully_expand_pressed], [_fully_collapse_button, _on_fully_collapse_pressed], [_update_from_main_button, _on_update_from_main_pressed], [_update_from_release_button, _on_update_from_release_pressed]]:
+	for pair in [[_cleanup_uids_button, _on_cleanup_uids_pressed], [_nullable_button, _on_nullable_pressed], [_remove_empty_folders_button, _on_remove_empty_folders_pressed], [_copy_debugger_errors_button, _on_copy_debugger_errors_pressed], [_close_all_scene_tabs_button, _on_close_all_scene_tabs_pressed], [_restart_editor_button, _on_restart_editor_pressed], [_expand_to_level_button, _on_expand_to_level_pressed], [_fully_expand_button, _on_fully_expand_pressed], [_fully_collapse_button, _on_fully_collapse_pressed], [_update_from_main_button, _on_update_from_main_pressed], [_update_from_release_button, _on_update_from_release_pressed], [_view_template_repo_button, _on_view_template_repo_pressed]]:
 		pair[0].pressed.connect(pair[1])
 	_clear_color_picker.color_changed.connect(_on_clear_color_changed)
 	_anti_aliasing_options.item_selected.connect(_on_anti_aliasing_item_selected)
@@ -45,7 +45,7 @@ func _unregister_events() -> void:
 	if not _events_registered:
 		return
 	_events_registered = false
-	for pair in [[_cleanup_uids_button, "_on_cleanup_uids_pressed"], [_nullable_button, "_on_nullable_pressed"], [_remove_empty_folders_button, "_on_remove_empty_folders_pressed"], [_copy_debugger_errors_button, "_on_copy_debugger_errors_pressed"], [_close_all_scene_tabs_button, "_on_close_all_scene_tabs_pressed"], [_restart_editor_button, "_on_restart_editor_pressed"], [_expand_to_level_button, "_on_expand_to_level_pressed"], [_fully_expand_button, "_on_fully_expand_pressed"], [_fully_collapse_button, "_on_fully_collapse_pressed"], [_update_from_main_button, "_on_update_from_main_pressed"], [_update_from_release_button, "_on_update_from_release_pressed"]]:
+	for pair in [[_cleanup_uids_button, "_on_cleanup_uids_pressed"], [_nullable_button, "_on_nullable_pressed"], [_remove_empty_folders_button, "_on_remove_empty_folders_pressed"], [_copy_debugger_errors_button, "_on_copy_debugger_errors_pressed"], [_close_all_scene_tabs_button, "_on_close_all_scene_tabs_pressed"], [_restart_editor_button, "_on_restart_editor_pressed"], [_expand_to_level_button, "_on_expand_to_level_pressed"], [_fully_expand_button, "_on_fully_expand_pressed"], [_fully_collapse_button, "_on_fully_collapse_pressed"], [_update_from_main_button, "_on_update_from_main_pressed"], [_update_from_release_button, "_on_update_from_release_pressed"], [_view_template_repo_button, "_on_view_template_repo_pressed"]]:
 		_disconnect_signal(pair[0], "pressed", pair[1])
 	_disconnect_signal(_clear_color_picker, "color_changed", "_on_clear_color_changed")
 	_disconnect_signal(_anti_aliasing_options, "item_selected", "_on_anti_aliasing_item_selected")
@@ -147,6 +147,9 @@ func _on_update_from_main_pressed() -> void:
 
 func _on_update_from_release_pressed() -> void:
 	await _run_template_update(true)
+
+func _on_view_template_repo_pressed() -> void:
+	OS.shell_open("https://github.com/CSharpGodotTools/Template")
 
 func _run_template_update(from_release: bool) -> void:
 	_set_update_buttons_disabled(true)
