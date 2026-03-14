@@ -1,13 +1,13 @@
 class_name NamespaceMigration
 
-static func rename_template_namespaces(project_root: String, new_namespace_name: String) -> void:
+static func rename_template_namespaces(project_root: String, new_namespace_name: String, include_all_scripts: bool = false) -> void:
 	var dir: DirAccess = DirAccess.open(project_root)
 	if dir == null:
 		return
 	
-	_process_directory_recursive(dir, project_root, new_namespace_name)
+	_process_directory_recursive(dir, project_root, new_namespace_name, include_all_scripts)
 
-static func _process_directory_recursive(dir: DirAccess, current_path: String, new_namespace_name: String) -> void:
+static func _process_directory_recursive(dir: DirAccess, current_path: String, new_namespace_name: String, include_all_scripts: bool) -> void:
 	dir.list_dir_begin()
 	var file_name: String = dir.get_next()
 	
@@ -21,9 +21,9 @@ static func _process_directory_recursive(dir: DirAccess, current_path: String, n
 		if dir.current_is_dir():
 			var sub_dir: DirAccess = DirAccess.open(full_path)
 			if sub_dir != null:
-				_process_directory_recursive(sub_dir, full_path, new_namespace_name)
+				_process_directory_recursive(sub_dir, full_path, new_namespace_name, include_all_scripts)
 		elif file_name.ends_with(".cs"):
-			if not should_skip_file(full_path):
+			if not should_skip_file(full_path, include_all_scripts):
 				process_script_file(full_path, new_namespace_name)
 		
 		file_name = dir.get_next()
@@ -47,9 +47,12 @@ static func process_script_file(script_file: String, new_namespace_name: String)
 	if file != null:
 		file.store_string(script_text)
 
-static func should_skip_file(file_path: String) -> bool:
+static func should_skip_file(file_path: String, include_all_scripts: bool = false) -> bool:
 	var normalized_path: String = file_path.replace("\\", "/")
 	var lower_path: String = normalized_path.to_lower()
+
+	if include_all_scripts:
+		return lower_path.contains("/.godot/")
 	
 	return lower_path.contains("/.godot/") \
 		or lower_path.contains("/addons/") \

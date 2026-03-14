@@ -21,6 +21,8 @@ var _fully_expand_button: Button
 var _fully_collapse_button: Button
 var _anti_aliasing_options: OptionButton
 var _clear_color_picker: ColorPickerButton
+var _update_from_main_button: Button
+var _update_from_release_button: Button
 var _feedback_timer: Timer
 
 func _create_controls() -> void:
@@ -52,6 +54,9 @@ func _create_controls() -> void:
 	_fully_expand_button = _create_button("Fully Expand")
 	_fully_collapse_button = _create_button("Fully Collapse")
 
+	_update_from_main_button = _create_fill_button("Update From Main Branch")
+	_update_from_release_button = _create_fill_button("Update From Latest Release")
+
 	_clear_color_picker = ColorPickerButton.new()
 	_clear_color_picker.custom_minimum_size = Vector2(75, 35)
 	_clear_color_picker.color = ProjectSettings.get_setting(DEFAULT_CLEAR_COLOR_PATH)
@@ -77,6 +82,7 @@ func _build_layout() -> void:
 	tabs.add_theme_stylebox_override("tabbar_background", no_margin_style)
 	tabs.add_child(_build_dev_tab())
 	tabs.add_child(_build_visual_tab())
+	tabs.add_child(_build_update_tab())
 
 	var content: VBoxContainer = VBoxContainer.new()
 	content.add_theme_constant_override("separation", 10)
@@ -107,6 +113,14 @@ func _build_visual_tab() -> VBoxContainer:
 	visual_tab.add_child(hierarchy_label)
 	visual_tab.add_child(_create_row([_expand_to_level_button, _hierarchy_level_spinbox, _fully_expand_button, _fully_collapse_button], 8))
 	return visual_tab
+
+func _build_update_tab() -> VBoxContainer:
+	var update_tab: VBoxContainer = VBoxContainer.new()
+	update_tab.name = "Update"
+	update_tab.add_theme_constant_override("separation", 8)
+	update_tab.add_child(_create_row([_update_from_main_button], 0))
+	update_tab.add_child(_create_row([_update_from_release_button], 0))
+	return update_tab
 
 func _create_row(controls: Array[Control], separation: int) -> HBoxContainer:
 	var row: HBoxContainer = HBoxContainer.new()

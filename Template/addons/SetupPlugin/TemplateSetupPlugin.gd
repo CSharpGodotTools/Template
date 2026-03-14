@@ -3,7 +3,7 @@ extends EditorPlugin
 
 const TEMPLATE_PROJECT_NAME: String = "Template"
 const PROJECT_ROOT_PATH: String = "res://"
-const DevToolsTab = preload("res://addons/SetupPlugin/Scripts/Dock/DevToolsTab.gd")
+const DevToolsTabScript = preload("res://addons/SetupPlugin/Scripts/Dock/DevToolsTab.gd")
 const TemplateSetupDock = preload("res://addons/SetupPlugin/Scripts/Dock/TemplateSetupDock.gd")
 
 var _dock: EditorDock
@@ -23,7 +23,7 @@ func _enter_tree() -> void:
 	_dev_dock.title = "Dev Tools"
 	_dev_dock.default_slot = EditorDock.DockSlot.DOCK_SLOT_BOTTOM
 	_dev_dock.available_layouts = EditorDock.DockLayout.DOCK_LAYOUT_VERTICAL
-	var dev_content: DevToolsTab = DevToolsTab.new()
+	var dev_content = DevToolsTabScript.new()
 	_dev_dock.add_child(dev_content)
 	add_dock(_dev_dock)
 
