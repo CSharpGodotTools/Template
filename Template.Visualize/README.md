@@ -1,31 +1,42 @@
-Easily debug in-game by adding the `[Visualize]` attribute to any of the supported members. This feature allows you to visualize and interact with various types of data directly within the game environment.
+Visual in-game debugging!
 
 https://github.com/user-attachments/assets/1fe282b9-f044-42cd-b9be-0e26f20b1aa6
 
 https://github.com/user-attachments/assets/2f44ae8e-0c99-4bd2-b15f-a72a70ffaa74
 
-#### Example Usage
+#### Example Usage 1
 ```cs
-public partial class Player : CharacterBody2D
+// Works in both 2D and 3D scenes
+public partial class Player : CharacterBody3D
 {
-    // You will be able to edit this in-game
-    [Visualize] private static int _totalPlayers;
-
-    private State _currentState;
+    [Visualize]
+    private int _x;
 
     public override void _Ready()
     {
-        // Visualize.Register(this) is required for the tool to see members with [Visualize].
-        // [Visualize] members are auto-grouped into readonly (left) and mutable (right) controls.
         Visualize.Register(this);
-        _currentState = new State("Idle");
     }
 
-    // You will be able to execute this method in-game
     [Visualize]
-    public void Attack(int damage)
+    public void IncrementX(int amount)
     {
-        Visualize.Log(damage); // Floating text will appear near node then disappear
+        _x += amount;
+        Visualize.Log(amount);
+    }
+}
+```
+
+#### Example Usage 2
+```cs
+// Scripts do not have to extend from Node for Visualize to work
+public class PlayerMovementComponent
+{
+    [Visualize]
+    private float _y;
+
+    public PlayerMovementComponent(Player player)
+    {
+        Visualize.Register(this, player);
     }
 }
 ```
@@ -55,16 +66,8 @@ public partial class Player : CharacterBody2D
 | **Godot Array**   | ❌         | `Godot.Collections.Array`                     |                                                                       |
 | **Godot Dictionary** | ❌      | `Godot.Collections.Dictionary`                |                                                                       |
 
-> [!IMPORTANT]
-> There are some annoyances when trying to visualize members from **inherited classes**. I will try to solve this later.
+> [!NOTE]
+> No mouse interactions have been implemented in 3D, so you will only be able to use it for read only.
 
-#### ⚠️ Common Mistakes ⚠️
-If your `[Visualize]` members are on a non-`Node` class (for example, a component/POCO), register that object with a `Node` anchor:
-
-```cs
-Visualize.Register(this, node);
-```
-
-The first parameter is the object that contains `[Visualize]` members. The `node` parameter is used for panel placement and in-game positioning.
-
-If `Visualize.Register(this)` is called in `_EnterTree`, you will get a null reference exception. This is because Visualize did not have time to initialize and you must instead call it in `_Ready`.
+> [!CAUTION]
+> If `Visualize.Register(this)` is called in `_EnterTree`, you will get a null reference exception. This is because Visualize did not have time to initialize and you must instead call it in `_Ready`.
