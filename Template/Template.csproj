@@ -44,5 +44,8 @@
         <!-- Exclude obj and bin directories from subfolders -->
         <Compile Remove="**\obj\**" />
         <Compile Remove="**\bin\**" />
+
+        <!-- Exclude Godot script templates -->
+        <Compile Remove="script_templates\**" />
     </ItemGroup>
 </Project>
