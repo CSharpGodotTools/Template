@@ -46,6 +46,15 @@ Download the [latest release](https://github.com/CSharpGodotTools/Template/relea
 
 Click `Run Setup` to restart Godot with your template ready to go.
 
+## Updating
+Everything in `Template/` can change in future releases but here are the places that change the most:
+- `Framework` (Most updates rely here)
+- `addons/SetupPlugin` (Dev Tools dock updates)
+- `Template.csproj` (Package version changes)
+- Other files may change but it's not as likely
+
+Manual copying is required to fetch updates. **Always** backup your project **before** updating!
+
 ## Thank You
 [Brian Shao](https://github.com/cydq)  
 [Cat Lips](https://github.com/Cat-Lips)  
