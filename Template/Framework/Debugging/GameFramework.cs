@@ -7,7 +7,7 @@ namespace __TEMPLATE__;
 public partial class Game
 {
     public static FocusOutlineManager FocusOutline => Autoloads.Instance!.FocusOutline;
-    public static MetricsOverlay      Metrics      => Autoloads.Instance!.MetricsOverlay;
+    public static IMetricsOverlay     Metrics      => Autoloads.Instance!.Metrics;
     public static OptionsManager      Options      => Autoloads.Instance!.OptionsManager;
     public static ResourceOptions     Settings     => Autoloads.Instance!.OptionsManager.Settings;
     public static AudioManager        Audio        => Autoloads.Instance!.AudioManager;

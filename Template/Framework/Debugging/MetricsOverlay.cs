@@ -5,7 +5,7 @@ using Monitor = Godot.Performance.Monitor;
 
 namespace __TEMPLATE__.Debugging;
 
-public partial class MetricsOverlay : CanvasLayer
+public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 {
     // Config
     private const int BytesInMegabyte = 1048576;
@@ -26,6 +26,7 @@ public partial class MetricsOverlay : CanvasLayer
     // Variables
     private readonly Dictionary<string, Func<object>> _processMonitors = [];
     private readonly Dictionary<string, Func<string>> _currentMetrics = [];
+    private readonly Dictionary<string, Label> _variableLabels = [];
     private readonly float[] _fpsBuffer = new float[MaxFpsBuffer];
 
     private PanelContainer _panel = null!;
@@ -98,10 +99,13 @@ public partial class MetricsOverlay : CanvasLayer
     // API
     public void StartMonitoring(string key, Func<object> function)
     {
-        // Allow the developer to call in for e.g. _Process
+        // Support repeated registrations (e.g. from _Process/_PhysicsProcess) by updating the provider.
         if (_processMonitors.ContainsKey(key))
+        {
+            _processMonitors[key] = function;
             return;
-            
+        }
+
         Visible = true;
         _processMonitors.Add(key, function);
         UpdateVariablesSection();
@@ -174,6 +178,7 @@ public partial class MetricsOverlay : CanvasLayer
     {
         _variablesHeader = CreateSectionHeader("VARIABLES");
         _variablesHeader.Pressed += () => ToggleSection(ref _variablesExpanded, _variablesContainer);
+        _variablesHeader.Visible = false;
         _mainContainer.AddChild(_variablesHeader);
 
         _variablesContainer = new VBoxContainer { Name = "VariablesContainer", Visible = false };
@@ -218,6 +223,11 @@ public partial class MetricsOverlay : CanvasLayer
 
         _fpsGraph.UpdateData(_fpsBuffer, _fpsIndex);
         UpdateMetricsSection();
+
+        if (_processMonitors.Count > 0)
+        {
+            UpdateVariablesSection();
+        }
     }
 
     private void UpdateMetricsSection()
@@ -233,19 +243,47 @@ public partial class MetricsOverlay : CanvasLayer
 
     private void UpdateVariablesSection()
     {
-        ClearLabels(_variablesContainer, skipGraph: false);
-
         bool hasVariables = _processMonitors.Count > 0;
         _variablesHeader.Visible = hasVariables;
         _variablesContainer.Visible = hasVariables && _variablesExpanded;
 
-        if (hasVariables)
+        if (!hasVariables)
         {
-            foreach (KeyValuePair<string, Func<object>> kvp in _processMonitors)
+            foreach (Label label in _variableLabels.Values)
             {
-                Label label = CreateLabel($"{kvp.Key}: {kvp.Value()}");
+                label.QueueFree();
+            }
+
+            _variableLabels.Clear();
+            return;
+        }
+
+        // Remove labels for keys that are no longer monitored.
+        List<string> labelsToRemove = [];
+        foreach (string key in _variableLabels.Keys)
+        {
+            if (!_processMonitors.ContainsKey(key))
+            {
+                labelsToRemove.Add(key);
+            }
+        }
+
+        foreach (string key in labelsToRemove)
+        {
+            _variableLabels[key].QueueFree();
+            _variableLabels.Remove(key);
+        }
+
+        foreach (KeyValuePair<string, Func<object>> kvp in _processMonitors)
+        {
+            if (!_variableLabels.TryGetValue(kvp.Key, out Label? label))
+            {
+                label = CreateLabel(string.Empty);
+                _variableLabels[kvp.Key] = label;
                 _variablesContainer.AddChild(label);
             }
+
+            label.Text = $"{kvp.Key}: {kvp.Value()}";
         }
     }
 

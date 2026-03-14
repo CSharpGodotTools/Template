@@ -32,7 +32,7 @@ public abstract partial class AutoloadsFramework : Node, IFocusManager
     public AudioManager         AudioManager     { get; private set; } = null!;
     public OptionsManager       OptionsManager   { get; private set; } = null!;
     public Services             Services         { get; private set; } = null!;
-    public MetricsOverlay       MetricsOverlay   { get; private set; } = null!;
+    public IMetricsOverlay      Metrics          { get; private set; } = null!;
     public SceneManager         SceneManager     { get; private set; } = null!;
     public Profiler             Profiler         { get; private set; } = null!;
     public FocusOutlineManager  FocusOutline     { get; private set; } = null!;
@@ -55,8 +55,9 @@ public abstract partial class AutoloadsFramework : Node, IFocusManager
         ComponentManager = GetNode<GameComponentManager>("ComponentManager");
         SceneManager = new SceneManager(this, _scenes);
         Services = new Services(this);
-        MetricsOverlay = new MetricsOverlay();
-        AddChild(MetricsOverlay);
+        MetricsOverlay metricsOverlay = new();
+        Metrics = metricsOverlay;
+        AddChild(metricsOverlay);
         Profiler = new Profiler();
         GameConsole = GetNode<GameConsole>("%Console");
         FocusOutline = new FocusOutlineManager(this);
