@@ -1913,12 +1913,17 @@
         </member>
         <member name="M:GodotUtils.ComponentHost.Add(GodotUtils.Component)">
             <summary>
-            Adds a component to the host.
+            Add a component.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ComponentHost.Get``1">
+            <summary>
+            Get a component.
             </summary>
         </member>
         <member name="M:GodotUtils.ComponentHost.SetActive(System.Boolean)">
             <summary>
-            Sets active state on all hosted components.
+            Enable or disable all components.
             </summary>
         </member>
         <member name="T:GodotUtils.ComponentManager">

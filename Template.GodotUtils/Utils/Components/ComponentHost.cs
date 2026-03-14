@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GodotUtils;
 
@@ -7,24 +8,32 @@ namespace GodotUtils;
 /// </summary>
 public class ComponentHost
 {
-    private readonly List<Component> _components = [];
+    private readonly HashSet<Component> _components = [];
 
     /// <summary>
-    /// Adds a component to the host.
+    /// Add a component.
     /// </summary>
     public void Add(Component component)
     {
         _components.Add(component);
     }
+    
+    /// <summary>
+    /// Get a component.
+    /// </summary>
+    public T? Get<T>() where T : Component
+    {
+        return _components.OfType<T>().FirstOrDefault();
+    }
 
     /// <summary>
-    /// Sets active state on all hosted components.
+    /// Enable or disable all components.
     /// </summary>
     public void SetActive(bool active)
     {
-        for (int i = 0; i < _components.Count; i++)
+        foreach (var component in _components)
         {
-            _components[i].SetActive(active);
+            component.SetActive(active);
         }
     }
 }
