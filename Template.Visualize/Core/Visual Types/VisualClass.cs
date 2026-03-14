@@ -179,11 +179,5 @@ internal static partial class VisualControlTypes
         public bool IsEditable { get; } = isEditable;
     }
 
-    internal sealed class MemberControlBinding(MemberInfo member, IVisualControl control, bool isEditable)
-    {
-        public MemberInfo Member { get; } = member;
-        public IVisualControl Control { get; } = control;
-        public bool IsEditable { get; } = isEditable;
-    }
 }
 #endif

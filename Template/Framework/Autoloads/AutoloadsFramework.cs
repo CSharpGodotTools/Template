@@ -86,7 +86,7 @@ public abstract partial class AutoloadsFramework : Node, IFocusManager
         OptionsManager.Update();
 
 #if DEBUG
-        VisualizeAutoload.Update();
+        Visualize.Update();
 #endif
 
         Logger.Update();

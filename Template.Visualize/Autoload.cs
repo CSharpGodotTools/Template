@@ -14,7 +14,7 @@ internal partial class Autoload : Node
 
     public override void _Process(double delta)
     {
-        VisualizeAutoload.Update();
+        Visualize.Update();
     }
 
     public override void _ExitTree()

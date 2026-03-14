@@ -13,6 +13,7 @@ internal static class VisualHandler
     private const string FailedToSetMemberTemplate = "[Visualize] Failed to set value for {0}: {1}";
     private const string ReadOnlyPropertyTemplate = "[Visualize] Property {0} is read-only.";
     private const string MemberTypeErrorMessage = "[Visualize] Member must be a field or property.";
+
     public static void SetMemberValue(MemberInfo member, object target, object value)
     {
         try

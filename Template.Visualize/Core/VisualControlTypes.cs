@@ -57,16 +57,4 @@ internal static partial class VisualControlTypes
         return info;
     }
 }
-
-internal interface IVisualControl
-{
-    void SetValue(object value);
-    Control Control { get; }
-    void SetEditable(bool editable);
-}
-
-internal sealed class VisualControlInfo(IVisualControl? visualControl)
-{
-    public IVisualControl? VisualControl { get; } = visualControl;
-}
 #endif

@@ -108,7 +108,6 @@ internal sealed class ReadonlyMemberBinder
             return;
         }
 
-
         _updateActions.Add(() =>
         {
             object? current = accessor.GetValue(target);

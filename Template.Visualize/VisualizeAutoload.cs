@@ -9,8 +9,8 @@ public sealed class VisualizeAutoload : IDisposable
 {
     public static VisualizeAutoload? Instance { get; private set; }
 
-    private readonly Dictionary<Node, VBoxContainer> _visualNodes = [];
-    private readonly Dictionary<Node, VBoxContainer> _visualNodesWithoutAttribute = [];
+    private readonly Dictionary<Node, VBoxContainer> _attributedLogContainers = [];
+    private readonly Dictionary<Node, VBoxContainer> _nonAttributedLogContainers = [];
 
     public VisualizeAutoload()
     {
@@ -23,14 +23,14 @@ public sealed class VisualizeAutoload : IDisposable
     public bool TryGetLogContainer(Node node, out VBoxContainer? vbox)
     {
         ArgumentNullException.ThrowIfNull(node);
-        return _visualNodes.TryGetValue(node, out vbox);
+        return _attributedLogContainers.TryGetValue(node, out vbox);
     }
 
     public void RegisterLogContainer(Node node, VBoxContainer vbox)
     {
         ArgumentNullException.ThrowIfNull(node);
         ArgumentNullException.ThrowIfNull(vbox);
-        _visualNodes[node] = vbox;
+        _attributedLogContainers[node] = vbox;
     }
 
     public VBoxContainer GetOrCreateNonAttributeLogContainer(Node node, Func<VBoxContainer> factory)
@@ -38,10 +38,10 @@ public sealed class VisualizeAutoload : IDisposable
         ArgumentNullException.ThrowIfNull(node);
         ArgumentNullException.ThrowIfNull(factory);
 
-        if (!_visualNodesWithoutAttribute.TryGetValue(node, out VBoxContainer? vbox))
+        if (!_nonAttributedLogContainers.TryGetValue(node, out VBoxContainer? vbox))
         {
             vbox = factory();
-            _visualNodesWithoutAttribute[node] = vbox;
+            _nonAttributedLogContainers[node] = vbox;
         }
 
         return vbox;
@@ -50,19 +50,14 @@ public sealed class VisualizeAutoload : IDisposable
     public void UnregisterNode(Node node)
     {
         ArgumentNullException.ThrowIfNull(node);
-        _visualNodes.Remove(node);
-        _visualNodesWithoutAttribute.Remove(node);
-    }
-
-    public static void Update()
-    {
-        Visualize.Update();
+        _attributedLogContainers.Remove(node);
+        _nonAttributedLogContainers.Remove(node);
     }
 
     public void Dispose()
     {
-        _visualNodes.Clear();
-        _visualNodesWithoutAttribute.Clear();
+        _attributedLogContainers.Clear();
+        _nonAttributedLogContainers.Clear();
         Instance = null;
     }
 }

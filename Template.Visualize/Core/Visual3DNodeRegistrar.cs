@@ -8,7 +8,7 @@ namespace GodotUtils.Debugging;
 internal sealed class Visual3DNodeRegistrar
 {
     private static readonly Vector2I _subViewportSize = new(1024, 1024);
-    private const float Base3DHeightOffset = 0.7f;
+    private const float Base3DHeightOffset = 0.0f;
     private const float Extra3DHeightPerPanel = 0.8f;
     private const float SpritePixelSize = 0.004f;
 
