@@ -1,6 +1,8 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Monitor = Godot.Performance.Monitor;
 
 namespace __TEMPLATE__.Debugging;
@@ -14,6 +16,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     private const int PanelWidth = 280;
     private const int GraphHeight = 50;
     private const int Margin = 10;
+    private const int MonitorValueDecimals = 2;
 
     // Theme Colors
     private static readonly Color BackgroundColor = new(0.11f, 0.11f, 0.13f, 0.92f);
@@ -24,9 +27,10 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     private static readonly Color GraphFillColor = new(0.26f, 0.59f, 0.98f, 0.3f);
 
     // Variables
-    private readonly Dictionary<string, Func<object>> _processMonitors = [];
+    private readonly Dictionary<Func<object>, (string DisplayName, Func<object> Provider)> _delegateMonitors = [];
+    private readonly Dictionary<string, Func<object>> _namedMonitors = [];
     private readonly Dictionary<string, Func<string>> _currentMetrics = [];
-    private readonly Dictionary<string, Label> _variableLabels = [];
+    private readonly Dictionary<string, int> _methodMonitorCounts = [];
     private readonly float[] _fpsBuffer = new float[MaxFpsBuffer];
 
     private PanelContainer _panel = null!;
@@ -97,27 +101,49 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     }
 
     // API
-    public void StartMonitoring(string key, Func<object> function)
+    public void StartMonitoring(Func<object> function)
     {
         // Support repeated registrations (e.g. from _Process/_PhysicsProcess) by updating the provider.
-        if (_processMonitors.ContainsKey(key))
+        if (_delegateMonitors.TryGetValue(function, out (string DisplayName, Func<object> Provider) existing))
         {
-            _processMonitors[key] = function;
+            _delegateMonitors[function] = (existing.DisplayName, function);
             return;
         }
 
         Visible = true;
-        _processMonitors.Add(key, function);
+        _delegateMonitors.Add(function, (GetGeneratedMonitorName(function), function));
+        UpdateVariablesSection();
+    }
+
+    public void StartMonitoring(string key, Func<object> function)
+    {
+        // Support repeated registrations with explicit keys by updating the provider.
+        if (_namedMonitors.ContainsKey(key))
+        {
+            _namedMonitors[key] = function;
+            return;
+        }
+
+        Visible = true;
+        _namedMonitors.Add(key, function);
+        UpdateVariablesSection();
+    }
+
+    public void StopMonitoring(Func<object> function)
+    {
+        // Allow the developer to call in for e.g. _Process
+        if (!_delegateMonitors.Remove(function))
+            return;
+
         UpdateVariablesSection();
     }
 
     public void StopMonitoring(string key)
     {
         // Allow the developer to call in for e.g. _Process
-        if (!_processMonitors.ContainsKey(key))
+        if (!_namedMonitors.Remove(key))
             return;
 
-        _processMonitors.Remove(key);
         UpdateVariablesSection();
     }
 
@@ -224,7 +250,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         _fpsGraph.UpdateData(_fpsBuffer, _fpsIndex);
         UpdateMetricsSection();
 
-        if (_processMonitors.Count > 0)
+        if (_delegateMonitors.Count > 0 || _namedMonitors.Count > 0)
         {
             UpdateVariablesSection();
         }
@@ -243,49 +269,102 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 
     private void UpdateVariablesSection()
     {
-        bool hasVariables = _processMonitors.Count > 0;
+        bool hasVariables = _delegateMonitors.Count > 0 || _namedMonitors.Count > 0;
         _variablesHeader.Visible = hasVariables;
         _variablesContainer.Visible = hasVariables && _variablesExpanded;
 
+        ClearLabels(_variablesContainer, skipGraph: false);
+
         if (!hasVariables)
         {
-            foreach (Label label in _variableLabels.Values)
-            {
-                label.QueueFree();
-            }
-
-            _variableLabels.Clear();
             return;
         }
 
-        // Remove labels for keys that are no longer monitored.
-        List<string> labelsToRemove = [];
-        foreach (string key in _variableLabels.Keys)
+        foreach ((string key, Func<object> provider) in _namedMonitors)
         {
-            if (!_processMonitors.ContainsKey(key))
-            {
-                labelsToRemove.Add(key);
-            }
+            Label label = CreateLabel($"{key}: {FormatMonitorValue(provider())}");
+            _variablesContainer.AddChild(label);
         }
 
-        foreach (string key in labelsToRemove)
+        foreach ((string displayName, Func<object> provider) in _delegateMonitors.Values)
         {
-            _variableLabels[key].QueueFree();
-            _variableLabels.Remove(key);
-        }
-
-        foreach (KeyValuePair<string, Func<object>> kvp in _processMonitors)
-        {
-            if (!_variableLabels.TryGetValue(kvp.Key, out Label? label))
-            {
-                label = CreateLabel(string.Empty);
-                _variableLabels[kvp.Key] = label;
-                _variablesContainer.AddChild(label);
-            }
-
-            label.Text = $"{kvp.Key}: {kvp.Value()}";
+            Label label = CreateLabel($"{displayName}: {FormatMonitorValue(provider())}");
+            _variablesContainer.AddChild(label);
         }
     }
+
+    private string GetGeneratedMonitorName(Func<object> function)
+    {
+        string className = function.Method.DeclaringType?.Name ?? "UnknownClass";
+        string methodName = GetDisplayMethodName(function.Method.Name);
+        if (string.IsNullOrWhiteSpace(methodName))
+        {
+            methodName = "UnknownMethod";
+        }
+
+        string methodKey = $"{className}:{methodName}";
+        int monitorIndex = _methodMonitorCounts.TryGetValue(methodKey, out int count)
+            ? count + 1
+            : 1;
+        _methodMonitorCounts[methodKey] = monitorIndex;
+
+        return $"{className}:{methodName}:{monitorIndex}";
+    }
+
+    private static string GetDisplayMethodName(string rawMethodName)
+    {
+        Match compilerGeneratedMatch = CompilerGeneratedMethodRegex().Match(rawMethodName);
+        string cleanedMethodName = compilerGeneratedMatch.Success
+            ? compilerGeneratedMatch.Groups["name"].Value
+            : rawMethodName;
+
+        return cleanedMethodName.TrimStart('_');
+    }
+
+    private static string FormatMonitorValue(object? value)
+    {
+        if (value is null)
+            return "null";
+
+        return value switch
+        {
+            float number => FormatDecimal(number),
+            double number => FormatDecimal(number),
+            decimal number => FormatDecimal((double)number),
+            Vector2 vector => $"({FormatDecimal(vector.X)}, {FormatDecimal(vector.Y)})",
+            Vector2I vector => $"({FormatDecimal(vector.X)}, {FormatDecimal(vector.Y)})",
+            Vector3 vector => $"({FormatDecimal(vector.X)}, {FormatDecimal(vector.Y)}, {FormatDecimal(vector.Z)})",
+            Vector3I vector => $"({FormatDecimal(vector.X)}, {FormatDecimal(vector.Y)}, {FormatDecimal(vector.Z)})",
+            Vector4 vector => $"({FormatDecimal(vector.X)}, {FormatDecimal(vector.Y)}, {FormatDecimal(vector.Z)}, {FormatDecimal(vector.W)})",
+            Quaternion quaternion => $"({FormatDecimal(quaternion.X)}, {FormatDecimal(quaternion.Y)}, {FormatDecimal(quaternion.Z)}, {FormatDecimal(quaternion.W)})",
+            Color color => $"({FormatDecimal(color.R)}, {FormatDecimal(color.G)}, {FormatDecimal(color.B)}, {FormatDecimal(color.A)})",
+            _ => RoundDecimalsInText(value.ToString() ?? string.Empty)
+        };
+    }
+
+    private static string FormatDecimal(double value)
+    {
+        return value.ToString($"F{MonitorValueDecimals}", CultureInfo.InvariantCulture);
+    }
+
+    private static string RoundDecimalsInText(string text)
+    {
+        return DecimalNumberRegex().Replace(text, match =>
+        {
+            if (double.TryParse(match.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out double number))
+            {
+                return FormatDecimal(number);
+            }
+
+            return match.Value;
+        });
+    }
+
+    [GeneratedRegex("^<(?<name>[^>]+)>b__\\d+(?:_\\d+)?$")]
+    private static partial Regex CompilerGeneratedMethodRegex();
+
+    [GeneratedRegex(@"-?\d+\.\d+")]
+    private static partial Regex DecimalNumberRegex();
 
     private void ClearLabels(Node container, bool skipGraph)
     {
@@ -294,6 +373,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
             if (skipGraph && child is FpsGraph)
                 continue;
 
+            container.RemoveChild(child);
             child.QueueFree();
         }
     }
@@ -303,7 +383,9 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         Label label = new()
         {
             Text = text,
-            AutowrapMode = TextServer.AutowrapMode.Off
+            AutowrapMode = TextServer.AutowrapMode.Arbitrary,
+            SizeFlagsHorizontal = Control.SizeFlags.Fill,
+            CustomMinimumSize = new Vector2(PanelWidth - (Margin * 2), 0)
         };
         label.AddThemeColorOverride("font_color", TextColor);
         return label;

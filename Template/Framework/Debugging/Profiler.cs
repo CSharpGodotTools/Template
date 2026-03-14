@@ -51,6 +51,7 @@ public class Profiler
         }
 
         entry.Stop();
+        Game.Metrics.StopMonitoring(key);
     }
 
     // Private Methods
@@ -63,10 +64,10 @@ public class Profiler
         {
             entry = new ProfilerEntry();
             _entries[key] = entry;
-
-            // Register the metric with the appropriate overlay
-            registerAction(key, () => _entries[key].GetAverageMs(accuracy) + " ms");
         }
+
+        // Register (or update) the metric with the overlay for this key.
+        registerAction(key, () => _entries[key].GetAverageMs(accuracy) + " ms");
 
         entry.Start();
     }
