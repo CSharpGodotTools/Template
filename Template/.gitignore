@@ -13,7 +13,8 @@ Directory.Build.targets
 
 # GDUnit4
 TestResults/
-gdunit4_testadapter_v5/
+gdunit4_testadapter_v5/*
+!gdunit4_testadapter_v5/*.gdignore
 .runsettings
 
 # Visual Studio

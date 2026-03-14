@@ -12,7 +12,7 @@
 
 # GDUnit4
 **/TestResults/
-**/gdunit4_testadapter_v5/
+**/gdunit4_testadapter_v5/*
 **/.runsettings
 
 # Visual Studio
