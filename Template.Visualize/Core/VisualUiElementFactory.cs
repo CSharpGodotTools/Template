@@ -51,7 +51,14 @@ internal static class VisualUiElementFactory
             TextureFilter = CanvasItem.TextureFilterEnum.Nearest
         };
 
-        btn.AddThemeStyleboxOverride("focus", new StyleBoxEmpty());
+        StyleBoxEmpty flatStyle = new();
+        // Fix bug causing Visualize icons to turn into 1 pixel when clicked
+        btn.AddThemeStyleboxOverride("normal", flatStyle);
+        btn.AddThemeStyleboxOverride("hover", flatStyle);
+        btn.AddThemeStyleboxOverride("pressed", flatStyle);
+        btn.AddThemeStyleboxOverride("hover_pressed", flatStyle);
+        btn.AddThemeStyleboxOverride("disabled", flatStyle);
+        btn.AddThemeStyleboxOverride("focus", flatStyle);
 
         return btn;
     }
