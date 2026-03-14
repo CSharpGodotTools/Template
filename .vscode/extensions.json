@@ -15,6 +15,10 @@
         // Trigger GitHub actions from within VSCode
         "github.vscode-github-actions",
         // Delete all whitespace characters on backspace
-        "jasonlhy.hungry-delete"
+        "jasonlhy.hungry-delete",
+        // Auto generate XML documentation
+        "k--kato.docomment",
+        // Background image with many preset color themes to choose from
+        "unthrottled.doki-theme"
     ]
 }
