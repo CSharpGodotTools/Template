@@ -45,7 +45,7 @@ internal sealed class PacketGeneratorWriteReadTests
         AssignProperties(packet, roundTripCase.Properties);
 
         object writer = harness.CreateWriter();
-        Type readerType = harness.GetTypeOrFail("__TEMPLATE__.Netcode.PacketReader");
+        Type readerType = harness.GetTypeOrFail(PacketGenTestConstants.PacketReaderFullName);
         PacketReflectionHelper.AssertHasWriteReadMethods(packetType, writer.GetType(), readerType);
 
         PacketReflectionHelper.InvokeWrite(packet, writer);
@@ -99,13 +99,7 @@ internal sealed class PacketGeneratorWriteReadTests
 
     private static void AssertGeneratedShape(string generatedSource)
     {
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(generatedSource, Does.Contain("public override void Write(PacketWriter writer)"));
-            Assert.That(generatedSource, Does.Contain("public override void Read(PacketReader reader)"));
-            Assert.That(generatedSource, Does.Contain("public override bool Equals(object obj)"));
-            Assert.That(generatedSource, Does.Contain("public override int GetHashCode()"));
-        }
+        PacketGeneratedSourceAssertions.AssertContainsCoreOverrides(generatedSource);
     }
 
     private static void AssertNoGeneratorErrors(GeneratorTestRunResult result)
@@ -119,7 +113,7 @@ internal sealed class PacketGeneratorWriteReadTests
         return $$"""
         using System.Collections.Generic;
         using Godot;
-        using __TEMPLATE__.Netcode;
+        using {{PacketGenTestConstants.PacketNamespace}};
 
         namespace TestPackets;
 
@@ -169,7 +163,7 @@ internal sealed class PacketGeneratorWriteReadTests
         return $$"""
         using System.Collections.Generic;
         using Godot;
-        using __TEMPLATE__.Netcode;
+        using {{PacketGenTestConstants.PacketNamespace}};
 
         namespace TestPackets;
 
@@ -200,7 +194,7 @@ internal sealed class PacketGeneratorWriteReadTests
     {
         return $$"""
         using System.Collections.Generic;
-        using __TEMPLATE__.Netcode;
+        using {{PacketGenTestConstants.PacketNamespace}};
 
         namespace TestPackets;
 

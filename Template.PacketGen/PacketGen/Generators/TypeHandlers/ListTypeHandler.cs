@@ -19,36 +19,21 @@ internal sealed class ListTypeHandler(TypeHandlerRegistry registry) : ITypeHandl
         INamedTypeSymbol namedType = (INamedTypeSymbol)ctx.Shared.Type;
         ITypeSymbol elementType = namedType.TypeArguments[0];
 
-        string countVar = $"{valueExpression}.Count";
-        // Unique loop index per depth avoids variable name collisions in nested collections
-        string loopIndex = $"i{depth}";
-        string elementAccess = $"{valueExpression}[{loopIndex}]";
+        CollectionLoopEmitter.EmitWriteLoop(ctx, valueExpression, $"{valueExpression}.Count", indent, depth,
+            (loopIndex, bodyIndent) =>
+            {
+                string elementAccess = $"{valueExpression}[{loopIndex}]";
+                string? elementSuffix = ReadMethodSuffix.Get(elementType);
 
-        if (depth == 0)
-            ctx.Shared.OutputLines.Add($"{indent}#region {valueExpression}");
+                if (elementSuffix != null)
+                {
+                    ctx.Shared.OutputLines.Add($"{bodyIndent}writer.Write({elementAccess});");
+                    return;
+                }
 
-        ctx.Shared.OutputLines.Add($"{indent}writer.Write({countVar});");
-        ctx.Shared.OutputLines.Add("");
-
-        ctx.Shared.OutputLines.Add($"{indent}for (int {loopIndex} = 0; {loopIndex} < {countVar}; {loopIndex}++)");
-        ctx.Shared.OutputLines.Add($"{indent}{{");
-
-        string? elementSuffix = ReadMethodSuffix.Get(elementType);
-
-        if (elementSuffix != null)
-        {
-            ctx.Shared.OutputLines.Add($"{indent}    writer.Write({elementAccess});");
-        }
-        else
-        {
-            GenerationContext nested = new(ctx.Shared.Compilation, ctx.Shared.Property, elementType, ctx.Shared.OutputLines, ctx.Shared.Namespaces);
-            registry.TryEmitWrite(new WriteContext(nested), elementAccess, indent + "    ", depth + 1);
-        }
-
-        ctx.Shared.OutputLines.Add($"{indent}}}");
-
-        if (depth == 0)
-            ctx.Shared.OutputLines.Add($"{indent}#endregion");
+                GenerationContext nested = new(ctx.Shared.Compilation, ctx.Shared.Property, elementType, ctx.Shared.OutputLines, ctx.Shared.Namespaces);
+                registry.TryEmitWrite(new WriteContext(nested), elementAccess, bodyIndent, depth + 1);
+            });
     }
 
     /// <inheritdoc/>
@@ -63,40 +48,30 @@ internal sealed class ListTypeHandler(TypeHandlerRegistry registry) : ITypeHandl
         TypeNamespaceHelper.AddNamespaceIfNeeded(elementType, ctx.Shared.Namespaces);
 
         string nameSeed = rootName ?? ctx.TargetExpression;
-        string countVar = TypeHandlerNameHelper.BuildName(nameSeed, "Count", depth);
-        string loopIndex = TypeHandlerNameHelper.BuildName(nameSeed, "Index", depth);
-        string elementVar = TypeHandlerNameHelper.BuildName(nameSeed, "Element", depth);
-
-        if (depth == 0)
-            ctx.Shared.OutputLines.Add($"{indent}#region {ctx.TargetExpression}");
+        (string countVar, string loopIndex, string elementVar) = CollectionLoopEmitter.BuildReadLoopNames(nameSeed, depth);
 
         ctx.Shared.OutputLines.Add($"{indent}{ctx.TargetExpression} = new List<{elementTypeName}>();");
         ctx.Shared.OutputLines.Add($"{indent}int {countVar} = reader.ReadInt();");
         ctx.Shared.OutputLines.Add("");
 
-        ctx.Shared.OutputLines.Add($"{indent}for (int {loopIndex} = 0; {loopIndex} < {countVar}; {loopIndex}++)");
-        ctx.Shared.OutputLines.Add($"{indent}{{");
+        CollectionLoopEmitter.EmitReadLoop(ctx, indent, depth, loopIndex, countVar,
+            (_, bodyIndent) =>
+            {
+                string? elementSuffix = ReadMethodSuffix.Get(elementType);
 
-        string? elementSuffix = ReadMethodSuffix.Get(elementType);
+                if (elementSuffix != null)
+                {
+                    ctx.Shared.OutputLines.Add($"{bodyIndent}{ctx.TargetExpression}.Add(reader.Read{elementSuffix}());");
+                    return;
+                }
 
-        if (elementSuffix != null)
-        {
-            ctx.Shared.OutputLines.Add($"{indent}    {ctx.TargetExpression}.Add(reader.Read{elementSuffix}());");
-        }
-        else
-        {
-            ctx.Shared.OutputLines.Add($"{indent}    {elementTypeName} {elementVar};");
+                ctx.Shared.OutputLines.Add($"{bodyIndent}{elementTypeName} {elementVar};");
 
-            GenerationContext nested = new(ctx.Shared.Compilation, ctx.Shared.Property, elementType, ctx.Shared.OutputLines, ctx.Shared.Namespaces);
-            registry.TryEmitRead(new ReadContext(nested, elementVar), indent + "    ", depth + 1, elementVar);
+                GenerationContext nested = new(ctx.Shared.Compilation, ctx.Shared.Property, elementType, ctx.Shared.OutputLines, ctx.Shared.Namespaces);
+                registry.TryEmitRead(new ReadContext(nested, elementVar), bodyIndent, depth + 1, elementVar);
 
-            ctx.Shared.OutputLines.Add("");
-            ctx.Shared.OutputLines.Add($"{indent}    {ctx.TargetExpression}.Add({elementVar});");
-        }
-
-        ctx.Shared.OutputLines.Add($"{indent}}}");
-
-        if (depth == 0)
-            ctx.Shared.OutputLines.Add($"{indent}#endregion");
+                ctx.Shared.OutputLines.Add("");
+                ctx.Shared.OutputLines.Add($"{bodyIndent}{ctx.TargetExpression}.Add({elementVar});");
+            });
     }
 }

@@ -51,7 +51,7 @@ internal sealed class GeneratedAssemblyHarness
 
     public object CreateWriter()
     {
-        Type writerType = GetTypeOrFail("__TEMPLATE__.Netcode.PacketWriter");
+        Type writerType = GetTypeOrFail(PacketGenTestConstants.PacketWriterFullName);
         return CreateInstance(writerType);
     }
 
@@ -68,7 +68,7 @@ internal sealed class GeneratedAssemblyHarness
 
     public object CreateReader(IEnumerable<object?> values)
     {
-        Type readerType = GetTypeOrFail("__TEMPLATE__.Netcode.PacketReader");
+        Type readerType = GetTypeOrFail(PacketGenTestConstants.PacketReaderFullName);
         object? reader = Activator.CreateInstance(readerType, [values]);
         Assert.That(reader, Is.Not.Null, "Failed to create PacketReader with provided values.");
         return reader!;

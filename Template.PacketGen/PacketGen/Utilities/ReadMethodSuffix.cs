@@ -4,7 +4,7 @@ namespace PacketGen.Utilities;
 
 /// <summary>
 /// Maps type symbols to their corresponding PacketReader Read method suffixes.
-/// See __TEMPLATE__.Netcode.PacketReader for all read methods.
+/// See the project's PacketReader type for all read methods.
 /// </summary>
 internal static class ReadMethodSuffix
 {

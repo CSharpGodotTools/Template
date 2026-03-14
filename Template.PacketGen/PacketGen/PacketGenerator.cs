@@ -16,8 +16,8 @@ public sealed class PacketGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         IncrementalValuesProvider<INamedTypeSymbol> packetSymbols = GetPacketSymbols(context);
-        IncrementalValuesProvider<INamedTypeSymbol> clientPackets = packetSymbols.Where(static s => InheritsFrom(s, "ClientPacket"));
-        IncrementalValuesProvider<INamedTypeSymbol> serverPackets = packetSymbols.Where(static s => InheritsFrom(s, "ServerPacket"));
+        IncrementalValuesProvider<INamedTypeSymbol> clientPackets = packetSymbols.Where(static s => InheritsFrom(s, PacketGenConstants.ClientPacketTypeName));
+        IncrementalValuesProvider<INamedTypeSymbol> serverPackets = packetSymbols.Where(static s => InheritsFrom(s, PacketGenConstants.ServerPacketTypeName));
 
         IncrementalValueProvider<Compilation> compilation = context.CompilationProvider;
 
@@ -118,7 +118,7 @@ public sealed class PacketGenerator : IIncrementalGenerator
 
                 foreach (AttributeData attribute in symbol.GetAttributes())
                 {
-                    if (attribute.AttributeClass?.Name == "PacketRegistryAttribute")
+                    if (attribute.AttributeClass?.Name == PacketGenConstants.PacketRegistryAttributeTypeName)
                     {
                         return symbol;
                     }
@@ -135,7 +135,8 @@ public sealed class PacketGenerator : IIncrementalGenerator
     /// </summary>
     private static bool IsPacketType(INamedTypeSymbol symbol)
     {
-        return InheritsFrom(symbol, "ClientPacket") || InheritsFrom(symbol, "ServerPacket");
+        return InheritsFrom(symbol, PacketGenConstants.ClientPacketTypeName)
+            || InheritsFrom(symbol, PacketGenConstants.ServerPacketTypeName);
     }
 
     /// <summary>
@@ -189,7 +190,7 @@ public sealed class PacketGenerator : IIncrementalGenerator
     {
         foreach (AttributeData attribute in registrySymbol.GetAttributes())
         {
-            if (attribute.AttributeClass?.Name != "PacketRegistryAttribute")
+            if (attribute.AttributeClass?.Name != PacketGenConstants.PacketRegistryAttributeTypeName)
             {
                 continue;
             }

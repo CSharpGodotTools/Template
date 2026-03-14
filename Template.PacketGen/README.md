@@ -4,6 +4,8 @@
 
 PacketGen generates packet boilerplate at compile time so packet types in [Template](https://github.com/CSharpGodotTools/Template) stay short and explicit.
 
+Architecture and code walkthrough: [ARCHITECTURE.md](./ARCHITECTURE.md)
+
 ## What it generates
 - `Write(PacketWriter writer)`
 - `Read(PacketReader reader)`

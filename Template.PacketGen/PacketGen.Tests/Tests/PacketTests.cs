@@ -8,7 +8,7 @@ internal sealed class PacketTests
     {
         string testCode = $$"""
         using Godot;
-        using __TEMPLATE__.Netcode;
+        using {{PacketGenTestConstants.PacketNamespace}};
 
         namespace TestPackets;
 
@@ -37,8 +37,8 @@ internal sealed class PacketTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(source, Does.Contain("public override void Write(PacketWriter writer)"));
-            Assert.That(source, Does.Contain("public override void Read(PacketReader reader)"));
+            Assert.That(source, Does.Contain(PacketGeneratedSourceAssertions.WriteOverrideSignature));
+            Assert.That(source, Does.Contain(PacketGeneratedSourceAssertions.ReadOverrideSignature));
 
             Assert.That(idWriteIndex, Is.GreaterThanOrEqualTo(0));
             Assert.That(positionWriteIndex, Is.GreaterThan(idWriteIndex));
@@ -54,7 +54,7 @@ internal sealed class PacketTests
     public void EmptyPacket_DoesNotGenerateSource()
     {
         string testCode = $$"""
-        using __TEMPLATE__.Netcode;
+        using {{PacketGenTestConstants.PacketNamespace}};
 
         namespace TestPackets;
 
@@ -75,7 +75,7 @@ internal sealed class PacketTests
     public void ManualWriteReadMethods_DoesNotGenerateSource()
     {
         string testCode = $$"""
-        using __TEMPLATE__.Netcode;
+        using {{PacketGenTestConstants.PacketNamespace}};
 
         namespace TestPackets;
 
@@ -108,7 +108,7 @@ internal sealed class PacketTests
     {
         string className = "CSimplePacket";
         string testCode = $$"""
-        using __TEMPLATE__.Netcode;
+        using {{PacketGenTestConstants.PacketNamespace}};
 
         namespace TestPackets;
 

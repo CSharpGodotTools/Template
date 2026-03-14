@@ -67,12 +67,8 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
     /// <inheritdoc/>
     public void EmitWrite(WriteContext ctx, string valueExpression, string indent, int depth)
     {
-        if (depth > MaxTraversalDepth)
-        {
-            Logger.Err(ctx.Shared.Property, $"Exceeded max class/struct traversal depth for {ctx.Shared.Type.ToDisplayString()}.");
-            ctx.Shared.OutputLines.Add($"{indent}// Exceeded max traversal depth for {ctx.Shared.Type.ToDisplayString()}.");
+        if (!TryGuardTraversalDepthForWrite(ctx, indent, depth))
             return;
-        }
 
         INamedTypeSymbol namedType = (INamedTypeSymbol)ctx.Shared.Type;
         if (IsNullableValueType(namedType))
@@ -92,12 +88,8 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
     /// <inheritdoc/>
     public void EmitRead(ReadContext ctx, string indent, int depth, string? rootName)
     {
-        if (depth > MaxTraversalDepth)
-        {
-            Logger.Err(ctx.Shared.Property, $"Exceeded max class/struct traversal depth for {ctx.Shared.Type.ToDisplayString()}.");
-            ctx.Shared.OutputLines.Add($"{indent}{ctx.TargetExpression} = default!;");
+        if (!TryGuardTraversalDepthForRead(ctx, indent, depth))
             return;
-        }
 
         INamedTypeSymbol namedType = (INamedTypeSymbol)ctx.Shared.Type;
         string nameSeed = rootName ?? ctx.TargetExpression;
@@ -217,7 +209,7 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
     /// <summary>Emits write calls for all serializable properties of the type.</summary>
     private void EmitWritableMembers(WriteContext ctx, INamedTypeSymbol type, string valueExpression, string indent, int depth)
     {
-        ImmutableArray<IPropertySymbol> properties = GetSerializableProperties(type);
+        ImmutableArray<IPropertySymbol> properties = SerializablePropertySelector.Get(type);
         foreach (IPropertySymbol property in properties)
         {
             string memberValue = $"{valueExpression}.{property.Name}";
@@ -228,7 +220,7 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
 
     private void EmitReadableMembers(ReadContext ctx, INamedTypeSymbol type, string valueExpression, string indent, int depth, string nameSeed)
     {
-        ImmutableArray<IPropertySymbol> properties = GetSerializableProperties(type);
+        ImmutableArray<IPropertySymbol> properties = SerializablePropertySelector.Get(type);
         foreach (IPropertySymbol property in properties)
         {
             string memberTarget = $"{valueExpression}.{property.Name}";
@@ -238,47 +230,24 @@ internal sealed class ComplexTypeHandler(TypeHandlerRegistry registry) : ITypeHa
         }
     }
 
-    private static ImmutableArray<IPropertySymbol> GetSerializableProperties(INamedTypeSymbol type)
+    private static bool TryGuardTraversalDepthForWrite(WriteContext ctx, string indent, int depth)
     {
-        ImmutableArray<ISymbol> members = type.GetMembers();
-        ImmutableArray<IPropertySymbol>.Builder builder = ImmutableArray.CreateBuilder<IPropertySymbol>();
+        if (depth <= MaxTraversalDepth)
+            return true;
 
-        foreach (ISymbol member in members)
-        {
-            if (member is not IPropertySymbol property)
-            {
-                continue;
-            }
+        Logger.Err(ctx.Shared.Property, $"Exceeded max class/struct traversal depth for {ctx.Shared.Type.ToDisplayString()}.");
+        ctx.Shared.OutputLines.Add($"{indent}// Exceeded max traversal depth for {ctx.Shared.Type.ToDisplayString()}.");
+        return false;
+    }
 
-            if (!property.CanBeReferencedByName || property.IsStatic || property.Parameters.Length > 0)
-            {
-                continue;
-            }
+    private static bool TryGuardTraversalDepthForRead(ReadContext ctx, string indent, int depth)
+    {
+        if (depth <= MaxTraversalDepth)
+            return true;
 
-            if (property.GetMethod is null || property.SetMethod is null)
-            {
-                continue;
-            }
-
-            if (property.GetMethod.DeclaredAccessibility != Accessibility.Public)
-            {
-                continue;
-            }
-
-            if (property.SetMethod.DeclaredAccessibility != Accessibility.Public || property.SetMethod.IsInitOnly)
-            {
-                continue;
-            }
-
-            if (property.GetAttributes().Any(static attr => attr.AttributeClass?.Name == "NetExcludeAttribute"))
-            {
-                continue;
-            }
-
-            builder.Add(property);
-        }
-
-        return builder.ToImmutable();
+        Logger.Err(ctx.Shared.Property, $"Exceeded max class/struct traversal depth for {ctx.Shared.Type.ToDisplayString()}.");
+        ctx.Shared.OutputLines.Add($"{indent}{ctx.TargetExpression} = default!;");
+        return false;
     }
 
     /// <summary>Returns <c>null</c> or <c>default!</c> depending on whether the type is already annotated nullable.</summary>

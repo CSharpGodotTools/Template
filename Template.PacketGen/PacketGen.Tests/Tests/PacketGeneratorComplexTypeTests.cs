@@ -138,7 +138,7 @@ internal sealed class PacketGeneratorComplexTypeTests
         return $$"""
         using System.Collections.Generic;
         using Godot;
-        using __TEMPLATE__.Netcode;
+        using {{PacketGenTestConstants.PacketNamespace}};
 
         namespace TestPackets;
 

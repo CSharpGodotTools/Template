@@ -6,29 +6,29 @@ internal static class MainProjectSource
         public sealed class NetExcludeAttribute : System.Attribute {}
         """;
 
-    public static string PacketRegistryAttribute => """
+    public static string PacketRegistryAttribute => $$"""
         [System.AttributeUsage(System.AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-        public sealed class PacketRegistryAttribute : System.Attribute
+        public sealed class {{PacketGenConstants.PacketRegistryAttributeTypeName}} : System.Attribute
         {
             public System.Type OpcodeType { get; }
         
-            public PacketRegistryAttribute()
+            public {{PacketGenConstants.PacketRegistryAttributeTypeName}}()
             {
                 OpcodeType = typeof(byte);
             }
         
-            public PacketRegistryAttribute(System.Type opcodeType)
+            public {{PacketGenConstants.PacketRegistryAttributeTypeName}}(System.Type opcodeType)
             {
                 OpcodeType = opcodeType;
             }
         }
         """;
 
-    public static string PacketStubs => """
+    public static string PacketStubs => $$"""
         using System;
         using System.Collections.Generic;
 
-        namespace __TEMPLATE__.Netcode;
+        namespace {{PacketGenTestConstants.PacketNamespace}};
 
         public abstract class GamePacket
         {
