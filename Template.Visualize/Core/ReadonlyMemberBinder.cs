@@ -105,8 +105,6 @@ internal sealed class ReadonlyMemberBinder
             return;
         }
 
-        visualControlInfo.VisualControl.SetEditable(false);
-
         _updateActions.Add(() =>
         {
             object? current = accessor.GetValue(target);

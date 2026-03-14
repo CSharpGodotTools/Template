@@ -89,12 +89,6 @@ internal static class VisualUI
         scrollContainer.AddChild(titleBar);
         panelContainer.AddChild(scrollContainer);
 
-        // Add to canvas layer so UI is not affected by lighting in game world
-        CanvasLayer canvasLayer = VisualUiElementFactory.CreateCanvasLayer(node.Name, node.GetInstanceId());
-        canvasLayer.AddChild(panelContainer);
-
-        node.CallDeferred(Node.MethodName.AddChild, canvasLayer);
-
         return (panelContainer, readonlyBinder.UpdateActions);
     }
 

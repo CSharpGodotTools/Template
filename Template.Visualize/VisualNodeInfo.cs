@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace GodotUtils.Debugging;
 
-internal sealed class VisualNodeInfo(IReadOnlyList<Action> actions, Control visualControl, Node node, Vector2 offset)
+internal sealed class VisualNodeInfo(IReadOnlyList<Action> actions, Node anchorNode, Node visualRoot, Action updatePosition)
 {
     public IReadOnlyList<Action> Actions { get; } = actions ?? throw new ArgumentNullException(nameof(actions));
-    public Control VisualControl { get; } = visualControl ?? throw new ArgumentNullException(nameof(visualControl));
-    public Vector2 Offset { get; } = offset;
-    public Node Node { get; } = node ?? throw new ArgumentNullException(nameof(node));
+    public Node AnchorNode { get; } = anchorNode ?? throw new ArgumentNullException(nameof(anchorNode));
+    public Node VisualRoot { get; } = visualRoot ?? throw new ArgumentNullException(nameof(visualRoot));
+    public Action UpdatePosition { get; } = updatePosition ?? throw new ArgumentNullException(nameof(updatePosition));
 }
 #endif

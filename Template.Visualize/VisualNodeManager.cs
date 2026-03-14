@@ -2,13 +2,19 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GodotUtils.Debugging;
 
 internal sealed class VisualNodeManager
 {
-    private static readonly Type[] _positionNodeTypes = [typeof(Node2D), typeof(Control)];
-    private static readonly Vector2 _defaultOffset = new(100, 100);
+    private static readonly Type[] _positionNodeTypes = [typeof(Node2D), typeof(Control), typeof(Node3D)];
+    private static readonly Vector2 _defaultOffset2D = new(100, 100);
+    private static readonly Vector2I _subViewportSize = new(1024, 1024);
+    private const float Base3DHeightOffset = -0.2f;
+    private const float Extra3DHeightPerPanel = 0.8f;
+    private const float SpritePixelSize = 0.004f;
+
     private readonly Dictionary<ulong, VisualNodeInfo> _nodeTrackers = [];
 
     public void Register(Node node, object visualizedObject)
@@ -17,47 +23,32 @@ internal sealed class VisualNodeManager
         ArgumentNullException.ThrowIfNull(visualizedObject);
 
         VisualData? visualData = VisualizeAttributeHandler.RetrieveData(visualizedObject, node);
-
-        if (visualData != null)
+        if (visualData == null)
         {
-            (Control visualPanel, IReadOnlyList<Action> actions) = VisualUI.CreateVisualPanel(visualData);
-
-            ulong instanceId = node.GetInstanceId();
-            Node? positionalNode = GetClosestParentOfType(node, _positionNodeTypes);
-
-            if (positionalNode == null)
-            {
-                PrintUtils.Warning($"[Visualize] No positional parent node could be found for {node.Name} so its visual panel will be created at position {_defaultOffset}");
-            }
-
-            if (!TryGetGlobalPosition(positionalNode, out Vector2 initialPosition))
-            {
-                initialPosition = _defaultOffset;
-            }
-
-            visualPanel.GlobalPosition = initialPosition;
-
-            Vector2 offset = CalculateVerticalOffset(visualPanel);
-
-            _nodeTrackers.Add(instanceId, new VisualNodeInfo(actions, visualPanel, positionalNode ?? node, offset));
+            node.TreeExited += () => RemoveVisualNodesForAnchor(node);
+            return;
         }
 
-        node.TreeExited += () => RemoveVisualNode(node);
+        (Control visualPanel, IReadOnlyList<Action> actions) = VisualUI.CreateVisualPanel(visualData);
+        Node? positionalNode = GetClosestParentOfType(node, _positionNodeTypes) ?? node;
+
+        if (positionalNode is Node3D node3D)
+        {
+            Register3D(node, node3D, visualPanel, actions);
+        }
+        else
+        {
+            Register2D(node, positionalNode, visualPanel, actions);
+        }
+
+        node.TreeExited += () => RemoveVisualNodesForAnchor(node);
     }
 
     public void Update()
     {
-        foreach (KeyValuePair<ulong, VisualNodeInfo> kvp in _nodeTrackers)
+        foreach (VisualNodeInfo info in _nodeTrackers.Values)
         {
-            VisualNodeInfo info = kvp.Value;
-            Node node = info.Node;
-            Control visualControl = info.VisualControl;
-
-            // Update position based on node type
-            if (node != null && TryGetGlobalPosition(node, out Vector2 position))
-            {
-                visualControl.GlobalPosition = position + info.Offset;
-            }
+            info.UpdatePosition();
 
             foreach (Action action in info.Actions)
             {
@@ -66,21 +57,140 @@ internal sealed class VisualNodeManager
         }
     }
 
-    private void RemoveVisualNode(Node node)
+    private void Register2D(Node anchorNode, Node positionalNode, Control visualPanel, IReadOnlyList<Action> actions)
     {
-        ulong instanceId = node.GetInstanceId();
-
-        if (_nodeTrackers.TryGetValue(instanceId, out VisualNodeInfo? info))
+        if (!TryGetGlobalPosition2D(positionalNode, out Vector2 initialPosition))
         {
-            // GetParent to queue free the CanvasLayer this VisualControl is a child of
-            info.VisualControl.GetParent().QueueFree();
-            _nodeTrackers.Remove(instanceId);
+            PrintUtils.Warning($"[Visualize] No 2D positional parent found for '{anchorNode.Name}'. Using fallback position {_defaultOffset2D}.");
+            initialPosition = _defaultOffset2D;
         }
 
-        VisualizeAutoload.Instance?.UnregisterNode(node);
+        visualPanel.GlobalPosition = initialPosition;
+        Vector2 offset = CalculateVerticalOffset2D(visualPanel);
+
+        CanvasLayer canvasLayer = VisualUiElementFactory.CreateCanvasLayer(anchorNode.Name, anchorNode.GetInstanceId());
+        canvasLayer.AddChild(visualPanel);
+        anchorNode.CallDeferred(Node.MethodName.AddChild, canvasLayer);
+
+        void UpdatePosition()
+        {
+            if (TryGetGlobalPosition2D(positionalNode, out Vector2 position))
+            {
+                visualPanel.GlobalPosition = position + offset;
+            }
+        }
+
+        _nodeTrackers.Add(visualPanel.GetInstanceId(), new VisualNodeInfo(actions, anchorNode, canvasLayer, UpdatePosition));
     }
 
-    private static bool TryGetGlobalPosition(Node? node, out Vector2 position)
+    private void Register3D(Node anchorNode, Node3D node3D, Control visualPanel, IReadOnlyList<Action> actions)
+    {
+        SubViewport subViewport = new()
+        {
+            Name = "VisualizeSubViewport",
+            TransparentBg = true,
+            Disable3D = true,
+            Size = _subViewportSize,
+            RenderTargetUpdateMode = SubViewport.UpdateMode.WhenVisible
+        };
+
+        CenterPanelInSubViewport(visualPanel);
+        subViewport.AddChild(visualPanel);
+
+        Sprite3D sprite3D = new()
+        {
+            Name = $"Visualizing3D {anchorNode.Name} {anchorNode.GetInstanceId()}",
+            Texture = subViewport.GetTexture(),
+            PixelSize = SpritePixelSize,
+            Billboard = BaseMaterial3D.BillboardModeEnum.Enabled,
+            DoubleSided = true
+        };
+
+        sprite3D.AddChild(subViewport);
+        anchorNode.CallDeferred(Node.MethodName.AddChild, sprite3D);
+
+        Vector3 offset = CalculateVerticalOffset3D();
+
+        void UpdatePosition()
+        {
+            CenterPanelInSubViewport(visualPanel);
+            sprite3D.GlobalPosition = node3D.GlobalPosition + offset;
+        }
+
+        _nodeTrackers.Add(visualPanel.GetInstanceId(), new VisualNodeInfo(actions, anchorNode, sprite3D, UpdatePosition));
+    }
+
+    private void RemoveVisualNodesForAnchor(Node anchorNode)
+    {
+        List<ulong> trackersToRemove = [];
+
+        foreach (KeyValuePair<ulong, VisualNodeInfo> tracker in _nodeTrackers)
+        {
+            if (tracker.Value.AnchorNode != anchorNode)
+            {
+                continue;
+            }
+
+            tracker.Value.VisualRoot.QueueFree();
+            trackersToRemove.Add(tracker.Key);
+        }
+
+        foreach (ulong id in trackersToRemove)
+        {
+            _nodeTrackers.Remove(id);
+        }
+
+        VisualizeAutoload.Instance?.UnregisterNode(anchorNode);
+    }
+
+    private Vector2 CalculateVerticalOffset2D(Control visualPanel)
+    {
+        Vector2 offset = Vector2.Zero;
+
+        foreach (VisualNodeInfo tracker in _nodeTrackers.Values)
+        {
+            if (tracker.VisualRoot is not CanvasLayer existingCanvasLayer)
+            {
+                continue;
+            }
+
+            if (existingCanvasLayer.GetChildCount() == 0 || existingCanvasLayer.GetChild(0) is not Control existingControl)
+            {
+                continue;
+            }
+
+            if (!ControlsOverlapping(visualPanel, existingControl))
+            {
+                continue;
+            }
+
+            offset += new Vector2(0, existingControl.GetRect().Size.Y);
+        }
+
+        return offset;
+    }
+
+    private Vector3 CalculateVerticalOffset3D()
+    {
+        int current3DPanelCount = _nodeTrackers.Values.Count(tracker => tracker.VisualRoot is Sprite3D);
+        return new Vector3(0, Base3DHeightOffset + current3DPanelCount * Extra3DHeightPerPanel, 0);
+    }
+
+    private void CenterPanelInSubViewport(Control visualPanel)
+    {
+        Vector2 viewportSize = new(_subViewportSize.X, _subViewportSize.Y);
+
+        Vector2 panelSize = visualPanel.GetCombinedMinimumSize();
+        if (panelSize == Vector2.Zero)
+        {
+            panelSize = visualPanel.Size;
+        }
+
+        Vector2 centered = (viewportSize - panelSize) * 0.5f;
+        visualPanel.Position = new Vector2(Mathf.Max(0, centered.X), Mathf.Max(0, centered.Y));
+    }
+
+    private static bool TryGetGlobalPosition2D(Node? node, out Vector2 position)
     {
         if (node is Node2D node2D)
         {
@@ -101,14 +211,18 @@ internal sealed class VisualNodeManager
     private static Node? GetClosestParentOfType(Node node, params Type[] typesToCheck)
     {
         if (IsNodeOfType(node, typesToCheck))
+        {
             return node;
+        }
 
-        Node parent = node.GetParent();
+        Node? parent = node.GetParent();
 
         while (parent != null)
         {
             if (IsNodeOfType(parent, typesToCheck))
+            {
                 return parent;
+            }
 
             parent = parent.GetParent();
         }
@@ -116,28 +230,14 @@ internal sealed class VisualNodeManager
         return null;
     }
 
-    private Vector2 CalculateVerticalOffset(Control visualPanel)
-    {
-        Vector2 offset = Vector2.Zero;
-
-        foreach (VisualNodeInfo tracker in _nodeTrackers.Values)
-        {
-            Control existingControl = tracker.VisualControl;
-            if (!ControlsOverlapping(visualPanel, existingControl))
-                continue;
-
-            offset += new Vector2(0, existingControl.GetRect().Size.Y);
-        }
-
-        return offset;
-    }
-
     private static bool IsNodeOfType(Node node, Type[] typesToCheck)
     {
         foreach (Type type in typesToCheck)
         {
             if (type.IsInstanceOfType(node))
+            {
                 return true;
+            }
         }
 
         return false;
