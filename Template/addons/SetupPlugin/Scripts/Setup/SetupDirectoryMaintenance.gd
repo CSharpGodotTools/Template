@@ -1,19 +1,20 @@
 class_name SetupDirectoryMaintenance
 
-static func delete_empty_directories(root_directory: String) -> void:
+static func delete_empty_directories(root_directory: String) -> int:
 	if not DirAccess.dir_exists_absolute(root_directory):
-		return
+		return 0
 	
-	delete_empty_directories_recursive(root_directory, true)
+	return delete_empty_directories_recursive(root_directory, true)
 
-static func delete_empty_directories_recursive(directory: String, is_root_directory: bool) -> bool:
+static func delete_empty_directories_recursive(directory: String, is_root_directory: bool) -> int:
 	var dir: DirAccess = DirAccess.open(directory)
 	if dir == null:
-		return false
+		return 0
 	
 	var child_directories: Array[String] = []
 	var has_files: bool = false
 	var has_non_empty_children: bool = false
+	var removed_count: int = 0
 	
 	dir.list_dir_begin()
 	var file_name: String = dir.get_next()
@@ -33,12 +34,13 @@ static func delete_empty_directories_recursive(directory: String, is_root_direct
 		file_name = dir.get_next()
 	
 	for child_directory in child_directories:
-		var child_has_content: bool = delete_empty_directories_recursive(child_directory, false)
-		if child_has_content:
+		removed_count += delete_empty_directories_recursive(child_directory, false)
+		if DirAccess.dir_exists_absolute(child_directory):
 			has_non_empty_children = true
 	
 	var has_content: bool = has_files or has_non_empty_children
 	if not has_content and not is_root_directory:
-		DirAccess.remove_absolute(directory)
+		if DirAccess.remove_absolute(directory) == OK:
+			removed_count += 1
 	
-	return has_content
+	return removed_count

@@ -42,6 +42,9 @@ func fully_expand() -> int:
 
     return _apply_level_to_nodes(9999)
 
+func fully_collapse() -> int:
+    return collapse_to_level(1)
+
 func _find_scene_dock_tree() -> Tree:
     var edited_root: Node = EditorInterface.get_edited_scene_root()
     if edited_root == null:

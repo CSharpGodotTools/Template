@@ -3,6 +3,7 @@ extends EditorPlugin
 
 const TEMPLATE_PROJECT_NAME: String = "Template"
 const PROJECT_ROOT_PATH: String = "res://"
+const DevToolsTab = preload("res://addons/SetupPlugin/Scripts/Dock/DevToolsTab.gd")
 const TemplateSetupDock = preload("res://addons/SetupPlugin/Scripts/Dock/TemplateSetupDock.gd")
 
 var _dock: EditorDock
@@ -14,7 +15,8 @@ func _enter_tree() -> void:
 
 	# ensure any previous dev dock is removed (happens on plugin re‑enable)
 	if _dev_dock != null and is_instance_valid(_dev_dock):
-		remove_dock(_dev_dock)
+		if _dev_dock.get_parent() != null:
+			remove_dock(_dev_dock)
 		_dev_dock.queue_free()
 	
 	_dev_dock = EditorDock.new()
@@ -43,7 +45,8 @@ func _enter_tree() -> void:
 func _exit_tree() -> void:
 	# remove dev tools dock when plugin disabled
 	if _dev_dock != null and is_instance_valid(_dev_dock):
-		remove_dock(_dev_dock)
+		if _dev_dock.get_parent() != null:
+			remove_dock(_dev_dock)
 		_dev_dock.queue_free()
 		_dev_dock = null
 	
@@ -58,7 +61,8 @@ func _exit_tree() -> void:
 	if _content != null and is_instance_valid(_content):
 		_content.prepare_for_plugin_disable()
 	
-	remove_dock(_dock)
+	if _dock.get_parent() != null:
+		remove_dock(_dock)
 	_dock.queue_free()
 	_content = null
 	_dock = null
