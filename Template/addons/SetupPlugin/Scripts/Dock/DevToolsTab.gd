@@ -1,4 +1,8 @@
 @tool
+# Top-level logic for the Dev Tools dock tab.
+# Instantiates editor service objects, connects all button signals, and
+# implements every button handler (UID cleanup, nullable toggle, scene
+# hierarchy controls, debugger clipboard, template update, and more).
 class_name DevToolsTab
 extends "res://addons/SetupPlugin/Scripts/Dock/DevToolsTabLayout.gd"
 
@@ -16,6 +20,7 @@ var _debugger_error_clipboard
 var _editor_scene_actions
 var _scene_hierarchy_actions
 
+# Initialises service objects, builds the UI, then wires all button signals.
 func _ready() -> void:
 	_debugger_error_clipboard = DebuggerErrorClipboardScript.new()
 	_editor_scene_actions = EditorSceneActionsScript.new()
@@ -25,12 +30,16 @@ func _ready() -> void:
 	_build_layout()
 	_register_events()
 
+# Disconnects all signals before the dock node is freed.
 func prepare_for_disable() -> void:
 	_unregister_events()
 
+# Returns the absolute file-system path for the project root.
 func _project_root() -> String:
 	return ProjectSettings.globalize_path(PROJECT_ROOT_PATH)
 
+# Connects every button pressed signal to its handler method.
+# The guard prevents double-wiring on plugin hot-reload.
 func _register_events() -> void:
 	if _events_registered:
 		return
@@ -41,6 +50,7 @@ func _register_events() -> void:
 	_feedback_timer.timeout.connect(_on_feedback_timer_timeout)
 	_events_registered = true
 
+# Disconnects all signals. Called before the dock node is freed.
 func _unregister_events() -> void:
 	if not _events_registered:
 		return
@@ -51,10 +61,12 @@ func _unregister_events() -> void:
 	_disconnect_signal(_anti_aliasing_options, "item_selected", "_on_anti_aliasing_item_selected")
 	_disconnect_signal(_feedback_timer, "timeout", "_on_feedback_timer_timeout")
 
+# Safely disconnects a single signal, silently skipping already-disconnected ones.
 func _disconnect_signal(source: Object, signal_name: StringName, method_name: String) -> void:
 	if source != null and source.is_connected(signal_name, Callable(self, method_name)):
 		source.disconnect(signal_name, Callable(self, method_name))
 
+# Updates the status label. An empty string resets it to the grey placeholder.
 func _set_status(text: String) -> void:
 	if text.is_empty():
 		_status_label.text = " "
@@ -63,14 +75,18 @@ func _set_status(text: String) -> void:
 	_status_label.text = text
 	_status_label.modulate = Color(0.6, 0.95, 0.6)
 
+# Triggers a Godot filesystem rescan so the editor reflects any files that
+# were created, modified, or deleted by a recent operation.
 func _refresh_editor_filesystem() -> void:
 	var resource_filesystem: EditorFileSystem = EditorInterface.get_resource_filesystem()
 	if resource_filesystem != null:
 		resource_filesystem.scan()
 
+# Clears the status label once the feedback display duration elapses.
 func _on_feedback_timer_timeout() -> void:
 	_set_status("")
 
+# Recursively deletes .uid files whose corresponding source file no longer exists.
 func _on_cleanup_uids_pressed() -> void:
 	_cleanup_uids_button.disabled = true
 	var removed_count: int = DevToolsUidCleanupScript.delete_orphan_uid_files(_project_root())
@@ -78,6 +94,7 @@ func _on_cleanup_uids_pressed() -> void:
 	_feedback_timer.start()
 	_cleanup_uids_button.disabled = false
 
+# Removes all empty directories from the project root, then rescans the filesystem.
 func _on_remove_empty_folders_pressed() -> void:
 	_remove_empty_folders_button.disabled = true
 	var removed_count: int = SetupDirectoryMaintenanceScript.delete_empty_directories(_project_root())
@@ -86,6 +103,8 @@ func _on_remove_empty_folders_pressed() -> void:
 	_feedback_timer.start()
 	_remove_empty_folders_button.disabled = false
 
+# Collects all errors shown in the Godot Debugger panel and writes them to
+# the system clipboard.
 func _on_copy_debugger_errors_pressed() -> void:
 	var errors: PackedStringArray = _debugger_error_clipboard.collect_errors(_include_stack_trace_checkbox.button_pressed, _use_short_type_names_checkbox.button_pressed)
 	if errors.is_empty():
@@ -96,41 +115,51 @@ func _on_copy_debugger_errors_pressed() -> void:
 	_set_status("Copied %d errors to clipboard" % errors.size())
 	_feedback_timer.start()
 
+# Closes every open scene tab in the editor.
 func _on_close_all_scene_tabs_pressed() -> void:
 	var closed_count: int = _editor_scene_actions.close_all_open_scenes()
 	_set_status("Closed %d scene tabs" % closed_count if closed_count > 0 else "No scene tabs to close")
 	_feedback_timer.start()
 
+# Saves the current scene and restarts the Godot editor process.
 func _on_restart_editor_pressed() -> void:
 	_set_status("Restarting editor...")
 	_feedback_timer.start()
 	_editor_scene_actions.restart_editor(true)
 
+# Expands the Scene dock hierarchy to the depth set in the SpinBox.
 func _on_expand_to_level_pressed() -> void:
 	var level: int = int(_hierarchy_level_spinbox.value)
 	var changed_count: int = _scene_hierarchy_actions.expand_to_level(level)
 	_set_status("Expanded hierarchy to level %d" % level if changed_count > 0 else "No scene hierarchy available")
 	_feedback_timer.start()
 
+# Fully expands every node in the Scene dock hierarchy.
 func _on_fully_expand_pressed() -> void:
 	_set_status("Fully expanded hierarchy" if _scene_hierarchy_actions.fully_expand() > 0 else "No scene hierarchy available")
 	_feedback_timer.start()
 
+# Collapses the Scene dock hierarchy to just the root level.
 func _on_fully_collapse_pressed() -> void:
 	_set_status("Fully collapsed hierarchy" if _scene_hierarchy_actions.fully_collapse() > 0 else "No scene hierarchy available")
 	_feedback_timer.start()
 
+# Persists the chosen viewport clear colour to project settings immediately.
 func _on_clear_color_changed(color: Color) -> void:
 	ProjectSettings.set_setting(DEFAULT_CLEAR_COLOR_PATH, color)
 	ProjectSettings.save()
 
+# Writes the chosen MSAA level to both 2D and 3D project settings.
 func _on_anti_aliasing_item_selected(index: int) -> void:
 	ProjectSettings.set_setting(ANTI_ALIASING_PATH_2D, index)
 	ProjectSettings.set_setting(ANTI_ALIASING_PATH_3D, index)
 
+# Reads the current nullable state from Template.csproj and sets the button
+# label to "Enable Nullable" or "Disable Nullable" accordingly.
 func _update_nullable_button_text() -> void:
 	_nullable_button.text = "Disable Nullable" if NullableProjectSettingsScript.read_state(_project_root()) else "Enable Nullable"
 
+# Toggles C# nullable reference types in Template.csproj and .editorconfig.
 func _on_nullable_pressed() -> void:
 	var new_state: bool = not NullableProjectSettingsScript.read_state(_project_root())
 	NullableProjectSettingsScript.set_state(_project_root(), new_state)
@@ -138,19 +167,25 @@ func _on_nullable_pressed() -> void:
 	_set_status("Nullable %s. Rebuild the project to apply." % ("enabled" if new_state else "disabled"))
 	_feedback_timer.start()
 
+# Enables or disables the two update buttons to prevent concurrent update runs.
 func _set_update_buttons_disabled(disabled: bool) -> void:
 	_update_from_main_button.disabled = disabled
 	_update_from_release_button.disabled = disabled
 
+# Starts an update from the latest commit on the main branch.
 func _on_update_from_main_pressed() -> void:
 	await _run_template_update(false)
 
+# Starts an update from the latest tagged GitHub release.
 func _on_update_from_release_pressed() -> void:
 	await _run_template_update(true)
 
+# Opens the CSharpGodotTools/Template repository in the default browser.
 func _on_view_template_repo_pressed() -> void:
 	OS.shell_open("https://github.com/CSharpGodotTools/Template")
 
+# Disables update controls, runs the full pipeline, shows the result status,
+# then re-enables controls. The filesystem is rescanned after every run.
 func _run_template_update(from_release: bool) -> void:
 	_set_update_buttons_disabled(true)
 	var result: Dictionary = await _execute_template_update(from_release)
@@ -163,6 +198,9 @@ func _run_template_update(from_release: bool) -> void:
 	_feedback_timer.start()
 	_set_update_buttons_disabled(false)
 
+# Full async update pipeline: creates a timestamped temp directory, downloads
+# the archive, extracts it, locates the template root inside the extraction,
+# applies the update to the project, then removes the temp directory.
 func _execute_template_update(from_release: bool) -> Dictionary:
 	var project_root: String = _project_root()
 	var temp_root: String = project_root.path_join(".godot/setup_plugin_update_%d" % Time.get_unix_time_from_system())

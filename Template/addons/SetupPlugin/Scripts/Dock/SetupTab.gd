@@ -1,9 +1,15 @@
 @tool
+# Event-wiring layer for the Setup tab.
+# Connects UI signals to business logic and implements each event handler.
+# Inherits UI control creation from SetupTabLayout and state management from
+# SetupTabState.
 class_name SetupTab
 extends SetupTabState
 
 var _events_registered: bool
 
+# Initialises services, creates controls, builds the layout, validates runtime
+# state, then connects all signals.
 func _ready() -> void:
 	_initialize_services()
 	_create_controls()
@@ -11,10 +17,14 @@ func _ready() -> void:
 	_validate_and_initialize_state()
 	_register_events()
 
+# Disconnects all signals and releases the confirmation dialog.
+# Called before the dock node is freed.
 func prepare_for_disable() -> void:
 	_unregister_events()
 	_release_restart_dialog()
 
+# Connects all UI signals to their handler methods.
+# The guard prevents double-wiring on plugin hot-reload.
 func _register_events() -> void:
 	if _events_registered:
 		return
@@ -27,6 +37,7 @@ func _register_events() -> void:
 	_apply_button.pressed.connect(_on_apply_pressed)
 	_events_registered = true
 
+# Disconnects all UI signals.
 func _unregister_events() -> void:
 	if not _events_registered:
 		return
@@ -51,6 +62,7 @@ func _unregister_events() -> void:
 	if _apply_button.is_connected("pressed", Callable(self, "_on_apply_pressed")):
 		_apply_button.pressed.disconnect(Callable(self, "_on_apply_pressed"))
 
+# Updates the template type dropdown when a different project type is selected.
 func _on_project_type_selected(index: int) -> void:
 	if not _ensure_runtime_state_valid("ProjectTypeSelected"):
 		return
@@ -62,6 +74,7 @@ func _on_project_type_selected(index: int) -> void:
 	_selected_project_type = _project_type.get_item_text(index)
 	_populate_template_type_options(_selected_project_type)
 
+# Stores the name of the newly selected template type.
 func _on_template_type_selected(index: int) -> void:
 	if not _ensure_runtime_state_valid("TemplateTypeSelected"):
 		return
@@ -74,6 +87,8 @@ func _on_template_type_selected(index: int) -> void:
 
 
 
+# Called when the user clicks "Yes" in the confirmation dialog.
+# Formats the game name and launches the setup runner.
 func _on_confirmed() -> void:
 	if not _ensure_runtime_state_valid("Confirmed"):
 		return
@@ -83,18 +98,22 @@ func _on_confirmed() -> void:
 	var formatted_game_name: String = GameNameRules.format_game_name(_game_name_line_edit.text)
 	_project_setup_runner.run(formatted_game_name, _selected_project_type, _selected_template_type)
 
+# Restores the game name preview after the brief validation-error display period.
 func _on_feedback_reset_timer_timeout() -> void:
 	if _game_name_validator == null:
 		return
 
 	_game_name_validator.restore_previous_game_name_preview()
 
+# Live-validates the typed game name and updates the formatted preview label.
 func _on_project_name_changed(game_name: String) -> void:
 	if not _ensure_runtime_state_valid("ProjectNameChanged"):
 		return
 
 	_game_name_validator.validate(game_name)
 
+# Validates the game name for setup eligibility and opens the confirmation
+# dialog if all checks pass.
 func _on_apply_pressed() -> void:
 	if not _ensure_runtime_state_valid("ApplyPressed"):
 		return

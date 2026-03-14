@@ -1,9 +1,15 @@
 @tool
+# Applies an extracted Template update to the project directory.
+# Replaces the Framework and addons/SetupPlugin directories wholesale, merges
+# new script_templates, copies NuGet.config, syncs .gdignore files, and
+# updates .csproj settings (TargetFramework, LangVersion, PackageReferences).
 class_name TemplateUpdateApplier
 extends RefCounted
 
 const UpdateFileOps = preload("res://addons/SetupPlugin/Scripts/Dock/Update/UpdateFileOps.gd")
 
+# Sequentially applies each part of the update.
+# Stops and returns an error dictionary on the first failure.
 func apply(template_root: String, project_root: String, status_callback: Callable) -> Dictionary:
 	var result: Dictionary = UpdateFileOps.replace_directory(template_root.path_join("Framework"), project_root.path_join("Framework"))
 	if not result.get("success", false):
@@ -47,6 +53,8 @@ func apply(template_root: String, project_root: String, status_callback: Callabl
 		"message": "Update complete. Build project and restart editor if script reload warnings appear."
 	}
 
+# Copies .gdignore files from known template relative paths to the matching
+# project paths, ensuring Godot ignores those directories during import.
 func _sync_gdignore_files(template_root: String, project_root: String) -> Dictionary:
 	for relative_path in ["script_templates/.gdignore", "Properties/.gdignore", "gdunit4_testadapter_v5/.gdignore"]:
 		var source_file: String = template_root.path_join(relative_path)
@@ -58,6 +66,7 @@ func _sync_gdignore_files(template_root: String, project_root: String) -> Dictio
 
 	return {"success": true}
 
+# Invokes the status callback with a progress message if it is currently valid.
 func _notify(status_callback: Callable, message: String) -> void:
 	if status_callback.is_valid():
 		status_callback.call(message)

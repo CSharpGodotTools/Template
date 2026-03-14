@@ -1,4 +1,7 @@
 @tool
+# Orchestrates the full template update pipeline:
+#   download → extract → locate template root → apply → clean up temp directory.
+# Called by DevToolsTab to perform the actual update work.
 class_name TemplateUpdaterRuntime
 extends RefCounted
 
@@ -7,12 +10,17 @@ const TemplateArchiveExtractorScript = preload("res://addons/SetupPlugin/Scripts
 const TemplateUpdateApplierScript = preload("res://addons/SetupPlugin/Scripts/Dock/Update/TemplateUpdateApplier.gd")
 const UpdateFileOps = preload("res://addons/SetupPlugin/Scripts/Dock/Update/UpdateFileOps.gd")
 
+# Runs the update pipeline using the latest commit on the main branch.
 func update_from_main(project_root: String, host: Node, status_callback: Callable) -> Dictionary:
 	return await _run_update(project_root, host, status_callback, false)
 
+# Runs the update pipeline using the latest tagged GitHub release zip.
 func update_from_release(project_root: String, host: Node, status_callback: Callable) -> Dictionary:
 	return await _run_update(project_root, host, status_callback, true)
 
+# Shared pipeline used by both update_from_main and update_from_release.
+# Creates a temporary directory, performs download/extract/apply, then removes
+# the temp directory regardless of success or failure.
 func _run_update(project_root: String, host: Node, status_callback: Callable, from_release: bool) -> Dictionary:
 	if host == null or not is_instance_valid(host):
 		return _error_result("Updater host is not valid.")
@@ -52,9 +60,11 @@ func _run_update(project_root: String, host: Node, status_callback: Callable, fr
 	UpdateFileOps.delete_path_recursive(temp_root)
 	return apply_result
 
+# Invokes the status callback with a progress message if the callable is valid.
 func _notify(status_callback: Callable, message: String) -> void:
 	if status_callback.is_valid():
 		status_callback.call(message)
 
+# Returns a standardised failure dictionary with the given error message.
 func _error_result(message: String) -> Dictionary:
 	return {"success": false, "message": message}

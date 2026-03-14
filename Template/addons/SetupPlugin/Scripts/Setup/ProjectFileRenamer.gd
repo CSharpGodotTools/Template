@@ -1,12 +1,19 @@
+# Renames the three main project identity files from their template names to
+# the chosen project name:
+#   Template.csproj  → ProjectName.csproj  (also updates RootNamespace)
+#   Template.sln     → ProjectName.sln
+#   project.godot    → unchanged path, but internal name/assembly fields updated
 class_name ProjectFileRenamer
 
 const TEMPLATE_PROJECT_NAME: String = "Template"
 
+# Entry point: runs all three file-rename helpers in order.
 static func rename_template_project_files(project_root: String, project_name: String) -> void:
 	rename_csproj_file(project_root, project_name)
 	rename_solution_file(project_root, project_name)
 	rename_project_godot_file(project_root, project_name)
 
+# Updates the config/name and project/assembly_name fields inside project.godot.
 static func rename_project_godot_file(project_root: String, project_name: String) -> void:
 	var project_file_path: String = project_root.path_join("project.godot")
 	require_file(project_file_path)
@@ -25,6 +32,8 @@ static func rename_project_godot_file(project_root: String, project_name: String
 	if file != null:
 		file.store_string(project_text)
 
+# Replaces all occurrences of "Template" in the .sln text, then renames the
+# file from Template.sln to ProjectName.sln.
 static func rename_solution_file(project_root: String, project_name: String) -> void:
 	var solution_file_path: String = project_root.path_join("%s.sln" % TEMPLATE_PROJECT_NAME)
 	require_file(solution_file_path)
@@ -37,6 +46,8 @@ static func rename_solution_file(project_root: String, project_name: String) -> 
 	if new_file != null:
 		new_file.store_string(solution_text)
 
+# Updates the <RootNamespace> element in the .csproj, then renames the file
+# from Template.csproj to ProjectName.csproj.
 static func rename_csproj_file(project_root: String, project_name: String) -> void:
 	var csproj_file_path: String = project_root.path_join("%s.csproj" % TEMPLATE_PROJECT_NAME)
 	require_file(csproj_file_path)
@@ -51,6 +62,8 @@ static func rename_csproj_file(project_root: String, project_name: String) -> vo
 	if new_file != null:
 		new_file.store_string(csproj_text)
 
+# Logs an error if the required file does not exist.
+# Used as a pre-condition guard before reading setup artifacts.
 static func require_file(path: String) -> void:
 	if FileAccess.file_exists(path):
 		return

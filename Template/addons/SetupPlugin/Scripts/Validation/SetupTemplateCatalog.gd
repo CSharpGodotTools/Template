@@ -1,19 +1,28 @@
+# Represents the available setup template options discovered from MainScenes/.
+# Provides a two-level catalogue: project types (e.g. "2D", "3D") mapped to
+# their template variant names (e.g. "Empty", "Platformer").
 class_name SetupTemplateCatalog
 
 var _templates_by_project_type: Dictionary
 
+# Stores the pre-built project-type → template-names mapping.
 func _init(templates_by_project_type: Dictionary) -> void:
 	_templates_by_project_type = templates_by_project_type
 
+# Returns an Array of all available project type name strings.
 var project_types: Array:
 	get:
 		return _templates_by_project_type.keys()
 
+# Returns the list of template variant names for the given project type.
+# Returns an empty array if the type is not in the catalogue.
 func get_templates(project_type: String) -> Array:
 	if _templates_by_project_type.has(project_type):
 		return _templates_by_project_type[project_type]
 	return []
 
+# Returns a {"project_type": ..., "template_type": ...} dict for the first
+# available option in the catalogue.  Returns an empty dict if none exist.
 func get_first_selection() -> Dictionary:
 	for entry_key in _templates_by_project_type.keys():
 		var entry_value: Array = _templates_by_project_type[entry_key]
@@ -24,6 +33,9 @@ func get_first_selection() -> Dictionary:
 			}
 	return {}
 
+# Scans the MainScenes directory structure to build the catalogue.
+# Each subdirectory of MainScenes is a project type; each of its subdirectories
+# is a template variant.  Returns null and sets failure_reason on error.
 static func try_load(main_scenes_root: String, failure_reason: String) -> SetupTemplateCatalog:
 	if not DirAccess.dir_exists_absolute(main_scenes_root):
 		failure_reason = "Missing setup templates directory: %s" % main_scenes_root

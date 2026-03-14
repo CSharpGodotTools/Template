@@ -1,7 +1,13 @@
+# Validates and formats user-provided game/project names.
+# Enforces naming rules: alphanumeric only, no leading digit, no reserved name,
+# no collision with an existing .cs class name in the project.
+# Also provides the canonical name formatter used when renaming project files.
 class_name GameNameRules
 
 const RESERVED_RAW_TEMPLATE_NAMESPACE: String = "__TEMPLATE__"
 
+# Full validation check for the setup "Run Setup" action.
+# Returns false and populates `validation_error` on the first violated rule.
 static func try_validate_for_setup(game_name: String, validation_error: String) -> bool:
 	var formatted_game_name: String = format_game_name(game_name)
 	
@@ -20,6 +26,8 @@ static func try_validate_for_setup(game_name: String, validation_error: String) 
 	validation_error = ""
 	return true
 
+# Trims whitespace, removes spaces, and capitalises the first letter.
+# Returns an empty string for blank/whitespace-only input.
 static func format_game_name(name: String) -> String:
 	if name.is_empty():
 		return ""
@@ -34,6 +42,8 @@ static func format_game_name(name: String) -> String:
 	
 	return first_character + trimmed_name.substr(1)
 
+# Returns true if every character in `value` is alphanumeric or a space.
+# Returns false for empty strings.
 static func is_alpha_numeric_and_allow_spaces(value: String) -> bool:
 	if value.is_empty():
 		return false
@@ -46,11 +56,16 @@ static func is_alpha_numeric_and_allow_spaces(value: String) -> bool:
 	
 	return true
 	
+# Instance-level alphanumeric check using a regex.
+# Note: the static is_alpha_numeric_and_allow_spaces is preferred for most uses.
 func is_alphanumeric(text: String) -> bool:
 	var regex = RegEx.new()
 	regex.compile("^[a-zA-Z0-9]+$")
 	return regex.search(text) != null
 
+# Recursively scans all .cs files under the project root to check whether any
+# existing file shares the same name (case-insensitive) as the proposed project
+# name.  Returns true if a collision is found.
 static func equals_existing_class_name(name: String) -> bool:
 	var project_root: String = ProjectSettings.globalize_path("res://")
 	var dir: DirAccess = DirAccess.open(project_root)
@@ -76,6 +91,7 @@ static func equals_existing_class_name(name: String) -> bool:
 	
 	return false
 
+# Recursive helper: checks a single directory for a .cs filename collision.
 static func _check_directory_recursive(dir: DirAccess, name: String, path: String) -> bool:
 	dir.list_dir_begin()
 	var file_name: String = dir.get_next()

@@ -1,7 +1,11 @@
 @tool
+# Static file-system helper methods used by the update pipeline.
+# All methods operate on absolute file-system paths (not res:// paths).
 class_name UpdateFileOps
 extends RefCounted
 
+# Deletes `target_path` if it exists, then copies all contents of `source_path`
+# into it.  Returns a success/failure dictionary.
 static func replace_directory(source_path: String, target_path: String) -> Dictionary:
 	if not DirAccess.dir_exists_absolute(source_path):
 		return _error_result("Update source directory is missing: %s" % source_path)
@@ -17,6 +21,8 @@ static func replace_directory(source_path: String, target_path: String) -> Dicti
 
 	return {"success": true}
 
+# Copies all files from `source_path` into `target_path`, creating missing
+# directories.  Existing files are overwritten but target-only files are kept.
 static func merge_directory(source_path: String, target_path: String) -> Dictionary:
 	if not DirAccess.dir_exists_absolute(source_path):
 		return _error_result("Update source directory is missing: %s" % source_path)
@@ -29,6 +35,8 @@ static func merge_directory(source_path: String, target_path: String) -> Diction
 
 	return {"success": true}
 
+# Replaces or creates a single file at `target_path` with the contents of
+# `source_path`.  Returns a success/failure dictionary.
 static func replace_file(source_path: String, target_path: String) -> Dictionary:
 	if not FileAccess.file_exists(source_path):
 		return _error_result("Update source file is missing: %s" % source_path)
@@ -42,6 +50,8 @@ static func replace_file(source_path: String, target_path: String) -> Dictionary
 
 	return {"success": true}
 
+# Recursively copies every file and subdirectory from `source_path` into
+# `target_path`.  Returns false on the first write failure.
 static func copy_directory_contents(source_path: String, target_path: String) -> bool:
 	var source_dir: DirAccess = DirAccess.open(source_path)
 	if source_dir == null:
@@ -68,6 +78,8 @@ static func copy_directory_contents(source_path: String, target_path: String) ->
 	source_dir.list_dir_end()
 	return true
 
+# Reads all bytes from `source_path` and writes them to `target_path`,
+# creating all parent directories if needed.  Returns false on failure.
 static func copy_file(source_path: String, target_path: String) -> bool:
 	var input_file: FileAccess = FileAccess.open(source_path, FileAccess.READ)
 	if input_file == null:
@@ -85,6 +97,8 @@ static func copy_file(source_path: String, target_path: String) -> bool:
 	output_file.close()
 	return true
 
+# Recursively deletes a file or an entire directory tree.
+# Returns true on success, false if any deletion fails.
 static func delete_path_recursive(path: String) -> bool:
 	if FileAccess.file_exists(path):
 		return DirAccess.remove_absolute(path) == OK
@@ -111,6 +125,9 @@ static func delete_path_recursive(path: String) -> bool:
 	dir.list_dir_end()
 	return DirAccess.remove_absolute(path) == OK
 
+# BFS from `search_root` to find the first directory that looks like the root
+# of a CSharpGodotTools/Template project (has Framework/, addons/SetupPlugin/,
+# and Template.csproj).
 static func find_template_directory(search_root: String) -> String:
 	var pending: Array[String] = [search_root]
 	while not pending.is_empty():
@@ -131,10 +148,13 @@ static func find_template_directory(search_root: String) -> String:
 		dir.list_dir_end()
 	return ""
 
+# Returns true if `path` contains the three key markers of a Template project:
+# the Framework folder, addons/SetupPlugin/, and Template.csproj.
 static func _looks_like_template_root(path: String) -> bool:
 	return DirAccess.dir_exists_absolute(path.path_join("Framework")) \
 		and DirAccess.dir_exists_absolute(path.path_join("addons/SetupPlugin")) \
 		and FileAccess.file_exists(path.path_join("Template.csproj"))
 
+# Returns a standardised failure dictionary with the given error message.
 static func _error_result(message: String) -> Dictionary:
 	return {"success": false, "message": message}

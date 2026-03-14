@@ -1,12 +1,21 @@
 @tool
+# Downloads the Template repository archive from GitHub.
+# Supports two sources:
+#   - Main branch: a live zip of the current HEAD commit
+#   - Latest release: a tagged release zip, with GitHub API fallback if the
+#     direct URL is not available
 class_name TemplateArchiveFetcher
 extends RefCounted
 
 const RELEASE_API_URL: String = "https://api.github.com/repos/CSharpGodotTools/Template/releases/latest"
 
+# Downloads the current state of the main branch as a .zip to `destination_path`.
 func download_main_archive(host: Node, destination_path: String) -> Dictionary:
 	return await _download_file(host, "https://codeload.github.com/CSharpGodotTools/Template/zip/refs/heads/main", destination_path)
 
+# Downloads the latest tagged release .zip.
+# Tries the well-known direct URL first; on failure, resolves the URL via the
+# GitHub Releases REST API.
 func download_release_archive(host: Node, destination_path: String) -> Dictionary:
 	var result: Dictionary = await _download_file(host, "https://github.com/CSharpGodotTools/Template/releases/latest/download/Template.zip", destination_path)
 	if result.get("success", false):
@@ -18,6 +27,9 @@ func download_release_archive(host: Node, destination_path: String) -> Dictionar
 
 	return await _download_file(host, resolved_url, destination_path)
 
+# Performs an HTTP GET download to `destination_path` using an HTTPRequest node
+# parented to `host` (needed for the signal/await mechanism).
+# Cleans up the partial download file on any error.
 func _download_file(host: Node, url: String, destination_path: String) -> Dictionary:
 	var request: HTTPRequest = HTTPRequest.new()
 	request.timeout = 120
@@ -53,6 +65,8 @@ func _download_file(host: Node, url: String, destination_path: String) -> Dictio
 
 	return {"success": true}
 
+# Queries the GitHub Releases API to find the first .zip asset URL in the
+# latest release.  Prefers assets whose name contains "Template".
 func _resolve_latest_release_zip_url(host: Node) -> String:
 	var response: Dictionary = await _request_body(host, RELEASE_API_URL, "application/vnd.github+json")
 	if not response.get("success", false):
@@ -80,6 +94,8 @@ func _resolve_latest_release_zip_url(host: Node) -> String:
 
 	return ""
 
+# Sends an HTTP GET request and returns the response body as a UTF-8 string
+# on success, or a failure dictionary on error.
 func _request_body(host: Node, url: String, accept_header: String) -> Dictionary:
 	var request: HTTPRequest = HTTPRequest.new()
 	request.timeout = 60
@@ -100,5 +116,6 @@ func _request_body(host: Node, url: String, accept_header: String) -> Dictionary
 
 	return {"success": true, "body": (result[3] as PackedByteArray).get_string_from_utf8()}
 
+# Returns a standardised failure dictionary with the given error message.
 func _error_result(message: String) -> Dictionary:
 	return {"success": false, "message": message}

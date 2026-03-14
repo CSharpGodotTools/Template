@@ -1,7 +1,11 @@
 @tool
+# Extracts a .zip archive to a destination directory using Godot's built-in
+# ZIPReader.  Creates subdirectories as needed.
 class_name TemplateArchiveExtractor
 extends RefCounted
 
+# Opens `zip_path` and writes every entry to `destination_root`, creating
+# parent directories on the fly.  Returns a success/failure dictionary.
 func extract_zip(zip_path: String, destination_root: String) -> Dictionary:
 	DirAccess.make_dir_recursive_absolute(destination_root)
 
@@ -28,5 +32,6 @@ func extract_zip(zip_path: String, destination_root: String) -> Dictionary:
 	zip.close()
 	return {"success": true}
 
+# Returns a standardised failure dictionary with the given error message.
 func _error_result(message: String) -> Dictionary:
 	return {"success": false, "message": message}

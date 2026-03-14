@@ -1,6 +1,12 @@
 @tool
+# Expands and collapses nodes in the Scene dock tree.
+# Prefers operating directly on the Tree widget for immediate visual feedback.
+# Falls back to the live scene node graph when no scene is open or the Tree
+# widget cannot be located.
 extends RefCounted
 
+# Expands the scene hierarchy so all nodes up to (but not past) `level` depth
+# are visible.  Returns the number of tree items touched.
 func expand_to_level(level: int) -> int:
 	var normalized_level: int = maxi(level, 0)
 	var scene_tree: Tree = _find_scene_dock_tree()
@@ -8,6 +14,8 @@ func expand_to_level(level: int) -> int:
 		return _apply_level_to_tree(scene_tree, normalized_level)
 	return _apply_level_to_nodes(normalized_level)
 
+# Collapses the scene hierarchy so only nodes at or above `level` remain
+# expanded.  Returns the number of tree items touched.
 func collapse_to_level(level: int) -> int:
 	var normalized_level: int = maxi(level, 0)
 	var scene_tree: Tree = _find_scene_dock_tree()
@@ -15,6 +23,8 @@ func collapse_to_level(level: int) -> int:
 		return _apply_level_to_tree(scene_tree, normalized_level)
 	return _apply_level_to_nodes(normalized_level)
 
+# Expands every node in the hierarchy.
+# Returns the number of items touched, or 0 if no scene is open.
 func fully_expand() -> int:
 	var scene_tree: Tree = _find_scene_dock_tree()
 	if scene_tree != null:
@@ -35,9 +45,13 @@ func fully_expand() -> int:
 		return touched
 	return _apply_level_to_nodes(9999)
 
+# Collapses everything to just the root level (equivalent to level = 1).
 func fully_collapse() -> int:
 	return collapse_to_level(1)
 
+# Locates the Tree widget inside the Scene dock that shows the current scene's
+# node tree.  Identifies the correct Tree by checking whether its root item
+# name matches the edited scene root.  Returns null if no scene is open.
 func _find_scene_dock_tree() -> Tree:
 	var edited_root: Node = EditorInterface.get_edited_scene_root()
 	if edited_root == null:
@@ -54,6 +68,7 @@ func _find_scene_dock_tree() -> Tree:
 				return tree
 	return null
 
+# Iterates every TreeItem and sets collapsed = (depth >= level), then redraws.
 func _apply_level_to_tree(scene_tree: Tree, level: int) -> int:
 	var root_item: TreeItem = scene_tree.get_root()
 	if root_item == null:
@@ -73,6 +88,8 @@ func _apply_level_to_tree(scene_tree: Tree, level: int) -> int:
 	scene_tree.queue_redraw()
 	return touched
 
+# Fallback path used when _find_scene_dock_tree returns null.
+# Applies expand/collapse by walking the live scene node graph.
 func _apply_level_to_nodes(level: int) -> int:
 	var root: Node = EditorInterface.get_edited_scene_root()
 	if root == null:

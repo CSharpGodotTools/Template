@@ -1,4 +1,7 @@
 @tool
+# Constructs and owns all UI controls for the Setup dock panel.
+# Provides a project name input, project type/template dropdowns, a live
+# name preview, a status label, and the "Run Setup" button.
 class_name SetupTabLayout
 extends VBoxContainer
 
@@ -17,6 +20,8 @@ var _content_container: VBoxContainer
 var _game_name_preview: Label
 var _status_label: Label
 
+# Instantiates all controls and the floating confirmation dialog.
+# The dialog is added to the editor main screen so it appears above the dock.
 func _create_controls() -> void:
 	_confirm_restart_dialog = ConfirmationDialog.new()
 	_confirm_restart_dialog.title = "Setup Confirmation"
@@ -56,6 +61,7 @@ func _create_controls() -> void:
 
 	_set_controls_enabled(false)
 
+# Assembles all controls into labeled rows inside a padded content container.
 func _build_layout() -> void:
 	_content_container = VBoxContainer.new()
 	_content_container.add_child(_status_label)
@@ -75,6 +81,8 @@ func _build_layout() -> void:
 	add_child(margin_container)
 	add_child(_apply_button)
 
+# Adds a right-aligned label + control pair as a row inside the content container.
+# Used for labeled settings rows such as "Project Name:" + LineEdit.
 func _add_labeled_control(label_text: String, control: Control) -> void:
 	var row: HBoxContainer = HBoxContainer.new()
 	var label: Label = Label.new()
@@ -85,12 +93,17 @@ func _add_labeled_control(label_text: String, control: Control) -> void:
 	row.add_child(control)
 	_content_container.add_child(row)
 
+# Enables or disables every interactive control.
+# Used to lock the UI when the plugin's runtime state is invalid.
 func _set_controls_enabled(enabled: bool) -> void:
 	_game_name_line_edit.editable = enabled
 	_project_type.disabled = not enabled
 	_template_type.disabled = not enabled
 	_apply_button.disabled = not enabled
 
+# Shows a status message below the form.
+# Red  = error (is_error = true);  Green = success (is_error = false).
+# Hides the label entirely when text is empty.
 func _set_status(text: String, is_error: bool) -> void:
 	_status_label.text = text
 	_status_label.visible = not text.is_empty()

@@ -1,4 +1,9 @@
 @tool
+# Constructs and owns all UI controls for the Dev Tools dock.
+# Provides three tab sections:
+#   Dev    – editor utility buttons (UID cleanup, nullable toggle, scene actions, etc.)
+#   Visual – rendering settings (clear colour, anti-aliasing, hierarchy controls)
+#   Update – template synchronisation buttons and backup reminder
 extends VBoxContainer
 
 const LABEL_PADDING: int = 120
@@ -26,6 +31,9 @@ var _update_from_release_button: Button
 var _view_template_repo_button: Button
 var _feedback_timer: Timer
 
+# Instantiates every UI control node.
+# Must be called before _build_layout so all controls exist when they are
+# added to the scene tree.
 func _create_controls() -> void:
 	_status_label = Label.new()
 	_status_label.autowrap_mode = TextServer.AutowrapMode.AUTOWRAP_WORD_SMART
@@ -74,6 +82,8 @@ func _create_controls() -> void:
 	_feedback_timer.wait_time = FEEDBACK_DURATION
 	_feedback_timer.one_shot = true
 
+# Assembles the three-tab container and attaches it to this VBoxContainer.
+# Must be called after _create_controls.
 func _build_layout() -> void:
 	var tabs: TabContainer = TabContainer.new()
 	tabs.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -93,6 +103,8 @@ func _build_layout() -> void:
 	add_child(_feedback_timer)
 	add_child(content)
 
+# Builds and returns the Dev tab content:
+# clipboard errors, uid cleanup, nullable toggle, hierarchy controls, scene actions.
 func _build_dev_tab() -> VBoxContainer:
 	var dev_tab: VBoxContainer = VBoxContainer.new()
 	dev_tab.name = "Dev"
@@ -104,6 +116,8 @@ func _build_dev_tab() -> VBoxContainer:
 	dev_tab.add_child(_status_label)
 	return dev_tab
 
+# Builds and returns the Visual tab content:
+# viewport clear colour picker, MSAA dropdown, and hierarchy depth controls.
 func _build_visual_tab() -> VBoxContainer:
 	var visual_tab: VBoxContainer = VBoxContainer.new()
 	visual_tab.name = "Visual"
@@ -116,6 +130,8 @@ func _build_visual_tab() -> VBoxContainer:
 	visual_tab.add_child(_create_row([_expand_to_level_button, _hierarchy_level_spinbox, _fully_expand_button, _fully_collapse_button], 8))
 	return visual_tab
 
+# Builds and returns the Update tab content:
+# update-from-main/release buttons and a backup reminder label.
 func _build_update_tab() -> VBoxContainer:
 	var update_tab: VBoxContainer = VBoxContainer.new()
 	update_tab.name = "Update"
@@ -131,6 +147,8 @@ func _build_update_tab() -> VBoxContainer:
 	update_tab.add_child(warning_label)
 	return update_tab
 
+# Wraps an array of controls in an HBoxContainer.
+# Pass separation > 0 to set a custom gap between items.
 func _create_row(controls: Array[Control], separation: int) -> HBoxContainer:
 	var row: HBoxContainer = HBoxContainer.new()
 	if separation > 0:
@@ -139,6 +157,8 @@ func _create_row(controls: Array[Control], separation: int) -> HBoxContainer:
 		row.add_child(control)
 	return row
 
+# Adds a right-aligned label paired with a control as a row inside `container`.
+# Used in labeled settings rows such as "Clear Color:" + ColorPickerButton.
 func _add_labeled_control(label_text: String, control: Control, container: VBoxContainer) -> void:
 	var row: HBoxContainer = HBoxContainer.new()
 	var label: Label = Label.new()
@@ -149,6 +169,8 @@ func _add_labeled_control(label_text: String, control: Control, container: VBoxC
 	row.add_child(control)
 	container.add_child(row)
 
+# Creates a Button that shrinks to fit its text.
+# Provide min_width to set a minimum pixel width.
 func _create_button(text: String, min_width: int = 0) -> Button:
 	var button: Button = Button.new()
 	button.text = text
@@ -157,11 +179,13 @@ func _create_button(text: String, min_width: int = 0) -> Button:
 		button.custom_minimum_size = Vector2(min_width, 0)
 	return button
 
+# Creates a Button that expands horizontally to fill all available space.
 func _create_fill_button(text: String) -> Button:
 	var button: Button = _create_button(text, 150)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	return button
 
+# Creates a CheckButton with the given label and initial toggle state.
 func _create_checkbox(text: String, pressed: bool) -> CheckButton:
 	var checkbox: CheckButton = CheckButton.new()
 	checkbox.text = text

@@ -1,3 +1,7 @@
+# Checks that all required project artifacts are in place before the Setup UI
+# allows the user to proceed.
+# Validates: project root exists, project.godot present, Template.csproj and
+# Template.sln present, MainScenes templates directory exists.
 class_name SetupRuntimeStateValidator
 extends Node
 
@@ -6,10 +10,14 @@ const TEMPLATE_PROJECT_NAME: String = "Template"
 var _project_root: String
 var _main_scenes_root: String
 
+# Stores the absolute paths needed for validation.
 func _init(project_root: String, main_scenes_root: String) -> void:
 	_project_root = project_root
 	_main_scenes_root = main_scenes_root
 
+# Runs all pre-condition checks.
+# Returns {"valid": true, "reason": ""} on success, or
+# {"valid": false, "reason": "<description>"} on the first failed check.
 func try_validate() -> Dictionary:
 	if _project_root.is_empty() or not DirAccess.dir_exists_absolute(_project_root):
 		return {"valid": false, "reason": "Project root could not be resolved."}

@@ -1,9 +1,15 @@
 @tool
+# Reads the TargetFramework, LangVersion, and NuGet PackageReferences from the
+# downloaded template .csproj and writes those values into the project's own
+# .csproj.  Also triggers a namespace migration pass when the project has
+# already been renamed away from "Template".
 class_name TemplateCsprojSynchronizer
 extends RefCounted
 
 const NamespaceMigration = preload("res://addons/SetupPlugin/Scripts/Setup/NamespaceMigration.gd")
 
+# Applies all template .csproj settings to the project's .csproj.
+# Returns a success dictionary, or an error dictionary on the first failure.
 func sync_template_settings(template_csproj_path: String, project_root: String) -> Dictionary:
 	if not FileAccess.file_exists(template_csproj_path):
 		return _error_result("Template.csproj was not found in the downloaded update.")
@@ -38,14 +44,19 @@ func sync_template_settings(template_csproj_path: String, project_root: String) 
 
 	return {"success": true}
 
+# Reads TargetFramework from the template and sets it in the target content.
 func _sync_target_framework(template_content: String, target_content: String) -> String:
 	var target_framework: String = _read_xml_tag_value(template_content, "TargetFramework")
 	return _set_xml_tag_value(target_content, "TargetFramework", target_framework) if not target_framework.is_empty() else target_content
 
+# Reads LangVersion from the template and sets it in the target content.
 func _sync_lang_version(template_content: String, target_content: String) -> String:
 	var lang_version: String = _read_xml_tag_value(template_content, "LangVersion")
 	return _set_xml_tag_value(target_content, "LangVersion", lang_version) if not lang_version.is_empty() else target_content
 
+# Scans the project root for a .csproj file.
+# Prefers any file that is NOT named Template.csproj (i.e. the renamed project file).
+# Falls back to Template.csproj if no other .csproj is found.
 func _find_target_csproj_path(project_root: String) -> String:
 	var root_dir: DirAccess = DirAccess.open(project_root)
 	if root_dir == null:
@@ -68,6 +79,8 @@ func _find_target_csproj_path(project_root: String) -> String:
 			return csproj_file
 	return csproj_files[0]
 
+# Extracts the text content of a named XML element using a simple regex.
+# Returns an empty string if the tag is not found.
 func _read_xml_tag_value(content: String, tag_name: String) -> String:
 	var regex: RegEx = RegEx.new()
 	if regex.compile("<%s>([^<]+)</%s>" % [tag_name, tag_name]) != OK:
@@ -75,6 +88,8 @@ func _read_xml_tag_value(content: String, tag_name: String) -> String:
 	var match: RegExMatch = regex.search(content)
 	return match.get_string(1).strip_edges() if match != null else ""
 
+# Replaces an existing XML element's text value, or inserts the element into
+# the first PropertyGroup (or a new PropertyGroup if none exists).
 func _set_xml_tag_value(content: String, tag_name: String, value: String) -> String:
 	var tag_regex: RegEx = RegEx.new()
 	if tag_regex.compile("<%s>[^<]*</%s>" % [tag_name, tag_name]) == OK:
@@ -95,5 +110,6 @@ func _set_xml_tag_value(content: String, tag_name: String, value: String) -> Str
 	var updated_group: String = property_group.replace("</PropertyGroup>", "%s\n    </PropertyGroup>" % insertion)
 	return content.substr(0, group_match.get_start()) + updated_group + content.substr(group_match.get_end())
 
+# Returns a standardised failure dictionary with the given error message.
 func _error_result(message: String) -> Dictionary:
 	return {"success": false, "message": message}

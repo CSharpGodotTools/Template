@@ -1,3 +1,7 @@
+# Executes the one-time initial project setup when the user clicks "Run Setup".
+# Copies the selected template scene to the project root, renames project files
+# and .cs namespaces from "Template" to the chosen game name, configures the
+# main scene, and restarts the Godot editor.
 class_name ProjectSetupRunner
 
 const SETUP_PLUGIN_NAME: String = "SetupPlugin"
@@ -6,10 +10,20 @@ const MAIN_SCENE_PATH: String = "application/run/main_scene"
 var _project_root: String
 var _main_scenes_root: String
 
+# Stores the absolute file-system paths needed throughout the setup sequence.
 func _init(project_root: String, main_scenes_root: String) -> void:
 	_project_root = project_root
 	_main_scenes_root = main_scenes_root
 
+# Full setup sequence:
+#   1. Remove stale empty directories
+#   2. Copy the chosen template scene files to the project root
+#   3. Set the main scene project setting
+#   4. Rename .csproj / .sln / project.godot from "Template" to the game name
+#   5. Replace the __TEMPLATE__ namespace placeholder in all .cs files
+#   6. Verify the script template has the new namespace
+#   7. Place .gdignore files in GdUnit4 test output folders
+#   8. Save, delete the MainScenes directory, and restart the editor
 func run(formatted_game_name: String, project_type: String, template_type: String) -> void:
 	SetupDirectoryMaintenance.delete_empty_directories(_project_root)
 	
@@ -30,6 +44,7 @@ func run(formatted_game_name: String, project_type: String, template_type: Strin
 	delete_directory_recursive(_main_scenes_root)
 	EditorInterface.restart_editor(false)
 
+# Recursively copies all files from `template_folder` into the project root.
 func copy_template_to_project_root(template_folder: String) -> void:
 	if not DirAccess.dir_exists_absolute(template_folder):
 		push_error("Template folder does not exist: %s" % template_folder)
@@ -41,6 +56,8 @@ func copy_template_to_project_root(template_folder: String) -> void:
 	
 	_copy_directory_recursive(dir, template_folder, _project_root)
 	
+# Recursively deletes all files and subdirectories under `path`, then removes
+# the directory itself.
 func delete_directory_recursive(path: String) -> void:
 	var dir := DirAccess.open(path)
 	if dir == null:
@@ -58,6 +75,8 @@ func delete_directory_recursive(path: String) -> void:
 		
 	DirAccess.remove_absolute(path)
 
+# Recursive helper: mirrors a source directory tree into dest_path, creating
+# subdirectories as needed and copying every file byte-for-byte.
 func _copy_directory_recursive(dir: DirAccess, source_path: String, dest_path: String) -> void:
 	dir.list_dir_begin()
 	var file_name: String = dir.get_next()

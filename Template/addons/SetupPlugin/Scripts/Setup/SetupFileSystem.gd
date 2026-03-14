@@ -1,7 +1,14 @@
+# Filesystem utilities used during the initial project setup:
+#   - Creates .gdignore files in GdUnit4 test output folders so Godot does not
+#     try to import test results
+#   - Reads UID strings from .tscn scene files
+#   - Verifies / fixes the namespace placeholder in the new-script template
 class_name SetupFileSystem
 
 const NEW_SCRIPT_TEMPLATE_PATH: String = "script_templates/Node/NewScript.cs"
 
+# Creates "TestResults/" and "gdunit4_testadapter_v5/" directories if they do
+# not exist, and places an empty .gdignore in each one.
 static func ensure_gdignore_files_in_gdunit_test_folders(project_root: String) -> void:
 	var folders: Array[String] = [
 		"TestResults",
@@ -20,6 +27,8 @@ static func ensure_gdignore_files_in_gdunit_test_folders(project_root: String) -
 		if file != null:
 			file.store_string("")
 
+# Parses the first line of a .tscn file to extract its "uid=..." value.
+# Returns an empty string if the file cannot be read or has no uid field.
 static func get_uid_from_scene_file(scene_file_path: String) -> String:
 	if not FileAccess.file_exists(scene_file_path):
 		return ""
@@ -42,6 +51,9 @@ static func get_uid_from_scene_file(scene_file_path: String) -> String:
 	
 	return uid_value[1]
 
+# Verifies that the new-script template no longer contains the __TEMPLATE__
+# namespace placeholder.  Replaces it if still present.  Returns false and
+# logs an error if it cannot be confirmed clean after the replacement.
 static func ensure_script_template_namespace_replaced(project_root: String, namespace_name: String) -> bool:
 	var script_template_path: String = project_root.path_join(NEW_SCRIPT_TEMPLATE_PATH)
 	if not FileAccess.file_exists(script_template_path):

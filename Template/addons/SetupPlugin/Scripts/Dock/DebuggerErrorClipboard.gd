@@ -1,4 +1,8 @@
 @tool
+# High-level coordinator for the "Copy Debugger Errors" action.
+# Walks the editor control tree, locates every Tree widget under the Debugger
+# tab, formats each error entry into a human-readable string, and returns them
+# as a deduplicated array ready to be written to the clipboard.
 class_name DebuggerErrorClipboard
 extends RefCounted
 
@@ -9,6 +13,8 @@ var _formatter: DebuggerErrorFormatter = DebuggerErrorFormatter.new()
 var _scanner: DebuggerErrorScanner = DebuggerErrorScanner.new()
 
 func collect_errors(include_stack_trace: bool, use_short_type_names: bool) -> PackedStringArray:
+	# Collect every unique formatted error string currently visible in the
+	# Godot Debugger panel.  Returns an empty array when no errors are found.
 	var errors: PackedStringArray = []
 	var root: Control = EditorInterface.get_base_control()
 	if root == null:

@@ -9,6 +9,11 @@ const TemplateSetupDock = preload("res://addons/SetupPlugin/Scripts/Dock/Templat
 var _dock: EditorDock
 var _content: TemplateSetupDock
 var _dev_dock: EditorDock
+# Entry point for the SetupPlugin editor plugin.
+# Registers two docks:
+#   - Dev Tools dock (always visible whilst the plugin is enabled)
+#   - Setup dock     (only shown while Template.csproj still exists, meaning
+#                     the one-time project setup has not yet been completed)
 
 func _enter_tree() -> void:
 	var project_root: String = ProjectSettings.globalize_path(PROJECT_ROOT_PATH)
@@ -20,6 +25,7 @@ func _enter_tree() -> void:
 		_dev_dock.queue_free()
 	
 	_dev_dock = EditorDock.new()
+	# Resolve the absolute project root so we can probe for Template.csproj.
 	_dev_dock.title = "Dev Tools"
 	_dev_dock.default_slot = EditorDock.DockSlot.DOCK_SLOT_BOTTOM
 	_dev_dock.available_layouts = EditorDock.DockLayout.DOCK_LAYOUT_VERTICAL
@@ -36,6 +42,8 @@ func _enter_tree() -> void:
 	_dock.title = "Setup"
 	_dock.default_slot = EditorDock.DockSlot.DOCK_SLOT_RIGHT_BL
 	_dock.available_layouts = EditorDock.DockLayout.DOCK_LAYOUT_VERTICAL
+	# If Template.csproj no longer exists the developer has already renamed the
+	# project.  The Setup dock is not needed, so we exit early.
 	
 	_content = TemplateSetupDock.new()
 	_dock.add_child(_content)
@@ -50,6 +58,7 @@ func _exit_tree() -> void:
 		_dev_dock.queue_free()
 		_dev_dock = null
 	
+	# Remove and free the Dev Tools dock first.
 	if _dock == null:
 		return
 	

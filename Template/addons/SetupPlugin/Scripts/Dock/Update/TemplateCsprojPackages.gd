@@ -1,7 +1,13 @@
 @tool
+# Parses and patches NuGet PackageReference elements inside a .csproj XML string.
+# Used during template updates to keep the project's NuGet packages in sync
+# with the template's specification.
 class_name TemplateCsprojPackages
 extends RefCounted
 
+# Parses all PackageReference entries from the given .csproj XML string.
+# Returns an Array of Dictionaries, each with "include", "version", and
+# "element" keys.  Entries without a Version attribute are skipped.
 func extract_packages(template_content: String) -> Array:
 	var package_regex: RegEx = RegEx.new()
 	if package_regex.compile("(?s)<PackageReference\\b[^>]*Include=\"([^\"]+)\"[^>]*(?:/>|>.*?</PackageReference>)") != OK:
@@ -27,6 +33,8 @@ func extract_packages(template_content: String) -> Array:
 
 	return unique_by_include.values()
 
+# Updates the version of an existing PackageReference, or inserts the full
+# element if the package is not yet referenced in the target content.
 func upsert_package_reference(target_content: String, package_data: Dictionary) -> String:
 	var include_name: String = str(package_data.get("include", ""))
 	var version: String = str(package_data.get("version", ""))
@@ -57,6 +65,8 @@ func upsert_package_reference(target_content: String, package_data: Dictionary) 
 
 	return _replace_match(target_content, existing_match, updated_tag)
 
+# Inserts a new PackageReference element into the first ItemGroup that already
+# contains package references, or creates a new ItemGroup if none exists.
 func _insert_package_reference(target_content: String, package_element: String) -> String:
 	var group_regex: RegEx = RegEx.new()
 	if group_regex.compile("(?s)<ItemGroup>.*?<PackageReference\\b.*?</ItemGroup>") == OK:
@@ -73,9 +83,12 @@ func _insert_package_reference(target_content: String, package_element: String) 
 
 	return target_content
 
+# Replaces the substring captured by `match` with `replacement` text.
 func _replace_match(content: String, match: RegExMatch, replacement: String) -> String:
 	return content.substr(0, match.get_start()) + replacement + content.substr(match.get_end())
 
+# Escapes all special regex metacharacters in `value` so it can be used as a
+# literal string pattern inside a regex.
 func _escape_regex(value: String) -> String:
 	var escaped: String = value
 	for token in ["\\", ".", "+", "*", "?", "[", "]", "(", ")", "{", "}", "^", "$", "|"]:

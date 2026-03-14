@@ -1,5 +1,10 @@
+# Provides a recursive directory scanner that deletes orphaned .uid files.
+# A .uid file is considered orphaned when its corresponding source file
+# (same name without the ".uid" suffix) no longer exists in the same directory.
 extends RefCounted
 
+# Recursively scans `directory` and deletes any .uid file that has no matching
+# sibling.  Returns the total number of files deleted.
 static func delete_orphan_uid_files(directory: String) -> int:
 	var dir: DirAccess = DirAccess.open(directory)
 	if dir == null:
