@@ -37,7 +37,7 @@ internal static class VisualTitleBarBuilder
         Button? readonlyBtn = null;
         Button? mutableBtn = null;
 
-        if (readonlyMembers != null)
+        if (readonlyMembers.Length > 0)
         {
             readonlyBtn = VisualUiElementFactory.CreateVisibilityButton(VisualUiResources.EyeOpen, Colors.Pink);
             readonlyBtn.ButtonPressed = true;

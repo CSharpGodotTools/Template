@@ -13,7 +13,7 @@ internal partial class VisualizeExampleSprite : Sprite2D
 
     public override void _EnterTree()
     {
-        Visualize.Register(this, nameof(Offset), nameof(Rotation));
+        Visualize.Register(this);
     }
 
     public override void _PhysicsProcess(double delta)

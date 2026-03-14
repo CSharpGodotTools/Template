@@ -11,7 +11,7 @@ internal sealed class VisualNodeManager
     private static readonly Vector2 _defaultOffset = new(100, 100);
     private readonly Dictionary<ulong, VisualNodeInfo> _nodeTrackers = [];
 
-    public void Register(Node node, params string[] readonlyMembers)
+    public void Register(Node node)
     {
         ArgumentNullException.ThrowIfNull(node);
 
@@ -19,7 +19,7 @@ internal sealed class VisualNodeManager
 
         if (visualData != null)
         {
-            (Control visualPanel, IReadOnlyList<Action> actions) = VisualUI.CreateVisualPanel(visualData, readonlyMembers);
+            (Control visualPanel, IReadOnlyList<Action> actions) = VisualUI.CreateVisualPanel(visualData);
 
             ulong instanceId = node.GetInstanceId();
             Node? positionalNode = GetClosestParentOfType(node, _positionNodeTypes);

@@ -2,6 +2,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using static Godot.Control;
 
 namespace GodotUtils.Debugging;
@@ -14,15 +15,21 @@ internal static class VisualUI
     private const string MainPanelName = "Main Panel";
     private const string MutableMembersName = "Mutable Members";
     private const string ReadonlyMembersName = "Readonly Members";
+    private const string MembersColumnsName = "Members Columns";
     private const string LogsName = "Logs";
     private const string MainVBoxName = "Main VBox";
 
     /// <summary>
     /// Creates the visual panel for a specified visual node.
     /// </summary>
-    public static (Control, IReadOnlyList<Action>) CreateVisualPanel(VisualData visualData, string[] readonlyMembers)
+    public static (Control, IReadOnlyList<Action>) CreateVisualPanel(VisualData visualData)
     {
         Node node = visualData.Node;
+        string[] readonlyMembers =
+        [
+            .. visualData.Properties.Select(property => property.Name),
+            .. visualData.Fields.Select(field => field.Name)
+        ];
 
         PanelContainer panelContainer = VisualUiElementFactory.CreatePanelContainer(node.Name);
         panelContainer.MouseFilter = MouseFilterEnum.Ignore;
@@ -68,8 +75,15 @@ internal static class VisualUI
         VBoxContainer titleBar = VisualTitleBarBuilder.Build(node.Name, mutableMembersVbox, readonlyMembersVbox, visualData, readonlyMembers);
         titleBar.Name = MainVBoxName;
         titleBar.MouseFilter = MouseFilterEnum.Ignore;
-        titleBar.AddChild(readonlyMembersVbox);
-        titleBar.AddChild(mutableMembersVbox);
+
+        HBoxContainer membersColumns = new()
+        {
+            Name = MembersColumnsName,
+            MouseFilter = MouseFilterEnum.Ignore
+        };
+        membersColumns.AddChild(readonlyMembersVbox);
+        membersColumns.AddChild(mutableMembersVbox);
+        titleBar.AddChild(membersColumns);
 
         scrollContainer.AddChild(titleBar);
         panelContainer.AddChild(scrollContainer);

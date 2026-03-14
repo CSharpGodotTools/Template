@@ -118,7 +118,7 @@
             The main core class for the visualizer UI
             </summary>
         </member>
-        <member name="M:GodotUtils.Debugging.VisualUI.CreateVisualPanel(GodotUtils.Debugging.VisualData,System.String[])">
+        <member name="M:GodotUtils.Debugging.VisualUI.CreateVisualPanel(GodotUtils.Debugging.VisualData)">
             <summary>
             Creates the visual panel for a specified visual node.
             </summary>

@@ -13,7 +13,7 @@ public static class Visualize
     private const int MaxLabelsVisible = 5;
     private static readonly VisualNodeManager _visualNodeManager = new();
 
-    public static void Register(Node node, params string[] readonlyMembers)
+    public static void Register(Node node)
     {
         ArgumentNullException.ThrowIfNull(node);
 
@@ -23,7 +23,7 @@ public static class Visualize
             return;
         }
 
-        _visualNodeManager.Register(node, readonlyMembers);
+        _visualNodeManager.Register(node);
     }
 
     public static void Update()
