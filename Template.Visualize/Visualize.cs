@@ -15,6 +15,12 @@ public static class Visualize
 
     public static void Register(Node node)
     {
+        Register(node, node);
+    }
+
+    public static void Register(object visualizedObject, Node node)
+    {
+        ArgumentNullException.ThrowIfNull(visualizedObject);
         ArgumentNullException.ThrowIfNull(node);
 
         if (VisualizeAutoload.Instance == null)
@@ -23,7 +29,7 @@ public static class Visualize
             return;
         }
 
-        _visualNodeManager.Register(node);
+        _visualNodeManager.Register(node, visualizedObject);
     }
 
     public static void Update()

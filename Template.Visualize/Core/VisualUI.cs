@@ -24,7 +24,8 @@ internal static class VisualUI
     /// </summary>
     public static (Control, IReadOnlyList<Action>) CreateVisualPanel(VisualData visualData)
     {
-        Node node = visualData.Node;
+        Node node = visualData.AnchorNode;
+        object visualizedObject = visualData.VisualizedObject;
         string[] readonlyMembers =
         [
             .. visualData.Properties.Select(property => property.Name),
@@ -48,14 +49,14 @@ internal static class VisualUI
 
         // Readonly Members
         ReadonlyMemberBinder readonlyBinder = new();
-        readonlyBinder.AddReadonlyControls(readonlyMembers, node, readonlyMembersVbox);
+        readonlyBinder.AddReadonlyControls(readonlyMembers, visualizedObject, readonlyMembersVbox, node.Name);
 
         // Mutable Members
-        VisualMemberElementBuilder.AddMutableControls(mutableMembersVbox, visualData.Properties, node);
-        VisualMemberElementBuilder.AddMutableControls(mutableMembersVbox, visualData.Fields, node);
+        VisualMemberElementBuilder.AddMutableControls(mutableMembersVbox, visualData.Properties, visualizedObject, node.Name);
+        VisualMemberElementBuilder.AddMutableControls(mutableMembersVbox, visualData.Fields, visualizedObject, node.Name);
 
         // Methods
-        VisualMethods.AddMethodInfoElements(mutableMembersVbox, visualData.Methods, node);
+        VisualMethods.AddMethodInfoElements(mutableMembersVbox, visualData.Methods, visualizedObject);
 
         VBoxContainer vboxLogs = new()
         {

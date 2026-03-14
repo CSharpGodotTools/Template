@@ -7,11 +7,11 @@ namespace GodotUtils.Debugging;
 
 internal static class VisualMemberElementBuilder
 {
-    public static void AddMutableControls(Control vbox, IEnumerable<MemberInfo> members, Node node)
+    public static void AddMutableControls(Control vbox, IEnumerable<MemberInfo> members, object target, string displayName)
     {
         foreach (MemberInfo member in members)
         {
-            Control? element = CreateMemberInfoElement(member, node);
+            Control? element = CreateMemberInfoElement(member, target, displayName);
 
             if (element != null)
             {
@@ -20,19 +20,19 @@ internal static class VisualMemberElementBuilder
         }
     }
 
-    private static Control? CreateMemberInfoElement(MemberInfo member, Node node)
+    private static Control? CreateMemberInfoElement(MemberInfo member, object target, string displayName)
     {
-        object? initialValue = VisualHandler.GetMemberValue(member, node);
+        object? initialValue = VisualHandler.GetMemberValue(member, target);
 
         if (initialValue == null)
         {
-            PrintUtils.Warning($"[Visualize] '{member.Name}' value in '{node.Name}' is null");
+            PrintUtils.Warning($"[Visualize] '{member.Name}' value in '{displayName}' is null");
             return null;
         }
 
         VisualControlInfo element = VisualControlTypes.CreateControlForType(VisualHandler.GetMemberType(member), member, new VisualControlContext(initialValue, v =>
         {
-            VisualHandler.SetMemberValue(member, node, v);
+            VisualHandler.SetMemberValue(member, target, v);
         }));
 
         Control container;

@@ -11,11 +11,12 @@ internal sealed class VisualNodeManager
     private static readonly Vector2 _defaultOffset = new(100, 100);
     private readonly Dictionary<ulong, VisualNodeInfo> _nodeTrackers = [];
 
-    public void Register(Node node)
+    public void Register(Node node, object visualizedObject)
     {
         ArgumentNullException.ThrowIfNull(node);
+        ArgumentNullException.ThrowIfNull(visualizedObject);
 
-        VisualData? visualData = VisualizeAttributeHandler.RetrieveData(node);
+        VisualData? visualData = VisualizeAttributeHandler.RetrieveData(visualizedObject, node);
 
         if (visualData != null)
         {

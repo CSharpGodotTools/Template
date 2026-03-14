@@ -88,7 +88,7 @@
             Represents a node to be visualized
             </summary>
         </member>
-        <member name="M:GodotUtils.Debugging.VisualData.#ctor(Godot.Node,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Collections.Generic.IEnumerable{System.Reflection.FieldInfo},System.Collections.Generic.IEnumerable{System.Reflection.MethodInfo})">
+        <member name="M:GodotUtils.Debugging.VisualData.#ctor(Godot.Node,System.Object,System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo},System.Collections.Generic.IEnumerable{System.Reflection.FieldInfo},System.Collections.Generic.IEnumerable{System.Reflection.MethodInfo})">
             <summary>
             Represents a node to be visualized
             </summary>

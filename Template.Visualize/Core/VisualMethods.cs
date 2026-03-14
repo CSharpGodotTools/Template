@@ -45,24 +45,20 @@ internal static class VisualMethods
         return hboxParams;
     }
 
-    public static void AddMethodInfoElements(Control vbox, IEnumerable<MethodInfo> methods, Node node)
+    public static void AddMethodInfoElements(Control vbox, IEnumerable<MethodInfo> methods, object target)
     {
         foreach (MethodInfo method in methods)
         {
-            Type? declaringType = method.DeclaringType;
-            if (declaringType != null && declaringType.IsSubclassOf(typeof(GodotObject)))
-            {
-                ParameterInfo[] paramInfos = method.GetParameters();
-                object[] providedValues = new object[paramInfos.Length];
+            ParameterInfo[] paramInfos = method.GetParameters();
+            object[] providedValues = new object[paramInfos.Length];
 
-                HBoxContainer hboxParams = CreateMethodParameterControls(method, providedValues);
+            HBoxContainer hboxParams = CreateMethodParameterControls(method, providedValues);
 
-                vbox.AddChild(hboxParams);
+            vbox.AddChild(hboxParams);
 
-                Button button = CreateMethodButton(method, node, paramInfos, providedValues);
+            Button button = CreateMethodButton(method, target, paramInfos, providedValues);
 
-                vbox.AddChild(button);
-            }
+            vbox.AddChild(button);
         }
     }
 

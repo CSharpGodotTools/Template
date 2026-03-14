@@ -14,46 +14,47 @@ internal sealed class ReadonlyMemberBinder
 
     public IReadOnlyList<Action> UpdateActions => _updateActions;
 
-    public void AddReadonlyControls(string[] visualizeMembers, Node node, Control readonlyMembers)
+    public void AddReadonlyControls(string[] visualizeMembers, object target, Control readonlyMembers, string displayName)
     {
         if (visualizeMembers == null)
         {
-            GD.PrintErr($"[Visualize] AddReadonlyControls called with null members on node '{node?.Name}'");
+            GD.PrintErr($"[Visualize] AddReadonlyControls called with null members on node '{displayName}'");
             return;
         }
 
         foreach (string visualMember in visualizeMembers)
         {
-            if (!TryCreateMemberAccessor(node, visualMember, out MemberAccessor? accessor))
+            if (!TryCreateMemberAccessor(target, visualMember, out MemberAccessor? accessor))
             {
                 continue;
             }
 
-            object? initialValue = accessor.GetValue(node);
+            object? initialValue = accessor.GetValue(target);
 
             if (initialValue != null)
             {
-                AddReadonlyControl(accessor, readonlyMembers, node, initialValue);
+                AddReadonlyControl(accessor, readonlyMembers, target, initialValue);
             }
             else
             {
-                _ = TryAddReadonlyControlAsync(accessor, readonlyMembers, node);
+                _ = TryAddReadonlyControlAsync(accessor, readonlyMembers, target, displayName);
             }
         }
     }
 
-    private static bool TryCreateMemberAccessor(Node node, string visualMember, [NotNullWhen(true)] out MemberAccessor? accessor)
+    private static bool TryCreateMemberAccessor(object target, string visualMember, [NotNullWhen(true)] out MemberAccessor? accessor)
     {
         BindingFlags memberTypes = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
+        Type targetType = target.GetType();
 
-        PropertyInfo? property = node.GetType().GetProperty(visualMember, memberTypes);
+        PropertyInfo? property = targetType.GetProperty(visualMember, memberTypes);
         if (property != null && property.GetGetMethod(true) != null)
         {
             accessor = new MemberAccessor(visualMember, property, property.PropertyType);
             return true;
         }
 
-        FieldInfo? field = node.GetType().GetField(visualMember, memberTypes);
+        FieldInfo? field = targetType.GetField(visualMember, memberTypes);
         if (field != null)
         {
             accessor = new MemberAccessor(visualMember, field, field.FieldType);
@@ -64,17 +65,17 @@ internal sealed class ReadonlyMemberBinder
         return false;
     }
 
-    private async Task TryAddReadonlyControlAsync(MemberAccessor accessor, Control readonlyMembers, Node node)
+    private async Task TryAddReadonlyControlAsync(MemberAccessor accessor, Control readonlyMembers, object target, string displayName)
     {
         int elapsedSeconds = 0;
 
         while (true)
         {
-            object? value = accessor.GetValue(node);
+            object? value = accessor.GetValue(target);
 
             if (value != null)
             {
-                AddReadonlyControl(accessor, readonlyMembers, node, value);
+                AddReadonlyControl(accessor, readonlyMembers, target, value);
                 break;
             }
 
@@ -84,13 +85,13 @@ internal sealed class ReadonlyMemberBinder
 
             if (elapsedSeconds == VisualUiLayout.MaxSecondsToWaitForInitialValues)
             {
-                GD.PrintRich($"[color=orange][Visualize] Tracking '{node.Name}' to see if '{accessor.Name}' value changes[/color]");
+                GD.PrintRich($"[color=orange][Visualize] Tracking '{displayName}' to see if '{accessor.Name}' value changes[/color]");
                 break;
             }
         }
     }
 
-    private void AddReadonlyControl(MemberAccessor accessor, Control readonlyMembers, Node node, object initialValue)
+    private void AddReadonlyControl(MemberAccessor accessor, Control readonlyMembers, object target, object initialValue)
     {
         VisualControlContext context = new(initialValue, _ =>
         {
@@ -108,7 +109,7 @@ internal sealed class ReadonlyMemberBinder
 
         _updateActions.Add(() =>
         {
-            object? current = accessor.GetValue(node);
+            object? current = accessor.GetValue(target);
             if (current is not null)
             {
                 visualControlInfo.VisualControl.SetValue(current);
@@ -132,7 +133,7 @@ internal sealed class ReadonlyMemberBinder
         public MemberInfo Member { get; } = member ?? throw new ArgumentNullException(nameof(member));
         public Type MemberType { get; } = memberType ?? throw new ArgumentNullException(nameof(memberType));
 
-        public object? GetValue(Node node) => VisualHandler.GetMemberValue(Member, node);
+        public object? GetValue(object target) => VisualHandler.GetMemberValue(Member, target);
     }
 }
 #endif

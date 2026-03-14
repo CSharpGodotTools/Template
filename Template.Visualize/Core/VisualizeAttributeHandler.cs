@@ -14,9 +14,9 @@ internal static class VisualizeAttributeHandler
 {
     private static readonly BindingFlags _flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
-    public static VisualData? RetrieveData(Node specificNode)
+    public static VisualData? RetrieveData(object visualizedObject, Node anchorNode)
     {
-        Type type = specificNode.GetType();
+        Type type = visualizedObject.GetType();
 
         List<PropertyInfo> properties = GetVisualMembers<PropertyInfo>(type.GetProperties);
         List<FieldInfo> fields = GetVisualMembers<FieldInfo>(type.GetFields);
@@ -25,7 +25,7 @@ internal static class VisualizeAttributeHandler
         // There is something to visualize for this node
         if (properties.Count != 0 || fields.Count != 0 || methods.Count != 0)
         {
-            return new VisualData(specificNode, properties, fields, methods);
+            return new VisualData(anchorNode, visualizedObject, properties, fields, methods);
         }
 
         // Nothing to visualize for this node
