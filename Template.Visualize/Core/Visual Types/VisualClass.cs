@@ -9,9 +9,17 @@ namespace GodotUtils.Debugging;
 
 internal static partial class VisualControlTypes
 {
+    private const int ClassControlColumns = 1;
+    private const float ClassMemberLabelMinWidth = 200f;
+    private const string GetterPrefix = "get_";
+    private const string SetterPrefix = "set_";
+    private const string EventAddPrefix = "add_";
+    private const string EventRemovePrefix = "remove_";
+    private const string ToStringMethodName = "ToString";
+
     private static VisualControlInfo VisualClass(Type type, VisualControlContext context)
     {
-        GridContainer container = new() { Columns = 1 };
+        GridContainer container = new() { Columns = ClassControlColumns };
 
         if (context.InitialValue == null)
         {
@@ -106,11 +114,11 @@ internal static partial class VisualControlTypes
             // Exclude delegates
             .Where(m => !(typeof(Delegate).IsAssignableFrom(m.ReturnType)))
             // Exclude auto property methods
-            .Where(m => !m.Name.StartsWith("get_") && !m.Name.StartsWith("set_"))
+            .Where(m => !m.Name.StartsWith(GetterPrefix) && !m.Name.StartsWith(SetterPrefix))
             // Exclude event add and remove event methods
-            .Where(m => !m.Name.StartsWith("add_") && !m.Name.StartsWith("remove_"))
+            .Where(m => !m.Name.StartsWith(EventAddPrefix) && !m.Name.StartsWith(EventRemovePrefix))
             // Exclude the override string ToString() method
-            .Where(m => m.Name != "ToString")];
+            .Where(m => m.Name != ToStringMethodName)];
 
         FilterByVisualizeAttribute(ref methods);
 
@@ -155,7 +163,7 @@ internal static partial class VisualControlTypes
         Label label = new()
         {
             Text = VisualText.ToDisplayName(memberName),
-            CustomMinimumSize = new Vector2(200, 0)
+            CustomMinimumSize = new Vector2(ClassMemberLabelMinWidth, 0)
         };
 
         HBoxContainer hbox = new();
@@ -176,28 +184,6 @@ internal static partial class VisualControlTypes
         public MemberInfo Member { get; } = member;
         public IVisualControl Control { get; } = control;
         public bool IsEditable { get; } = isEditable;
-    }
-}
-
-internal sealed class ClassControl(Control container, List<VisualControlTypes.MemberControlBinding> bindings) : IVisualControl
-{
-    public void SetValue(object value)
-    {
-        foreach (VisualControlTypes.MemberControlBinding binding in bindings)
-        {
-            object? memberValue = VisualHandler.GetMemberValue(binding.Member, value);
-            binding.Control.SetValue(memberValue!);
-        }
-    }
-
-    public Control Control => container;
-
-    public void SetEditable(bool editable)
-    {
-        foreach (VisualControlTypes.MemberControlBinding binding in bindings)
-        {
-            binding.Control.SetEditable(editable && binding.IsEditable);
-        }
     }
 }
 #endif

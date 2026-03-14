@@ -10,6 +10,9 @@ namespace GodotUtils.Debugging;
 /// </summary>
 internal static class VisualHandler
 {
+    private const string FailedToSetMemberTemplate = "[Visualize] Failed to set value for {0}: {1}";
+    private const string ReadOnlyPropertyTemplate = "[Visualize] Property {0} is read-only.";
+    private const string MemberTypeErrorMessage = "[Visualize] Member must be a field or property.";
     public static void SetMemberValue(MemberInfo member, object target, object value)
     {
         try
@@ -25,7 +28,7 @@ internal static class VisualHandler
         }
         catch (Exception ex)
         {
-            GD.Print($"[Visualize] Failed to set value for {member.Name}: {ex.Message}");
+            GD.Print(string.Format(FailedToSetMemberTemplate, member.Name, ex.Message));
         }
     }
 
@@ -47,7 +50,7 @@ internal static class VisualHandler
         }
         else
         {
-            GD.Print($"[Visualize] Property {property.Name} is read-only.");
+            GD.Print(string.Format(ReadOnlyPropertyTemplate, property.Name));
         }
     }
 
@@ -97,7 +100,7 @@ internal static class VisualHandler
             PropertyInfo propertyInfo when propertyInfo.GetGetMethod(true)?.IsStatic == true => propertyInfo.GetValue(null),
             PropertyInfo propertyInfo => propertyInfo.GetValue(obj),
 
-            _ => throw new ArgumentException("[Visualize] Member must be a field or property.")
+            _ => throw new ArgumentException(MemberTypeErrorMessage)
         });
     }
 
@@ -122,7 +125,7 @@ internal static class VisualHandler
         {
             FieldInfo fieldInfo => fieldInfo.FieldType,
             PropertyInfo propertyInfo => propertyInfo.PropertyType,
-            _ => throw new ArgumentException("[Visualize] Member must be a field or property.")
+            _ => throw new ArgumentException(MemberTypeErrorMessage)
         };
     }
 }
