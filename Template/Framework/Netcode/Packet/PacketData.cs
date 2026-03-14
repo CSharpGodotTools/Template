@@ -1,6 +1,6 @@
 using System;
 
-namespace Framework.Netcode.Client;
+namespace __TEMPLATE__.Netcode.Client;
 
 public class PacketData
 {

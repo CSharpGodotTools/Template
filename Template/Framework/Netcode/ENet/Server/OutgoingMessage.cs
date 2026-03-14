@@ -1,4 +1,4 @@
-namespace Framework.Netcode.Server;
+namespace __TEMPLATE__.Netcode.Server;
 
 public abstract partial class ENetServer
 {

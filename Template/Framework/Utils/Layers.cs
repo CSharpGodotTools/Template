@@ -1,6 +1,6 @@
 ﻿using Godot;
 
-namespace Framework;
+namespace __TEMPLATE__;
 
 [LayerNames]
 public partial class Layers

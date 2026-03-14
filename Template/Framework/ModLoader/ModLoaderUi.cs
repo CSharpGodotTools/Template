@@ -1,4 +1,4 @@
-using Framework.Mods;
+using __TEMPLATE__.Mods;
 using Godot;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using System.Text.Json;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public class ModLoaderUi
 {
@@ -33,7 +33,7 @@ public class ModLoaderUi
 
         if (dir == null)
         {
-            GameFramework.Logger.LogWarning("Failed to open Mods directory because it does not exist");
+            Game.Logger.LogWarning("Failed to open Mods directory because it does not exist");
             return;
         }
 
@@ -58,7 +58,7 @@ public class ModLoaderUi
 
             if (!File.Exists(modJson))
             {
-                GameFramework.Logger.LogWarning($"The mod folder '{filename}' does not have a mod.json so it will not be loaded");
+                Game.Logger.LogWarning($"The mod folder '{filename}' does not have a mod.json so it will not be loaded");
                 goto Next;
             }
 
@@ -75,13 +75,13 @@ public class ModLoaderUi
 
             if (string.IsNullOrWhiteSpace(modInfo.Id))
             {
-                GameFramework.Logger.LogWarning($"The mod folder '{filename}' has an invalid or empty id and will be skipped");
+                Game.Logger.LogWarning($"The mod folder '{filename}' has an invalid or empty id and will be skipped");
                 goto Next;
             }
 
             if (_mods.ContainsKey(modInfo.Id))
             {
-                GameFramework.Logger.LogWarning($"Duplicate mod id '{modInfo.Id}' was skipped");
+                Game.Logger.LogWarning($"Duplicate mod id '{modInfo.Id}' was skipped");
                 goto Next;
             }
 
@@ -96,7 +96,7 @@ public class ModLoaderUi
 
                 if (!success)
                 {
-                    GameFramework.Logger.LogWarning($"Failed to load pck file for mod '{modInfo.Name}'");
+                    Game.Logger.LogWarning($"Failed to load pck file for mod '{modInfo.Name}'");
                 }
                 else
                 {
@@ -131,7 +131,7 @@ public class ModLoaderUi
         }
         catch (JsonException exception)
         {
-            GameFramework.Logger.LogWarning($"Failed to parse '{modJsonPath}': {exception.Message}");
+            Game.Logger.LogWarning($"Failed to parse '{modJsonPath}': {exception.Message}");
             modInfo = new ModInfo();
             return false;
         }
@@ -141,7 +141,7 @@ public class ModLoaderUi
             return true;
         }
 
-        GameFramework.Logger.LogWarning($"The file '{modJsonPath}' is empty or malformed and was skipped");
+        Game.Logger.LogWarning($"The file '{modJsonPath}' is empty or malformed and was skipped");
         modInfo = new ModInfo();
         return false;
     }
@@ -158,7 +158,7 @@ public class ModLoaderUi
         }
         else
         {
-            GameFramework.Logger.LogWarning($"Failed to load mod.tscn for mod '{modInfo.Name}'. Expected path '{modScenePath}'.");
+            Game.Logger.LogWarning($"Failed to load mod.tscn for mod '{modInfo.Name}'. Expected path '{modScenePath}'.");
         }
     }
 
@@ -166,7 +166,7 @@ public class ModLoaderUi
     {
         if (_managedMods.ContainsKey(modInfo.Id))
         {
-            GameFramework.Logger.LogWarning($"Managed mod '{modInfo.Id}' is loaded already and was skipped");
+            Game.Logger.LogWarning($"Managed mod '{modInfo.Id}' is loaded already and was skipped");
             return;
         }
 
@@ -180,7 +180,7 @@ public class ModLoaderUi
         }
         catch (Exception exception)
         {
-            GameFramework.Logger.LogErr(exception, $"Failed to load managed mod '{modInfo.Id}'");
+            Game.Logger.LogErr(exception, $"Failed to load managed mod '{modInfo.Id}'");
         }
     }
 
@@ -205,13 +205,13 @@ public class ModLoaderUi
             }
             catch (Exception exception)
             {
-                GameFramework.Logger.LogErr(exception, $"Failed to initialize entrypoint '{type.FullName}' for mod '{modInfo.Id}'");
+                Game.Logger.LogErr(exception, $"Failed to initialize entrypoint '{type.FullName}' for mod '{modInfo.Id}'");
             }
         }
 
         if (entrypoints.Count == 0)
         {
-            GameFramework.Logger.LogWarning($"Managed mod '{modInfo.Id}' does not contain an IModEntrypoint implementation");
+            Game.Logger.LogWarning($"Managed mod '{modInfo.Id}' does not contain an IModEntrypoint implementation");
         }
 
         return entrypoints;
@@ -229,7 +229,7 @@ public class ModLoaderUi
             {
                 if (loaderException is null)
                     continue;
-                GameFramework.Logger.LogErr(loaderException, $"Managed mod '{modId}' failed to resolve one or more types");
+                Game.Logger.LogErr(loaderException, $"Managed mod '{modId}' failed to resolve one or more types");
             }
 
             Type[] loadableTypes = [.. (exception.Types ?? []).OfType<Type>()];

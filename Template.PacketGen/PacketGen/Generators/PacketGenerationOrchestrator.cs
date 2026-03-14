@@ -29,7 +29,7 @@ internal sealed class PacketGenerationOrchestrator
         if (model.HasWriteReadMethods || model.Properties.Length == 0)
             return null;
 
-        HashSet<string> namespaces = ["Framework.Netcode"];
+        HashSet<string> namespaces = ["__TEMPLATE__.Netcode"];
         List<string> writeLines = [];
         List<string> readLines = [];
         List<EqualityLine> equalsLines = [];

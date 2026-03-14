@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Framework.Netcode.Server;
+namespace __TEMPLATE__.Netcode.Server;
 
 /// <summary>
 /// Main-thread server facade. Provides packet handler registration and exposes
@@ -57,7 +57,7 @@ public abstract class GodotServer : ENetServer
         }
         catch (Exception exception)
         {
-            GameFramework.Logger.LogErr(exception, LogTag);
+            Game.Logger.LogErr(exception, LogTag);
         }
     }
 

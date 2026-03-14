@@ -1,5 +1,5 @@
-using Framework.Netcode;
-using Framework.Netcode.Client;
+using __TEMPLATE__.Netcode;
+using __TEMPLATE__.Netcode.Client;
 using System;
 using System.Diagnostics;
 using System.Threading;

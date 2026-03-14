@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Framework.Netcode.Examples.Topdown.Server
+namespace __TEMPLATE__.Netcode.Examples.Topdown.Server
 {
     /// <summary>
     /// Tracks the set of connected players and their latest positions.

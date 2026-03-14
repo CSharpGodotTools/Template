@@ -1,4 +1,4 @@
-namespace Framework;
+namespace __TEMPLATE__;
 
 public partial class Autoloads : AutoloadsFramework
 {

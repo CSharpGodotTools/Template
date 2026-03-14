@@ -1,4 +1,4 @@
-using Framework.Netcode.Client;
+using __TEMPLATE__.Netcode.Client;
 
 namespace Template.Setup.Testing;
 

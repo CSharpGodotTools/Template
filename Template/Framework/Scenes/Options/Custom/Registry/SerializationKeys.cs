@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 /// <summary>
 /// Converts option labels into PascalCase keys suitable for JSON persistence.

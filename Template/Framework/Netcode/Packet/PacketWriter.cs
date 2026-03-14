@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Framework.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 public class PacketWriter : IDisposable
 {

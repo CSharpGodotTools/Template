@@ -1,7 +1,6 @@
-using Framework.Netcode;
-using Framework.Netcode.Server;
+using __TEMPLATE__.Netcode.Server;
 
-namespace Framework.Netcode.Examples.TopDown2;
+namespace __TEMPLATE__.Netcode.Examples.TopDown2;
 
 public class GameServer : GodotServer
 {

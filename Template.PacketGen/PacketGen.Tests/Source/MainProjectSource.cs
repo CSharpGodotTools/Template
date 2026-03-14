@@ -28,7 +28,7 @@ internal static class MainProjectSource
         using System;
         using System.Collections.Generic;
 
-        namespace Framework.Netcode;
+        namespace __TEMPLATE__.Netcode;
 
         public abstract class GamePacket
         {

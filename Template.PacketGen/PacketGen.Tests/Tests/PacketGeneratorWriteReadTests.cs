@@ -45,7 +45,7 @@ internal sealed class PacketGeneratorWriteReadTests
         AssignProperties(packet, roundTripCase.Properties);
 
         object writer = harness.CreateWriter();
-        Type readerType = harness.GetTypeOrFail("Framework.Netcode.PacketReader");
+        Type readerType = harness.GetTypeOrFail("__TEMPLATE__.Netcode.PacketReader");
         PacketReflectionHelper.AssertHasWriteReadMethods(packetType, writer.GetType(), readerType);
 
         PacketReflectionHelper.InvokeWrite(packet, writer);
@@ -119,7 +119,7 @@ internal sealed class PacketGeneratorWriteReadTests
         return $$"""
         using System.Collections.Generic;
         using Godot;
-        using Framework.Netcode;
+        using __TEMPLATE__.Netcode;
 
         namespace TestPackets;
 
@@ -169,7 +169,7 @@ internal sealed class PacketGeneratorWriteReadTests
         return $$"""
         using System.Collections.Generic;
         using Godot;
-        using Framework.Netcode;
+        using __TEMPLATE__.Netcode;
 
         namespace TestPackets;
 
@@ -200,7 +200,7 @@ internal sealed class PacketGeneratorWriteReadTests
     {
         return $$"""
         using System.Collections.Generic;
-        using Framework.Netcode;
+        using __TEMPLATE__.Netcode;
 
         namespace TestPackets;
 

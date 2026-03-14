@@ -1,7 +1,7 @@
 using System;
 using System.Buffers.Binary;
 
-namespace Framework.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 // Fragment wire format (per ENet packet):
 //   [fragment opcode: PacketRegistry.OpcodeSize bytes]  PacketRegistry.FragmentOpcode — never assigned by PacketGen

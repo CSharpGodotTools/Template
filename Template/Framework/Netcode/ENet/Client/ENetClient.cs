@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
-namespace Framework.Netcode.Client;
+namespace __TEMPLATE__.Netcode.Client;
 
 // ENet API Reference: https://github.com/SoftwareGuy/ENet-CSharp/blob/master/DOCUMENTATION.md
 /// <summary>
@@ -61,7 +61,7 @@ public abstract class ENetClient : ENetLow
     public sealed override void Log(object message, BBColor color = BBColor.Gray)
     {
         string timestampPrefix = BuildTimestampPrefix();
-        GameFramework.Logger.Log($"{timestampPrefix}[Client] {message}", color);
+        Game.Logger.Log($"{timestampPrefix}[Client] {message}", color);
     }
 
     /// <summary>
@@ -372,7 +372,7 @@ public abstract class ENetClient : ENetLow
             }
             catch (Exception exception)
             {
-                GameFramework.Logger.LogErr(exception, LogTag);
+                Game.Logger.LogErr(exception, LogTag);
             }
         }
     }
@@ -414,7 +414,7 @@ public abstract class ENetClient : ENetLow
         }
         catch (Exception exception)
         {
-            GameFramework.Logger.LogErr(exception, LogTag);
+            Game.Logger.LogErr(exception, LogTag);
         }
     }
 }

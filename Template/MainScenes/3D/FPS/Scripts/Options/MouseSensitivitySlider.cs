@@ -1,5 +1,4 @@
-using Framework;
-using Framework.Ui;
+using __TEMPLATE__.Ui;
 
 namespace __TEMPLATE__.FPS;
 
@@ -14,11 +13,11 @@ public sealed class MouseSensitivitySlider : SliderOptionDefinition
 
     public override float GetValue()
     {
-        return GameFramework.Settings.MouseSensitivity;
+        return Game.Settings.MouseSensitivity;
     }
 
     public override void SetValue(float value)
     {
-        GameFramework.Settings.MouseSensitivity = value;
+        Game.Settings.MouseSensitivity = value;
     }
 }

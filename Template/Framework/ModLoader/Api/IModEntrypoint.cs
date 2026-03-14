@@ -1,4 +1,4 @@
-namespace Framework.Mods;
+namespace __TEMPLATE__.Mods;
 
 /// <summary>
 /// Contract implemented by managed C# mods.

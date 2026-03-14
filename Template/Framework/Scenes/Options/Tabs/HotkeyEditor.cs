@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public partial class OptionsInput
 {
@@ -98,7 +98,7 @@ public partial class OptionsInput
             if (action == _fullscreenAction && @event is InputEventMouseButton)
                 return;
 
-            GameFramework.FocusOutline.ClearFocus();
+            Game.FocusOutline.ClearFocus();
 
             InputEvent persistentEvent = (InputEvent)@event.Duplicate();
 

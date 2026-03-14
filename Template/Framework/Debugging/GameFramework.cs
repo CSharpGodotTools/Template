@@ -1,10 +1,10 @@
-﻿using Framework.Debugging;
-using Framework.Ui;
-using Framework.Ui.Console;
+﻿using __TEMPLATE__.Debugging;
+using __TEMPLATE__.Ui;
+using __TEMPLATE__.Ui.Console;
 
-namespace Framework;
+namespace __TEMPLATE__;
 
-public partial class GameFramework
+public partial class Game
 {
     public static FocusOutlineManager FocusOutline => Autoloads.Instance!.FocusOutline;
     public static MetricsOverlay      Metrics      => Autoloads.Instance!.MetricsOverlay;

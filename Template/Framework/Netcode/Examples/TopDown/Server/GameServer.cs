@@ -1,12 +1,9 @@
-using Framework.Netcode;
-using Framework.Netcode.Server;
+using __TEMPLATE__.Netcode.Server;
 using Godot;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using Framework.Netcode.Examples.Topdown.Server;
+using __TEMPLATE__.Netcode.Examples.Topdown.Server;
 
-namespace Framework.Netcode.Examples.Topdown;
+namespace __TEMPLATE__.Netcode.Examples.Topdown;
 
 public partial class GameServer : GodotServer
 {

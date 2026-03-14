@@ -2,7 +2,7 @@ using Godot;
 using GodotUtils;
 using System;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public partial class OptionsInput
 {
@@ -90,7 +90,7 @@ public partial class OptionsInput
                 return;
 
             Button plusBtn = _events.GetChild<Button>(_events.GetChildCount() - 1);
-            GameFramework.FocusOutline.Focus(plusBtn);
+            Game.FocusOutline.Focus(plusBtn);
         }
 
         private HotkeyButton CreateBindingButton(InputEvent inputEvent, bool isFirst)

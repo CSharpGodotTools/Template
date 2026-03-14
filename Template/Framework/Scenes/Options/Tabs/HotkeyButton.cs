@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public partial class OptionsInput
 {

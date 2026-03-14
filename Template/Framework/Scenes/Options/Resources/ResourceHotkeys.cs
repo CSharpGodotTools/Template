@@ -2,8 +2,8 @@ using Godot;
 using Godot.Collections;
 
 // This was intentionally set to GodotUtils instead of __TEMPLATE__ as GodotUtils relies on MainMenuBtnPressed
-// and GodotUtils should NOT have any trace of using Framework.
-namespace Framework.Ui;
+// and GodotUtils should NOT have any trace of using __TEMPLATE__.
+namespace __TEMPLATE__.Ui;
 
 /* 
  * If the ResourceHotkeys.cs script is moved then the file path will not updated

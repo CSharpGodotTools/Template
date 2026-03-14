@@ -1,4 +1,4 @@
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 /// <summary>
 /// Tabs available in the options UI.

@@ -1,7 +1,7 @@
 using Godot;
 using System.Linq;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public partial class Options : PanelContainer
 {
@@ -33,7 +33,7 @@ public partial class Options : PanelContainer
 
         VisibilityChanged += OnVisibilityChanged;
 
-        GameFramework.Scene.PostSceneChanged += OnPostSceneChanged;
+        Game.Scene.PostSceneChanged += OnPostSceneChanged;
 
         SetupPopupAnimations();
     }
@@ -58,7 +58,7 @@ public partial class Options : PanelContainer
         _optionsInput.Dispose();
         _optionsCustom.Dispose();
 
-        GameFramework.Scene.PostSceneChanged -= OnPostSceneChanged;
+        Game.Scene.PostSceneChanged -= OnPostSceneChanged;
         VisibilityChanged -= OnVisibilityChanged;
     }
 
@@ -100,7 +100,7 @@ public partial class Options : PanelContainer
     {
         if (Visible)
         {
-            GameFramework.FocusOutline.Focus(_navNode.GetNode<Button>(GameFramework.Options.GetCurrentTab()));
+            Game.FocusOutline.Focus(_navNode.GetNode<Button>(Game.Options.GetCurrentTab()));
         }
     }
 
@@ -108,7 +108,7 @@ public partial class Options : PanelContainer
     {
         if (Visible)
         {
-            _navNode.GetNode<Button>(GameFramework.Options.GetCurrentTab()).GrabFocus();
+            _navNode.GetNode<Button>(Game.Options.GetCurrentTab()).GrabFocus();
             _optionsDisplay.RefreshWindowSizeDisplay();
         }
     }

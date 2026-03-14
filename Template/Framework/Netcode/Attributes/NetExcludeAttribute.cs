@@ -1,6 +1,6 @@
 using System;
 
-namespace Framework.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 /// <summary>
 /// Excludes a property from legacy reflection-based packet serialization fallback.

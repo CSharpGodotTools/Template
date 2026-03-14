@@ -1,4 +1,4 @@
-using Framework.Netcode;
+using __TEMPLATE__.Netcode;
 using System.Collections.Generic;
 
 namespace Template.Setup.Testing;

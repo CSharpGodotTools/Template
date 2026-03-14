@@ -2,7 +2,7 @@ using Godot;
 using GodotUtils;
 using System;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public partial class Credits : Node
 {
@@ -74,7 +74,7 @@ public partial class Credits : Node
     // Private Methods
     private void SetupFields()
     {
-        _scene = GameFramework.Scene;
+        _scene = Game.Scene;
         _btnPause = GetNode<Button>("%Pause");
         _btnSpeed = GetNode<Button>("%Speed");
         _btnReverse = GetNode<Button>("%Reverse");

@@ -8,7 +8,7 @@ internal sealed class PacketTests
     {
         string testCode = $$"""
         using Godot;
-        using Framework.Netcode;
+        using __TEMPLATE__.Netcode;
 
         namespace TestPackets;
 
@@ -54,7 +54,7 @@ internal sealed class PacketTests
     public void EmptyPacket_DoesNotGenerateSource()
     {
         string testCode = $$"""
-        using Framework.Netcode;
+        using __TEMPLATE__.Netcode;
 
         namespace TestPackets;
 
@@ -75,7 +75,7 @@ internal sealed class PacketTests
     public void ManualWriteReadMethods_DoesNotGenerateSource()
     {
         string testCode = $$"""
-        using Framework.Netcode;
+        using __TEMPLATE__.Netcode;
 
         namespace TestPackets;
 
@@ -108,7 +108,7 @@ internal sealed class PacketTests
     {
         string className = "CSimplePacket";
         string testCode = $$"""
-        using Framework.Netcode;
+        using __TEMPLATE__.Netcode;
 
         namespace TestPackets;
 

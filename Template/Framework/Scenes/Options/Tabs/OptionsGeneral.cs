@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public class OptionsGeneral : IDisposable
 {
@@ -14,7 +14,7 @@ public class OptionsGeneral : IDisposable
     {
         _generalBtn = generalBtn;
         _languageBtn = options.GetNode<OptionButton>("%LanguageButton");
-        _resourceOptions = GameFramework.Settings;
+        _resourceOptions = Game.Settings;
 
         SetupLanguage();
     }

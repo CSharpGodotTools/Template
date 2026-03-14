@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 
-namespace Framework.Netcode.Server;
+namespace __TEMPLATE__.Netcode.Server;
 
 // ENet API Reference: https://github.com/SoftwareGuy/ENet-CSharp/blob/master/DOCUMENTATION.md
 /// <summary>
@@ -54,7 +54,7 @@ public abstract partial class ENetServer : ENetLow
     public sealed override void Log(object message, BBColor color = BBColor.Gray)
     {
         string timestampPrefix = BuildTimestampPrefix();
-        GameFramework.Logger.Log($"{timestampPrefix}[Server] {message}", color);
+        Game.Logger.Log($"{timestampPrefix}[Server] {message}", color);
     }
 
     /// <summary>
@@ -460,7 +460,7 @@ public abstract partial class ENetServer : ENetLow
         }
         catch (Exception exception)
         {
-            GameFramework.Logger.LogErr(exception, LogTag);
+            Game.Logger.LogErr(exception, LogTag);
             return false;
         }
     }
@@ -505,7 +505,7 @@ public abstract partial class ENetServer : ENetLow
         }
         catch (Exception exception)
         {
-            GameFramework.Logger.LogErr(exception, LogTag);
+            Game.Logger.LogErr(exception, LogTag);
         }
     }
 
@@ -529,7 +529,7 @@ public abstract partial class ENetServer : ENetLow
             }
             catch (Exception exception)
             {
-                GameFramework.Logger.LogErr(exception, LogTag);
+                Game.Logger.LogErr(exception, LogTag);
             }
         }
     }

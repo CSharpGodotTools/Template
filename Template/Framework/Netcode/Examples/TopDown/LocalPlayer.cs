@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Framework.Netcode.Examples.Topdown;
+namespace __TEMPLATE__.Netcode.Examples.Topdown;
 
 internal sealed class LocalPlayer
 {

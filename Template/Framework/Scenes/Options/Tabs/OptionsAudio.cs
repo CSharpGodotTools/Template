@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public partial class OptionsAudio : IDisposable
 {
@@ -14,7 +14,7 @@ public partial class OptionsAudio : IDisposable
     {
         _musicSlider = options.GetNode<HSlider>("%Music");
         _sfxSlider = options.GetNode<HSlider>("%Sounds");
-        _options = GameFramework.Settings;
+        _options = Game.Settings;
 
         SetupMusic();
         SetupSounds();
@@ -40,11 +40,11 @@ public partial class OptionsAudio : IDisposable
 
     private void OnMusicValueChanged(double v)
     {
-        GameFramework.Audio.SetMusicVolume((float)v);
+        Game.Audio.SetMusicVolume((float)v);
     }
 
     private void OnSoundsValueChanged(double v)
     {
-        GameFramework.Audio.SetSFXVolume((float)v);
+        Game.Audio.SetSFXVolume((float)v);
     }
 }

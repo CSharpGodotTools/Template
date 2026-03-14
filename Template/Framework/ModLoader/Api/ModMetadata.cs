@@ -1,4 +1,4 @@
-namespace Framework.Mods;
+namespace __TEMPLATE__.Mods;
 
 /// <summary>
 /// Immutable metadata snapshot for a loaded mod.

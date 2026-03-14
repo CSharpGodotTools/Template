@@ -1,7 +1,7 @@
-using Framework.Netcode.Client;
+using __TEMPLATE__.Netcode.Client;
 using Godot;
 
-namespace Framework.Netcode.Examples.TopDown2;
+namespace __TEMPLATE__.Netcode.Examples.TopDown2;
 
 public class GameClient : GodotClient
 {

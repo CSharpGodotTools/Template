@@ -7,7 +7,7 @@ using System.Linq;
 using static Godot.DisplayServer;
 using WindowMode = GodotUtils.WindowMode;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public class OptionsDisplay : IDisposable
 {
@@ -62,7 +62,7 @@ public class OptionsDisplay : IDisposable
         _resolutionSlider = options.GetNode<HSlider>("%Resolution");
         _vsyncMode = options.GetNode<OptionButton>("%VSyncMode");
         _windowMode = options.GetNode<OptionButton>("%WindowMode");
-        _resourceOptions = GameFramework.Settings;
+        _resourceOptions = Game.Settings;
 
         SetupMaxFps(displayBtn);
         SetupWindowSize(displayBtn);
@@ -87,7 +87,7 @@ public class OptionsDisplay : IDisposable
 
         _windowMode.ItemSelected -= OnWindowModeItemSelected;
 
-        GameFramework.Options.WindowModeChanged -= _selectWindowModeAction;
+        Game.Options.WindowModeChanged -= _selectWindowModeAction;
 
         _resolutionSlider.ValueChanged -= OnResolutionValueChanged;
 
@@ -253,7 +253,7 @@ public class OptionsDisplay : IDisposable
 
         _selectWindowModeAction = SelectWindowMode;
 
-        GameFramework.Options.WindowModeChanged += _selectWindowModeAction;
+        Game.Options.WindowModeChanged += _selectWindowModeAction;
 
         void SelectWindowMode(WindowMode windowMode)
         {

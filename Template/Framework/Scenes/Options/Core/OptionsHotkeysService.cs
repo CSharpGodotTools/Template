@@ -7,7 +7,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using FileAccess = Godot.FileAccess;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 /// <summary>
 /// Manages hotkey defaults, load/save, and reset behavior.

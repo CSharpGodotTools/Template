@@ -1,7 +1,7 @@
 using Godot;
 using GodotUtils;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public partial class MainMenuNav : Node
 {
@@ -17,13 +17,13 @@ public partial class MainMenuNav : Node
     // Godot Overrides
     public override void _Ready()
     {
-        _scene = GameFramework.Scene;
+        _scene = Game.Scene;
         _viewport = GetViewport();
         _playBtn = GetNode<Button>("Play");
 
         FocusOnPlayBtn();
 
-        GameFramework.Scene.PostSceneChanged += OnPostSceneChanged;
+        Game.Scene.PostSceneChanged += OnPostSceneChanged;
 
         _viewport.GuiFocusChanged += OnGuiFocusChanged;
     }
@@ -48,13 +48,13 @@ public partial class MainMenuNav : Node
     public override void _ExitTree()
     {
         _viewport.GuiFocusChanged -= OnGuiFocusChanged;
-        GameFramework.Scene.PostSceneChanged -= OnPostSceneChanged;
+        Game.Scene.PostSceneChanged -= OnPostSceneChanged;
     }
 
     // FocusOnPlayBtn
     private void FocusOnPlayBtn()
     {
-        GameFramework.FocusOutline.Focus(_playBtn);
+        Game.FocusOutline.Focus(_playBtn);
     }
 
     // Subscribers

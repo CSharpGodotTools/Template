@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 /// <summary>
 /// Disposable helper that owns a dropdown row and its event subscription.

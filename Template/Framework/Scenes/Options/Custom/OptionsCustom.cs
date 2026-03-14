@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 /// <summary>
 /// Creates and manages UI controls for custom options registered via OptionsManager.
@@ -16,7 +16,7 @@ public sealed class OptionsCustom : IDisposable
 
     // Properties
     internal OptionsNav Nav { get; }
-    internal OptionsManager OptionsManager { get; } = GameFramework.Options;
+    internal OptionsManager OptionsManager { get; } = Game.Options;
     internal Dictionary<int, IDisposable> Bindings { get; } = [];
 
     /// <summary>

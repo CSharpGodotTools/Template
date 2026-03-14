@@ -1,7 +1,7 @@
 using Godot;
 using GodotUtils;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public interface IFocusManager : IComponentNode
 {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Framework.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 /// <summary>
 /// Shared packet functionality for client-to-server and server-to-client packets.

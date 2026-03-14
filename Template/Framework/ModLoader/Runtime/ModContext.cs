@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Framework.Mods;
+namespace __TEMPLATE__.Mods;
 
 internal sealed class ModContext(Node hostNode, ModMetadata metadata) : IModContext
 {
@@ -9,11 +9,11 @@ internal sealed class ModContext(Node hostNode, ModMetadata metadata) : IModCont
 
     public void Log(string message)
     {
-        GameFramework.Logger.Log($"[Mod:{Metadata.Id}] {message}");
+        Game.Logger.Log($"[Mod:{Metadata.Id}] {message}");
     }
 
     public T GetService<T>() where T : Node
     {
-        return GameFramework.Services.Get<T>();
+        return Game.Services.Get<T>();
     }
 }

@@ -1,4 +1,4 @@
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 /// <summary>
 /// Base type for a custom option that can be shown in the Options UI.

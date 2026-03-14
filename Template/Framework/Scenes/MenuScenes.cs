@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 [GlobalClass]
 public partial class MenuScenes : Resource

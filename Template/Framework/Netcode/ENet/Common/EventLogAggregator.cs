@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Framework.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 /// <summary>
 /// Base class for event aggregation that coalesces rapid lifecycle events into summarized log messages.

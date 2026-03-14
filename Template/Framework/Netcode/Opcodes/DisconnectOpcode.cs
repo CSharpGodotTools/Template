@@ -1,4 +1,4 @@
-namespace Framework.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 /// <summary>
 /// Disconnect reason codes sent through ENet disconnection events.

@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Framework.Debugging;
+namespace __TEMPLATE__.Debugging;
 
 public class Profiler
 {
@@ -39,7 +39,7 @@ public class Profiler
 
     public static void StartProcess(string key, int accuracy = DefaultAccuracy)
     {
-        StartMonitor(key, accuracy, GameFramework.Metrics.StartMonitoring);
+        StartMonitor(key, accuracy, Game.Metrics.StartMonitoring);
     }
 
     public static void StopProcess(string key)

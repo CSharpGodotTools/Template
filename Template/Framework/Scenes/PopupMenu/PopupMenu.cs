@@ -1,11 +1,11 @@
-using Framework.Ui.Console;
+using __TEMPLATE__.Ui.Console;
 using Godot;
 using GodotUtils;
 using System;
 
 // This was intentionally set to GodotUtils instead of __TEMPLATE__ as GodotUtils relies on MainMenuBtnPressed
-// and GodotUtils should NOT have any trace of using Framework.
-namespace Framework.Ui; 
+// and GodotUtils should NOT have any trace of using __TEMPLATE__.
+namespace __TEMPLATE__.Ui; 
 
 public partial class PopupMenu : Control
 {
@@ -35,7 +35,7 @@ public partial class PopupMenu : Control
     public override void _Ready()
     {
         ProcessMode = ProcessModeEnum.Always;
-        GameFramework.Services.Register(this);
+        Game.Services.Register(this);
         InitializeNodes();
         RegisterNodeEvents();
 
@@ -73,7 +73,7 @@ public partial class PopupMenu : Control
     // Initialization Methods
     private void InitializeNodes()
     {
-        _console = GameFramework.Console;
+        _console = Game.Console;
         _nav = GetNode<VBoxContainer>("%Navigation");
         _menu = GetNode<Control>("Menu");
 
@@ -121,7 +121,7 @@ public partial class PopupMenu : Control
         _options.ProcessMode = ProcessModeEnum.Disabled;
         _options.Hide();
         OptionsClosed?.Invoke();
-        GameFramework.FocusOutline.ClearFocus();
+        Game.FocusOutline.ClearFocus();
         FocusResumeBtn();
     }
 
@@ -146,7 +146,7 @@ public partial class PopupMenu : Control
         Visible = false;
         GetTree().Paused = false;
         Closed?.Invoke();
-        GameFramework.FocusOutline.ClearFocus();
+        Game.FocusOutline.ClearFocus();
     }
 
     private void FocusResumeBtn() => _resumeBtn.GrabFocus();
@@ -159,7 +159,7 @@ public partial class PopupMenu : Control
     private void OnRestartPressed()
     {
         GetTree().Paused = false;
-        GameFramework.Scene.ResetCurrentScene();
+        Game.Scene.ResetCurrentScene();
     }
 
     private void OnOptionsPressed()
@@ -172,7 +172,7 @@ public partial class PopupMenu : Control
     {
         MainMenuBtnPressed?.Invoke();
         GetTree().Paused = false;
-        GameFramework.Scene.SwitchToMainMenu();
+        Game.Scene.SwitchToMainMenu();
     }
 
     private void OnQuitPressed()

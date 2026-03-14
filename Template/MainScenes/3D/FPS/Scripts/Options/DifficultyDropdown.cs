@@ -1,5 +1,4 @@
-using Framework;
-using Framework.Ui;
+using __TEMPLATE__.Ui;
 using System.Collections.Generic;
 
 namespace __TEMPLATE__.FPS;
@@ -13,11 +12,11 @@ public sealed class DifficultyDropdown : DropdownOptionDefinition
 
     public override int GetValue()
     {
-        return (int)GameFramework.Settings.Difficulty;
+        return (int)Game.Settings.Difficulty;
     }
 
     public override void SetValue(int value)
     {
-        GameFramework.Settings.Difficulty = (Difficulty)value;
+        Game.Settings.Difficulty = (Difficulty)value;
     }
 }

@@ -3,7 +3,7 @@ using GodotUtils;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public partial class ModLoader : Node
 {
@@ -63,7 +63,7 @@ public partial class ModLoader : Node
     {
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
-            GameFramework.Scene.SwitchToMainMenu();
+            Game.Scene.SwitchToMainMenu();
         }
     }
 

@@ -1,5 +1,4 @@
-﻿using Framework;
-using Godot;
+﻿using Godot;
 using GodotUtils;
 
 namespace __TEMPLATE__.FPS;

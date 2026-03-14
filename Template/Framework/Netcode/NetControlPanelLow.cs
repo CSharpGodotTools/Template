@@ -1,9 +1,9 @@
-using Framework.Netcode.Client;
-using Framework.Netcode.Server;
+using __TEMPLATE__.Netcode.Client;
+using __TEMPLATE__.Netcode.Server;
 using Godot;
 using GodotUtils;
 
-namespace Framework.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Control
     where TGameClient : GodotClient, new()

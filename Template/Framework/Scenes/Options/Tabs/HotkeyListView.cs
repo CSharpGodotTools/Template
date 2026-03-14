@@ -3,7 +3,7 @@ using GodotUtils;
 using System;
 using System.Collections.Generic;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public partial class OptionsInput
 {

@@ -1,4 +1,4 @@
-namespace Framework.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 [System.AttributeUsage(System.AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
 public sealed class PacketRegistryAttribute : System.Attribute

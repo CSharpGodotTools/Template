@@ -1,9 +1,9 @@
-using Framework.Ui;
+using __TEMPLATE__.Ui;
 using Godot;
 using GodotUtils;
 using System;
 
-namespace Framework;
+namespace __TEMPLATE__;
 
 // About Scene Switching: https://docs.godotengine.org/en/latest/tutorials/scripting/singletons_autoload.html
 public class SceneManager
@@ -95,7 +95,7 @@ public class SceneManager
         }
 
         PostSceneChanged?.Invoke();
-        GameFramework.FocusOutline.ClearFocus();
+        Game.FocusOutline.ClearFocus();
     }
 
     // Private Methods
@@ -110,7 +110,7 @@ public class SceneManager
         _currentScene = root.GetChild(root.GetChildCount() - 1);
     }
 
-    private void OnPreSceneChanged() => GameFramework.Audio.FadeOutSFX();
+    private void OnPreSceneChanged() => Game.Audio.FadeOutSFX();
 
     private void ChangeScene(string scenePath, TransType transType)
     {

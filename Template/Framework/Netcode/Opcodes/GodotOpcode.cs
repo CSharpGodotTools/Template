@@ -1,4 +1,4 @@
-namespace Framework.Netcode.Client;
+namespace __TEMPLATE__.Netcode.Client;
 
 /// <summary>
 /// Main-thread client lifecycle commands raised by the ENet client worker.

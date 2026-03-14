@@ -1,5 +1,5 @@
-using Framework.Netcode;
-using Framework.Netcode.Server;
+using __TEMPLATE__.Netcode;
+using __TEMPLATE__.Netcode.Server;
 using System;
 
 namespace Template.Setup.Testing;

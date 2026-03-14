@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Framework.Mods;
+namespace __TEMPLATE__.Mods;
 
 /// <summary>
 /// Exposes a minimal host surface to managed C# mod entrypoints.

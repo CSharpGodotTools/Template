@@ -1,4 +1,4 @@
-using Framework.Netcode;
+using __TEMPLATE__.Netcode;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;

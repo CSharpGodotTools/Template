@@ -1,4 +1,4 @@
-namespace Framework.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 /// <summary>
 /// Runtime logging and diagnostics options for ENet client/server wrappers.

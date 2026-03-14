@@ -1,8 +1,8 @@
-using Framework.Netcode.Client;
+using __TEMPLATE__.Netcode.Client;
 using Godot;
 using System.Collections.Generic;
 
-namespace Framework.Netcode.Examples.Topdown;
+namespace __TEMPLATE__.Netcode.Examples.Topdown;
 
 public partial class World : Node2D
 {

@@ -1,4 +1,4 @@
-namespace Framework.Netcode.Client;
+namespace __TEMPLATE__.Netcode.Client;
 
 /// <summary>
 /// Commands consumed by the ENet client worker queue.

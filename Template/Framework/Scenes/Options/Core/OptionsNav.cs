@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public class OptionsNav : IDisposable
 {
@@ -99,18 +99,18 @@ public class OptionsNav : IDisposable
 
     private void FocusOnLastClickedNavBtn()
     {
-        _buttons[GameFramework.Options.GetCurrentTab()].GrabFocus();
+        _buttons[Game.Options.GetCurrentTab()].GrabFocus();
     }
 
     private void ShowCurrentTab(Label titleLabel)
     {
-        ShowTab(titleLabel, GameFramework.Options.GetCurrentTab());
+        ShowTab(titleLabel, Game.Options.GetCurrentTab());
     }
 
     private void ShowTab(Label titleLabel, string tabName)
     {
         titleLabel.Text = tabName;
-        GameFramework.Options.SetCurrentTab(tabName);
+        Game.Options.SetCurrentTab(tabName);
         HideAllTabs();
         _tabs[tabName].Show();
     }

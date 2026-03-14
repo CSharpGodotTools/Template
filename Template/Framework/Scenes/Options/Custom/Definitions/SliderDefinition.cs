@@ -1,9 +1,9 @@
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 /// <summary>
 /// Class-based definition for a custom slider option.
 /// Implement this in game code, then register with:
-/// GameFramework.Options.AddSlider(new YourSliderOption()).
+/// Game.Options.AddSlider(new YourSliderOption()).
 /// </summary>
 public abstract class SliderOptionDefinition : OptionDefinition
 {

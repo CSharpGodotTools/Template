@@ -1,4 +1,4 @@
-using Framework.Netcode;
+using __TEMPLATE__.Netcode;
 using Godot;
 
 namespace Template.Setup.Testing;

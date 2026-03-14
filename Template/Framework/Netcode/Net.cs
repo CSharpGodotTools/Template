@@ -1,10 +1,10 @@
-using Framework.Netcode.Client;
-using Framework.Netcode.Server;
+using __TEMPLATE__.Netcode.Client;
+using __TEMPLATE__.Netcode.Server;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Framework.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 /// <summary>
 /// Top-level network coordinator. Owns a single server and client pair, manages
@@ -154,7 +154,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
         }
         catch (DllNotFoundException exception)
         {
-            GameFramework.Logger.LogErr(exception);
+            Game.Logger.LogErr(exception);
             return false;
         }
     }
@@ -178,7 +178,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
                 ENet.Library.Deinitialize();
             }
 
-            while (GameFramework.Logger.StillWorking())
+            while (Game.Logger.StillWorking())
             {
                 await Task.Delay(ShutdownPollIntervalMs);
             }
@@ -199,7 +199,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
             return true;
         }
 
-        GameFramework.Logger.LogWarning("ENet is not initialized. Network operation was ignored.");
+        Game.Logger.LogWarning("ENet is not initialized. Network operation was ignored.");
         return false;
     }
 

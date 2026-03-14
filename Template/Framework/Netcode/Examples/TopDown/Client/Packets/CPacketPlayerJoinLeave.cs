@@ -1,4 +1,4 @@
-namespace Framework.Netcode.Examples.Topdown;
+namespace __TEMPLATE__.Netcode.Examples.Topdown;
 
 public partial class CPacketPlayerJoinLeave : ClientPacket
 {

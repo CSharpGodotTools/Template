@@ -82,7 +82,7 @@ internal sealed class GeneratorEqualityTests
     {
         return $$"""
         using System.Collections.Generic;
-        using Framework.Netcode;
+        using __TEMPLATE__.Netcode;
 
         namespace TestPackets;
 
@@ -104,7 +104,7 @@ internal sealed class GeneratorEqualityTests
     {
         return $$"""
         using System.Collections.Generic;
-        using Framework.Netcode;
+        using __TEMPLATE__.Netcode;
 
         namespace TestPackets;
 

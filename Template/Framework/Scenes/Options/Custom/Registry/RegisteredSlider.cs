@@ -1,6 +1,6 @@
 using System;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 /// <summary>
 /// Runtime wrapper created after a <see cref="SliderOptionDefinition"/>

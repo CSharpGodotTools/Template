@@ -1,12 +1,12 @@
-using Framework.Ui;
+using __TEMPLATE__.Ui;
 using GodotUtils;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using QualityP = Framework.Ui.QualityPreset;
+using QualityP = __TEMPLATE__.Ui.QualityPreset;
 using VSyncMode = Godot.DisplayServer.VSyncMode;
 
-namespace Framework;
+namespace __TEMPLATE__;
 
 // Keep this class partial so game projects can extend options outside Framework
 // by adding `public partial class ResourceOptions` files in their own folders.

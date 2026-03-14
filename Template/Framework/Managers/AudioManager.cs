@@ -2,7 +2,7 @@ using Godot;
 using GodotUtils;
 using System;
 
-namespace Framework;
+namespace __TEMPLATE__;
 
 public class AudioManager : IDisposable
 {
@@ -110,7 +110,7 @@ public class AudioManager : IDisposable
     private void SetupFields(AutoloadsFramework autoloads)
     {
         _autoloads = autoloads;
-        _options = GameFramework.Options.GetOptions();
+        _options = Game.Options.GetOptions();
     }
 
     private void SetupSfxPool()

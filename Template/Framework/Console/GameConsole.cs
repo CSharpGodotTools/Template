@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-namespace Framework.Ui.Console;
+namespace __TEMPLATE__.Ui.Console;
 
 public partial class GameConsole : Node
 {
@@ -149,7 +149,7 @@ public partial class GameConsole : Node
     private void CloseConsole()
     {
         _mainContainer.Hide();
-        GameFramework.FocusOutline.ClearFocus();
+        Game.FocusOutline.ClearFocus();
     }
 
     private void ScrollDownIfEnabled()
@@ -169,7 +169,7 @@ public partial class GameConsole : Node
         string commandName = parts[0];
         if (!TryGetCommand(commandName, out ConsoleCommandInfo commandInfo))
         {
-            GameFramework.Logger.Log($"The command '{commandName}' does not exist");
+            Game.Logger.Log($"The command '{commandName}' does not exist");
             return false;
         }
 

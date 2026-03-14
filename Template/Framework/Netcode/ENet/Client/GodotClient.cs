@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Framework.Netcode.Client;
+namespace __TEMPLATE__.Netcode.Client;
 
 /// <summary>
 /// Main-thread client facade. Provides packet handler registration and exposes
@@ -83,7 +83,7 @@ public abstract class GodotClient : ENetClient
         catch (Exception exception)
         {
             Interlocked.Exchange(ref _running, 0);
-            GameFramework.Logger.LogErr(exception, LogTag);
+            Game.Logger.LogErr(exception, LogTag);
         }
     }
 
@@ -154,7 +154,7 @@ public abstract class GodotClient : ENetClient
             }
             catch (Exception exception)
             {
-                GameFramework.Logger.LogErr(exception, LogTag);
+                Game.Logger.LogErr(exception, LogTag);
             }
             finally
             {
@@ -239,7 +239,7 @@ public abstract class GodotClient : ENetClient
         }
         catch (Exception exception)
         {
-            GameFramework.Logger.LogErr(exception, LogTag);
+            Game.Logger.LogErr(exception, LogTag);
         }
     }
 }

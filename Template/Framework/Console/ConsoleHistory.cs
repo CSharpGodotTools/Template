@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Framework.Ui.Console;
+namespace __TEMPLATE__.Ui.Console;
 
 public class ConsoleHistory
 {

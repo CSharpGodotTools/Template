@@ -1,4 +1,4 @@
-namespace Framework.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 /// <summary>
 /// Lightweight command envelope passed across worker and main-thread queues.

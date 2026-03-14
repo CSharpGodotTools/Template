@@ -1,6 +1,6 @@
 using System;
 
-namespace Framework.Netcode;
+namespace __TEMPLATE__.Netcode;
 
 /// <summary>
 /// Packet sent from a server to one or more clients.

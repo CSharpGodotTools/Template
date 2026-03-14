@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public class OptionsGraphics : IDisposable
 {
@@ -18,7 +18,7 @@ public class OptionsGraphics : IDisposable
     {
         _options = options;
         _optionBtnQualityPreset = options.GetNode<OptionButton>("%QualityMode");
-        _resourceOptions = GameFramework.Settings;
+        _resourceOptions = Game.Settings;
 
         SetupQualityPreset(graphicsBtn);
         SetupAntialiasing(graphicsBtn);

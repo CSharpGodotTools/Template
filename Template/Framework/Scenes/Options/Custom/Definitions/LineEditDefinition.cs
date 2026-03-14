@@ -1,9 +1,9 @@
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 /// <summary>
 /// Class-based definition for a custom line edit option.
 /// Implement this in game code, then register with:
-/// GameFramework.Options.AddLineEdit(new YourLineEditOption()).
+/// Game.Options.AddLineEdit(new YourLineEditOption()).
 /// </summary>
 public abstract class LineEditOptionDefinition : OptionDefinition
 {

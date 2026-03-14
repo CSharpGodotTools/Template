@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using Monitor = Godot.Performance.Monitor;
 
-namespace Framework.Debugging;
+namespace __TEMPLATE__.Debugging;
 
 public partial class MetricsOverlay : CanvasLayer
 {

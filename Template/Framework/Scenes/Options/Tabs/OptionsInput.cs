@@ -2,7 +2,7 @@ using Godot;
 using GodotUtils;
 using System;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 public partial class OptionsInput : IDisposable
 {
@@ -20,11 +20,11 @@ public partial class OptionsInput : IDisposable
 
     public OptionsInput(Options options, Button inputNavBtn)
     {
-        _scene = GameFramework.Scene;
+        _scene = Game.Scene;
 
         VBoxContainer content = options.GetNode<VBoxContainer>("%InputContent");
 
-        _store = new HotkeyStore(GameFramework.Options);
+        _store = new HotkeyStore(Game.Options);
         _view = new HotkeyListView(content, inputNavBtn, _store, InputActions.RemoveHotkey, UiPrefix, Ellipsis);
         _view.HotkeyPressed += OnHotkeyButtonPressed;
         _view.PlusPressed += OnPlusButtonPressed;

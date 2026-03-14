@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Framework.Netcode.Server;
+namespace __TEMPLATE__.Netcode.Server;
 
 /// <summary>
 /// Coalesces rapid server lifecycle events into summarised log messages.

@@ -1,6 +1,6 @@
 using System;
 
-namespace Framework.Ui.Console;
+namespace __TEMPLATE__.Ui.Console;
 
 public class ConsoleCommandInfo
 {

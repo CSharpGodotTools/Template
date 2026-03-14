@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Framework.Ui;
+namespace __TEMPLATE__.Ui;
 
 /// <summary>
 /// Builds labelled HBox rows used by the custom option bindings.

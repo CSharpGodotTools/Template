@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Framework.Netcode.Examples.TopDown2;
+namespace __TEMPLATE__.Netcode.Examples.TopDown2;
 
 public partial class CPacketPlayerPosition : ClientPacket
 {

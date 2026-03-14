@@ -1,4 +1,4 @@
-using Framework.Mods;
+using __TEMPLATE__.Mods;
 
 namespace ExampleMod;
 

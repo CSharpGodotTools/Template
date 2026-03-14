@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
-namespace Framework.Netcode.Client;
+namespace __TEMPLATE__.Netcode.Client;
 
 /// <summary>
 /// Coalesces rapid client lifecycle events into summarised log messages.

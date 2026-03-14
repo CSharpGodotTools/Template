@@ -10,7 +10,7 @@ internal sealed class PacketRegistryTests
     public void Registry_UsesConfiguredOpcodeTypeAndSortedOpcodes()
     {
         string testCode = $$"""
-        namespace Framework.Netcode;
+        namespace __TEMPLATE__.Netcode;
 
         public partial class CPacketZulu : ClientPacket {}
         public partial class CPacketAlpha : ClientPacket {}
@@ -39,7 +39,7 @@ internal sealed class PacketRegistryTests
         GeneratedFileStore fileStore = new();
         fileStore.Write(result.GeneratedFile, source);
         Assembly assembly = GeneratedAssemblyCompiler.Compile(result, fileStore);
-        Type registryType = assembly.GetType("Framework.Netcode.PacketRegistry")!;
+        Type registryType = assembly.GetType("__TEMPLATE__.Netcode.PacketRegistry")!;
 
         IDictionary clientInfo = ReadDictionaryField(registryType, "ClientPacketInfo");
         IDictionary serverInfo = ReadDictionaryField(registryType, "ServerPacketInfo");
@@ -50,19 +50,19 @@ internal sealed class PacketRegistryTests
             Assert.That(serverInfo, Has.Count.EqualTo(2));
         }
 
-        AssertOpcode(clientInfo, "Framework.Netcode.CPacketAlpha", 0);
-        AssertOpcode(clientInfo, "Framework.Netcode.CPacketBeta", 1);
-        AssertOpcode(clientInfo, "Framework.Netcode.CPacketZulu", 2);
+        AssertOpcode(clientInfo, "__TEMPLATE__.Netcode.CPacketAlpha", 0);
+        AssertOpcode(clientInfo, "__TEMPLATE__.Netcode.CPacketBeta", 1);
+        AssertOpcode(clientInfo, "__TEMPLATE__.Netcode.CPacketZulu", 2);
 
-        AssertOpcode(serverInfo, "Framework.Netcode.SPacketAlpha", 0);
-        AssertOpcode(serverInfo, "Framework.Netcode.SPacketGamma", 1);
+        AssertOpcode(serverInfo, "__TEMPLATE__.Netcode.SPacketAlpha", 0);
+        AssertOpcode(serverInfo, "__TEMPLATE__.Netcode.SPacketGamma", 1);
     }
 
     [Test]
     public void Registry_DefaultOpcodeType_IsByte()
     {
         string testCode = $$"""
-        namespace Framework.Netcode;
+        namespace __TEMPLATE__.Netcode;
 
         public partial class CPacketOnly : ClientPacket {}
 
