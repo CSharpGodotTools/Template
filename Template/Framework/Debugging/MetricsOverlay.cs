@@ -98,6 +98,10 @@ public partial class MetricsOverlay : CanvasLayer
     // API
     public void StartMonitoring(string key, Func<object> function)
     {
+        // Allow the developer to call in for e.g. _Process
+        if (_processMonitors.ContainsKey(key))
+            return;
+            
         Visible = true;
         _processMonitors.Add(key, function);
         UpdateVariablesSection();
@@ -105,6 +109,10 @@ public partial class MetricsOverlay : CanvasLayer
 
     public void StopMonitoring(string key)
     {
+        // Allow the developer to call in for e.g. _Process
+        if (!_processMonitors.ContainsKey(key))
+            return;
+
         _processMonitors.Remove(key);
         UpdateVariablesSection();
     }
