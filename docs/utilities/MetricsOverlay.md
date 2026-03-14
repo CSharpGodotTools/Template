@@ -4,8 +4,8 @@
 The metrics overlay shows useful information in-game and can be used to monitor the performance of your script variables.
 
 ```cs
+Game.Metrics.StartMonitoring(() => _someVariable);
 Game.Metrics.StartMonitoring("My Variable", () => _someVariable);
-//Game.Metrics.StopMonitoring("My Variable");
 ```
 
 <img width="293" height="311" alt="image" src="https://github.com/user-attachments/assets/02c77eef-7295-4bf0-856f-d0d32e0993ed" />
