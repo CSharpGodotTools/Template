@@ -283,9 +283,6 @@ public class OptionsDisplay : IDisposable
 
     private void ApplyWindowSize()
     {
-        if (Engine.IsEmbeddedInEditor())
-            return;
-
         // Set Root.Size instead of DisplayServer.WindowSetSize so the RenderingServer
         // viewport is updated synchronously in this frame, not deferred via the OS
         // window-resize event (which can be one or more frames late on Wayland/X11).

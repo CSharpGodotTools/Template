@@ -173,6 +173,9 @@ public partial class OptionsManager : IDisposable
 
     private void SetWindowMode()
     {
+        if (Engine.IsEmbeddedInEditor())
+            return;
+
         switch (_options.WindowMode)
         {
             case WindowMode.Windowed:
@@ -189,6 +192,9 @@ public partial class OptionsManager : IDisposable
 
     private void SwitchToFullscreen()
     {
+        if (Engine.IsEmbeddedInEditor())
+            return;
+
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
         _options.WindowMode = WindowMode.Fullscreen;
         WindowModeChanged?.Invoke(WindowMode.Fullscreen);
@@ -196,6 +202,9 @@ public partial class OptionsManager : IDisposable
 
     private void SwitchToWindow()
     {
+        if (Engine.IsEmbeddedInEditor())
+            return;
+
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
         _options.WindowMode = WindowMode.Windowed;
         WindowModeChanged?.Invoke(WindowMode.Windowed);
