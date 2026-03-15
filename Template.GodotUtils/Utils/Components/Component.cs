@@ -8,7 +8,7 @@ namespace GodotUtils;
 /// </summary>
 public class Component : IDisposable
 {
-    protected Node Owner;
+    private readonly Node _node;
     private ComponentManager _componentManager = null!;
     private SceneTree? _deferredTree;
     private bool _disposed;
@@ -21,11 +21,11 @@ public class Component : IDisposable
     /// <summary>
     /// Creates a component attached to the provided owner node.
     /// </summary>
-    public Component(Node owner)
+    public Component(Node node)
     {
-        Owner = owner;
-        Owner.Ready += InitializeComponent;
-        Owner.TreeExited += CleanupOnTreeExit;
+        _node = node;
+        _node.Ready += InitializeComponent;
+        _node.TreeExited += CleanupOnTreeExit;
     }
 
     /// <summary>
@@ -131,7 +131,7 @@ public class Component : IDisposable
     {
         _componentManager = ComponentManager.Instance;
         Ready();
-        _deferredTree = Owner.GetTree();
+        _deferredTree = _node.GetTree();
         _deferredTree.ProcessFrame += OnDeferredOnce;
     }
 
@@ -164,17 +164,13 @@ public class Component : IDisposable
         finally
         {
             _componentManager?.UnregisterAll(this);
+            _deferredTree?.ProcessFrame -= OnDeferredOnce;
+            _deferredTree = null;
 
-            if (_deferredTree != null)
+            if (_node != null)
             {
-                _deferredTree.ProcessFrame -= OnDeferredOnce;
-                _deferredTree = null;
-            }
-
-            if (Owner != null)
-            {
-                Owner.Ready -= InitializeComponent;
-                Owner.TreeExited -= CleanupOnTreeExit;
+                _node.Ready -= InitializeComponent;
+                _node.TreeExited -= CleanupOnTreeExit;
             }
         }
     }
