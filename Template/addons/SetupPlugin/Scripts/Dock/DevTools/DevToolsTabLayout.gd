@@ -8,6 +8,8 @@ extends VBoxContainer
 
 const LABEL_PADDING: int = 120
 const FEEDBACK_DURATION: float = 5.0
+const UPDATE_FEEDBACK_DURATION: float = 5.0
+const UPDATE_WARNING_DEFAULT_TEXT: String = "Remember to back up your project [b]before[/b] updating!"
 const ANTI_ALIASING_PATH_2D: String = "rendering/anti_aliasing/quality/msaa_2d"
 const DEFAULT_CLEAR_COLOR_PATH: String = "rendering/environment/defaults/default_clear_color"
 
@@ -28,8 +30,16 @@ var _anti_aliasing_options: OptionButton
 var _clear_color_picker: ColorPickerButton
 var _update_from_main_button: Button
 var _update_from_release_button: Button
+var _check_updates_button: Button
+var _reset_update_cache_button: Button
 var _view_template_repo_button: Button
+var _tracked_main_commit_label: Label
+var _tracked_release_version_label: Label
+var _latest_main_commit_label: Label
+var _latest_release_version_label: Label
+var _update_warning_label: RichTextLabel
 var _feedback_timer: Timer
+var _update_feedback_timer: Timer
 
 # Instantiates every UI control node.
 # Must be called before _build_layout so all controls exist when they are
@@ -63,9 +73,35 @@ func _create_controls() -> void:
 	_fully_expand_button = _create_button("Fully Expand")
 	_fully_collapse_button = _create_button("Fully Collapse")
 
-	_update_from_main_button = _create_fill_button("Update From Main Branch")
-	_update_from_release_button = _create_fill_button("Update From Latest Release")
+	_update_from_main_button = _create_button("Update From Main Branch", 230)
+	_update_from_release_button = _create_button("Update From Latest Release", 230)
+	_check_updates_button = _create_button("Check For Updates", 230)
+	_reset_update_cache_button = _create_button("Reset Update Cache", 230)
 	_view_template_repo_button = _create_button("View Template Repository")
+
+	_tracked_main_commit_label = Label.new()
+	_tracked_main_commit_label.text = "Not tracked"
+	_tracked_main_commit_label.clip_text = true
+	_tracked_main_commit_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_tracked_release_version_label = Label.new()
+	_tracked_release_version_label.text = "Not tracked"
+	_tracked_release_version_label.clip_text = true
+	_tracked_release_version_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_latest_main_commit_label = Label.new()
+	_latest_main_commit_label.text = "Unknown"
+	_latest_main_commit_label.clip_text = true
+	_latest_main_commit_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_latest_release_version_label = Label.new()
+	_latest_release_version_label.text = "Unknown"
+	_latest_release_version_label.clip_text = true
+	_latest_release_version_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	_update_warning_label = RichTextLabel.new()
+	_update_warning_label.bbcode_enabled = true
+	_update_warning_label.text = UPDATE_WARNING_DEFAULT_TEXT
+	_update_warning_label.fit_content = true
+	_update_warning_label.scroll_active = false
+	_update_warning_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	_clear_color_picker = ColorPickerButton.new()
 	_clear_color_picker.custom_minimum_size = Vector2(75, 35)
@@ -81,6 +117,10 @@ func _create_controls() -> void:
 	_feedback_timer = Timer.new()
 	_feedback_timer.wait_time = FEEDBACK_DURATION
 	_feedback_timer.one_shot = true
+
+	_update_feedback_timer = Timer.new()
+	_update_feedback_timer.wait_time = UPDATE_FEEDBACK_DURATION
+	_update_feedback_timer.one_shot = true
 
 # Assembles the three-tab container and attaches it to this VBoxContainer.
 # Must be called after _create_controls.
@@ -101,6 +141,7 @@ func _build_layout() -> void:
 	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_child(tabs)
 	add_child(_feedback_timer)
+	add_child(_update_feedback_timer)
 	add_child(content)
 
 # Builds and returns the Dev tab content:
@@ -136,16 +177,60 @@ func _build_update_tab() -> VBoxContainer:
 	var update_tab: VBoxContainer = VBoxContainer.new()
 	update_tab.name = "Update"
 	update_tab.add_theme_constant_override("separation", 8)
-	update_tab.add_child(_create_row([_update_from_main_button], 0))
-	update_tab.add_child(_create_row([_update_from_release_button], 0))
-	var warning_label: RichTextLabel = RichTextLabel.new()
-	warning_label.bbcode_enabled = true
-	warning_label.text = "Remember to back up your project [b]before[/b] updating!"
-	warning_label.fit_content = true
-	warning_label.scroll_active = false
-	warning_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	update_tab.add_child(warning_label)
+
+	var title_label: Label = Label.new()
+	title_label.text = "Template Updater"
+	title_label.add_theme_font_size_override("font_size", 18)
+	update_tab.add_child(title_label)
+
+	var subtitle_label: Label = Label.new()
+	subtitle_label.text = "Sync your project with upstream commits or releases."
+	subtitle_label.modulate = Color(0.82, 0.82, 0.82)
+	subtitle_label.autowrap_mode = TextServer.AutowrapMode.AUTOWRAP_WORD_SMART
+	update_tab.add_child(subtitle_label)
+
+	var actions_label: Label = Label.new()
+	actions_label.text = "Actions"
+	update_tab.add_child(actions_label)
+
+	var action_grid: GridContainer = GridContainer.new()
+	action_grid.columns = 2
+	action_grid.add_theme_constant_override("h_separation", 8)
+	action_grid.add_theme_constant_override("v_separation", 8)
+	for action_button in [_update_from_main_button, _update_from_release_button, _check_updates_button, _reset_update_cache_button]:
+		action_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		action_grid.add_child(action_button)
+	update_tab.add_child(action_grid)
+
+	update_tab.add_child(_update_warning_label)
+
+	var metadata_grid: GridContainer = GridContainer.new()
+	metadata_grid.columns = 2
+	metadata_grid.add_theme_constant_override("h_separation", 12)
+	metadata_grid.add_theme_constant_override("v_separation", 8)
+	metadata_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	metadata_grid.add_child(_create_update_info_block("Tracked Main Commit", _tracked_main_commit_label))
+	metadata_grid.add_child(_create_update_info_block("Latest Main Branch", _latest_main_commit_label))
+	metadata_grid.add_child(_create_update_info_block("Tracked Release", _tracked_release_version_label))
+	metadata_grid.add_child(_create_update_info_block("Latest Release", _latest_release_version_label))
+	update_tab.add_child(metadata_grid)
 	return update_tab
+
+# Creates a compact, two-line info block used in the update metadata grid.
+func _create_update_info_block(title: String, value_label: Label) -> VBoxContainer:
+	var block: VBoxContainer = VBoxContainer.new()
+	block.add_theme_constant_override("separation", 2)
+	block.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var title_label: Label = Label.new()
+	title_label.text = title
+	title_label.modulate = Color(0.82, 0.82, 0.82)
+	title_label.clip_text = true
+	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	block.add_child(title_label)
+	block.add_child(value_label)
+	return block
 
 # Wraps an array of controls in an HBoxContainer.
 # Pass separation > 0 to set a custom gap between items.

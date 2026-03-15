@@ -7,7 +7,43 @@
 class_name TemplateArchiveFetcher
 extends RefCounted
 
+const MAIN_COMMIT_API_URL: String = "https://api.github.com/repos/CSharpGodotTools/Template/commits/main"
 const RELEASE_API_URL: String = "https://api.github.com/repos/CSharpGodotTools/Template/releases/latest"
+
+# Fetches the latest commit SHA on the main branch.
+func fetch_latest_main_commit(host: Node) -> Dictionary:
+	var response: Dictionary = await _request_body(host, MAIN_COMMIT_API_URL, "application/vnd.github+json")
+	if not response.get("success", false):
+		return response
+
+	var payload: Variant = JSON.parse_string(response.get("body", ""))
+	if payload == null or not (payload is Dictionary):
+		return _error_result("Failed to parse latest main-branch commit response.")
+
+	var sha: String = str((payload as Dictionary).get("sha", "")).strip_edges()
+	if sha.is_empty():
+		return _error_result("Latest main-branch commit id was not found.")
+
+	return {
+		"success": true,
+		"commit": sha.substr(0, min(7, sha.length())),
+		"full_commit": sha
+	}
+
+# Fetches the latest GitHub release version/tag.
+func fetch_latest_release_version(host: Node) -> Dictionary:
+	var release_result: Dictionary = await _request_latest_release_data(host)
+	if not release_result.get("success", false):
+		return release_result
+
+	var release_data: Dictionary = release_result.get("release_data", {})
+	var version: String = str(release_data.get("tag_name", "")).strip_edges()
+	if version.is_empty():
+		version = str(release_data.get("name", "")).strip_edges()
+	if version.is_empty():
+		return _error_result("Latest release version was not found.")
+
+	return {"success": true, "version": version}
 
 # Downloads the current state of the main branch as a .zip to `destination_path`.
 func download_main_archive(host: Node, destination_path: String) -> Dictionary:
@@ -68,15 +104,11 @@ func _download_file(host: Node, url: String, destination_path: String) -> Dictio
 # Queries the GitHub Releases API to find the first .zip asset URL in the
 # latest release.  Prefers assets whose name contains "Template".
 func _resolve_latest_release_zip_url(host: Node) -> String:
-	var response: Dictionary = await _request_body(host, RELEASE_API_URL, "application/vnd.github+json")
-	if not response.get("success", false):
+	var release_result: Dictionary = await _request_latest_release_data(host)
+	if not release_result.get("success", false):
 		return ""
 
-	var payload: Variant = JSON.parse_string(response.get("body", ""))
-	if payload == null or not (payload is Dictionary):
-		return ""
-
-	var release_data: Dictionary = payload as Dictionary
+	var release_data: Dictionary = release_result.get("release_data", {})
 	if not release_data.has("assets") or not (release_data["assets"] is Array):
 		return ""
 
@@ -93,6 +125,18 @@ func _resolve_latest_release_zip_url(host: Node) -> String:
 				return fallback_url
 
 	return ""
+
+# Requests and parses the latest release payload from GitHub.
+func _request_latest_release_data(host: Node) -> Dictionary:
+	var response: Dictionary = await _request_body(host, RELEASE_API_URL, "application/vnd.github+json")
+	if not response.get("success", false):
+		return response
+
+	var payload: Variant = JSON.parse_string(response.get("body", ""))
+	if payload == null or not (payload is Dictionary):
+		return _error_result("Failed to parse latest release metadata response.")
+
+	return {"success": true, "release_data": payload as Dictionary}
 
 # Sends an HTTP GET request and returns the response body as a UTF-8 string
 # on success, or a failure dictionary on error.

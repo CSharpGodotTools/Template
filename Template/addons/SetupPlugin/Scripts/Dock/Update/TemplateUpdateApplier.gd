@@ -18,7 +18,11 @@ func apply(template_root: String, project_root: String, status_callback: Callabl
 	var example_mod_target: String = project_root.path_join("Mods/Example Mod")
 	if DirAccess.dir_exists_absolute(example_mod_target):
 		_notify(status_callback, "Updating Mods/Example Mod...")
-		result = UpdateFileOps.replace_directory(template_root.path_join("Mods/Example Mod"), example_mod_target)
+		var example_mod_source: String = template_root.path_join("Mods/Example Mod")
+		result = UpdateFileOps.replace_directory(example_mod_source, example_mod_target)
+		if not result.get("success", false):
+			_notify(status_callback, "Replace failed for Mods/Example Mod; merging files instead...")
+			result = UpdateFileOps.merge_directory(example_mod_source, example_mod_target)
 		if not result.get("success", false):
 			return result
 
