@@ -3,34 +3,41 @@ using Godot;
 namespace GodotUtils;
 
 /// <summary>
-/// Base class for 2D shape areas.
+/// Base class for 2D shape areas that directly expose the full Area2D API.
 /// </summary>
-public abstract class ShapeArea2D<TShape> : BaseShapeArea<Area2D> where TShape : Shape2D
+public abstract class ShapeArea2D<TShape> : Area2D where TShape : Shape2D
 {
-    protected readonly TShape Shape;
-    private readonly CollisionShape2D _collision;
+    /// <summary>
+    /// Gets the backing shape resource.
+    /// </summary>
+    protected TShape Shape { get; }
+
+    /// <summary>
+    /// Gets the collision node attached to this area.
+    /// </summary>
+    public CollisionShape2D Collision { get; }
 
     /// <summary>
     /// Creates a shape area backed by the provided shape.
     /// </summary>
-    protected ShapeArea2D(TShape shape) : base(new Area2D())
+    protected ShapeArea2D(TShape shape)
     {
         Shape = shape;
-        _collision = new CollisionShape2D { Shape = Shape };
-        Area.AddChild(_collision);
+        Collision = new CollisionShape2D { Shape = Shape };
+        AddChild(Collision);
     }
 
     /// <summary>
     /// Sets the debug color for the collision shape.
     /// </summary>
-    public override void SetColor(Color color, bool transparent = false)
+    public void SetColor(Color color, bool transparent = false)
     {
         color.A = transparent ? 0f : 1f;
-        _collision.DebugColor = color;
+        Collision.DebugColor = color;
     }
 
     /// <summary>
     /// Gets the debug color for the collision shape.
     /// </summary>
-    public override Color GetColor() => _collision.DebugColor;
+    public Color GetColor() => Collision.DebugColor;
 }

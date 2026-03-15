@@ -867,39 +867,19 @@
             Creates a box area.
             </summary>
         </member>
-        <member name="T:GodotUtils.BaseShapeArea`1">
-            <summary>
-            Base wrapper for area nodes with shapes.
-            </summary>
-        </member>
-        <member name="P:GodotUtils.BaseShapeArea`1.Area">
-            <summary>
-            Gets the underlying area node.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.BaseShapeArea`1.#ctor(`0)">
-            <summary>
-            Creates a wrapper around the provided area node.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.BaseShapeArea`1.SetColor(Godot.Color,System.Boolean)">
-            <summary>
-            Sets the debug color for the area.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.BaseShapeArea`1.GetColor">
-            <summary>
-            Gets the debug color for the area.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.BaseShapeArea`1.op_Implicit(GodotUtils.BaseShapeArea{`0})~`0">
-            <summary>
-            Returns the underlying area node.
-            </summary>
-        </member>
         <member name="T:GodotUtils.ShapeArea2D`1">
             <summary>
-            Base class for 2D shape areas.
+            Base class for 2D shape areas that directly expose the full Area2D API.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.ShapeArea2D`1.Shape">
+            <summary>
+            Gets the backing shape resource.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.ShapeArea2D`1.Collision">
+            <summary>
+            Gets the collision node attached to this area.
             </summary>
         </member>
         <member name="M:GodotUtils.ShapeArea2D`1.#ctor(`0)">
@@ -919,7 +899,17 @@
         </member>
         <member name="T:GodotUtils.ShapeArea3D`1">
             <summary>
-            Base class for 3D shape areas.
+            Base class for 3D shape areas that directly expose the full Area3D API.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.ShapeArea3D`1.Shape">
+            <summary>
+            Gets the backing shape resource.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.ShapeArea3D`1.Collision">
+            <summary>
+            Gets the collision node attached to this area.
             </summary>
         </member>
         <member name="M:GodotUtils.ShapeArea3D`1.#ctor(`0)">
