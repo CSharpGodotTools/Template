@@ -42,9 +42,15 @@ This is an on-going project I've been working on. I know how hard it is to actua
 ## Install  
 Download the [latest release](https://github.com/CSharpGodotTools/Template/releases/latest) and open `project.godot`.
 
-<img width="501" height="344" alt="image" src="https://github.com/user-attachments/assets/9a0e7e22-2bfa-4cdc-8b5a-d92d209242b8" />
+<img alt="image" src="https://github.com/user-attachments/assets/9a0e7e22-2bfa-4cdc-8b5a-d92d209242b8" />
 
 Click `Run Setup` to restart Godot with your template ready to go.
+
+## Updating
+
+Updates can be done from `Dev Tools > Update`. One click, no more manual copying of files.
+
+<img src="https://github.com/user-attachments/assets/415dbda5-d2a9-476c-8a17-c8f84ec63eb7" />
 
 ## Thank You
 [Brian Shao](https://github.com/cydq)  
