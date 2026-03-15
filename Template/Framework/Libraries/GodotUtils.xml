@@ -1831,7 +1831,7 @@
             Gets whether this component is blocked while the tree is paused.
             </summary>
         </member>
-        <member name="M:GodotUtils.Component.#ctor(GodotUtils.IComponentNode)">
+        <member name="M:GodotUtils.Component.#ctor(Godot.Node)">
             <summary>
             Creates a component attached to the provided owner node.
             </summary>

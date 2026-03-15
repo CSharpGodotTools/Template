@@ -8,7 +8,7 @@ namespace GodotUtils;
 /// </summary>
 public class Component : IDisposable
 {
-    protected IComponentNode Owner;
+    protected Node Owner;
     private ComponentManager _componentManager = null!;
     private SceneTree? _deferredTree;
     private bool _disposed;
@@ -21,7 +21,7 @@ public class Component : IDisposable
     /// <summary>
     /// Creates a component attached to the provided owner node.
     /// </summary>
-    public Component(IComponentNode owner)
+    public Component(Node owner)
     {
         Owner = owner;
         Owner.Ready += InitializeComponent;
