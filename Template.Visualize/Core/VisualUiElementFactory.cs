@@ -67,12 +67,21 @@ internal static class VisualUiElementFactory
     {
         foreach (BaseButton baseButton in vboxParent.GetChildren<BaseButton>())
         {
-            baseButton.Pressed += () =>
+            void OnPressed()
             {
                 Tweens.Animate(baseButton)
                     .Delay(VisualUiLayout.ReleaseFocusOnPressDelay)
                     .Then(baseButton.ReleaseFocus);
-            };
+            }
+
+            void OnExitedTree()
+            {
+                baseButton.Pressed -= OnPressed;
+                baseButton.TreeExited -= OnExitedTree;
+            }
+
+            baseButton.Pressed += OnPressed;
+            baseButton.TreeExited += OnExitedTree;
         }
     }
 }

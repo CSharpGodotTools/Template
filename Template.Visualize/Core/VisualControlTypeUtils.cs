@@ -15,6 +15,17 @@ internal static partial class VisualControlTypes
     private const double DecimalStep = 0.01;
     private const double IntStep = 1;
 
+    private static void CleanupOnTreeExited(Node node, Action cleanup)
+    {
+        void OnTreeExited()
+        {
+            cleanup();
+            node.TreeExited -= OnTreeExited;
+        }
+
+        node.TreeExited += OnTreeExited;
+    }
+
     private static Array RemoveAt(this Array source, int index)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -70,7 +81,11 @@ internal static partial class VisualControlTypes
     {
         string initialText = stringify(context.InitialValue!);
         LineEdit lineEdit = new() { Text = initialText };
-        lineEdit.TextChanged += text => context.ValueChanged(parse(text));
+
+        void OnTextChanged(string text) => context.ValueChanged(parse(text));
+
+        lineEdit.TextChanged += OnTextChanged;
+        CleanupOnTreeExited(lineEdit, () => lineEdit.TextChanged -= OnTextChanged);
 
         return new VisualControlInfo(new TextControl(lineEdit, stringify));
     }
@@ -94,11 +109,15 @@ internal static partial class VisualControlTypes
             spinBox.Value = components[i];
 
             int index = i;
-            spinBox.ValueChanged += value =>
+
+            void OnValueChanged(double value)
             {
                 currentValue = setComponent(currentValue, index, value);
                 context.ValueChanged(currentValue);
-            };
+            }
+
+            spinBox.ValueChanged += OnValueChanged;
+            CleanupOnTreeExited(spinBox, () => spinBox.ValueChanged -= OnValueChanged);
 
             container.AddChild(new Label { Text = labels[i] });
             container.AddChild(spinBox);
@@ -139,14 +158,18 @@ internal static partial class VisualControlTypes
             control.VisualControl.SetValue(value!);
 
             Button removeButton = new() { Text = "-" };
-            removeButton.Pressed += () =>
+
+            void OnRemovePressed()
             {
                 int currentIndex = Convert.ToInt32(row.GetMeta(IndexMetaKey));
                 listVBox.RemoveChild(row);
                 removeValue(currentIndex);
                 context.ValueChanged(getCollectionValue());
                 UpdateIndicesAfterRemoval(currentIndex);
-            };
+            }
+
+            removeButton.Pressed += OnRemovePressed;
+            CleanupOnTreeExited(removeButton, () => removeButton.Pressed -= OnRemovePressed);
 
             row.AddChild(control.VisualControl.Control);
             row.AddChild(removeButton);
@@ -158,14 +181,17 @@ internal static partial class VisualControlTypes
             AddEntry(getValue(i), i);
         }
 
-        addButton.Pressed += () =>
+        void OnAddPressed()
         {
             object newValue = VisualMethods.CreateDefaultValue(elementType);
             addValue(newValue);
             context.ValueChanged(getCollectionValue());
             AddEntry(newValue, getCount() - 1);
             listVBox.MoveChild(addButton, listVBox.GetChildCount() - 1);
-        };
+        }
+
+        addButton.Pressed += OnAddPressed;
+        CleanupOnTreeExited(addButton, () => addButton.Pressed -= OnAddPressed);
 
         listVBox.AddChild(addButton);
 

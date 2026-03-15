@@ -70,12 +70,21 @@ internal static class VisualMethods
             SizeFlagsHorizontal = SizeFlags.ShrinkCenter
         };
 
-        button.Pressed += () =>
+        void OnPressed()
         {
             object[] parameters = ParameterConverter.ConvertParameterInfoToObjectArray(paramInfos, providedValues);
 
             method.Invoke(target, parameters);
-        };
+        }
+
+        void OnExitedTree()
+        {
+            button.Pressed -= OnPressed;
+            button.TreeExited -= OnExitedTree;
+        }
+
+        button.Pressed += OnPressed;
+        button.TreeExited += OnExitedTree;
 
         return button;
     }

@@ -28,7 +28,7 @@ internal static partial class VisualControlTypes
             AddEntry(entry.Key, entry.Value!);
         }
 
-        addButton.Pressed += () =>
+        void OnAddPressed()
         {
             if (dictionary.Contains(defaultKey))
             {
@@ -39,7 +39,10 @@ internal static partial class VisualControlTypes
             context.ValueChanged(dictionary);
             AddEntry(defaultKey, defaultValue);
             dictionaryVBox.MoveChild(addButton, dictionaryVBox.GetChildCount() - 1);
-        };
+        }
+
+        addButton.Pressed += OnAddPressed;
+        CleanupOnTreeExited(addButton, () => addButton.Pressed -= OnAddPressed);
         dictionaryVBox.AddChild(addButton);
 
         return new VisualControlInfo(new VBoxContainerControl(dictionaryVBox));
@@ -85,12 +88,15 @@ internal static partial class VisualControlTypes
             Button removeKeyEntryButton = new() { Text = "-" };
             HBoxContainer hbox = new();
 
-            removeKeyEntryButton.Pressed += () =>
+            void OnRemovePressed()
             {
                 dictionaryVBox.RemoveChild(hbox);
                 dictionary.Remove(currentKey);
                 context.ValueChanged(dictionary);
-            };
+            }
+
+            removeKeyEntryButton.Pressed += OnRemovePressed;
+            CleanupOnTreeExited(removeKeyEntryButton, () => removeKeyEntryButton.Pressed -= OnRemovePressed);
 
             hbox.AddChild(keyControl.VisualControl.Control);
             hbox.AddChild(valueControl.VisualControl.Control);

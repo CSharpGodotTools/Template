@@ -21,12 +21,15 @@ internal static partial class VisualControlTypes
             optionButton.AddItem(VisualText.ToSpacedName(item.ToString()!));
         }
 
-        optionButton.ItemSelected += index =>
+        void OnItemSelected(long index)
         {
             object? selectedValue = Enum.GetValues(type).GetValue(index);
             context.ValueChanged(selectedValue!);
             optionButton.ReleaseFocus();
-        };
+        }
+
+        optionButton.ItemSelected += OnItemSelected;
+        CleanupOnTreeExited(optionButton, () => optionButton.ItemSelected -= OnItemSelected);
 
         void Select(object value)
         {

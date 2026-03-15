@@ -21,7 +21,13 @@ internal sealed class VisualNodeManager
         VisualData? visualData = VisualizeAttributeHandler.RetrieveData(visualizedObject, node);
         if (visualData == null)
         {
-            node.TreeExited += () => RemoveVisualNodesForAnchor(node);
+            void OnEmptyVisualDataTreeExited()
+            {
+                RemoveVisualNodesForAnchor(node);
+                node.TreeExited -= OnEmptyVisualDataTreeExited;
+            }
+
+            node.TreeExited += OnEmptyVisualDataTreeExited;
             return;
         }
 
@@ -33,7 +39,14 @@ internal sealed class VisualNodeManager
             : _nodeRegistrar2D.Register(new Visual2DRegistrationContext(node, positionalNode, visualPanel, actions, _nodeTrackers.Values));
 
         _nodeTrackers.Add(visualPanel.GetInstanceId(), nodeInfo);
-        node.TreeExited += () => RemoveVisualNodesForAnchor(node);
+
+        void OnTrackedNodeTreeExited()
+        {
+            RemoveVisualNodesForAnchor(node);
+            node.TreeExited -= OnTrackedNodeTreeExited;
+        }
+
+        node.TreeExited += OnTrackedNodeTreeExited;
     }
 
     public void Update()

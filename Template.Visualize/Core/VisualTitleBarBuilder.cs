@@ -53,21 +53,39 @@ internal static class VisualTitleBarBuilder
 
         if (readonlyBtn != null)
         {
-            readonlyBtn.Pressed += () =>
+            void OnReadonlyPressed()
             {
                 readonlyBtn.Icon = readonlyBtn.ButtonPressed ? VisualUiResources.EyeOpen : VisualUiResources.EyeClosed;
                 readonlyMembersVbox.Visible = readonlyBtn.ButtonPressed;
                 title.Visible = readonlyBtn.ButtonPressed || (mutableBtn != null && mutableBtn.ButtonPressed);
-            };
+            }
+
+            void OnReadonlyExitedTree()
+            {
+                readonlyBtn.Pressed -= OnReadonlyPressed;
+                readonlyBtn.TreeExited -= OnReadonlyExitedTree;
+            }
+
+            readonlyBtn.Pressed += OnReadonlyPressed;
+            readonlyBtn.TreeExited += OnReadonlyExitedTree;
         }
 
         if (mutableBtn != null)
         {
-            mutableBtn.Pressed += () =>
+            void OnMutablePressed()
             {
                 mutableMembersVbox.Visible = mutableBtn.ButtonPressed;
                 title.Visible = mutableBtn.ButtonPressed || (readonlyBtn != null && readonlyBtn.ButtonPressed);
-            };
+            }
+
+            void OnMutableExitedTree()
+            {
+                mutableBtn.Pressed -= OnMutablePressed;
+                mutableBtn.TreeExited -= OnMutableExitedTree;
+            }
+
+            mutableBtn.Pressed += OnMutablePressed;
+            mutableBtn.TreeExited += OnMutableExitedTree;
         }
 
         vboxParent.AddChild(hbox);

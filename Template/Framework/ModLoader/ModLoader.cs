@@ -43,10 +43,19 @@ public partial class ModLoader : Node
                 Text = modInfo.Name
             };
 
-            btn.Pressed += () =>
+            void OnPressed()
             {
                 DisplayModInfo(modInfo);
-            };
+            }
+
+            void OnExitedTree()
+            {
+                btn.Pressed -= OnPressed;
+                btn.TreeExited -= OnExitedTree;
+            }
+
+            btn.Pressed += OnPressed;
+            btn.TreeExited += OnExitedTree;
 
             uiMods.AddChild(btn);
 

@@ -1,5 +1,6 @@
 #if DEBUG
 using Godot;
+using System;
 
 namespace GodotUtils.Debugging;
 
@@ -10,7 +11,11 @@ internal static partial class VisualControlTypes
         Color initialColor = (Color)context.InitialValue!;
 
         ColorPickerButton colorPickerButton = ColorPickerButtonFactory.Create(initialColor);
-        colorPickerButton.ColorChanged += color => context.ValueChanged(color);
+
+        void OnColorChanged(Color color) => context.ValueChanged(color);
+
+        colorPickerButton.ColorChanged += OnColorChanged;
+        CleanupOnTreeExited(colorPickerButton, () => colorPickerButton.ColorChanged -= OnColorChanged);
 
         return new VisualControlInfo(new ColorPickerButtonControl(colorPickerButton));
     }

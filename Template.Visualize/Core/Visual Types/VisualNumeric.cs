@@ -31,11 +31,14 @@ internal static partial class VisualControlTypes
 
         control.Value = Convert.ToDouble(context.InitialValue);
 
-        control.ValueChanged += value =>
+        void OnValueChanged(double value)
         {
             object convertedValue = Convert.ChangeType(value, type);
             context.ValueChanged(convertedValue);
-        };
+        }
+
+        control.ValueChanged += OnValueChanged;
+        CleanupOnTreeExited(control, () => control.ValueChanged -= OnValueChanged);
 
         return new VisualControlInfo(new NumericControl(control));
     }
