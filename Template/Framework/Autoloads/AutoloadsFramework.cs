@@ -17,7 +17,7 @@ namespace __TEMPLATE__;
 // Autoload
 // Access the managers that live in here through through Game.(...)
 // Alternatively access through GetNode<Autoloads>("/root/Autoloads")
-public abstract partial class AutoloadsFramework : Node, IFocusManager
+public abstract partial class AutoloadsFramework : Node
 {
     // Exports
     [Export] private MenuScenes _scenes = null!;

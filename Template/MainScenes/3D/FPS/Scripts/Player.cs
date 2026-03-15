@@ -4,7 +4,7 @@ using PopupMenu = __TEMPLATE__.Ui.PopupMenu;
 
 namespace __TEMPLATE__.FPS;
 
-public partial class Player : CharacterBody3D, IComponentNode
+public partial class Player : CharacterBody3D
 {
     [Export] private Camera3D _camera = null!;
     [Export] private PopupMenu _popupMenu = null!;
