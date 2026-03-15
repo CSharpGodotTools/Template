@@ -16,6 +16,7 @@
         "**/gdunit4_testadapter_v5": true,
         "**/NuGet.config": true,
         "**/Template/Properties": true,
+        "**/script_templates/": true,
         "**/bin": true,
         "**/obj": true,
         "**/README.md": true,
