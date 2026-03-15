@@ -131,8 +131,8 @@ public class AudioManager : IDisposable
     {
         float pitch = _randomNumberGenerator.RandfRange(min, max);
         int attempts = 0;
-        const int maxAttempts = 8;
-        while (Mathf.Abs(pitch - _lastPitch) < RandomPitchThreshold && attempts < maxAttempts)
+        const int MaxAttempts = 8;
+        while (Mathf.Abs(pitch - _lastPitch) < RandomPitchThreshold && attempts < MaxAttempts)
         {
             pitch = _randomNumberGenerator.RandfRange(min, max);
             attempts++;

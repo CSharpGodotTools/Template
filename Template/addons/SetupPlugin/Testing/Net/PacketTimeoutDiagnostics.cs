@@ -95,14 +95,14 @@ public static class PacketTimeoutDiagnostics
 
     private static object? GetStaticMemberValue(Type type, string memberName)
     {
-        const BindingFlags flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-        PropertyInfo? prop = type.GetProperty(memberName, flags);
+        const BindingFlags Flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+        PropertyInfo? prop = type.GetProperty(memberName, Flags);
         if (prop != null)
         {
             return prop.GetValue(null);
         }
 
-        FieldInfo? field = type.GetField(memberName, flags);
+        FieldInfo? field = type.GetField(memberName, Flags);
         if (field != null)
         {
             return field.GetValue(null);

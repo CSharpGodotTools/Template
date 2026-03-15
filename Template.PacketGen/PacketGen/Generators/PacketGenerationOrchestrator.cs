@@ -284,32 +284,32 @@ public partial class {{model.ClassName}}
     /// </summary>
     private static string BuildConstructors(PacketGenerationModel model)
     {
-        const string indent4 = "    ";
-        const string indent8 = "        ";
+        const string Indent4 = "    ";
+        const string Indent8 = "        ";
 
         var refTypeProps = model.Properties.Where(p => !p.Type.IsValueType).ToList();
         string emptyConstructor;
         if (refTypeProps.Count == 0)
         {
-            emptyConstructor = $"{indent4}public {model.ClassName}() {{ }}";
+            emptyConstructor = $"{Indent4}public {model.ClassName}() {{ }}";
         }
         else
         {
-            string nullInits = string.Join("\n", refTypeProps.Select(p => $"{indent8}{p.Name} = null!;"));
-            emptyConstructor = $"{indent4}public {model.ClassName}()\n{indent4}{{\n{nullInits}\n{indent4}}}";
+            string nullInits = string.Join("\n", refTypeProps.Select(p => $"{Indent8}{p.Name} = null!;"));
+            emptyConstructor = $"{Indent4}public {model.ClassName}()\n{Indent4}{{\n{nullInits}\n{Indent4}}}";
         }
 
         string paramList = string.Join(", ", model.Properties.Select(p =>
             $"{p.Type.ToDisplayString()} {ToCamelCase(p.Name)}"));
 
         string assignments = string.Join("\n", model.Properties.Select(p =>
-            $"{indent8}{p.Name} = {ToCamelCase(p.Name)};"));
+            $"{Indent8}{p.Name} = {ToCamelCase(p.Name)};"));
 
         string paramsConstructor =
-            $"{indent4}public {model.ClassName}({paramList})\n" +
-            $"{indent4}{{\n" +
+            $"{Indent4}public {model.ClassName}({paramList})\n" +
+            $"{Indent4}{{\n" +
             $"{assignments}\n" +
-            $"{indent4}}}";
+            $"{Indent4}}}";
 
         return $"{emptyConstructor}\n\n{paramsConstructor}\n";
     }
