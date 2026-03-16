@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+ROOT_VSCODE="$REPO_ROOT/.vscode"
+TEMPLATE_VSCODE="$REPO_ROOT/Template/.vscode"
+
+FILES=(
+    "extensions.json"
+    "settings.json"
+    "tasks.json"
+)
+
+stage_changes=false
+if [ "${1:-}" = "--stage" ]; then
+    stage_changes=true
+fi
+
+mkdir -p "$TEMPLATE_VSCODE"
+
+for file_name in "${FILES[@]}"; do
+    src="$ROOT_VSCODE/$file_name"
+    dest="$TEMPLATE_VSCODE/$file_name"
+
+    if [ ! -f "$src" ]; then
+        continue
+    fi
+
+    if ! diff -q "$src" "$dest" > /dev/null 2>&1; then
+        cp "$src" "$dest"
+        echo "[vscode-sync] Updated Template/.vscode/$file_name"
+
+        if $stage_changes; then
+            git add "$dest"
+        fi
+    fi
+done

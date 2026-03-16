@@ -54,6 +54,14 @@ if echo "$STAGED" | grep -q "^\.editorconfig$"; then
 fi
 
 # ------------------------------------------------------------
+# 1b. Sync root .vscode configs to Template/.vscode
+# ------------------------------------------------------------
+if echo "$STAGED" | grep -Eq "^\.vscode/(extensions|settings|tasks)\.json$"; then
+    echo "[pre-commit] Syncing .vscode configs to Template/.vscode..."
+    "$REPO_ROOT/.githooks/sync-vscode-configs" --stage
+fi
+
+# ------------------------------------------------------------
 # 2. Build GodotUtils
 # ------------------------------------------------------------
 if $build_godotutils; then
