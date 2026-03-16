@@ -35,7 +35,7 @@ func run(formatted_game_name: String, project_type: String, template_type: Strin
 	ProjectSettings.save()
 	
 	ProjectFileRenamer.rename_template_project_files(_project_root, formatted_game_name)
-	NamespaceMigration.rename_template_namespaces(_project_root, formatted_game_name)
+	NamespaceMigration.rename_template_namespaces(_project_root, formatted_game_name, true)
 	if not SetupFileSystem.ensure_script_template_namespace_replaced(_project_root, formatted_game_name):
 		push_error("Setup aborted because the script template namespace could not be verified.")
 		return
