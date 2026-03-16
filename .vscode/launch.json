@@ -1,0 +1,60 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Godot: Run Template",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${env:GODOT_BIN}",
+            "args": [
+                "--path",
+                "${workspaceFolder}/Template",
+                "--scene",
+                "${input:godotScene}"
+            ],
+            "cwd": "${workspaceFolder}/Template",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "logging": {
+                "moduleLoad": false,
+                "consoleUsageMessage": false
+            },
+            "symbolOptions": {
+                "moduleFilter": {
+                    "mode": "loadOnlyIncluded",
+                    "includedModules": [
+                        "Template*"
+                    ],
+                    "includeSymbolsNextToModules": false
+                }
+            }
+        },
+        {
+            "name": "Godot: Run Visualize",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${env:GODOT_BIN}",
+            "args": [
+                "--path",
+                "${workspaceFolder}/Template.Visualize"
+            ],
+            "cwd": "${workspaceFolder}/Template.Visualize",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "logging": {
+                "moduleLoad": false,
+                "consoleUsageMessage": false
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "godotScene",
+            "type": "promptString",
+            "description": "Godot scene path (for example: res://MainScenes/3D/FPS/Level.tscn)",
+            "default": "res://"
+        }
+    ]
+}

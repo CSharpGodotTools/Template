@@ -24,9 +24,6 @@ obj/*
 Properties/*
 *.csproj.user
 
-# Visual Studio Code
-.vscode/*
-
 # Rider
 .idea/*
 

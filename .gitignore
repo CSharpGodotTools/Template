@@ -22,12 +22,6 @@
 **/Properties/*
 **/*.csproj.user
 
-# Visual Studio Code
-**/.vscode/*
-!/.vscode/settings.json
-!/.vscode/extensions.json
-!/.vscode/mcp.json
-
 # Rider
 **/.idea/*
 

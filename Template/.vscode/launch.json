@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Godot: Run Project (Debug)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${env:GODOT_BIN}",
+            "args": [
+                "--path",
+                "${workspaceFolder}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "logging": {
+                "moduleLoad": false,
+                "consoleUsageMessage": false
+            },
+            "symbolOptions": {
+                "moduleFilter": {
+                    "mode": "loadOnlyIncluded",
+                    "includedModules": [
+                        "Template*"
+                    ],
+                    "includeSymbolsNextToModules": false
+                }
+            }
+        }
+    ]
+}
