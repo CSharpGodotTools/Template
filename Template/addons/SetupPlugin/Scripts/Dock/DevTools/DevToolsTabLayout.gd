@@ -10,10 +10,14 @@ const LABEL_PADDING: int = 120
 const FEEDBACK_DURATION: float = 5.0
 const UPDATE_FEEDBACK_DURATION: float = 5.0
 const UPDATE_WARNING_DEFAULT_TEXT: String = "Remember to back up your project [b]before[/b] updating!"
+const TAB_MARGIN_HORIZONTAL_PX: int = 5
+const TAB_MARGIN_TOP_PX: int = 10
+const TAB_MARGIN_BOTTOM_PX: int = 0
 const ANTI_ALIASING_PATH_2D: String = "rendering/anti_aliasing/quality/msaa_2d"
 const DEFAULT_CLEAR_COLOR_PATH: String = "rendering/environment/defaults/default_clear_color"
 
 var _status_label: Label
+var _visual_status_label: Label
 var _cleanup_uids_button: Button
 var _nullable_button: Button
 var _remove_empty_folders_button: Button
@@ -53,12 +57,19 @@ func _create_controls() -> void:
 	_status_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_status_label.text = " "
 
+	_visual_status_label = Label.new()
+	_visual_status_label.autowrap_mode = TextServer.AutowrapMode.AUTOWRAP_WORD_SMART
+	_visual_status_label.clip_text = false
+	_visual_status_label.custom_minimum_size = Vector2(0, 22)
+	_visual_status_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_visual_status_label.text = " "
+
 	_cleanup_uids_button = _create_button("Cleanup uids", 150)
 	_nullable_button = _create_button("Nullable", 150)
 	_remove_empty_folders_button = _create_button("Remove Empty Folders", 180)
 	_copy_debugger_errors_button = _create_fill_button("Copy Debugger Errors")
-	_close_all_scene_tabs_button = _create_fill_button("Close All Scene Tabs")
-	_restart_editor_button = _create_fill_button("Restart Editor")
+	_close_all_scene_tabs_button = _create_button("Close All Scene Tabs", 180)
+	_restart_editor_button = _create_button("Restart Editor", 180)
 	_include_stack_trace_checkbox = _create_checkbox("Include Stack Trace", false)
 	_use_short_type_names_checkbox = _create_checkbox("Use Short Type Names", true)
 
@@ -83,19 +94,23 @@ func _create_controls() -> void:
 
 	_tracked_main_commit_label = Label.new()
 	_tracked_main_commit_label.text = "Not tracked"
-	_tracked_main_commit_label.clip_text = true
+	_tracked_main_commit_label.clip_text = false
+	_tracked_main_commit_label.autowrap_mode = TextServer.AutowrapMode.AUTOWRAP_OFF
 	_tracked_main_commit_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_tracked_release_version_label = Label.new()
 	_tracked_release_version_label.text = "Not tracked"
-	_tracked_release_version_label.clip_text = true
+	_tracked_release_version_label.clip_text = false
+	_tracked_release_version_label.autowrap_mode = TextServer.AutowrapMode.AUTOWRAP_OFF
 	_tracked_release_version_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_latest_main_commit_label = Label.new()
 	_latest_main_commit_label.text = "Unknown"
-	_latest_main_commit_label.clip_text = true
+	_latest_main_commit_label.clip_text = false
+	_latest_main_commit_label.autowrap_mode = TextServer.AutowrapMode.AUTOWRAP_OFF
 	_latest_main_commit_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_latest_release_version_label = Label.new()
 	_latest_release_version_label.text = "Unknown"
-	_latest_release_version_label.clip_text = true
+	_latest_release_version_label.clip_text = false
+	_latest_release_version_label.autowrap_mode = TextServer.AutowrapMode.AUTOWRAP_OFF
 	_latest_release_version_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	_update_warning_label = RichTextLabel.new()
@@ -151,12 +166,15 @@ func _build_layout() -> void:
 func _build_dev_tab() -> VBoxContainer:
 	var dev_tab: VBoxContainer = VBoxContainer.new()
 	dev_tab.name = "Dev"
-	dev_tab.add_theme_constant_override("separation", 8)
-	dev_tab.add_child(_create_row([_copy_debugger_errors_button], 0))
-	dev_tab.add_child(_create_row([_include_stack_trace_checkbox, _use_short_type_names_checkbox], 12))
-	dev_tab.add_child(_create_row([_cleanup_uids_button, _nullable_button, _remove_empty_folders_button, _view_template_repo_button], 8))
-	dev_tab.add_child(_create_row([_close_all_scene_tabs_button, _restart_editor_button], 8))
-	dev_tab.add_child(_status_label)
+
+	var content: VBoxContainer = VBoxContainer.new()
+	content.add_theme_constant_override("separation", 8)
+	content.add_child(_create_row([_copy_debugger_errors_button], 0))
+	content.add_child(_create_row([_include_stack_trace_checkbox, _use_short_type_names_checkbox], 12))
+	content.add_child(_create_row([_cleanup_uids_button, _nullable_button, _remove_empty_folders_button, _view_template_repo_button, _close_all_scene_tabs_button, _restart_editor_button], 8))
+	content.add_child(_status_label)
+
+	dev_tab.add_child(_wrap_with_tab_margin(content))
 	return dev_tab
 
 # Builds and returns the Visual tab content:
@@ -164,13 +182,32 @@ func _build_dev_tab() -> VBoxContainer:
 func _build_visual_tab() -> VBoxContainer:
 	var visual_tab: VBoxContainer = VBoxContainer.new()
 	visual_tab.name = "Visual"
-	visual_tab.add_theme_constant_override("separation", 8)
-	_add_labeled_control("Clear Color", _clear_color_picker, visual_tab)
-	_add_labeled_control("Anti Aliasing", _anti_aliasing_options, visual_tab)
+
+	var content: VBoxContainer = VBoxContainer.new()
+	content.add_theme_constant_override("separation", 8)
+
+	var split_row: HBoxContainer = HBoxContainer.new()
+	split_row.add_theme_constant_override("separation", 16)
+
+	var rendering_column: VBoxContainer = VBoxContainer.new()
+	rendering_column.add_theme_constant_override("separation", 8)
+	rendering_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_add_labeled_control("Clear Color", _clear_color_picker, rendering_column)
+	_add_labeled_control("Anti Aliasing", _anti_aliasing_options, rendering_column)
+
+	var hierarchy_column: VBoxContainer = VBoxContainer.new()
+	hierarchy_column.add_theme_constant_override("separation", 8)
+	hierarchy_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var hierarchy_label: Label = Label.new()
 	hierarchy_label.text = "Hierarchy"
-	visual_tab.add_child(hierarchy_label)
-	visual_tab.add_child(_create_row([_expand_to_level_button, _hierarchy_level_spinbox, _fully_expand_button, _fully_collapse_button], 8))
+	hierarchy_column.add_child(hierarchy_label)
+	hierarchy_column.add_child(_create_row([_expand_to_level_button, _hierarchy_level_spinbox, _fully_expand_button, _fully_collapse_button], 8))
+
+	split_row.add_child(rendering_column)
+	split_row.add_child(hierarchy_column)
+	content.add_child(split_row)
+	content.add_child(_visual_status_label)
+	visual_tab.add_child(_wrap_with_tab_margin(content))
 	return visual_tab
 
 # Builds and returns the Update tab content:
@@ -178,23 +215,48 @@ func _build_visual_tab() -> VBoxContainer:
 func _build_update_tab() -> VBoxContainer:
 	var update_tab: VBoxContainer = VBoxContainer.new()
 	update_tab.name = "Update"
-	update_tab.add_theme_constant_override("separation", 8)
+
+	var content: VBoxContainer = VBoxContainer.new()
+	content.add_theme_constant_override("separation", 8)
+
+	var top_row: HBoxContainer = HBoxContainer.new()
+	top_row.add_theme_constant_override("separation", 16)
+	top_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var left_column: VBoxContainer = VBoxContainer.new()
+	left_column.add_theme_constant_override("separation", 8)
+	left_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	var title_label: Label = Label.new()
 	title_label.text = "Template Updater"
 	title_label.add_theme_font_size_override("font_size", 18)
-	update_tab.add_child(title_label)
+	left_column.add_child(title_label)
 
 	var subtitle_label: Label = Label.new()
 	subtitle_label.text = "Sync your project with upstream commits or releases."
 	subtitle_label.modulate = Color(0.82, 0.82, 0.82)
 	subtitle_label.autowrap_mode = TextServer.AutowrapMode.AUTOWRAP_WORD_SMART
-	update_tab.add_child(subtitle_label)
+	left_column.add_child(subtitle_label)
+	left_column.add_child(_check_updates_on_startup_checkbox)
 
-	var actions_label: Label = Label.new()
-	actions_label.text = "Actions"
-	update_tab.add_child(actions_label)
-	update_tab.add_child(_check_updates_on_startup_checkbox)
+	var right_column: VBoxContainer = VBoxContainer.new()
+	right_column.add_theme_constant_override("separation", 0)
+	right_column.size_flags_horizontal = Control.SIZE_SHRINK_END
+
+	var metadata_grid: GridContainer = GridContainer.new()
+	metadata_grid.columns = 2
+	metadata_grid.add_theme_constant_override("h_separation", 25)
+	metadata_grid.add_theme_constant_override("v_separation", 8)
+	metadata_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	metadata_grid.add_child(_create_update_info_block("Tracked Main Commit", _tracked_main_commit_label))
+	metadata_grid.add_child(_create_update_info_block("Latest Main Branch", _latest_main_commit_label))
+	metadata_grid.add_child(_create_update_info_block("Tracked Release", _tracked_release_version_label))
+	metadata_grid.add_child(_create_update_info_block("Latest Release", _latest_release_version_label))
+	right_column.add_child(metadata_grid)
+
+	top_row.add_child(left_column)
+	top_row.add_child(right_column)
+	content.add_child(top_row)
 
 	var action_grid: GridContainer = GridContainer.new()
 	action_grid.columns = 2
@@ -203,21 +265,23 @@ func _build_update_tab() -> VBoxContainer:
 	for action_button in [_update_from_main_button, _update_from_release_button, _check_updates_button, _reset_update_cache_button]:
 		action_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		action_grid.add_child(action_button)
-	update_tab.add_child(action_grid)
+	content.add_child(action_grid)
+	content.add_child(_update_warning_label)
 
-	update_tab.add_child(_update_warning_label)
-
-	var metadata_grid: GridContainer = GridContainer.new()
-	metadata_grid.columns = 2
-	metadata_grid.add_theme_constant_override("h_separation", 12)
-	metadata_grid.add_theme_constant_override("v_separation", 8)
-	metadata_grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	metadata_grid.add_child(_create_update_info_block("Tracked Main Commit", _tracked_main_commit_label))
-	metadata_grid.add_child(_create_update_info_block("Latest Main Branch", _latest_main_commit_label))
-	metadata_grid.add_child(_create_update_info_block("Tracked Release", _tracked_release_version_label))
-	metadata_grid.add_child(_create_update_info_block("Latest Release", _latest_release_version_label))
-	update_tab.add_child(metadata_grid)
+	update_tab.add_child(_wrap_with_tab_margin(content))
 	return update_tab
+
+# Wraps content in a consistent margin for all tab pages.
+func _wrap_with_tab_margin(content: Control) -> MarginContainer:
+	var margin: MarginContainer = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", TAB_MARGIN_HORIZONTAL_PX)
+	margin.add_theme_constant_override("margin_top", TAB_MARGIN_TOP_PX)
+	margin.add_theme_constant_override("margin_right", TAB_MARGIN_HORIZONTAL_PX)
+	margin.add_theme_constant_override("margin_bottom", TAB_MARGIN_BOTTOM_PX)
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	margin.add_child(content)
+	return margin
 
 # Creates a compact, two-line info block used in the update metadata grid.
 func _create_update_info_block(title: String, value_label: Label) -> VBoxContainer:
@@ -228,7 +292,8 @@ func _create_update_info_block(title: String, value_label: Label) -> VBoxContain
 	var title_label: Label = Label.new()
 	title_label.text = title
 	title_label.modulate = Color(0.82, 0.82, 0.82)
-	title_label.clip_text = true
+	title_label.clip_text = false
+	title_label.autowrap_mode = TextServer.AutowrapMode.AUTOWRAP_OFF
 	title_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	block.add_child(title_label)

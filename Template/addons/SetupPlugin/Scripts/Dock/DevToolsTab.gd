@@ -97,6 +97,21 @@ func _set_status(text: String) -> void:
 	_status_label.text = text
 	_status_label.modulate = Color(0.6, 0.95, 0.6)
 
+# Updates the status label shown at the bottom of the Visual tab.
+func _set_visual_status(text: String) -> void:
+	if _visual_status_label == null:
+		return
+	if text.is_empty():
+		_visual_status_label.text = " "
+		_visual_status_label.modulate = Color(0.75, 0.75, 0.75)
+		return
+	_visual_status_label.text = text
+	_visual_status_label.modulate = Color(0.6, 0.95, 0.6)
+
+# Updates the status label in the Update tab only.
+func _set_update_status(text: String) -> void:
+	_set_update_feedback(text)
+
 # Triggers a Godot filesystem rescan so the editor reflects any files that
 # were created, modified, or deleted by a recent operation.
 func _refresh_editor_filesystem() -> void:
@@ -107,6 +122,7 @@ func _refresh_editor_filesystem() -> void:
 # Clears the status label once the feedback display duration elapses.
 func _on_feedback_timer_timeout() -> void:
 	_set_status("")
+	_set_visual_status("")
 
 # Updates the green update feedback label. An empty string hides its text.
 func _set_update_feedback(text: String) -> void:
@@ -174,28 +190,32 @@ func _on_restart_editor_pressed() -> void:
 func _on_expand_to_level_pressed() -> void:
 	var level: int = int(_hierarchy_level_spinbox.value)
 	var changed_count: int = _scene_hierarchy_actions.expand_to_level(level)
-	_set_status("Expanded hierarchy to level %d" % level if changed_count > 0 else "No scene hierarchy available")
+	_set_visual_status("Expanded hierarchy to level %d" % level if changed_count > 0 else "No scene hierarchy available")
 	_feedback_timer.start()
 
 # Fully expands every node in the Scene dock hierarchy.
 func _on_fully_expand_pressed() -> void:
-	_set_status("Fully expanded hierarchy" if _scene_hierarchy_actions.fully_expand() > 0 else "No scene hierarchy available")
+	_set_visual_status("Fully expanded hierarchy" if _scene_hierarchy_actions.fully_expand() > 0 else "No scene hierarchy available")
 	_feedback_timer.start()
 
 # Collapses the Scene dock hierarchy to just the root level.
 func _on_fully_collapse_pressed() -> void:
-	_set_status("Fully collapsed hierarchy" if _scene_hierarchy_actions.fully_collapse() > 0 else "No scene hierarchy available")
+	_set_visual_status("Fully collapsed hierarchy" if _scene_hierarchy_actions.fully_collapse() > 0 else "No scene hierarchy available")
 	_feedback_timer.start()
 
 # Persists the chosen viewport clear colour to project settings immediately.
 func _on_clear_color_changed(color: Color) -> void:
 	ProjectSettings.set_setting(DEFAULT_CLEAR_COLOR_PATH, color)
 	ProjectSettings.save()
+	_set_visual_status("Updated clear color.")
+	_feedback_timer.start()
 
 # Writes the chosen MSAA level to both 2D and 3D project settings.
 func _on_anti_aliasing_item_selected(index: int) -> void:
 	ProjectSettings.set_setting(ANTI_ALIASING_PATH_2D, index)
 	ProjectSettings.set_setting(ANTI_ALIASING_PATH_3D, index)
+	_set_visual_status("Anti-aliasing updated.")
+	_feedback_timer.start()
 
 # Reads the current nullable state from Template.csproj and sets the button
 # label to "Enable Nullable" or "Disable Nullable" accordingly.
@@ -265,7 +285,7 @@ func _check_for_updates(show_success_status: bool) -> void:
 
 	_update_check_in_progress = true
 	_refresh_update_button_state()
-	_set_status("Checking for template updates...")
+	_set_update_status("Checking for template updates...")
 
 	var fetcher = TemplateArchiveFetcherScript.new()
 	var main_result: Dictionary = await fetcher.fetch_latest_main_commit(self)
@@ -290,12 +310,14 @@ func _check_for_updates(show_success_status: bool) -> void:
 
 	if not errors.is_empty():
 		_show_update_feedback("Could not refresh %s update metadata." % ", ".join(errors))
-		_set_status("Unable to refresh %s update metadata." % ", ".join(errors))
-		_feedback_timer.start()
+		_set_update_status("Unable to refresh %s update metadata." % ", ".join(errors))
+		_update_feedback_timer.start()
 	elif show_success_status:
 		_show_update_feedback("Update availability refreshed.")
-		_set_status("Update availability refreshed.")
-		_feedback_timer.start()
+		_set_update_status("Update availability refreshed.")
+		_update_feedback_timer.start()
+	else:
+		_set_update_status("")
 
 # Starts an update from the latest commit on the main branch.
 func _on_update_from_main_pressed() -> void:
@@ -319,8 +341,8 @@ func _on_reset_update_cache_pressed() -> void:
 	_refresh_latest_update_labels()
 	var reset_ok: bool = TemplateUpdateCacheScript.clear_state(_check_updates_on_startup)
 	_show_update_feedback("Update cache reset.")
-	_set_status("Update cache reset." if reset_ok else "Failed to reset update cache.")
-	_feedback_timer.start()
+	_set_update_status("Update cache reset." if reset_ok else "Failed to reset update cache.")
+	_update_feedback_timer.start()
 	await _check_for_updates(false)
 
 # Opens the CSharpGodotTools/Template repository in the default browser.
@@ -342,14 +364,14 @@ func _run_template_update(from_release: bool) -> void:
 		target = str(target_result.get("target", "")).strip_edges()
 	else:
 		_show_update_feedback("Could not check latest metadata. Updating anyway.")
-		_set_status("Proceeding without metadata check: %s" % target_result.get("message", "Unknown metadata error."))
-		_feedback_timer.start()
+		_set_update_status("Proceeding without metadata check: %s" % target_result.get("message", "Unknown metadata error."))
+		_update_feedback_timer.start()
 
 	var tracked: String = _tracked_release_version if from_release else _tracked_main_commit
 	if not target.is_empty() and tracked == target:
 		_show_update_feedback("Already up to date on %s" % target)
-		_set_status("No update needed.")
-		_feedback_timer.start()
+		_set_update_status("No update needed.")
+		_update_feedback_timer.start()
 		_update_in_progress = false
 		_refresh_update_button_state()
 		return
@@ -374,12 +396,12 @@ func _run_template_update(from_release: bool) -> void:
 		_save_update_cache_state()
 		_refresh_tracked_update_labels()
 		_refresh_latest_update_labels()
-		_set_status(result.get("message", "Update finished successfully."))
+		_set_update_status(result.get("message", "Update finished successfully."))
 	else:
 		var failure_message: String = str(result.get("message", "Unknown error."))
 		_show_update_feedback("Update failed: %s" % failure_message)
-		_set_status("Update failed: %s" % failure_message)
-	_feedback_timer.start()
+		_set_update_status("Update failed: %s" % failure_message)
+	_update_feedback_timer.start()
 	_update_in_progress = false
 	_refresh_update_button_state()
 
@@ -415,7 +437,7 @@ func _execute_template_update(from_release: bool) -> Dictionary:
 	var extractor = TemplateArchiveExtractorScript.new()
 	var applier = TemplateUpdateApplierScript.new()
 
-	_set_status("Downloading template update...")
+	_set_update_status("Downloading template update...")
 	var download_result: Dictionary
 	if from_release:
 		download_result = await fetcher.download_release_archive(self, archive_path)
@@ -425,7 +447,7 @@ func _execute_template_update(from_release: bool) -> Dictionary:
 		UpdateFileOpsScript.delete_path_recursive(temp_root)
 		return download_result
 
-	_set_status("Extracting archive...")
+	_set_update_status("Extracting archive...")
 	var extract_result: Dictionary = extractor.extract_zip(archive_path, extract_root)
 	if not extract_result.get("success", false):
 		UpdateFileOpsScript.delete_path_recursive(temp_root)
@@ -436,7 +458,7 @@ func _execute_template_update(from_release: bool) -> Dictionary:
 		UpdateFileOpsScript.delete_path_recursive(temp_root)
 		return {"success": false, "message": "Template folder was not found in the downloaded archive."}
 
-	_set_status("Applying update files...")
-	var apply_result: Dictionary = applier.apply(template_root, project_root, Callable(self, "_set_status"))
+	_set_update_status("Applying update files...")
+	var apply_result: Dictionary = applier.apply(template_root, project_root, Callable(self, "_set_update_status"))
 	UpdateFileOpsScript.delete_path_recursive(temp_root)
 	return apply_result
