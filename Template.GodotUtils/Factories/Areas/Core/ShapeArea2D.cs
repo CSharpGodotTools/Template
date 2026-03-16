@@ -30,11 +30,7 @@ public abstract class ShapeArea2D<TShape> : Area2D where TShape : Shape2D
     /// <summary>
     /// Sets the debug color for the collision shape.
     /// </summary>
-    public void SetColor(Color color, bool transparent = false)
-    {
-        color.A = transparent ? 0f : 1f;
-        Collision.DebugColor = color;
-    }
+    public void SetColor(Color color) => Collision.DebugColor = color;
 
     /// <summary>
     /// Gets the debug color for the collision shape.

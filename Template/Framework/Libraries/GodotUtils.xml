@@ -887,7 +887,7 @@
             Creates a shape area backed by the provided shape.
             </summary>
         </member>
-        <member name="M:GodotUtils.ShapeArea2D`1.SetColor(Godot.Color,System.Boolean)">
+        <member name="M:GodotUtils.ShapeArea2D`1.SetColor(Godot.Color)">
             <summary>
             Sets the debug color for the collision shape.
             </summary>
