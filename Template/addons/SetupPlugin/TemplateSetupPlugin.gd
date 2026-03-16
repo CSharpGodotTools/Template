@@ -3,6 +3,8 @@ extends EditorPlugin
 
 const TEMPLATE_PROJECT_NAME: String = "Template"
 const PROJECT_ROOT_PATH: String = "res://"
+const MAIN_SCENE_SETTING_PATH: String = "application/run/main_scene"
+const ROOT_LEVEL_SCENE_PATH: String = "res://Level.tscn"
 const DevToolsTabScript = preload("res://addons/SetupPlugin/Scripts/Dock/DevToolsTab.gd")
 const TemplateSetupDock = preload("res://addons/SetupPlugin/Scripts/Dock/TemplateSetupDock.gd")
 
@@ -38,6 +40,10 @@ func _enter_tree() -> void:
 	if not FileAccess.file_exists(project_root.path_join("%s.csproj" % TEMPLATE_PROJECT_NAME)):
 		return
 
+	# Before setup completion, prevent a stale Level.tscn main-scene value from
+	# being persisted when editor/project settings are saved.
+	_clear_setup_main_scene_if_needed()
+
 	_dock = EditorDock.new()
 	_dock.title = "Setup"
 	_dock.default_slot = EditorDock.DockSlot.DOCK_SLOT_RIGHT_BL
@@ -49,6 +55,14 @@ func _enter_tree() -> void:
 	_dock.add_child(_content)
 	
 	add_dock(_dock)
+
+func _clear_setup_main_scene_if_needed() -> void:
+	var main_scene_value: String = str(ProjectSettings.get_setting(MAIN_SCENE_SETTING_PATH, "")).strip_edges()
+	if main_scene_value != ROOT_LEVEL_SCENE_PATH:
+		return
+
+	ProjectSettings.set_setting(MAIN_SCENE_SETTING_PATH, "")
+	ProjectSettings.save()
 
 func _exit_tree() -> void:
 	# remove dev tools dock when plugin disabled
