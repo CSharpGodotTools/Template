@@ -1,6 +1,7 @@
 There is a very noticeable gap in performance when we have 10,000 nodes all with their own `_Process` functions. If we use a centralized component manager that handles all processes we notice a [3.5x increase in performance](https://www.reddit.com/r/godot/comments/1mdrjce/you_can_save_a_lot_of_fps_by_centralizing_your/) (This only applies to C# users)
 
-That is why we make use of the component design pattern and do not make our component scripts extend from node. But this can make our root scripts messy. Below is what you would typically do. Imagine we add 10 more component scripts to player, you can see this will get really messy.
+<details>
+<summary>Component design typically looks like this.</summary>
 
 ```cs
 public partial class Player : Node
@@ -24,40 +25,53 @@ public partial class Player : Node
 }
 ```
 
-Instead lets make our component script extend from `Component`.
+</details>
+
+But we can do better! Lets extend from `Component`.
 
 ```cs
 public class EntityMovementComponent(Player player) : Component(player)
 {
     // Notice these methods do not start with an underscore
-    public override void Ready()
+    protected override void Ready()
     {
         // Process is disabled by default and we must enable it ourselves
         SetProcess(true);
     }
 
-    public override void Process(double delta)
+    protected override void Process(double delta)
     {
         // Handle process...
     }
 
-    public override void Dispose()
+    protected override void ExitTree()
     {
-        // Handle dispose...
+        // Handle exit tree...
     }
 }
 ```
 
-Now the player script is super clean!
+And this is what the `Player` script would look like.
 
 ```cs
 public partial class Player : Node
 {
-    public EntityMovementComponent MovementComponent { get; private set; }
+    // ComponentHost is completely optional but it improves readability imo
+    private ComponentHost _components = new();
 
     public override void _Ready()
     {
-        MovementComponent = new EntityMovementComponent(this);
+        // Add your components
+        _components.Add(new EntityMovementComponent(this));
+
+        // Disable all your components if you want
+        _components.SetActive(false);
+    }
+
+    public override void _ExitTree()
+    {
+        // Get a component like this
+        _components.Get<EntityMovementComponent>().(...)
     }
 }
 ```

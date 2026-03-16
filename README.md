@@ -21,11 +21,12 @@ This is an on-going project I've been working on. I know how hard it is to actua
 - Templates
   - Minimal 2D scene
   - Minimal 3D scene
-  - FPS scene
+  - [FPS scene](docs/templates/FPS.md)
 - Performance
   - [Centralized Component Scripts](docs/utilities/ComponentScripts.md)
 - Debugging
   - [Visual In-Game Debugging](Template.Visualize/README.md)
+  - [Editor Tools](docs/utilities/EditorTools.md)
   - [Metrics Overlay](docs/utilities/MetricsOverlay.md)
   - [Console Commands](docs/utilities/ConsoleCommands.md)
   - [Custom Main Run Args](docs/utilities/CustomMainRunArgs.md)
@@ -42,7 +43,7 @@ This is an on-going project I've been working on. I know how hard it is to actua
 ## Install  
 Download the [latest release](https://github.com/CSharpGodotTools/Template/releases/latest) and open `project.godot`.
 
-<img alt="image" src="https://github.com/user-attachments/assets/9a0e7e22-2bfa-4cdc-8b5a-d92d209242b8" />
+<img width="411" height="313" alt="image" src="https://github.com/user-attachments/assets/d5c663a9-29c1-40a0-b851-17f9e5cb7f00" />
 
 Click `Run Setup` to restart Godot with your template ready to go.
 
@@ -50,7 +51,7 @@ Click `Run Setup` to restart Godot with your template ready to go.
 
 Updates can be done from `Dev Tools > Update`. One click, no more manual copying of files.
 
-<img src="https://github.com/user-attachments/assets/415dbda5-d2a9-476c-8a17-c8f84ec63eb7" />
+<img width="1500" height="332" alt="image" src="https://github.com/user-attachments/assets/283da14c-3449-40c3-ba9f-41b6448859a6" />
 
 ## Thank You
 [Brian Shao](https://github.com/cydq)  

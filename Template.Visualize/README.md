@@ -68,6 +68,3 @@ public class PlayerMovementComponent
 
 > [!NOTE]
 > No mouse interactions have been implemented in 3D, so you will only be able to use it for read only.
-
-> [!CAUTION]
-> If `Visualize.Register(this)` is called in `_EnterTree`, you will get a null reference exception. This is because Visualize did not have time to initialize and you must instead call it in `_Ready`.
