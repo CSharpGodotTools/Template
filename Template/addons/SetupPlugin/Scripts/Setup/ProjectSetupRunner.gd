@@ -27,6 +27,7 @@ func _init(project_root: String, main_scenes_root: String) -> void:
 #   8. Save, delete the MainScenes directory, and restart the editor
 func run(formatted_game_name: String, project_type: String, template_type: String) -> void:
 	SetupDirectoryMaintenance.delete_empty_directories(_project_root)
+	close_all_open_scene_tabs()
 	
 	var template_folder: String = _main_scenes_root.path_join(project_type).path_join(template_type)
 	copy_template_to_project_root(template_folder)
@@ -45,6 +46,14 @@ func run(formatted_game_name: String, project_type: String, template_type: Strin
 	EditorInterface.save_scene()
 	delete_directory_recursive(_main_scenes_root)
 	EditorInterface.restart_editor(false)
+
+# Closes all currently open scene tabs so stale in-memory scenes cannot be
+# accidentally written back over newly copied template scenes.
+func close_all_open_scene_tabs() -> void:
+	while true:
+		var close_result: Error = EditorInterface.close_scene()
+		if close_result != OK:
+			break
 
 # Ensures the editor is focused on the copied root Level.tscn so restart state
 # does not reference the removed MainScenes template path.
