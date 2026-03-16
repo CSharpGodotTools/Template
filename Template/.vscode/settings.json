@@ -1,3 +1,28 @@
 {
-    "dotnet.defaultSolution": "Template.sln"
+    "csharpextensions.useFileScopedNamespace": true,
+    "dotnet.defaultSolution": "Template.sln",
+    "github-actions.workflows.pinned.workflows": [
+        ".github/workflows/release.yml"
+    ],
+    "files.exclude": {
+        // By excluding several file types we can focus more on working.
+        // If you need to see these files, use your file explorer.
+        "**/.godot": true,
+        "**/*.import": true,
+        "**/*.uid": true,
+        "**/.idea": true,
+        "**/*.gitattributes": true,
+        "**/.serena": true,
+        "**/gdunit4_testadapter_v5": true,
+        "**/NuGet.config": true,
+        "**/Template/Properties": true,
+        "**/script_templates/": true,
+        "**/bin": true,
+        "**/obj": true,
+        "**/README.md": true,
+        "**/CONTRIBUTING.md": true,
+        "**/LICENSE": true,
+        "Properties/": true,
+        "TestResults/": true,
+    }
 }
