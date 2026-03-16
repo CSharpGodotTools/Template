@@ -6,6 +6,7 @@ class_name ProjectSetupRunner
 
 const SETUP_PLUGIN_NAME: String = "SetupPlugin"
 const MAIN_SCENE_PATH: String = "application/run/main_scene"
+const ROOT_LEVEL_SCENE_PATH: String = "res://Level.tscn"
 
 var _project_root: String
 var _main_scenes_root: String
@@ -30,7 +31,7 @@ func run(formatted_game_name: String, project_type: String, template_type: Strin
 	var template_folder: String = _main_scenes_root.path_join(project_type).path_join(template_type)
 	copy_template_to_project_root(template_folder)
 	
-	ProjectSettings.set_setting(MAIN_SCENE_PATH, "res://Level.tscn")
+	ProjectSettings.set_setting(MAIN_SCENE_PATH, ROOT_LEVEL_SCENE_PATH)
 	ProjectSettings.save()
 	
 	ProjectFileRenamer.rename_template_project_files(_project_root, formatted_game_name)
@@ -40,9 +41,18 @@ func run(formatted_game_name: String, project_type: String, template_type: Strin
 		return
 	SetupFileSystem.ensure_gdignore_files_in_gdunit_test_folders(_project_root)
 	
+	open_root_level_scene_if_present()
 	EditorInterface.save_scene()
 	delete_directory_recursive(_main_scenes_root)
 	EditorInterface.restart_editor(false)
+
+# Ensures the editor is focused on the copied root Level.tscn so restart state
+# does not reference the removed MainScenes template path.
+func open_root_level_scene_if_present() -> void:
+	if not ResourceLoader.exists(ROOT_LEVEL_SCENE_PATH):
+		return
+
+	EditorInterface.open_scene_from_path(ROOT_LEVEL_SCENE_PATH)
 
 # Recursively copies all files from `template_folder` into the project root.
 func copy_template_to_project_root(template_folder: String) -> void:
