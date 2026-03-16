@@ -30,6 +30,7 @@ var _latest_main_commit: String = ""
 var _latest_release_version: String = ""
 var _update_check_in_progress: bool = false
 var _update_in_progress: bool = false
+var _check_updates_on_startup: bool = true
 
 # Initialises service objects, builds the UI, then wires all button signals.
 func _ready() -> void:
@@ -44,7 +45,8 @@ func _ready() -> void:
 	_refresh_tracked_update_labels()
 	_refresh_latest_update_labels()
 	_refresh_update_button_state()
-	call_deferred("_check_for_updates", false)
+	if _check_updates_on_startup:
+		call_deferred("_check_for_updates", false)
 
 # Disconnects all signals before the dock node is freed.
 func prepare_for_disable() -> void:
@@ -61,6 +63,7 @@ func _register_events() -> void:
 		return
 	for pair in [[_cleanup_uids_button, _on_cleanup_uids_pressed], [_nullable_button, _on_nullable_pressed], [_remove_empty_folders_button, _on_remove_empty_folders_pressed], [_copy_debugger_errors_button, _on_copy_debugger_errors_pressed], [_close_all_scene_tabs_button, _on_close_all_scene_tabs_pressed], [_restart_editor_button, _on_restart_editor_pressed], [_expand_to_level_button, _on_expand_to_level_pressed], [_fully_expand_button, _on_fully_expand_pressed], [_fully_collapse_button, _on_fully_collapse_pressed], [_update_from_main_button, _on_update_from_main_pressed], [_update_from_release_button, _on_update_from_release_pressed], [_check_updates_button, _on_check_updates_pressed], [_reset_update_cache_button, _on_reset_update_cache_pressed], [_view_template_repo_button, _on_view_template_repo_pressed]]:
 		pair[0].pressed.connect(pair[1])
+	_check_updates_on_startup_checkbox.toggled.connect(_on_check_updates_on_startup_toggled)
 	_clear_color_picker.color_changed.connect(_on_clear_color_changed)
 	_anti_aliasing_options.item_selected.connect(_on_anti_aliasing_item_selected)
 	_feedback_timer.timeout.connect(_on_feedback_timer_timeout)
@@ -74,6 +77,7 @@ func _unregister_events() -> void:
 	_events_registered = false
 	for pair in [[_cleanup_uids_button, "_on_cleanup_uids_pressed"], [_nullable_button, "_on_nullable_pressed"], [_remove_empty_folders_button, "_on_remove_empty_folders_pressed"], [_copy_debugger_errors_button, "_on_copy_debugger_errors_pressed"], [_close_all_scene_tabs_button, "_on_close_all_scene_tabs_pressed"], [_restart_editor_button, "_on_restart_editor_pressed"], [_expand_to_level_button, "_on_expand_to_level_pressed"], [_fully_expand_button, "_on_fully_expand_pressed"], [_fully_collapse_button, "_on_fully_collapse_pressed"], [_update_from_main_button, "_on_update_from_main_pressed"], [_update_from_release_button, "_on_update_from_release_pressed"], [_check_updates_button, "_on_check_updates_pressed"], [_reset_update_cache_button, "_on_reset_update_cache_pressed"], [_view_template_repo_button, "_on_view_template_repo_pressed"]]:
 		_disconnect_signal(pair[0], "pressed", pair[1])
+	_disconnect_signal(_check_updates_on_startup_checkbox, "toggled", "_on_check_updates_on_startup_toggled")
 	_disconnect_signal(_clear_color_picker, "color_changed", "_on_clear_color_changed")
 	_disconnect_signal(_anti_aliasing_options, "item_selected", "_on_anti_aliasing_item_selected")
 	_disconnect_signal(_feedback_timer, "timeout", "_on_feedback_timer_timeout")
@@ -211,10 +215,18 @@ func _load_update_cache_state() -> void:
 	var cache_state: Dictionary = TemplateUpdateCacheScript.load_state()
 	_tracked_main_commit = str(cache_state.get("main_commit", "")).strip_edges()
 	_tracked_release_version = str(cache_state.get("release_version", "")).strip_edges()
+	_check_updates_on_startup = bool(cache_state.get("auto_check_on_startup", true))
+	if _check_updates_on_startup_checkbox != null:
+		_check_updates_on_startup_checkbox.button_pressed = _check_updates_on_startup
 
 # Saves tracked identifiers to persistent cache.
 func _save_update_cache_state() -> void:
-	TemplateUpdateCacheScript.save_state(_tracked_main_commit, _tracked_release_version)
+	TemplateUpdateCacheScript.save_state(_tracked_main_commit, _tracked_release_version, _check_updates_on_startup)
+
+# Toggles startup update checks and persists the preference.
+func _on_check_updates_on_startup_toggled(enabled: bool) -> void:
+	_check_updates_on_startup = enabled
+	_save_update_cache_state()
 
 # Refreshes the two labels that expose currently tracked commit/version values.
 func _refresh_tracked_update_labels() -> void:
@@ -305,7 +317,7 @@ func _on_reset_update_cache_pressed() -> void:
 	_tracked_release_version = ""
 	_refresh_tracked_update_labels()
 	_refresh_latest_update_labels()
-	var reset_ok: bool = TemplateUpdateCacheScript.clear_state()
+	var reset_ok: bool = TemplateUpdateCacheScript.clear_state(_check_updates_on_startup)
 	_show_update_feedback("Update cache reset.")
 	_set_status("Update cache reset." if reset_ok else "Failed to reset update cache.")
 	_feedback_timer.start()

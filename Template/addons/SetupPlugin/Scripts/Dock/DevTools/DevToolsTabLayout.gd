@@ -33,6 +33,7 @@ var _update_from_release_button: Button
 var _check_updates_button: Button
 var _reset_update_cache_button: Button
 var _view_template_repo_button: Button
+var _check_updates_on_startup_checkbox: CheckButton
 var _tracked_main_commit_label: Label
 var _tracked_release_version_label: Label
 var _latest_main_commit_label: Label
@@ -78,6 +79,7 @@ func _create_controls() -> void:
 	_check_updates_button = _create_button("Check For Updates", 230)
 	_reset_update_cache_button = _create_button("Reset Update Cache", 230)
 	_view_template_repo_button = _create_button("View Template Repository")
+	_check_updates_on_startup_checkbox = _create_checkbox("Check for updates when project starts up", true)
 
 	_tracked_main_commit_label = Label.new()
 	_tracked_main_commit_label.text = "Not tracked"
@@ -192,6 +194,7 @@ func _build_update_tab() -> VBoxContainer:
 	var actions_label: Label = Label.new()
 	actions_label.text = "Actions"
 	update_tab.add_child(actions_label)
+	update_tab.add_child(_check_updates_on_startup_checkbox)
 
 	var action_grid: GridContainer = GridContainer.new()
 	action_grid.columns = 2
@@ -275,4 +278,6 @@ func _create_checkbox(text: String, pressed: bool) -> CheckButton:
 	var checkbox: CheckButton = CheckButton.new()
 	checkbox.text = text
 	checkbox.button_pressed = pressed
+	checkbox.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	checkbox.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	return checkbox
