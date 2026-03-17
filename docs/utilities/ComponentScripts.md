@@ -56,8 +56,8 @@ And this is what the `Player` script would look like.
 ```cs
 public partial class Player : Node
 {
-    // ComponentHost is completely optional but it improves readability imo
-    private ComponentHost _components = new();
+    // ComponentList is completely optional but it improves readability imo
+    private ComponentList _components = new();
 
     public override void _Ready()
     {

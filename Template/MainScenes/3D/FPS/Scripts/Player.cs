@@ -10,7 +10,7 @@ public partial class Player : CharacterBody3D
     [Export] private PopupMenu _popupMenu = null!;
     [Export] private PlayerMovementConfig _movementConfig = null!;
 
-    private readonly ComponentHost _components = new();
+    private readonly ComponentList _components = new();
 
     public override void _Ready()
     {

@@ -1896,22 +1896,22 @@
             Performs component cleanup.
             </summary>
         </member>
-        <member name="T:GodotUtils.ComponentHost">
+        <member name="T:GodotUtils.ComponentList">
             <summary>
             Holds and manages a set of components.
             </summary>
         </member>
-        <member name="M:GodotUtils.ComponentHost.Add(GodotUtils.Component)">
+        <member name="M:GodotUtils.ComponentList.Add(GodotUtils.Component)">
             <summary>
             Add a component.
             </summary>
         </member>
-        <member name="M:GodotUtils.ComponentHost.Get``1">
+        <member name="M:GodotUtils.ComponentList.Get``1">
             <summary>
             Get a component.
             </summary>
         </member>
-        <member name="M:GodotUtils.ComponentHost.SetActive(System.Boolean)">
+        <member name="M:GodotUtils.ComponentList.SetActive(System.Boolean)">
             <summary>
             Enable or disable all components.
             </summary>
