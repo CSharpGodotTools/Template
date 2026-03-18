@@ -1831,11 +1831,6 @@
             Called when the owner node is ready.
             </summary>
         </member>
-        <member name="M:GodotUtils.Component.Deferred">
-            <summary>
-            Called one frame after <see cref="M:GodotUtils.Component.Ready"/>.
-            </summary>
-        </member>
         <member name="M:GodotUtils.Component.Process(System.Double)">
             <summary>
             Called every frame while processing is enabled.
@@ -1891,11 +1886,6 @@
             Enables or disables unhandled input processing.
             </summary>
         </member>
-        <member name="M:GodotUtils.Component.Dispose">
-            <summary>
-            Performs component cleanup.
-            </summary>
-        </member>
         <member name="T:GodotUtils.ComponentList">
             <summary>
             Holds and manages a set of components.
@@ -1904,6 +1894,21 @@
         <member name="M:GodotUtils.ComponentList.Add(GodotUtils.Component)">
             <summary>
             Add a component.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ComponentList.Add(GodotUtils.ComponentList)">
+            <summary>
+            Add a list of components.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ComponentList.Remove(GodotUtils.Component)">
+            <summary>
+            Remove a component.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ComponentList.RemoveAll">
+            <summary>
+            Remove all components.
             </summary>
         </member>
         <member name="M:GodotUtils.ComponentList.Get``1">

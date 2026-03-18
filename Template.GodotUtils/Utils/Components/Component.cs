@@ -1,17 +1,14 @@
 using Godot;
-using System;
 
 namespace GodotUtils;
 
 /// <summary>
 /// Base class for lightweight components attached to a node.
 /// </summary>
-public class Component : IDisposable
+public class Component
 {
     private readonly Node _node;
     private ComponentManager _componentManager = null!;
-    private SceneTree? _deferredTree;
-    private bool _disposed;
 
     /// <summary>
     /// Gets whether this component is blocked while the tree is paused.
@@ -24,19 +21,14 @@ public class Component : IDisposable
     public Component(Node node)
     {
         _node = node;
-        _node.Ready += InitializeComponent;
-        _node.TreeExited += CleanupOnTreeExit;
+        _node.Ready += OnReady;
+        _node.TreeExited += OnExitedTree;
     }
 
     /// <summary>
     /// Called when the owner node is ready.
     /// </summary>
     protected internal virtual void Ready() { }
-
-    /// <summary>
-    /// Called one frame after <see cref="Ready"/>.
-    /// </summary>
-    protected internal virtual void Deferred() { }
 
     /// <summary>
     /// Called every frame while processing is enabled.
@@ -127,51 +119,23 @@ public class Component : IDisposable
             _componentManager.UnregisterUnhandledInput(this);
     }
 
-    private void InitializeComponent()
+    private void OnReady()
     {
         _componentManager = ComponentManager.Instance;
         Ready();
-        _deferredTree = _node.GetTree();
-        _deferredTree.ProcessFrame += OnDeferredOnce;
     }
 
-    private void OnDeferredOnce()
+    private void OnExitedTree()
     {
-        _deferredTree!.ProcessFrame -= OnDeferredOnce;
-        _deferredTree = null;
-        Deferred();
-    }
-
-    private void CleanupOnTreeExit()
-    {
-        Dispose();
-    }
-
-    /// <summary>
-    /// Performs component cleanup.
-    /// </summary>
-    public void Dispose()
-    {
-        if (_disposed)
-            return;
-
-        _disposed = true;
-
         try
         {
             ExitTree();
         }
         finally
         {
-            _componentManager?.UnregisterAll(this);
-            _deferredTree?.ProcessFrame -= OnDeferredOnce;
-            _deferredTree = null;
-
-            if (_node != null)
-            {
-                _node.Ready -= InitializeComponent;
-                _node.TreeExited -= CleanupOnTreeExit;
-            }
+            _componentManager.UnregisterAll(this);
+            _node.Ready -= OnReady;
+            _node.TreeExited -= OnExitedTree;
         }
     }
 }

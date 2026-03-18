@@ -17,6 +17,33 @@ public class ComponentList
     {
         _components.Add(component);
     }
+
+    /// <summary>
+    /// Add a list of components.
+    /// </summary>
+    public void Add(ComponentList components)
+    {
+        foreach (Component component in components._components)
+        {
+            _components.Add(component);
+        }
+    }
+
+    /// <summary>
+    /// Remove a component.
+    /// </summary>
+    public void Remove(Component component)
+    {
+        _components.Remove(component);
+    }
+
+    /// <summary>
+    /// Remove all components.
+    /// </summary>
+    public void RemoveAll()
+    {
+        _components.Clear();
+    }
     
     /// <summary>
     /// Get a component.
