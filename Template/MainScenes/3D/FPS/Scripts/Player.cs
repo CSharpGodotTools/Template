@@ -21,13 +21,6 @@ public partial class Player : CharacterBody3D
         _components.Add(rotationComponent);
         _components.Add(new PlayerMovement(this, _movementConfig, rotationComponent));
         _components.Add(new PlayerMouseCapture(this, _popupMenu));
-
-        Debug.MyTest();
-    }
-
-    public override void _Process(double delta)
-    {
-        throw new System.Exception("Update Test");
     }
 }
 
