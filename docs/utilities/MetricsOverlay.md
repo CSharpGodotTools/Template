@@ -1,16 +1,20 @@
-> [!NOTE]
-> Metrics Overlay can be toggled in-game with `F1`
-
-The metrics overlay shows useful information in-game and can be used to monitor the performance of your script variables.
-
-```cs
-Game.Metrics.StartMonitoring(() => _someVariable);
-Game.Metrics.StartMonitoring("My Variable", () => _someVariable);
-```
+# Metrics Overlay
+The metrics overlay can be toggled in-game with `F1`. All monitored variables or profiled code will appear under the 'Variables' section.
 
 <img width="293" height="311" alt="image" src="https://github.com/user-attachments/assets/02c77eef-7295-4bf0-856f-d0d32e0993ed" />
 
-You can also profile the rest of your codes performance.
+## Monitor Variables
+Track variables in your code.
+
+```cs
+Game.Metrics.StartMonitoring("My Variable", () => _someVariable);
+
+// Specifiying a name is optional
+Game.Metrics.StartMonitoring(() => _someVariable);
+```
+
+## Profile Code
+Log the running time of your code.
 
 ```cs
 // _Ready

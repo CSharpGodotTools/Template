@@ -24,17 +24,17 @@ This is an on-going project I've been working on. I know how hard it is to actua
   - [FPS scene](docs/templates/FPS.md)
 - Performance
   - [Centralized Component Scripts](docs/utilities/ComponentScripts.md)
-- Debugging
-  - [Visual In-Game Debugging](Template.Visualize/README.md)
-  - [Editor Tools](docs/utilities/EditorTools.md)
+- In-Game Debugging
+  - [Visual Debugging](Template.Visualize/README.md)
   - [Metrics Overlay](docs/utilities/MetricsOverlay.md)
   - [Console Commands](docs/utilities/ConsoleCommands.md)
-  - [Custom Main Run Args](docs/utilities/CustomMainRunArgs.md)
-  - [GDUnit4 Testing](docs/utilities/GDUnitTesting.md)
 - Utilities
   - [Cat Lips Source Generators](https://github.com/Cat-Lips/GodotSharp.SourceGenerators)
+  - [Improved Debugger Dock](docs/utilities/EditorTools.md#debugger-dock)
   - [Simplified Tweens](docs/utilities/SimplifiedTweens.md)
   - [Services](docs/utilities/Services.md)
+  - [Custom Main Run Args](docs/utilities/CustomMainRunArgs.md)
+  - [GDUnit4 Testing](docs/utilities/GDUnitTesting.md)
  
 ## Prerequisites
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
@@ -47,9 +47,9 @@ Download the [latest release](https://github.com/CSharpGodotTools/Template/relea
 
 Click `Run Setup` to restart Godot with your template ready to go.
 
-## Updating
+## Update
 
-Updates can be done from `Dev Tools > Update`. One click, no more manual copying of files.
+Updates can be done from `Dev Tools > Update`.
 
 <img width="1500" height="332" alt="image" src="https://github.com/user-attachments/assets/283da14c-3449-40c3-ba9f-41b6448859a6" />
 

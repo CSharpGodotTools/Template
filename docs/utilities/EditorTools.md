@@ -1,22 +1,23 @@
-## Editor Tools
+# Editor Tools
 
-The "Dev Tools" dock is at the middle bottom of the editor.
+## Debugger+ Dock
+This is just like the built-in Godot debugger dock except with a few added features.
+- Copy all errors button
+- Double click to open any error (currently only tested with VSCode)
+- Hide methods from stack trace with `[StackTraceHidden]` attribute
+- Options to use short type names and include stack trace
+- Stack trace only includes what you need to see
+- Duplicate errors are not shown
+
+The debugger will not reliably update when errors are thrown so you will need to press the "Refresh" button to manually get them.
+
+<img width="740" height="363" alt="image" src="https://github.com/user-attachments/assets/57ec6006-964e-459a-889b-21e612a59f8a" />
+
+## Dev Tools Dock
+Contains useful utilities to clean stale uids, empty folders and so on.
 
 #### Dev
-<img width="1246" height="237" alt="image" src="https://github.com/user-attachments/assets/71d08471-f041-43d1-9350-50de5c26a4c2" />
+<img width="1083" height="153" alt="image" src="https://github.com/user-attachments/assets/cb28d5ee-b9b6-46b5-b89e-b27fd0f8c1e7" />
 
 #### Visual
-<img width="1246" height="199" alt="image" src="https://github.com/user-attachments/assets/e7dd079b-7c85-4a2e-a434-0b3ff7ecb08b" />
-
-#### Update
-<img src="https://github.com/user-attachments/assets/1843f8d1-be8e-49a4-9c04-f342aa3df418" />
-
-## Showcase 
-
-Copy all debugger errors at once, no more copying each individual error.
-
-[Copy Debugger Errors.webm](https://github.com/user-attachments/assets/6ee7cdcf-c0ff-4096-8455-926de973ab67)
-
-Full control over node hierachy window.
-
-[Node Hierachy.webm](https://github.com/user-attachments/assets/457d6b84-fff9-4ddd-ae7c-c862fb24d740)
+<img width="1301" height="193" alt="image" src="https://github.com/user-attachments/assets/f1372a99-f878-48d6-b729-88f6ea979351" />
