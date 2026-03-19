@@ -7,7 +7,10 @@ namespace GodotUtils;
 /// </summary>
 public class Component
 {
-    private readonly Node _node;
+    /// <summary>
+    /// The node this component is attached to.
+    /// </summary>
+    protected Node Owner { get; }
     private ComponentManager _componentManager = null!;
 
     /// <summary>
@@ -18,11 +21,11 @@ public class Component
     /// <summary>
     /// Creates a component attached to the provided owner node.
     /// </summary>
-    public Component(Node node)
+    public Component(Node owner)
     {
-        _node = node;
-        _node.Ready += OnReady;
-        _node.TreeExited += OnExitedTree;
+        Owner = owner;
+        Owner.Ready += OnReady;
+        Owner.TreeExited += OnExitedTree;
     }
 
     /// <summary>
@@ -134,8 +137,8 @@ public class Component
         finally
         {
             _componentManager.UnregisterAll(this);
-            _node.Ready -= OnReady;
-            _node.TreeExited -= OnExitedTree;
+            Owner.Ready -= OnReady;
+            Owner.TreeExited -= OnExitedTree;
         }
     }
 }

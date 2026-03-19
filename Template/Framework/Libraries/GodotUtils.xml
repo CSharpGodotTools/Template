@@ -1816,6 +1816,11 @@
             Base class for lightweight components attached to a node.
             </summary>
         </member>
+        <member name="P:GodotUtils.Component.Owner">
+            <summary>
+            The node this component is attached to.
+            </summary>
+        </member>
         <member name="P:GodotUtils.Component.IsPausable">
             <summary>
             Gets whether this component is blocked while the tree is paused.
