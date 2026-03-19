@@ -9,9 +9,9 @@ STAGED="$(git diff --cached --name-only)"
 # ------------------------------------------------------------
 # dotnet resolver
 # Works in:
-#  • normal terminals
-#  • CI
-#  • Flatpak GitHub Desktop
+#  - normal terminals
+#  - CI
+#  - Flatpak GitHub Desktop
 # ------------------------------------------------------------
 dotnet_cmd() {
     if command -v flatpak-spawn >/dev/null 2>&1; then
@@ -40,7 +40,7 @@ if $build_visualize; then
 fi
 
 # ------------------------------------------------------------
-# 1. Sync .editorconfig
+# Sync .editorconfig
 # ------------------------------------------------------------
 if echo "$STAGED" | grep -q "^\.editorconfig$"; then
     echo "[pre-commit] Syncing .editorconfig to subprojects..."
@@ -54,7 +54,7 @@ if echo "$STAGED" | grep -q "^\.editorconfig$"; then
 fi
 
 # ------------------------------------------------------------
-# 1b. Sync root .vscode configs to Template/.vscode
+# Sync root .vscode configs to Template/.vscode
 # ------------------------------------------------------------
 if echo "$STAGED" | grep -Eq "^\.vscode/(extensions|settings|tasks)\.json$"; then
     echo "[pre-commit] Syncing .vscode configs to Template/.vscode..."
@@ -62,7 +62,7 @@ if echo "$STAGED" | grep -Eq "^\.vscode/(extensions|settings|tasks)\.json$"; the
 fi
 
 # ------------------------------------------------------------
-# 2. Build GodotUtils
+# Build GodotUtils
 # ------------------------------------------------------------
 if $build_godotutils; then
     echo "[pre-commit] Building GodotUtils..."
@@ -77,7 +77,7 @@ if $build_godotutils; then
 fi
 
 # ------------------------------------------------------------
-# 3. Build Visualize
+# Build Visualize
 # ------------------------------------------------------------
 if $build_visualize; then
     echo "[pre-commit] Building Visualize..."
@@ -92,7 +92,7 @@ if $build_visualize; then
 fi
 
 # ------------------------------------------------------------
-# 4. Build PacketGen
+# Build PacketGen
 # ------------------------------------------------------------
 if $build_packetgen; then
     echo "[pre-commit] Building PacketGen..."
@@ -140,6 +140,28 @@ if $build_packetgen; then
     git add "$LIBS/PacketGen.$next_version.nupkg"
 fi
 
-echo "[pre-commit] ✓ complete"
+# ------------------------------------------------------------
+# Verify everything still works by building all projects
+# ------------------------------------------------------------
+
+echo "[pre-commit] Running full solution build..."
+
+if ! BUILD_OUTPUT=$(dotnet_cmd build 2>&1); then
+    echo ""
+    echo "========================================"
+    echo "[pre-commit] ❌ FINAL BUILD FAILED"
+    echo "========================================"
+    echo ""
+    echo "$BUILD_OUTPUT"
+    echo ""
+    echo "[pre-commit] Commit aborted due to build failure."
+    echo "Fix the errors above before committing."
+    echo "========================================"
+    echo ""
+
+    exit 1
+fi
+
+echo "[pre-commit] ✅ Full build succeeded"
 
 exit 0
