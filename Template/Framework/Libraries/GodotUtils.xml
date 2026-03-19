@@ -239,19 +239,34 @@
             Disable ALL collision layers, then enable the specified layers.
             </summary>
         </member>
+        <member name="M:GodotUtils.CollisionObject2DExtensions.EnableCollisionLayers(Godot.CollisionObject2D,System.String)">
+            <summary>
+            Disable ALL collision layers, then enable the specified layers.
+            </summary>
+        </member>
         <member name="M:GodotUtils.CollisionObject2DExtensions.EnableCollisionMasks(Godot.CollisionObject2D,System.Int32[])">
             <summary>
             Disable ALL mask layers, then enable the specified layers.
             </summary>
         </member>
-        <member name="M:GodotUtils.CollisionObject2DExtensions.ClearCollisionLayers(Godot.CollisionObject2D)">
+        <member name="M:GodotUtils.CollisionObject2DExtensions.EnableCollisionMasks(Godot.CollisionObject2D,System.String)">
+            <summary>
+            Disable ALL mask layers, then enable the specified layers.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.CollisionObject2DExtensions.DisableAllCollisionLayers(Godot.CollisionObject2D)">
             <summary>
             Disable ALL collision layers.
             </summary>
         </member>
-        <member name="M:GodotUtils.CollisionObject2DExtensions.ClearCollisionMasks(Godot.CollisionObject2D)">
+        <member name="M:GodotUtils.CollisionObject2DExtensions.DisableAllCollisionMasks(Godot.CollisionObject2D)">
             <summary>
             Disable ALL collision masks.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.CollisionObject2DExtensions.ConvertToUniqueIntArray(System.String)">
+            <summary>
+            Converts a string to a unique int array. For example "1223" becomes [1, 2, 3].
             </summary>
         </member>
         <member name="M:GodotUtils.ControlExtensions.SetLayout(Godot.Control,Godot.Control.LayoutPreset)">
