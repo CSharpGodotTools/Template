@@ -6,7 +6,7 @@
 class_name TemplateCsprojSynchronizer
 extends RefCounted
 
-const NamespaceMigration = preload("res://addons/SetupPlugin/Scripts/Setup/NamespaceMigration.gd")
+const NamespaceMigration = preload("../../Setup/NamespaceMigration.gd")
 
 # Applies all template .csproj settings to the project's .csproj.
 # Returns a success dictionary, or an error dictionary on the first failure.
@@ -26,7 +26,7 @@ func sync_template_settings(template_csproj_path: String, project_root: String) 
 	target_content = _sync_target_framework(template_content, target_content)
 	target_content = _sync_lang_version(template_content, target_content)
 
-	var packages = load("res://addons/SetupPlugin/Scripts/Dock/Update/TemplateCsprojPackages.gd").new()
+	var packages = load("TemplateCsprojPackages.gd").new()
 	for package_variant in packages.extract_packages(template_content):
 		if package_variant is Dictionary:
 			target_content = packages.upsert_package_reference(target_content, package_variant as Dictionary)

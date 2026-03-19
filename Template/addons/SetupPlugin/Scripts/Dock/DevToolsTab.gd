@@ -8,17 +8,17 @@ extends "res://addons/SetupPlugin/Scripts/Dock/DevToolsTabLayout.gd"
 
 const PROJECT_ROOT_PATH: String = "res://"
 const ANTI_ALIASING_PATH_3D: String = "rendering/anti_aliasing/quality/msaa_3d"
-const DebuggerErrorClipboardScript = preload("res://addons/SetupPlugin/Scripts/Dock/DebuggerErrorClipboard.gd")
-const DevToolsUidCleanupScript = preload("res://addons/SetupPlugin/Scripts/Dock/DevToolsUidCleanup.gd")
-const EditorSceneActionsScript = preload("res://addons/SetupPlugin/Scripts/Dock/EditorSceneActions.gd")
-const NullableProjectSettingsScript = preload("res://addons/SetupPlugin/Scripts/Dock/NullableProjectSettings.gd")
-const SceneHierarchyActionsScript = preload("res://addons/SetupPlugin/Scripts/Dock/SceneHierarchyActions.gd")
-const SetupDirectoryMaintenanceScript = preload("res://addons/SetupPlugin/Scripts/Setup/SetupDirectoryMaintenance.gd")
-const TemplateArchiveFetcherScript = preload("res://addons/SetupPlugin/Scripts/Dock/Update/TemplateArchiveFetcher.gd")
-const TemplateArchiveExtractorScript = preload("res://addons/SetupPlugin/Scripts/Dock/Update/TemplateArchiveExtractor.gd")
-const TemplateUpdateApplierScript = preload("res://addons/SetupPlugin/Scripts/Dock/Update/TemplateUpdateApplier.gd")
-const TemplateUpdateCacheScript = preload("res://addons/SetupPlugin/Scripts/Dock/Update/TemplateUpdateCache.gd")
-const UpdateFileOpsScript = preload("res://addons/SetupPlugin/Scripts/Dock/Update/UpdateFileOps.gd")
+const DebuggerErrorClipboardScript = preload("DebuggerErrorClipboard.gd")
+const DevToolsUidCleanupScript = preload("DevToolsUidCleanup.gd")
+const EditorSceneActionsScript = preload("EditorSceneActions.gd")
+const NullableProjectSettingsScript = preload("NullableProjectSettings.gd")
+const SceneHierarchyActionsScript = preload("SceneHierarchyActions.gd")
+const SetupDirectoryMaintenanceScript = preload("../Setup/SetupDirectoryMaintenance.gd")
+const TemplateArchiveFetcherScript = preload("Update/TemplateArchiveFetcher.gd")
+const TemplateArchiveExtractorScript = preload("Update/TemplateArchiveExtractor.gd")
+const TemplateUpdateApplierScript = preload("Update/TemplateUpdateApplier.gd")
+const TemplateUpdateCacheScript = preload("Update/TemplateUpdateCache.gd")
+const UpdateFileOpsScript = preload("Update/UpdateFileOps.gd")
 
 var _events_registered: bool
 var _debugger_error_clipboard

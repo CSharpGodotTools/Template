@@ -6,7 +6,7 @@
 class_name TemplateUpdateApplier
 extends RefCounted
 
-const UpdateFileOps = preload("res://addons/SetupPlugin/Scripts/Dock/Update/UpdateFileOps.gd")
+const UpdateFileOps = preload("UpdateFileOps.gd")
 
 # Sequentially applies each part of the update.
 # Stops and returns an error dictionary on the first failure.
@@ -47,7 +47,7 @@ func apply(template_root: String, project_root: String, status_callback: Callabl
 		return result
 
 	_notify(status_callback, "Synchronizing project .csproj...")
-	var csproj_sync = load("res://addons/SetupPlugin/Scripts/Dock/Update/TemplateCsprojSynchronizer.gd").new()
+	var csproj_sync = load("TemplateCsprojSynchronizer.gd").new()
 	result = csproj_sync.sync_template_settings(template_root.path_join("Template.csproj"), project_root)
 	if not result.get("success", false):
 		return result

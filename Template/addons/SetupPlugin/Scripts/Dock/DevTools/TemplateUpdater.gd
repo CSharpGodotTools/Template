@@ -5,10 +5,10 @@
 class_name TemplateUpdaterRuntime
 extends RefCounted
 
-const TemplateArchiveFetcherScript = preload("res://addons/SetupPlugin/Scripts/Dock/Update/TemplateArchiveFetcher.gd")
-const TemplateArchiveExtractorScript = preload("res://addons/SetupPlugin/Scripts/Dock/Update/TemplateArchiveExtractor.gd")
-const TemplateUpdateApplierScript = preload("res://addons/SetupPlugin/Scripts/Dock/Update/TemplateUpdateApplier.gd")
-const UpdateFileOps = preload("res://addons/SetupPlugin/Scripts/Dock/Update/UpdateFileOps.gd")
+const TemplateArchiveFetcherScript = preload("../Update/TemplateArchiveFetcher.gd")
+const TemplateArchiveExtractorScript = preload("../Update/TemplateArchiveExtractor.gd")
+const TemplateUpdateApplierScript = preload("../Update/TemplateUpdateApplier.gd")
+const UpdateFileOps = preload("../Update/UpdateFileOps.gd")
 
 # Runs the update pipeline using the latest commit on the main branch.
 func update_from_main(project_root: String, host: Node, status_callback: Callable) -> Dictionary:

@@ -6,8 +6,8 @@
 class_name DebuggerErrorClipboard
 extends RefCounted
 
-const DebuggerErrorFormatter = preload("res://addons/SetupPlugin/Scripts/Dock/DebuggerErrorFormatter.gd")
-const DebuggerErrorScanner = preload("res://addons/SetupPlugin/Scripts/Dock/DebuggerErrorScanner.gd")
+const DebuggerErrorFormatter = preload("DebuggerErrorFormatter.gd")
+const DebuggerErrorScanner = preload("DebuggerErrorScanner.gd")
 
 var _formatter: DebuggerErrorFormatter = DebuggerErrorFormatter.new()
 var _scanner: DebuggerErrorScanner = DebuggerErrorScanner.new()
