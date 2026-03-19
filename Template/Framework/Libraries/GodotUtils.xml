@@ -234,24 +234,24 @@
             Extension helpers for 2D collision objects.
             </summary>
         </member>
-        <member name="M:GodotUtils.CollisionObject2DExtensions.SetCollisionLayers(Godot.CollisionObject2D,System.Int32[])">
+        <member name="M:GodotUtils.CollisionObject2DExtensions.EnableCollisionLayers(Godot.CollisionObject2D,System.Int32[])">
             <summary>
-            Sets collision layers from the provided layer indices.
+            Disable ALL collision layers, then enable the specified layers.
             </summary>
         </member>
-        <member name="M:GodotUtils.CollisionObject2DExtensions.SetCollisionMasks(Godot.CollisionObject2D,System.Int32[])">
+        <member name="M:GodotUtils.CollisionObject2DExtensions.EnableCollisionMasks(Godot.CollisionObject2D,System.Int32[])">
             <summary>
-            Sets collision masks from the provided layer indices.
+            Disable ALL mask layers, then enable the specified layers.
             </summary>
         </member>
         <member name="M:GodotUtils.CollisionObject2DExtensions.ClearCollisionLayers(Godot.CollisionObject2D)">
             <summary>
-            Clears all collision layers.
+            Disable ALL collision layers.
             </summary>
         </member>
         <member name="M:GodotUtils.CollisionObject2DExtensions.ClearCollisionMasks(Godot.CollisionObject2D)">
             <summary>
-            Clears all collision masks.
+            Disable ALL collision masks.
             </summary>
         </member>
         <member name="M:GodotUtils.ControlExtensions.SetLayout(Godot.Control,Godot.Control.LayoutPreset)">

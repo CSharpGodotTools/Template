@@ -8,23 +8,23 @@ namespace GodotUtils;
 public static class CollisionObject2DExtensions
 {
     /// <summary>
-    /// Sets collision layers from the provided layer indices.
+    /// Disable ALL collision layers, then enable the specified layers.
     /// </summary>
-    public static void SetCollisionLayers(this CollisionObject2D collisionObject, params int[] layers)
+    public static void EnableCollisionLayers(this CollisionObject2D collisionObject, params int[] layers)
     {
         collisionObject.CollisionLayer = (uint)MathUtils.GetLayerValues(layers);
     }
 
     /// <summary>
-    /// Sets collision masks from the provided layer indices.
+    /// Disable ALL mask layers, then enable the specified layers.
     /// </summary>
-    public static void SetCollisionMasks(this CollisionObject2D collisionObject, params int[] layers)
+    public static void EnableCollisionMasks(this CollisionObject2D collisionObject, params int[] layers)
     {
         collisionObject.CollisionMask = (uint)MathUtils.GetLayerValues(layers);
     }
 
     /// <summary>
-    /// Clears all collision layers.
+    /// Disable ALL collision layers.
     /// </summary>
     public static void ClearCollisionLayers(this CollisionObject2D collisionObject2D)
     {
@@ -32,7 +32,7 @@ public static class CollisionObject2DExtensions
     }
 
     /// <summary>
-    /// Clears all collision masks.
+    /// Disable ALL collision masks.
     /// </summary>
     public static void ClearCollisionMasks(this CollisionObject2D collisionObject2D)
     {
