@@ -14,6 +14,10 @@ func format_item(item: TreeItem, include_stack_trace: bool, use_short_type_names
 
 	var lines: PackedStringArray = [title]
 	var source: String = _format_tree_item_source(item)
+	if _is_helper_source(source):
+		var stack_source: String = _find_first_user_source_from_stack(item)
+		if not stack_source.is_empty():
+			source = stack_source
 	if not source.is_empty():
 		lines.append("Source: %s" % source)
 	if include_stack_trace:
@@ -33,6 +37,53 @@ func _format_tree_item_source(item: TreeItem) -> String:
 		if parts.size() >= 2 and not str(parts[0]).is_empty():
 			return "%s:%s" % [str(parts[0]), str(parts[1])]
 	return ""
+
+func _is_helper_source(source: String) -> bool:
+	if source.is_empty():
+		return false
+	var lower: String = source.to_lower()
+	return lower.contains("debug.cs:") or lower.ends_with("debug.cs")
+
+func _find_first_user_source_from_stack(item: TreeItem) -> String:
+	var child: TreeItem = item.get_first_child()
+	var collecting: bool = false
+	while child != null:
+		var label: String = child.get_text(0)
+		var details: String = child.get_text(1).strip_edges()
+		if label.contains("Stack Trace"):
+			collecting = true
+			child = child.get_next()
+			continue
+		if collecting and not details.is_empty():
+			if _should_stop_stack_frame(details):
+				break
+			var source: String = _extract_source_from_stack_frame(details)
+			if not source.is_empty() and not _is_helper_source(source):
+				return source
+		child = child.get_next()
+	return ""
+
+func _extract_source_from_stack_frame(frame: String) -> String:
+	var at_split: PackedStringArray = frame.split(" @ ", false, 1)
+	if at_split.size() == 2:
+		var left: String = at_split[0].strip_edges()
+		var right: String = at_split[1].strip_edges()
+		if _looks_like_source_segment(left):
+			return left
+		if _looks_like_source_segment(right):
+			return right
+
+	var line_matcher: RegEx = RegEx.new()
+	if line_matcher.compile("(?:in\\s+)?(.+\\.(?:cs|gd))(?::line\\s*|:)(\\d+)") == OK:
+		var match: RegExMatch = line_matcher.search(frame)
+		if match != null:
+			return "%s:%s" % [match.get_string(1).strip_edges(), match.get_string(2).strip_edges()]
+
+	return ""
+
+func _looks_like_source_segment(text: String) -> bool:
+	var lower: String = text.to_lower()
+	return lower.contains(".cs:") or lower.contains(".gd:") or lower.contains(":line")
 
 # Walks the TreeItem's children to collect every stack frame that appears
 # after the row labelled "Stack Trace", stopping at internal .NET frames.

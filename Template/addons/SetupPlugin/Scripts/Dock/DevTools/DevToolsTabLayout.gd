@@ -21,11 +21,8 @@ var _visual_status_label: Label
 var _cleanup_uids_button: Button
 var _nullable_button: Button
 var _remove_empty_folders_button: Button
-var _copy_debugger_errors_button: Button
 var _close_all_scene_tabs_button: Button
 var _restart_editor_button: Button
-var _include_stack_trace_checkbox: CheckButton
-var _use_short_type_names_checkbox: CheckButton
 var _hierarchy_level_spinbox: SpinBox
 var _expand_to_level_button: Button
 var _fully_expand_button: Button
@@ -67,11 +64,8 @@ func _create_controls() -> void:
 	_cleanup_uids_button = _create_button("Cleanup uids", 150)
 	_nullable_button = _create_button("Nullable", 150)
 	_remove_empty_folders_button = _create_button("Remove Empty Folders", 180)
-	_copy_debugger_errors_button = _create_fill_button("Copy Debugger Errors")
 	_close_all_scene_tabs_button = _create_button("Close All Scene Tabs", 180)
 	_restart_editor_button = _create_button("Restart Editor", 180)
-	_include_stack_trace_checkbox = _create_checkbox("Include Stack Trace", false)
-	_use_short_type_names_checkbox = _create_checkbox("Use Short Type Names", true)
 
 	_hierarchy_level_spinbox = SpinBox.new()
 	_hierarchy_level_spinbox.min_value = 0
@@ -169,8 +163,6 @@ func _build_dev_tab() -> VBoxContainer:
 
 	var content: VBoxContainer = VBoxContainer.new()
 	content.add_theme_constant_override("separation", 8)
-	content.add_child(_create_row([_copy_debugger_errors_button], 0))
-	content.add_child(_create_row([_include_stack_trace_checkbox, _use_short_type_names_checkbox], 12))
 	content.add_child(_create_row([_cleanup_uids_button, _nullable_button, _remove_empty_folders_button, _view_template_repo_button, _close_all_scene_tabs_button, _restart_editor_button], 8))
 	content.add_child(_status_label)
 
