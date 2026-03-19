@@ -51,7 +51,6 @@ public class Profiler
         }
 
         entry.Stop();
-        Game.Metrics.StopMonitoring(key);
     }
 
     // Private Methods
