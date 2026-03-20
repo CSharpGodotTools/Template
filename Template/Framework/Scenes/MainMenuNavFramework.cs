@@ -1,9 +1,10 @@
 using Godot;
 using GodotUtils;
+using System;
 
 namespace __TEMPLATE__.Ui;
 
-public partial class MainMenuNav : Node
+public abstract partial class MainMenuNavFramework : Node
 {
     // Exports
     [Export] private PackedScene _gameScene = null!;
@@ -57,41 +58,42 @@ public partial class MainMenuNav : Node
         Game.FocusOutline.Focus(_playBtn);
     }
 
+    // Abstract
+    protected abstract void Play();
+    protected abstract void Mods();
+    protected abstract void Options();
+    protected abstract void Credits();
+    protected abstract void Quit();
+
     // Subscribers
     private void OnPlayPressed()
     {
-        GD.Print($"Remove this message and set the game scene (it is currently {(_gameScene == null ? "not set" : "set")})");
-        //_scene.SwitchTo(_gameScene);
+        ArgumentNullException.ThrowIfNull(_gameScene, nameof(_gameScene));
+        _scene.SwitchTo(_gameScene);
+        Play();
     }
 
     private void OnModsPressed()
     {
         _scene.SwitchToModLoader();
+        Mods();
     }
 
     private void OnOptionsPressed()
     {
         _scene.SwitchToOptions();
+        Options();
     }
 
     private void OnCreditsPressed()
     {
         _scene.SwitchToCredits();
+        Credits();
     }
 
     private async static void OnQuitPressed()
     {
         await Autoloads.Instance!.ExitGame();
-    }
-
-    private static void OnDiscordPressed()
-    {
-        OS.ShellOpen("https://discord.gg/j8HQZZ76r8");
-    }
-
-    private static void OnGitHubPressed()
-    {
-        OS.ShellOpen("https://github.com/ValksGodotTools/Template");
     }
 
     private void OnPostSceneChanged()
