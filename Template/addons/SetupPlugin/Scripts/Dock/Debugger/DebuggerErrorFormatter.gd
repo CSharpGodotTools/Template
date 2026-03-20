@@ -14,7 +14,7 @@ func format_item(item: TreeItem, include_stack_trace: bool, use_short_type_names
 
 	var lines: PackedStringArray = [title]
 	var source: String = _format_tree_item_source(item)
-	if _is_helper_source(source):
+	if _is_helper_source(source) or _is_non_actionable_source(source):
 		var stack_source: String = _find_first_user_source_from_stack(item)
 		if not stack_source.is_empty():
 			source = stack_source
@@ -43,6 +43,24 @@ func _is_helper_source(source: String) -> bool:
 		return false
 	var lower: String = source.to_lower()
 	return lower.contains("debug.cs:") or lower.ends_with("debug.cs")
+
+func _is_non_actionable_source(source: String) -> bool:
+	if source.is_empty():
+		return true
+	var trimmed: String = source.strip_edges()
+	if trimmed == "res://" or trimmed == "res://:0":
+		return true
+
+	var separator: int = trimmed.rfind(":")
+	if separator <= 0:
+		return false
+	var path: String = trimmed.substr(0, separator).strip_edges()
+	var line_text: String = trimmed.substr(separator + 1).strip_edges()
+	if path.is_empty() or path == "res://":
+		return true
+	if line_text.is_valid_int() and int(line_text) <= 0:
+		return true
+	return false
 
 func _find_first_user_source_from_stack(item: TreeItem) -> String:
 	var child: TreeItem = item.get_first_child()
@@ -96,16 +114,31 @@ func _collect_stack_trace(item: TreeItem, use_short_type_names: bool) -> PackedS
 		var details: String = child.get_text(1).strip_edges()
 		if label.contains("Stack Trace"):
 			collecting = true
-			if not details.is_empty() and not _should_stop_stack_frame(details):
+			if not details.is_empty() and not _should_stop_stack_frame(details) and not _is_non_actionable_stack_frame(details):
 				result.append(_normalize_stack_frame_signature(details) if use_short_type_names else details)
 			child = child.get_next()
 			continue
 		if collecting and not details.is_empty():
 			if _should_stop_stack_frame(details):
 				break
+			if _is_non_actionable_stack_frame(details):
+				child = child.get_next()
+				continue
 			result.append(_normalize_stack_frame_signature(details) if use_short_type_names else details)
 		child = child.get_next()
 	return result
+
+func _is_non_actionable_stack_frame(frame: String) -> bool:
+	var trimmed: String = frame.strip_edges()
+	if trimmed.is_empty():
+		return true
+	if trimmed == ":0" or trimmed.begins_with(":0 @"):
+		return true
+
+	var extracted_source: String = _extract_source_from_stack_frame(trimmed)
+	if not extracted_source.is_empty() and _is_non_actionable_source(extracted_source):
+		return true
+	return false
 
 # Returns true for internal .NET/GDNative frames that offer no value to the
 # developer and should be excluded from the output.
