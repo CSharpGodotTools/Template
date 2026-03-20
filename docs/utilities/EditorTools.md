@@ -2,16 +2,15 @@
 
 ## Debugger+ Dock
 This is just like the built-in Godot debugger dock except with a few added features.
-- Copy all errors button
-- Double click to open any error (currently only tested with VSCode)
+- Copy all errors button with options to exclude stack trace and use short type names
+- Options to toggle timestamps and duplicates
+- Double click to open any entry (currently only tested with VSCode)
 - Hide methods from stack trace with `[StackTraceHidden]` attribute
-- Options to use short type names and include stack trace
 - Stack trace only includes what you need to see
-- Duplicate errors are not shown
 
 The debugger will not reliably update when errors are thrown so you will need to press the "Refresh" button to manually get them.
 
-<img width="740" height="363" alt="image" src="https://github.com/user-attachments/assets/57ec6006-964e-459a-889b-21e612a59f8a" />
+<img width="836" height="359" alt="image" src="https://github.com/user-attachments/assets/5f6b3e7b-9ce5-464c-8110-25909ed91c6e" />
 
 ## Dev Tools Dock
 Contains useful utilities to clean stale uids, empty folders and so on.
