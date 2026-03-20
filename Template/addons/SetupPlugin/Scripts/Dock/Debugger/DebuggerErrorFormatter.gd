@@ -11,6 +11,9 @@ func format_item(item: TreeItem, include_stack_trace: bool, use_short_type_names
 		title = _strip_fully_qualified_names(title)
 	if not _looks_like_error_line(title):
 		return ""
+	var row_timestamp: String = _extract_row_timestamp(item)
+	if not row_timestamp.is_empty():
+		title = "%s %s" % [row_timestamp, title]
 
 	var lines: PackedStringArray = [title]
 	var source: String = _format_tree_item_source(item)
@@ -37,6 +40,51 @@ func _format_tree_item_source(item: TreeItem) -> String:
 		if parts.size() >= 2 and not str(parts[0]).is_empty():
 			return "%s:%s" % [str(parts[0]), str(parts[1])]
 	return ""
+
+func _extract_row_timestamp(item: TreeItem) -> String:
+	var text_timestamp: String = _normalize_elapsed_timestamp_from_text(item.get_text(0).strip_edges())
+	if not text_timestamp.is_empty():
+		return text_timestamp
+
+	var meta: Variant = item.get_metadata(0)
+	if meta is Array:
+		var parts: Array = meta
+		if parts.size() >= 3:
+			var maybe_elapsed = parts[2]
+			if typeof(maybe_elapsed) == TYPE_INT:
+				return _format_elapsed_from_msec(int(maybe_elapsed))
+			if typeof(maybe_elapsed) == TYPE_FLOAT:
+				return _format_elapsed_from_msec(int(float(maybe_elapsed) * 1000.0))
+	return ""
+
+func _normalize_elapsed_timestamp_from_text(text: String) -> String:
+	if text.is_empty():
+		return ""
+	var regex: RegEx = RegEx.new()
+	if regex.compile("(\\d+):(\\d{2}):(\\d{2})[\\.:](\\d{1,3})") != OK:
+		return ""
+	var match: RegExMatch = regex.search(text)
+	if match == null:
+		return ""
+	var hours: int = int(match.get_string(1))
+	var minutes: int = int(match.get_string(2))
+	var seconds: int = int(match.get_string(3))
+	var millis_text: String = match.get_string(4)
+	var millis: int = int(millis_text)
+	if millis_text.length() == 1:
+		millis *= 100
+	elif millis_text.length() == 2:
+		millis *= 10
+	return "%d:%02d:%02d:%03d" % [hours, minutes, seconds, millis]
+
+func _format_elapsed_from_msec(elapsed_msec: int) -> String:
+	var safe_elapsed: int = maxi(0, elapsed_msec)
+	var total_seconds: int = safe_elapsed / 1000
+	var hours: int = total_seconds / 3600
+	var minutes: int = (total_seconds % 3600) / 60
+	var seconds: int = total_seconds % 60
+	var millis: int = safe_elapsed % 1000
+	return "%d:%02d:%02d:%03d" % [hours, minutes, seconds, millis]
 
 func _is_helper_source(source: String) -> bool:
 	if source.is_empty():
