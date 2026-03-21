@@ -108,6 +108,9 @@ internal sealed class ReadonlyMemberBinder
             return;
         }
 
+        // Readonly column should never accept user edits.
+        visualControlInfo.VisualControl.SetEditable(false);
+
         _updateActions.Add(() =>
         {
             object? current = accessor.GetValue(target);

@@ -63,8 +63,8 @@ public class PlayerMovementComponent
 | **Classes**       | ✅         | `class`                                       |                                                                       |
 | **Resources**     | ✅         | `Resource`                                    |                                                                       |
 | **Godot Classes** | ❌         | `PointLight2D`, `CharacterBody3D`             |                                                                       |
-| **Godot Array**   | ❌         | `Godot.Collections.Array`                     |                                                                       |
-| **Godot Dictionary** | ❌      | `Godot.Collections.Dictionary`                |                                                                       |
+| **Godot Array**   | ✅         | `Godot.Collections.Array<int>`   |           |
+| **Godot Dictionary** | ✅      | `Godot.Collections.Dictionary<int, bool>`     |          |
 
 > [!NOTE]
 > No mouse interactions have been implemented in 3D, so you will only be able to use it for read only.

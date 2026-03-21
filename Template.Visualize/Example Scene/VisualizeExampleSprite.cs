@@ -6,13 +6,22 @@ namespace GodotUtils.Debugging;
 
 internal partial class VisualizeExampleSprite : Sprite2D
 {
-    [Visualize] private float   _rotation;
-    [Visualize] private Color   _color = Colors.White;
-    [Visualize] private float   _skew;
+    [Visualize] private float _rotation;
+    [Visualize] private Color _color = Colors.White;
+    [Visualize] private float _skew;
     [Visualize] private Vector2 _offset;
+    [Visualize] private Godot.Collections.Array<int> _godotArray = null!;
+    [Visualize] private Godot.Collections.Dictionary<int, bool> _godotDict = null!;
 
     public override void _EnterTree()
     {
+        _godotArray = [1, 2, 3];
+        _godotDict = new Godot.Collections.Dictionary<int, bool>
+        {
+            { 1, false },
+            { 2, true },
+            { 3, false }
+        };
         Visualize.Register(this);
     }
 
@@ -20,8 +29,8 @@ internal partial class VisualizeExampleSprite : Sprite2D
     {
         Rotation = _rotation;
         Modulate = _color;
-        Skew     = _skew;
-        Offset   = _offset;
+        Skew = _skew;
+        Offset = _offset;
     }
 
     [Visualize]

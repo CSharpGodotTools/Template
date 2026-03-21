@@ -140,6 +140,8 @@ internal static partial class VisualControlTypes
         VBoxContainer listVBox = new() { SizeFlagsHorizontal = SizeFlags.ShrinkEnd | SizeFlags.Expand };
         Button addButton = new() { Text = "+" };
         const string IndexMetaKey = "Visualize_Index";
+        // Shared between mutable and readonly views so controls can be toggled at runtime.
+        bool isEditable = true;
 
         void AddEntry(object? value, int index)
         {
@@ -147,7 +149,7 @@ internal static partial class VisualControlTypes
             row.SetMeta(IndexMetaKey, index);
             VisualControlInfo control = CreateControlForType(elementType, null, new VisualControlContext(value, v =>
             {
-                int currentIndex = Convert.ToInt32(row.GetMeta(IndexMetaKey));
+                int currentIndex = GetRowIndex(row);
                 setValue(currentIndex, v);
                 context.ValueChanged(getCollectionValue());
             }));
@@ -156,12 +158,18 @@ internal static partial class VisualControlTypes
                 return;
 
             control.VisualControl.SetValue(value!);
+            control.VisualControl.SetEditable(isEditable);
 
-            Button removeButton = new() { Text = "-" };
+            Button removeButton = new() { Text = "-", Disabled = !isEditable };
 
             void OnRemovePressed()
             {
-                int currentIndex = Convert.ToInt32(row.GetMeta(IndexMetaKey));
+                if (!isEditable)
+                {
+                    return;
+                }
+
+                int currentIndex = GetRowIndex(row);
                 listVBox.RemoveChild(row);
                 removeValue(currentIndex);
                 context.ValueChanged(getCollectionValue());
@@ -183,6 +191,11 @@ internal static partial class VisualControlTypes
 
         void OnAddPressed()
         {
+            if (!isEditable)
+            {
+                return;
+            }
+
             object newValue = VisualMethods.CreateDefaultValue(elementType);
             addValue(newValue);
             context.ValueChanged(getCollectionValue());
@@ -195,7 +208,16 @@ internal static partial class VisualControlTypes
 
         listVBox.AddChild(addButton);
 
-        return new VisualControlInfo(new VBoxContainerControl(listVBox));
+        return new VisualControlInfo(new VBoxContainerControl(
+            listVBox,
+            // Readonly polling refreshes the rendered rows from the latest collection state.
+            _ => RefreshEntries(),
+            editable =>
+            {
+                isEditable = editable;
+                addButton.Disabled = !editable;
+                RefreshEntries();
+            }));
 
         void UpdateIndicesAfterRemoval(int removedIndex)
         {
@@ -206,12 +228,39 @@ internal static partial class VisualControlTypes
                     continue;
                 }
 
-                int currentIndex = Convert.ToInt32(row.GetMeta(IndexMetaKey));
+                int currentIndex = GetRowIndex(row);
                 if (currentIndex > removedIndex)
                 {
                     row.SetMeta(IndexMetaKey, currentIndex - 1);
                 }
             }
+        }
+
+        static int GetRowIndex(HBoxContainer row)
+        {
+            // Metadata is stored as Variant in Godot.
+            Variant indexVariant = row.GetMeta(IndexMetaKey);
+            return indexVariant.AsInt32();
+        }
+
+        void RefreshEntries()
+        {
+            foreach (Node child in listVBox.GetChildren())
+            {
+                if (child == addButton)
+                {
+                    continue;
+                }
+
+                listVBox.RemoveChild(child);
+            }
+
+            for (int i = 0; i < getCount(); i++)
+            {
+                AddEntry(getValue(i), i);
+            }
+
+            listVBox.MoveChild(addButton, listVBox.GetChildCount() - 1);
         }
     }
 }

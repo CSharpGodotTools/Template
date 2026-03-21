@@ -58,9 +58,34 @@
             Utility class for converting provided values to method parameters
             </summary>
         </member>
+        <member name="M:GodotUtils.Debugging.VBoxContainerControl.ApplyEditableRecursive(Godot.Control,System.Boolean)">
+            <summary>
+            Applies editable state to this control and all control descendants.
+            </summary>
+        </member>
         <member name="T:GodotUtils.Debugging.VisualControlTypes">
             <summary>
             More utility methods
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.CreateDictionaryAdapter(System.Object,System.Type,System.Type)">
+            <summary>
+            Builds a common dictionary adapter for both CLR and Godot generic dictionary implementations.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.EnumerateDictionaryEntries(System.Collections.IDictionary)">
+            <summary>
+            Enumerates key/value pairs from an <see cref="T:System.Collections.IDictionary"/>.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.EnumerateObjectDictionaryEntries(System.Object)">
+            <summary>
+            Enumerates key/value pairs from dictionary-like objects that expose an enumerable of entries.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.TryGetNextAvailableKey(System.Object,System.Object,System.Type,System.Func{System.Object,System.Boolean},System.Object@)">
+            <summary>
+            Resolves duplicate numeric or enum keys by walking in the user's edit direction until a free key is found.
             </summary>
         </member>
         <member name="M:GodotUtils.Debugging.VisualControlTypes.TryGetExportAttributeRange(System.Reflection.MemberInfo,GodotUtils.Debugging.VisualControlTypes.ExportAttributeRange@)">
@@ -266,6 +291,16 @@
         <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._offset">
             <summary>
             Cached name for the '_offset' field.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._godotArray">
+            <summary>
+            Cached name for the '_godotArray' field.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._godotDict">
+            <summary>
+            Cached name for the '_godotDict' field.
             </summary>
         </member>
         <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.SetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
