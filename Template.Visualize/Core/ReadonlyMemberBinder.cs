@@ -14,6 +14,8 @@ internal sealed class ReadonlyMemberBinder
     private const int PollDelayMilliseconds = 1000;
     private const string NullMembersMessageTemplate = "[Visualize] AddReadonlyControls called with null members on node '{0}'";
     private const string TrackingMessageTemplate = "[color=orange][Visualize] Tracking '{0}' to see if '{1}' value changes[/color]";
+    private const int ClassReadonlyRowSeparation = 4;
+    private static readonly Color _hiddenGhostTitleColor = new(1, 1, 1, 0);
 
     private readonly List<Action> _updateActions = [];
 
@@ -113,6 +115,11 @@ internal sealed class ReadonlyMemberBinder
         // Readonly column should never accept user edits.
         visualControl.SetEditable(false);
 
+        if (visualControl is ClassControl)
+        {
+            SetNestedLabelsVisible(visualControl.Control, false);
+        }
+
         _updateActions.Add(() =>
         {
             object? current = accessor.GetValue(target);
@@ -140,7 +147,53 @@ internal sealed class ReadonlyMemberBinder
 
         hbox.AddChild(visualControl.Control);
 
+        if (visualControl is ClassControl)
+        {
+            Label ghostTitle = new()
+            {
+                Name = "ClassTitleGhost",
+                Text = VisualText.ToDisplayName(accessor.Name),
+                HorizontalAlignment = HorizontalAlignment.Right,
+                SizeFlagsHorizontal = Control.SizeFlags.ExpandFill,
+                SelfModulate = _hiddenGhostTitleColor,
+                LabelSettings = new LabelSettings
+                {
+                    FontSize = VisualUiLayout.MemberFontSize,
+                    FontColor = Colors.White,
+                    OutlineSize = VisualUiLayout.FontOutlineSize,
+                    OutlineColor = Colors.Black,
+                }
+            };
+
+            VBoxContainer classReadonlyRow = new()
+            {
+                Name = accessor.Name,
+                SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+            };
+            classReadonlyRow.AddThemeConstantOverride("separation", ClassReadonlyRowSeparation);
+            classReadonlyRow.AddChild(ghostTitle);
+            classReadonlyRow.AddChild(hbox);
+            readonlyMembers.AddChild(classReadonlyRow);
+            return;
+        }
+
         readonlyMembers.AddChild(hbox);
+    }
+
+    private static void SetNestedLabelsVisible(Control root, bool visible)
+    {
+        foreach (Node child in root.GetChildren())
+        {
+            if (child is Label label)
+            {
+                label.Visible = visible;
+            }
+
+            if (child is Control childControl)
+            {
+                SetNestedLabelsVisible(childControl, visible);
+            }
+        }
     }
 
 }

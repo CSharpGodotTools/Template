@@ -23,6 +23,13 @@ internal static partial class VisualControlTypes
                 value => list.Add(value),
                 index => list.RemoveAt(index),
                 () => list,
+                value =>
+                {
+                    if (value is IList nextList)
+                    {
+                        list = nextList;
+                    }
+                },
                 context);
         }
 
@@ -45,6 +52,13 @@ internal static partial class VisualControlTypes
             value => addMethod.Invoke(listObject, [value]),
             index => removeAtMethod.Invoke(listObject, [index]),
             () => listObject,
+            value =>
+            {
+                if (value != null)
+                {
+                    listObject = value;
+                }
+            },
             context);
     }
 }

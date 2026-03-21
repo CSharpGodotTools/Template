@@ -15,9 +15,11 @@ internal static class VisualUI
     private const string MainPanelName = "Main Panel";
     private const string MutableMembersName = "Mutable Members";
     private const string ReadonlyMembersName = "Readonly Members";
+    private const string MethodsName = "Methods";
     private const string MembersColumnsName = "Members Columns";
     private const string LogsName = "Logs";
     private const string MainVBoxName = "Main VBox";
+    private const int MembersColumnsSeparation = 6;
 
     /// <summary>
     /// Creates the visual panel for a specified visual node.
@@ -57,8 +59,15 @@ internal static class VisualUI
         VisualMemberElementBuilder.AddMutableControls(mutableMembersVbox, visualData.Properties, visualizedObject, node.Name);
         VisualMemberElementBuilder.AddMutableControls(mutableMembersVbox, visualData.Fields, visualizedObject, node.Name);
 
+        VBoxContainer methodsVbox = new()
+        {
+            Name = MethodsName,
+            MouseFilter = MouseFilterEnum.Ignore,
+            SizeFlagsHorizontal = SizeFlags.ShrinkBegin
+        };
+
         // Methods
-        VisualMethods.AddMethodInfoElements(mutableMembersVbox, visualData.Methods, visualizedObject);
+        VisualMethods.AddMethodInfoElements(methodsVbox, visualData.Methods, visualizedObject);
 
         VBoxContainer vboxLogs = new()
         {
@@ -81,7 +90,7 @@ internal static class VisualUI
             MouseFilter = MouseFilterEnum.Ignore
         };
 
-        VBoxContainer titleBar = VisualTitleBarBuilder.Build(node.Name, mutableMembersVbox, readonlyMembersVbox, visualData, readonlyMembers);
+        VBoxContainer titleBar = VisualTitleBarBuilder.Build(node.Name, mutableMembersVbox, readonlyMembersVbox, methodsVbox, visualData, readonlyMembers);
         titleBar.Name = MainVBoxName;
         titleBar.MouseFilter = MouseFilterEnum.Ignore;
 
@@ -90,10 +99,11 @@ internal static class VisualUI
             Name = MembersColumnsName,
             MouseFilter = MouseFilterEnum.Ignore
         };
-        membersColumns.Alignment = BoxContainer.AlignmentMode.Center;
-        membersColumns.AddThemeConstantOverride("separation", 6);
+        membersColumns.Alignment = BoxContainer.AlignmentMode.Begin;
+        membersColumns.AddThemeConstantOverride("separation", MembersColumnsSeparation);
         membersColumns.AddChild(mutableMembersVbox);
         membersColumns.AddChild(readonlyMembersVbox);
+        membersColumns.AddChild(methodsVbox);
 
         VBoxContainer scrollContent = new()
         {

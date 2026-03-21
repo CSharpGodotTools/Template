@@ -17,11 +17,12 @@ internal static partial class VisualControlTypes
         bool isEditable = true;
 
         Type[] genericArguments = type.GetGenericArguments();
-        Type keyType = genericArguments[0];
-        Type valueType = genericArguments[1];
+        bool useStableDisplayOrder = genericArguments.Length == 2;
+        Type keyType = genericArguments.Length == 2 ? genericArguments[0] : typeof(object);
+        Type valueType = genericArguments.Length == 2 ? genericArguments[1] : typeof(object);
 
-        object defaultKey = VisualMethods.CreateDefaultValue(keyType);
-        object defaultValue = VisualMethods.CreateDefaultValue(valueType);
+        object defaultKey = keyType == typeof(object) ? "Key" : VisualMethods.CreateDefaultValue(keyType);
+        object defaultValue = valueType == typeof(object) ? string.Empty : VisualMethods.CreateDefaultValue(valueType);
 
         // Keep the runtime dictionary instance and an adapter so CLR and Godot dictionaries share one UI path.
         object dictionaryObject = context.InitialValue ?? Activator.CreateInstance(type)!;
@@ -31,7 +32,11 @@ internal static partial class VisualControlTypes
 
         foreach ((object key, object value) in adapter.Entries)
         {
-            displayOrder.Add(key);
+            if (useStableDisplayOrder)
+            {
+                displayOrder.Add(key);
+            }
+
             AddEntry(key, value);
         }
 
@@ -42,14 +47,16 @@ internal static partial class VisualControlTypes
                 return;
             }
 
-            if (adapter.ContainsKey(defaultKey))
+            object keyToAdd = defaultKey;
+
+            if (adapter.ContainsKey(keyToAdd) && !TryGetNextAvailableAddKey(keyToAdd, keyType, adapter.ContainsKey, out keyToAdd))
             {
                 return;
             }
 
-            adapter.Set(defaultKey, defaultValue);
+            adapter.Set(keyToAdd, defaultValue);
             context.ValueChanged(dictionaryObject);
-            AddEntry(defaultKey, defaultValue);
+            AddEntry(keyToAdd, defaultValue);
             dictionaryVBox.MoveChild(addButton, dictionaryVBox.GetChildCount() - 1);
         }
 
@@ -64,7 +71,11 @@ internal static partial class VisualControlTypes
                 // Readonly polling can replace the bound instance; rebuild adapters from the latest object.
                 dictionaryObject = value;
                 adapter = CreateDictionaryAdapter(dictionaryObject, type, keyType);
-                ReconcileDisplayOrder();
+                if (useStableDisplayOrder)
+                {
+                    ReconcileDisplayOrder();
+                }
+
                 RefreshEntries();
             },
             editable =>
@@ -95,11 +106,11 @@ internal static partial class VisualControlTypes
 
                 if (Equals(v, currentKey))
                 {
-                    keyControlInfo?.VisualControl?.SetValue(currentKey);
                     return;
                 }
 
                 object resolvedKey = v;
+                bool keyWasAutoAdjusted = false;
 
                 // If a key already exists, resolve to the nearest free numeric/enum key.
                 if (adapter.ContainsKey(resolvedKey) && !TryGetNextAvailableKey(currentKey, resolvedKey, keyType, adapter.ContainsKey, out resolvedKey))
@@ -108,7 +119,9 @@ internal static partial class VisualControlTypes
                     return;
                 }
 
-                if (resolvedKey.GetType() != keyType)
+                keyWasAutoAdjusted = !Equals(resolvedKey, v);
+
+                if (!keyType.IsAssignableFrom(resolvedKey.GetType()))
                 {
                     keyControlInfo?.VisualControl?.SetValue(currentKey);
                     throw new ArgumentException($"[Visualize] Type mismatch: Expected {keyType}, got {resolvedKey.GetType()}");
@@ -119,7 +132,12 @@ internal static partial class VisualControlTypes
                 adapter.Set(resolvedKey, currentValue);
                 currentKey = resolvedKey;
                 context.ValueChanged(dictionaryObject);
-                keyControlInfo?.VisualControl?.SetValue(currentKey);
+
+                if (keyWasAutoAdjusted)
+                {
+                    keyControlInfo?.VisualControl?.SetValue(currentKey);
+                }
+
                 valueControl.VisualControl?.SetValue(defaultValue);
             }));
 
@@ -162,7 +180,10 @@ internal static partial class VisualControlTypes
 
         void RefreshEntries()
         {
-            ReconcileDisplayOrder();
+            if (useStableDisplayOrder)
+            {
+                ReconcileDisplayOrder();
+            }
 
             foreach (Node child in dictionaryVBox.GetChildren())
             {
@@ -175,16 +196,26 @@ internal static partial class VisualControlTypes
                 child.QueueFree();
             }
 
-            foreach (object key in displayOrder)
+            if (!useStableDisplayOrder)
             {
-                object? value = adapter.Get(key);
-
-                if (value == null)
+                foreach ((object key, object value) in adapter.Entries)
                 {
-                    continue;
+                    AddEntry(key, value);
                 }
+            }
+            else
+            {
+                foreach (object key in displayOrder)
+                {
+                    object? value = adapter.Get(key);
 
-                AddEntry(key, value);
+                    if (value == null)
+                    {
+                        continue;
+                    }
+
+                    AddEntry(key, value);
+                }
             }
 
             dictionaryVBox.MoveChild(addButton, dictionaryVBox.GetChildCount() - 1);
@@ -260,8 +291,18 @@ internal static partial class VisualControlTypes
         }
 
         PropertyInfo? indexerProperty = dictionaryType.GetProperty("Item");
-        MethodInfo? containsKeyMethod = dictionaryType.GetMethod("ContainsKey", [keyType]);
-        MethodInfo? removeMethod = dictionaryType.GetMethod("Remove", [keyType]);
+        MethodInfo? containsKeyMethod = FindDictionarySingleParameterMethod(dictionaryType, "ContainsKey");
+        MethodInfo? removeMethod = FindDictionarySingleParameterMethod(dictionaryType, "Remove");
+        Type indexerKeyType = indexerProperty?.GetIndexParameters().Length == 1
+            ? indexerProperty.GetIndexParameters()[0].ParameterType
+            : typeof(object);
+        Type indexerValueType = indexerProperty?.PropertyType ?? typeof(object);
+        Type containsKeyParamType = containsKeyMethod?.GetParameters().Length == 1
+            ? containsKeyMethod.GetParameters()[0].ParameterType
+            : typeof(object);
+        Type removeKeyParamType = removeMethod?.GetParameters().Length == 1
+            ? removeMethod.GetParameters()[0].ParameterType
+            : typeof(object);
 
         // Godot generic dictionaries are adapted through reflected members.
         if (indexerProperty == null || containsKeyMethod == null || removeMethod == null)
@@ -271,10 +312,10 @@ internal static partial class VisualControlTypes
 
         return new DictionaryAdapter(
             () => EnumerateObjectDictionaryEntries(dictionaryObject),
-            key => (bool)containsKeyMethod.Invoke(dictionaryObject, [key])!,
-            key => indexerProperty.GetValue(dictionaryObject, [key]),
-            (key, value) => indexerProperty.SetValue(dictionaryObject, value, [key]),
-            key => removeMethod.Invoke(dictionaryObject, [key]));
+            key => (bool)containsKeyMethod.Invoke(dictionaryObject, [ConvertDictionaryValueToExpectedType(key, containsKeyParamType)])!,
+            key => indexerProperty.GetValue(dictionaryObject, [ConvertDictionaryValueToExpectedType(key, indexerKeyType)]),
+            (key, value) => indexerProperty.SetValue(dictionaryObject, ConvertDictionaryValueToExpectedType(value, indexerValueType), [ConvertDictionaryValueToExpectedType(key, indexerKeyType)]),
+            key => removeMethod.Invoke(dictionaryObject, [ConvertDictionaryValueToExpectedType(key, removeKeyParamType)]));
     }
 
     /// <summary>
@@ -398,6 +439,152 @@ internal static partial class VisualControlTypes
                 return false;
             }
         }
+    }
+
+    private static bool TryGetNextAvailableAddKey(object duplicateKey, Type keyType, Func<object, bool> containsKey, out object resolvedKey)
+    {
+        resolvedKey = duplicateKey;
+
+        if (keyType.IsEnum)
+        {
+            long candidate;
+
+            try
+            {
+                candidate = Convert.ToInt64(duplicateKey);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            while (true)
+            {
+                candidate += 1;
+                object enumKey = Enum.ToObject(keyType, candidate);
+
+                if (containsKey(enumKey))
+                {
+                    continue;
+                }
+
+                resolvedKey = enumKey;
+                return true;
+            }
+        }
+
+        if (keyType.IsNumericType())
+        {
+            long candidate;
+
+            try
+            {
+                candidate = Convert.ToInt64(duplicateKey);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            while (true)
+            {
+                candidate += 1;
+
+                try
+                {
+                    object nextKey = Convert.ChangeType(candidate, keyType)!;
+
+                    if (containsKey(nextKey))
+                    {
+                        continue;
+                    }
+
+                    resolvedKey = nextKey;
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+        }
+
+        if (keyType == typeof(string) || keyType == typeof(object))
+        {
+            string baseKey = duplicateKey?.ToString() ?? "Key";
+            int suffix = 1;
+
+            while (true)
+            {
+                object nextKey = $"{baseKey} {suffix}";
+
+                if (containsKey(nextKey))
+                {
+                    suffix++;
+                    continue;
+                }
+
+                resolvedKey = nextKey;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static object? ConvertDictionaryValueToExpectedType(object? value, Type expectedType)
+    {
+        if (expectedType == typeof(Variant))
+        {
+            return ConvertDictionaryVariantValue(value);
+        }
+
+        if (value == null || expectedType.IsInstanceOfType(value))
+        {
+            return value;
+        }
+
+        return value;
+    }
+
+    private static MethodInfo? FindDictionarySingleParameterMethod(Type type, string methodName)
+    {
+        foreach (MethodInfo method in type.GetMethods())
+        {
+            if (method.Name == methodName && method.GetParameters().Length == 1)
+            {
+                return method;
+            }
+        }
+
+        return null;
+    }
+
+    private static Variant ConvertDictionaryVariantValue(object? value)
+    {
+        return value switch
+        {
+            null => Variant.From((string?)null),
+            Variant variant => variant,
+            bool v => Variant.From(v),
+            int v => Variant.From(v),
+            long v => Variant.From(v),
+            float v => Variant.From(v),
+            double v => Variant.From(v),
+            string v => Variant.From(v),
+            Vector2 v => Variant.From(v),
+            Vector2I v => Variant.From(v),
+            Vector3 v => Variant.From(v),
+            Vector3I v => Variant.From(v),
+            Vector4 v => Variant.From(v),
+            Vector4I v => Variant.From(v),
+            Quaternion v => Variant.From(v),
+            Color v => Variant.From(v),
+            NodePath v => Variant.From(v),
+            StringName v => Variant.From(v),
+            GodotObject v => Variant.From(v),
+            _ => Variant.From(value.ToString() ?? string.Empty)
+        };
     }
 
     private readonly record struct DictionaryAdapter(

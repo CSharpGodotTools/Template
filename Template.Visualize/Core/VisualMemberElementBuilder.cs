@@ -7,6 +7,10 @@ namespace GodotUtils.Debugging;
 
 internal static class VisualMemberElementBuilder
 {
+    private const int MemberRowSeparation = 8;
+    private const int ClassContainerSeparation = 4;
+    private const string LabelSpacerName = "LabelSpacer";
+
     public static void AddMutableControls(Control vbox, IEnumerable<MemberInfo> members, object target, string displayName)
     {
         foreach (MemberInfo member in members)
@@ -35,24 +39,19 @@ internal static class VisualMemberElementBuilder
             VisualHandler.SetMemberValue(member, target, v);
         }));
 
-        Control container;
+        HBoxContainer container = new() { Alignment = BoxContainer.AlignmentMode.End };
+        container.AddThemeConstantOverride("separation", MemberRowSeparation);
+
         Label label = new();
 
         if (element.VisualControl is ClassControl)
         {
-            container = new VBoxContainer();
             label.LabelSettings = new LabelSettings
             {
                 FontSize = VisualUiLayout.MemberFontSize,
                 OutlineSize = VisualUiLayout.FontOutlineSize,
                 OutlineColor = Colors.Black,
             };
-        }
-        else
-        {
-            HBoxContainer hboxContainer = new() { Alignment = BoxContainer.AlignmentMode.End };
-            hboxContainer.AddThemeConstantOverride("separation", 8);
-            container = hboxContainer;
         }
 
         label.Text = VisualText.ToDisplayName(member.Name);
@@ -65,7 +64,53 @@ internal static class VisualMemberElementBuilder
             return container;
         }
 
+        if (element.VisualControl is ClassControl)
+        {
+            label.LabelSettings = new LabelSettings
+            {
+                FontSize = VisualUiLayout.MemberFontSize,
+                FontColor = Colors.LightSkyBlue,
+                OutlineSize = VisualUiLayout.FontOutlineSize,
+                OutlineColor = Colors.Black,
+            };
+            label.HorizontalAlignment = HorizontalAlignment.Right;
+            label.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+
+            HBoxContainer contentRow = new() { Alignment = BoxContainer.AlignmentMode.End };
+            contentRow.Name = $"{member.Name}_content";
+            contentRow.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+            contentRow.AddThemeConstantOverride("separation", MemberRowSeparation);
+
+            Control classSpacer = new()
+            {
+                Name = LabelSpacerName,
+                MouseFilter = Control.MouseFilterEnum.Ignore,
+                SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+            };
+
+            contentRow.AddChild(classSpacer);
+            contentRow.AddChild(element.VisualControl.Control);
+
+            VBoxContainer classContainer = new()
+            {
+                Name = member.Name,
+                SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+            };
+            classContainer.AddThemeConstantOverride("separation", ClassContainerSeparation);
+            classContainer.AddChild(label);
+            classContainer.AddChild(contentRow);
+
+            return classContainer;
+        }
+
         container.AddChild(label);
+        Control spacer = new()
+        {
+            Name = LabelSpacerName,
+            MouseFilter = Control.MouseFilterEnum.Ignore,
+            SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+        };
+        container.AddChild(spacer);
         container.AddChild(element.VisualControl.Control);
 
         return container;

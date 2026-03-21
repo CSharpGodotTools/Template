@@ -5,6 +5,14 @@ namespace GodotUtils.Debugging;
 
 internal static class VisualUiElementFactory
 {
+    private const string ToggleVisibilityButtonName = "Toggle Visibility";
+    private const string StyleNormal = "normal";
+    private const string StyleHover = "hover";
+    private const string StylePressed = "pressed";
+    private const string StyleHoverPressed = "hover_pressed";
+    private const string StyleDisabled = "disabled";
+    private const string StyleFocus = "focus";
+
     public static PanelContainer CreatePanelContainer(string name)
     {
         PanelContainer panelContainer = new()
@@ -41,7 +49,7 @@ internal static class VisualUiElementFactory
     {
         Button btn = new()
         {
-            Name = "Toggle Visibility",
+            Name = ToggleVisibilityButtonName,
             ToggleMode = true,
             Text = text,
             Flat = true,
@@ -51,12 +59,12 @@ internal static class VisualUiElementFactory
 
         StyleBoxEmpty flatStyle = new();
         // Fix bug causing Visualize icons to turn into 1 pixel when clicked
-        btn.AddThemeStyleboxOverride("normal", flatStyle);
-        btn.AddThemeStyleboxOverride("hover", flatStyle);
-        btn.AddThemeStyleboxOverride("pressed", flatStyle);
-        btn.AddThemeStyleboxOverride("hover_pressed", flatStyle);
-        btn.AddThemeStyleboxOverride("disabled", flatStyle);
-        btn.AddThemeStyleboxOverride("focus", flatStyle);
+        btn.AddThemeStyleboxOverride(StyleNormal, flatStyle);
+        btn.AddThemeStyleboxOverride(StyleHover, flatStyle);
+        btn.AddThemeStyleboxOverride(StylePressed, flatStyle);
+        btn.AddThemeStyleboxOverride(StyleHoverPressed, flatStyle);
+        btn.AddThemeStyleboxOverride(StyleDisabled, flatStyle);
+        btn.AddThemeStyleboxOverride(StyleFocus, flatStyle);
 
         return btn;
     }

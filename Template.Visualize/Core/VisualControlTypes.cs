@@ -33,9 +33,11 @@ internal static partial class VisualControlTypes
             
             // Arrays
             _ when type.IsArray => VisualArray(type, context),
+            _ when type == typeof(Godot.Collections.Array) => VisualGodotArray(context),
             _ when type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>) => VisualList(type, context),
             // Reuse the list renderer for Godot's generic array API.
             _ when type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Godot.Collections.Array<>) => VisualList(type, context),
+            _ when type == typeof(Godot.Collections.Dictionary) => VisualDictionary(type, context),
             _ when type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>) => VisualDictionary(type, context),
             // Reuse the dictionary renderer for Godot's generic dictionary API.
             _ when type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Godot.Collections.Dictionary<,>) => VisualDictionary(type, context),

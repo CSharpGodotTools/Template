@@ -10,7 +10,6 @@ namespace GodotUtils.Debugging;
 internal static partial class VisualControlTypes
 {
     private const int ClassControlColumns = 1;
-    private const float ClassMemberLabelMinWidth = 200f;
     private const string GetterPrefix = "get_";
     private const string SetterPrefix = "set_";
     private const string EventAddPrefix = "add_";
@@ -19,7 +18,7 @@ internal static partial class VisualControlTypes
 
     private static VisualControlInfo VisualClass(Type type, VisualControlContext context)
     {
-        GridContainer container = new() { Columns = ClassControlColumns };
+        GridContainer container = new() { Columns = ClassControlColumns, SizeFlagsHorizontal = Control.SizeFlags.ShrinkBegin };
 
         if (context.InitialValue == null)
         {
@@ -126,11 +125,7 @@ internal static partial class VisualControlTypes
         {
             ParameterInfo[] paramInfos = method.GetParameters();
             object[] providedValues = new object[paramInfos.Length];
-
-            HBoxContainer hboxParams = VisualMethods.CreateMethodParameterControls(method, providedValues);
             Button button = VisualMethods.CreateMethodButton(method, context.InitialValue!, paramInfos, providedValues);
-
-            vbox.AddChild(hboxParams);
             vbox.AddChild(button);
         }
     }
@@ -163,11 +158,11 @@ internal static partial class VisualControlTypes
         Label label = new()
         {
             Text = VisualText.ToDisplayName(memberName),
-            HorizontalAlignment = HorizontalAlignment.Right,
-            CustomMinimumSize = new Vector2(ClassMemberLabelMinWidth, 0)
+            HorizontalAlignment = HorizontalAlignment.Right
         };
 
-        HBoxContainer hbox = new();
+        HBoxContainer hbox = new() { Alignment = BoxContainer.AlignmentMode.End };
+        hbox.AddThemeConstantOverride("separation", 8);
         hbox.AddChild(label);
         hbox.AddChild(control);
         return hbox;

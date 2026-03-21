@@ -233,6 +233,50 @@
             Cached StringNames for the signals contained in this class, for fast lookup.
             </summary>
         </member>
+        <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource.MethodName">
+            <summary>
+            Cached StringNames for the methods contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource.PropertyName">
+            <summary>
+            Cached StringNames for the properties and fields contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource.PropertyName.Tint">
+            <summary>
+            Cached name for the 'Tint' property.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource.PropertyName.Curve">
+            <summary>
+            Cached name for the 'Curve' property.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource.SetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource.GetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource.GetGodotPropertyList">
+            <summary>
+            Get the property information for all the properties declared in this class.
+            This method is used by Godot to register the available properties in the editor.
+            Do not call this method.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource.SaveGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource.RestoreGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource.SignalName">
+            <summary>
+            Cached StringNames for the signals contained in this class, for fast lookup.
+            </summary>
+        </member>
         <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.MethodName">
             <summary>
             Cached StringNames for the methods contained in this class, for fast lookup.
@@ -248,9 +292,24 @@
             Cached name for the '_PhysicsProcess' method.
             </summary>
         </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.MethodName.PrintPrimitives">
+            <summary>
+            Cached name for the 'PrintPrimitives' method.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.MethodName.PrintVectors">
+            <summary>
+            Cached name for the 'PrintVectors' method.
+            </summary>
+        </member>
         <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.MethodName.PrintEnum">
             <summary>
             Cached name for the 'PrintEnum' method.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.MethodName.BumpStaticCounter">
+            <summary>
+            Cached name for the 'BumpStaticCounter' method.
             </summary>
         </member>
         <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.GetGodotMethodList">
@@ -271,9 +330,24 @@
             Cached StringNames for the properties and fields contained in this class, for fast lookup.
             </summary>
         </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._isEnabled">
+            <summary>
+            Cached name for the '_isEnabled' field.
+            </summary>
+        </member>
         <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._rotation">
             <summary>
             Cached name for the '_rotation' field.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._zoomFactor">
+            <summary>
+            Cached name for the '_zoomFactor' field.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._displayName">
+            <summary>
+            Cached name for the '_displayName' field.
             </summary>
         </member>
         <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._color">
@@ -299,6 +373,11 @@
         <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._godotDict">
             <summary>
             Cached name for the '_godotDict' field.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualizeExampleSprite.PropertyName._resourceValue">
+            <summary>
+            Cached name for the '_resourceValue' field.
             </summary>
         </member>
         <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.SetGodotClassPropertyValue(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.godot_variant@)">

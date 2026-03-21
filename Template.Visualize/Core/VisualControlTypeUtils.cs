@@ -135,6 +135,7 @@ internal static partial class VisualControlTypes
         Action<object> addValue,
         Action<int> removeValue,
         Func<object> getCollectionValue,
+        Action<object>? setCollectionValue,
         VisualControlContext context)
     {
         VBoxContainer listVBox = new() { SizeFlagsHorizontal = SizeFlags.ShrinkEnd };
@@ -212,7 +213,11 @@ internal static partial class VisualControlTypes
         return new VisualControlInfo(new VBoxContainerControl(
             listVBox,
             // Readonly polling refreshes the rendered rows from the latest collection state.
-            _ => RefreshEntries(),
+            value =>
+            {
+                setCollectionValue?.Invoke(value);
+                RefreshEntries();
+            },
             editable =>
             {
                 isEditable = editable;
