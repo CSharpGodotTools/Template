@@ -62,9 +62,9 @@ public class PlayerMovementComponent
 | **Structs**       | ✅         | `struct`                                      |                                                                       |
 | **Classes**       | ✅         | `class`                                       |                                                                       |
 | **Resources**     | ✅         | `Resource`                                    |                                                                       |
+| **Godot Array**   | ✅         | `Godot.Collections.Array<int>`                | Both generic and non-generic types are supported.                     |
+| **Godot Dictionary** | ✅      | `Godot.Collections.Dictionary<int, bool>`     | Both generic and non-generic types are supported.                     |
 | **Godot Classes** | ❌         | `PointLight2D`, `CharacterBody3D`             |                                                                       |
-| **Godot Array**   | ✅         | `Godot.Collections.Array<int>`   |           |
-| **Godot Dictionary** | ✅      | `Godot.Collections.Dictionary<int, bool>`     |          |
 
 > [!NOTE]
 > No mouse interactions have been implemented in 3D, so you will only be able to use it for read only.
