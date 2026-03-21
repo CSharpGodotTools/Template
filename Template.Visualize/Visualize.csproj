@@ -12,12 +12,6 @@
 		<NoWarn>CS1591;IDE0130</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
-	  <EmbeddedResource Include="EyeClosed.png" />
-	  <EmbeddedResource Include="EyeOpen.png" />
-	  <EmbeddedResource Include="Wrench.png" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="ENet-CSharp" Version="2.4.8" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="GodotSharp.SourceGenerators" Version="2.4.0" />

@@ -50,11 +50,14 @@ internal static class VisualMemberElementBuilder
         }
         else
         {
-            container = new HBoxContainer();
+            HBoxContainer hboxContainer = new() { Alignment = BoxContainer.AlignmentMode.End };
+            hboxContainer.AddThemeConstantOverride("separation", 8);
+            container = hboxContainer;
         }
 
         label.Text = VisualText.ToDisplayName(member.Name);
-        label.HorizontalAlignment = HorizontalAlignment.Center;
+        label.HorizontalAlignment = HorizontalAlignment.Right;
+        label.CustomMinimumSize = new Vector2(VisualUiLayout.MemberLabelMinWidth, 0);
         container.Name = member.Name;
 
         if (element.VisualControl == null)

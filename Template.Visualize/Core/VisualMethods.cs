@@ -54,7 +54,16 @@ internal static class VisualMethods
 
             HBoxContainer hboxParams = CreateMethodParameterControls(method, providedValues);
 
-            vbox.AddChild(hboxParams);
+            ScrollContainer paramsScroll = new()
+            {
+                HorizontalScrollMode = ScrollContainer.ScrollMode.Auto,
+                VerticalScrollMode = ScrollContainer.ScrollMode.Disabled,
+                CustomMinimumSize = new Vector2(VisualUiLayout.MinScrollViewDistance, 0),
+                SizeFlagsHorizontal = SizeFlags.ShrinkEnd
+            };
+            paramsScroll.AddChild(hboxParams);
+
+            vbox.AddChild(paramsScroll);
 
             Button button = CreateMethodButton(method, target, paramInfos, providedValues);
 

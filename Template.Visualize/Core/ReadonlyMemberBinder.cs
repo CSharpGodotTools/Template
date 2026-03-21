@@ -108,25 +108,37 @@ internal sealed class ReadonlyMemberBinder
             return;
         }
 
+        IVisualControl visualControl = visualControlInfo.VisualControl;
+
         // Readonly column should never accept user edits.
-        visualControlInfo.VisualControl.SetEditable(false);
+        visualControl.SetEditable(false);
 
         _updateActions.Add(() =>
         {
             object? current = accessor.GetValue(target);
             if (current is not null)
             {
-                visualControlInfo.VisualControl.SetValue(current);
+                visualControl.SetValue(current);
             }
         });
 
         HBoxContainer hbox = new()
         {
-            Name = accessor.Name
+            Name = accessor.Name,
+            Alignment = BoxContainer.AlignmentMode.Begin
         };
 
-        hbox.AddChild(new Label { Text = accessor.Name });
-        hbox.AddChild(visualControlInfo.VisualControl.Control);
+        Label label = new()
+        {
+            Text = VisualText.ToDisplayName(accessor.Name),
+            HorizontalAlignment = HorizontalAlignment.Right,
+            CustomMinimumSize = new Vector2(VisualUiLayout.MemberLabelMinWidth, 0),
+            Visible = false
+        };
+
+        hbox.AddChild(label);
+
+        hbox.AddChild(visualControl.Control);
 
         readonlyMembers.AddChild(hbox);
     }

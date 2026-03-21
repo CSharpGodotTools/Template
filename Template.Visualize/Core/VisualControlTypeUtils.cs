@@ -137,7 +137,7 @@ internal static partial class VisualControlTypes
         Func<object> getCollectionValue,
         VisualControlContext context)
     {
-        VBoxContainer listVBox = new() { SizeFlagsHorizontal = SizeFlags.ShrinkEnd | SizeFlags.Expand };
+        VBoxContainer listVBox = new() { SizeFlagsHorizontal = SizeFlags.ShrinkEnd };
         Button addButton = new() { Text = "+" };
         const string IndexMetaKey = "Visualize_Index";
         // Shared between mutable and readonly views so controls can be toggled at runtime.
@@ -171,6 +171,7 @@ internal static partial class VisualControlTypes
 
                 int currentIndex = GetRowIndex(row);
                 listVBox.RemoveChild(row);
+                row.QueueFree();
                 removeValue(currentIndex);
                 context.ValueChanged(getCollectionValue());
                 UpdateIndicesAfterRemoval(currentIndex);
@@ -253,6 +254,7 @@ internal static partial class VisualControlTypes
                 }
 
                 listVBox.RemoveChild(child);
+                child.QueueFree();
             }
 
             for (int i = 0; i < getCount(); i++)

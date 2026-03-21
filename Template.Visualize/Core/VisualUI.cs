@@ -41,10 +41,12 @@ internal static class VisualUI
 
         VBoxContainer mutableMembersVbox = VisualUiElementFactory.CreateColoredVBox(VisualUiResources.MutableMembersColor);
         mutableMembersVbox.MouseFilter = MouseFilterEnum.Ignore;
+        mutableMembersVbox.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
         mutableMembersVbox.Name = MutableMembersName;
 
         VBoxContainer readonlyMembersVbox = VisualUiElementFactory.CreateColoredVBox(VisualUiResources.ReadonlyMembersColor);
         readonlyMembersVbox.MouseFilter = MouseFilterEnum.Ignore;
+        readonlyMembersVbox.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
         readonlyMembersVbox.Name = ReadonlyMembersName;
 
         // Readonly Members
@@ -62,7 +64,8 @@ internal static class VisualUI
         {
             Name = LogsName
         };
-        mutableMembersVbox.AddChild(vboxLogs);
+        vboxLogs.MouseFilter = MouseFilterEnum.Ignore;
+        vboxLogs.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
 
         VisualizeAutoload.Instance?.RegisterLogContainer(node, vboxLogs);
 
@@ -71,6 +74,11 @@ internal static class VisualUI
             HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled,
             VerticalScrollMode = ScrollContainer.ScrollMode.ShowNever,
             CustomMinimumSize = new Vector2(0, VisualUiLayout.MinScrollViewDistance)
+        };
+
+        VBoxContainer mainLayout = new()
+        {
+            MouseFilter = MouseFilterEnum.Ignore
         };
 
         VBoxContainer titleBar = VisualTitleBarBuilder.Build(node.Name, mutableMembersVbox, readonlyMembersVbox, visualData, readonlyMembers);
@@ -82,12 +90,23 @@ internal static class VisualUI
             Name = MembersColumnsName,
             MouseFilter = MouseFilterEnum.Ignore
         };
-        membersColumns.AddChild(readonlyMembersVbox);
+        membersColumns.Alignment = BoxContainer.AlignmentMode.Center;
+        membersColumns.AddThemeConstantOverride("separation", 6);
         membersColumns.AddChild(mutableMembersVbox);
-        titleBar.AddChild(membersColumns);
+        membersColumns.AddChild(readonlyMembersVbox);
 
-        scrollContainer.AddChild(titleBar);
-        panelContainer.AddChild(scrollContainer);
+        VBoxContainer scrollContent = new()
+        {
+            Name = "Scroll Content",
+            MouseFilter = MouseFilterEnum.Ignore
+        };
+        scrollContent.AddChild(membersColumns);
+
+        scrollContainer.AddChild(scrollContent);
+        mainLayout.AddChild(titleBar);
+        mainLayout.AddChild(scrollContainer);
+        mainLayout.AddChild(vboxLogs);
+        panelContainer.AddChild(mainLayout);
 
         return (panelContainer, readonlyBinder.UpdateActions);
     }

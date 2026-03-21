@@ -8,6 +8,7 @@ internal static class VisualUiLayout
     public const int MinScrollViewDistance = 350;
     public const int TitleFontSize = 20;
     public const int MemberFontSize = 18;
+    public const float MemberLabelMinWidth = 120f;
     public const int FontOutlineSize = 6;
     public const int MinButtonSize = 25;
     public const double ReleaseFocusOnPressDelay = 0.1;

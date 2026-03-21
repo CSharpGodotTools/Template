@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://dpt16oa8hjtej"]
+[gd_scene format=3 uid="uid://dpt16oa8hjtej"]
 
 [ext_resource type="Script" uid="uid://osw45l54xmwh" path="res://Example Scene/ExampleScene.cs" id="1_4e0k5"]
 [ext_resource type="PackedScene" uid="uid://dnawp2ojmq7fy" path="res://Example Scene/VisualizeExampleSprite.tscn" id="2_6hp5q"]
@@ -7,7 +7,7 @@
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_pwxkx"]
 light_mode = 1
 
-[node name="Scene" type="Control"]
+[node name="Scene" type="Control" unique_id=434164978]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -18,9 +18,9 @@ script = ExtResource("1_4e0k5")
 _spriteExampleScene = ExtResource("2_6hp5q")
 metadata/_edit_lock_ = true
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=446011541]
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer"]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer" unique_id=306061173]
 offset_right = 480.0
 offset_bottom = 363.0
 theme_override_constants/margin_left = 20
@@ -28,17 +28,17 @@ theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/MarginContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/MarginContainer" unique_id=1458255625]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MarginContainer/PanelContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/MarginContainer/PanelContainer" unique_id=2027567241]
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 
-[node name="Label" type="Label" parent="CanvasLayer/MarginContainer/PanelContainer/MarginContainer"]
+[node name="Label" type="Label" parent="CanvasLayer/MarginContainer/PanelContainer/MarginContainer" unique_id=892203553]
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 text = "This scene showcases the Visualize plugin's capabilities. Run it to see the plugin in action.
@@ -50,16 +50,16 @@ The scene is darkened by CanvasModulate, but Visualize UI elements remain unaffe
 Use WASD to move the camera."
 autowrap_mode = 2
 
-[node name="CanvasModulate" type="CanvasModulate" parent="."]
+[node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=1189400007]
 color = Color(0.0742188, 0.0742188, 0.0742188, 1)
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1449215211]
 
-[node name="Background" type="Sprite2D" parent="."]
+[node name="Background" type="Sprite2D" parent="." unique_id=608510036]
 scale = Vector2(30, 30)
 texture = ExtResource("2_fedb0")
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=120591397]
 material = SubResource("CanvasItemMaterial_pwxkx")
 layout_mode = 1
 offset_right = 52.0
@@ -69,5 +69,5 @@ text = "World Center"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Sprite2D" parent="." instance=ExtResource("2_6hp5q")]
-position = Vector2(261, -147)
+[node name="Sprite2D" parent="." unique_id=1346787475 instance=ExtResource("2_6hp5q")]
+position = Vector2(76, 78)

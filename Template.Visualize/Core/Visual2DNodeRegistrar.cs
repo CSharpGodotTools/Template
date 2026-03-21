@@ -16,7 +16,8 @@ internal sealed class Visual2DNodeRegistrar
             initialPosition = _defaultOffset2D;
         }
 
-        context.VisualPanel.GlobalPosition = initialPosition;
+        Vector2 baselinePanelSize = GetPanelSize(context.VisualPanel);
+        context.VisualPanel.GlobalPosition = initialPosition - GetAnchorOffset(baselinePanelSize);
         Vector2 offset = CalculateVerticalOffset2D(context.VisualPanel, context.ExistingTrackers);
 
         CanvasLayer canvasLayer = VisualUiElementFactory.CreateCanvasLayer(context.AnchorNode.Name, context.AnchorNode.GetInstanceId());
@@ -27,7 +28,7 @@ internal sealed class Visual2DNodeRegistrar
         {
             if (VisualNodeLocator.TryGetGlobalPosition2D(context.PositionalNode, out Vector2 position))
             {
-                context.VisualPanel.GlobalPosition = position + offset;
+                context.VisualPanel.GlobalPosition = position - GetAnchorOffset(baselinePanelSize) + offset;
             }
         }
 
@@ -67,6 +68,22 @@ internal sealed class Visual2DNodeRegistrar
         Rect2 rect2 = control2.GetRect();
 
         return rect1.Intersects(rect2);
+    }
+
+    private static Vector2 GetAnchorOffset(Vector2 panelSize)
+    {
+        return panelSize * (Vector2.One - VisualAnchorSettings.NormalizedAnchor);
+    }
+
+    private static Vector2 GetPanelSize(Control visualPanel)
+    {
+        Vector2 panelSize = visualPanel.GetCombinedMinimumSize();
+        if (panelSize == Vector2.Zero)
+        {
+            panelSize = visualPanel.Size;
+        }
+
+        return panelSize;
     }
 }
 #endif

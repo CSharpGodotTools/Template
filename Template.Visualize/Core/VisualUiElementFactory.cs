@@ -37,18 +37,16 @@ internal static class VisualUiElementFactory
         return canvasLayer;
     }
 
-    public static Button CreateVisibilityButton(Texture2D icon, Color color)
+    public static Button CreateVisibilityButton(string text, Color color)
     {
         Button btn = new()
         {
             Name = "Toggle Visibility",
             ToggleMode = true,
-            Icon = icon,
+            Text = text,
             Flat = true,
-            ExpandIcon = true,
             SelfModulate = color,
             CustomMinimumSize = Vector2.One * VisualUiLayout.MinButtonSize,
-            TextureFilter = CanvasItem.TextureFilterEnum.Nearest
         };
 
         StyleBoxEmpty flatStyle = new();

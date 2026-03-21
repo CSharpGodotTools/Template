@@ -163,6 +163,7 @@ internal static partial class VisualControlTypes
         Label label = new()
         {
             Text = VisualText.ToDisplayName(memberName),
+            HorizontalAlignment = HorizontalAlignment.Right,
             CustomMinimumSize = new Vector2(ClassMemberLabelMinWidth, 0)
         };
 

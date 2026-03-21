@@ -12,7 +12,7 @@ internal static partial class VisualControlTypes
 {
     private static VisualControlInfo VisualDictionary(Type type, VisualControlContext context)
     {
-        VBoxContainer dictionaryVBox = new() { SizeFlagsHorizontal = SizeFlags.ShrinkEnd | SizeFlags.Expand };
+        VBoxContainer dictionaryVBox = new() { SizeFlagsHorizontal = SizeFlags.ShrinkEnd };
         Button addButton = new() { Text = "+" };
         bool isEditable = true;
 
@@ -146,6 +146,7 @@ internal static partial class VisualControlTypes
                 }
 
                 dictionaryVBox.RemoveChild(hbox);
+                hbox.QueueFree();
                 adapter.Remove(currentKey);
                 context.ValueChanged(dictionaryObject);
             }
@@ -171,6 +172,7 @@ internal static partial class VisualControlTypes
                 }
 
                 dictionaryVBox.RemoveChild(child);
+                child.QueueFree();
             }
 
             foreach (object key in displayOrder)
