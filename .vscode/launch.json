@@ -17,8 +17,7 @@
             "stopAtEntry": false,
             "console": "internalConsole",
             "logging": {
-                "moduleLoad": false,
-                "consoleUsageMessage": false
+                "moduleLoad": false
             },
             "symbolOptions": {
                 "moduleFilter": {
@@ -44,8 +43,7 @@
             "stopAtEntry": false,
             "console": "internalConsole",
             "logging": {
-                "moduleLoad": false,
-                "consoleUsageMessage": false
+                "moduleLoad": false
             }
         }
     ],
