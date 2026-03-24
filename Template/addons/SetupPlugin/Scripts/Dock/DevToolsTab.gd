@@ -212,7 +212,7 @@ func _on_nullable_pressed() -> void:
 	var new_state: bool = not NullableProjectSettingsScript.read_state(_project_root())
 	NullableProjectSettingsScript.set_state(_project_root(), new_state)
 	_update_nullable_button_text()
-	_set_status("Nullable %s. Rebuild the project to apply." % ("enabled" if new_state else "disabled"))
+	_set_status("Nullable %s. Updated .editorconfig and .csproj." % ("enabled" if new_state else "disabled"))
 	_feedback_timer.start()
 
 # Loads previously tracked update identifiers from persistent cache.
