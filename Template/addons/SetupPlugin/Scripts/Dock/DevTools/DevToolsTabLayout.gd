@@ -62,8 +62,8 @@ func _create_controls() -> void:
 	_visual_status_label.text = " "
 
 	_cleanup_uids_button = _create_button("Cleanup uids", 150)
-	_nullable_button = _create_button("Nullable", 150)
 	_remove_empty_folders_button = _create_button("Remove Empty Folders", 180)
+	_nullable_button = _create_button("Nullable", 150)
 	_close_all_scene_tabs_button = _create_button("Close All Scene Tabs", 180)
 	_restart_editor_button = _create_button("Restart Editor", 180)
 
@@ -163,7 +163,7 @@ func _build_dev_tab() -> VBoxContainer:
 
 	var content: VBoxContainer = VBoxContainer.new()
 	content.add_theme_constant_override("separation", 8)
-	content.add_child(_create_row([_cleanup_uids_button, _nullable_button, _remove_empty_folders_button, _view_template_repo_button, _close_all_scene_tabs_button, _restart_editor_button], 8))
+	content.add_child(_create_row([_cleanup_uids_button, _remove_empty_folders_button, _nullable_button, _close_all_scene_tabs_button, _restart_editor_button, _view_template_repo_button], 8))
 	content.add_child(_status_label)
 
 	dev_tab.add_child(_wrap_with_tab_margin(content))
