@@ -24,5 +24,6 @@
         "**/LICENSE": true,
         "Properties/": true,
         "TestResults/": true,
-    }
+    },
+    "files.trimFinalNewlines": true
 }
