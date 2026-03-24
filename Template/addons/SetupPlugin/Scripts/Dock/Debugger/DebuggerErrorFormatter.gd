@@ -43,6 +43,10 @@ func format_item(item: TreeItem, include_stack_trace: bool, use_short_type_names
 			lines.append("Stack Trace:")
 			for frame in stack:
 				lines.append("    %s" % frame)
+	if is_msbuild_problem:
+		var diagnostic_type: String = str(msbuild_details.get("type", "")).strip_edges().to_lower()
+		if diagnostic_type == "warning" or diagnostic_type == "error":
+			lines.append("__meta_type:%s" % diagnostic_type)
 	return "\n".join(lines)
 
 func _is_msbuild_problem_item(item: TreeItem) -> bool:
@@ -77,11 +81,6 @@ func _normalize_msbuild_title(title: String, details: Dictionary) -> String:
 	var code: String = str(details.get("code", "")).strip_edges()
 	if not code.is_empty() and not result.to_lower().begins_with(code.to_lower() + ":"):
 		result = "%s: %s" % [code, result]
-	var diagnostic_type: String = str(details.get("type", "")).strip_edges()
-	if diagnostic_type == "warning" and not result.to_lower().contains("warning"):
-		result = "Warning: %s" % result
-	elif diagnostic_type == "error" and not result.to_lower().contains("error"):
-		result = "Error: %s" % result
 	return result
 
 func _source_from_msbuild_details(details: Dictionary) -> String:

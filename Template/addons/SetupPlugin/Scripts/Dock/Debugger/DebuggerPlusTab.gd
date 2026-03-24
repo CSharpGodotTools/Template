@@ -53,6 +53,7 @@ var _include_stack_trace_checkbox: CheckButton
 var _use_short_type_names_checkbox: CheckButton
 var _include_duplicates_checkbox: CheckButton
 var _show_timestamps_checkbox: CheckButton
+var _show_prefixes_checkbox: CheckButton
 var _show_errors_checkbox: CheckButton
 var _show_warnings_checkbox: CheckButton
 var _dev_mode_checkbox: CheckButton
@@ -134,6 +135,10 @@ func _create_controls() -> void:
 	_show_timestamps_checkbox.text = "Timestamps"
 	_show_timestamps_checkbox.button_pressed = true
 
+	_show_prefixes_checkbox = CheckButton.new()
+	_show_prefixes_checkbox.text = "Prefixes"
+	_show_prefixes_checkbox.button_pressed = false
+
 	_show_errors_checkbox = CheckButton.new()
 	_show_errors_checkbox.text = "Errors"
 	_show_errors_checkbox.button_pressed = true
@@ -198,6 +203,7 @@ func _build_layout() -> void:
 	options_row.add_child(_use_short_type_names_checkbox)
 	options_row.add_child(_include_duplicates_checkbox)
 	options_row.add_child(_show_timestamps_checkbox)
+	options_row.add_child(_show_prefixes_checkbox)
 	options_row.add_child(_show_errors_checkbox)
 	options_row.add_child(_show_warnings_checkbox)
 	options_row.add_child(_dev_mode_checkbox)
@@ -227,6 +233,7 @@ func _register_events() -> void:
 	_use_short_type_names_checkbox.toggled.connect(_on_options_toggled)
 	_include_duplicates_checkbox.toggled.connect(_on_options_toggled)
 	_show_timestamps_checkbox.toggled.connect(_on_options_toggled)
+	_show_prefixes_checkbox.toggled.connect(_on_options_toggled)
 	_show_errors_checkbox.toggled.connect(_on_options_toggled)
 	_show_warnings_checkbox.toggled.connect(_on_options_toggled)
 	_dev_mode_checkbox.toggled.connect(_on_options_toggled)
@@ -246,6 +253,7 @@ func _unregister_events() -> void:
 	_disconnect_signal(_use_short_type_names_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_include_duplicates_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_show_timestamps_checkbox, "toggled", "_on_options_toggled")
+	_disconnect_signal(_show_prefixes_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_show_errors_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_show_warnings_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_dev_mode_checkbox, "toggled", "_on_options_toggled")
@@ -422,9 +430,15 @@ func _should_include_entry(entry: String) -> bool:
 	return true
 
 func _entry_is_warning(entry: String) -> bool:
+	var meta_type: String = _entry_meta_type(entry)
+	if meta_type == "warning":
+		return true
 	return _single_line_summary(entry).to_lower().contains("warning")
 
 func _entry_is_error(entry: String) -> bool:
+	var meta_type: String = _entry_meta_type(entry)
+	if meta_type == "error":
+		return true
 	var summary: String = _single_line_summary(entry).to_lower()
 	return summary.contains("error") or summary.contains("exception")
 
@@ -608,13 +622,14 @@ func _rebuild_error_tree() -> void:
 		var parts: Dictionary = _split_timestamp_prefix(summary)
 		var timestamp: String = str(parts.get("timestamp", ""))
 		var message: String = str(parts.get("message", summary))
+		message = _apply_prefix_to_message(message, entry)
 		if show_timestamps and not timestamp.is_empty():
 			entry_item.set_text(0, timestamp)
 			entry_item.set_custom_color(0, COLOR_TIMESTAMP_TEXT if _colors_enabled else DEFAULT_COLOR_TIMESTAMP_TEXT)
 		elif show_timestamps:
 			entry_item.set_text(0, "")
 		entry_item.set_text(message_column, message)
-		entry_item.set_custom_color(message_column, _entry_color_for_message(message))
+		entry_item.set_custom_color(message_column, _entry_color_for_message(message, entry))
 		entry_item.set_tooltip_text(0, "")
 		if show_timestamps:
 			entry_item.set_tooltip_text(1, "")
@@ -655,9 +670,15 @@ func _rebuild_error_tree() -> void:
 				"line": line_number
 			})
 
-func _entry_color_for_message(message: String) -> Color:
+func _entry_color_for_message(message: String, entry: String = "") -> Color:
 	if not _colors_enabled:
 		return DEFAULT_COLOR_ENTRY_DEFAULT
+	if not entry.is_empty():
+		var meta_type: String = _entry_meta_type(entry)
+		if meta_type == "warning":
+			return COLOR_ENTRY_WARNING
+		if meta_type == "error":
+			return COLOR_ENTRY_ERROR
 	var lowered: String = message.to_lower()
 	if lowered.contains("warning"):
 		return COLOR_ENTRY_WARNING
@@ -666,6 +687,31 @@ func _entry_color_for_message(message: String) -> Color:
 	if lowered.contains("exception") or lowered.contains("error"):
 		return COLOR_ENTRY_ERROR
 	return COLOR_ENTRY_DEFAULT
+
+func _apply_prefix_to_message(message: String, entry: String = "") -> String:
+	if _show_prefixes_checkbox == null or not _show_prefixes_checkbox.button_pressed:
+		return message
+	var trimmed: String = message.strip_edges()
+	var lowered: String = trimmed.to_lower()
+	if lowered.begins_with("warning:") or lowered.begins_with("error:"):
+		return message
+	var meta_type: String = _entry_meta_type(entry)
+	if meta_type == "warning":
+		return "Warning: %s" % message
+	if meta_type == "error":
+		return "Error: %s" % message
+	if lowered.contains("warning"):
+		return "Warning: %s" % message
+	if lowered.contains("exception") or lowered.contains("error"):
+		return "Error: %s" % message
+	return message
+
+func _entry_meta_type(entry: String) -> String:
+	for line in entry.split("\n", false):
+		var trimmed: String = line.strip_edges().to_lower()
+		if trimmed.begins_with("__meta_type:"):
+			return trimmed.trim_prefix("__meta_type:").strip_edges()
+	return ""
 
 func _on_colors_button_pressed() -> void:
 	if _colors_popup == null:
@@ -758,6 +804,7 @@ func _load_persistent_state() -> void:
 	_use_short_type_names_checkbox.button_pressed = _load_bool_setting(settings, "short_type_names", true)
 	_include_duplicates_checkbox.button_pressed = _load_bool_setting(settings, "duplicates", false)
 	_show_timestamps_checkbox.button_pressed = _load_bool_setting(settings, "timestamps", true)
+	_show_prefixes_checkbox.button_pressed = _load_bool_setting(settings, "prefixes", false)
 	_show_errors_checkbox.button_pressed = _load_bool_setting(settings, "errors", true)
 	_show_warnings_checkbox.button_pressed = _load_bool_setting(settings, "warnings", true)
 	_dev_mode_checkbox.button_pressed = _load_bool_setting(settings, "dev", false)
@@ -785,6 +832,7 @@ func _save_persistent_state() -> void:
 	settings.set_setting(SETTINGS_PREFIX + "short_type_names", _use_short_type_names_checkbox.button_pressed)
 	settings.set_setting(SETTINGS_PREFIX + "duplicates", _include_duplicates_checkbox.button_pressed)
 	settings.set_setting(SETTINGS_PREFIX + "timestamps", _show_timestamps_checkbox.button_pressed)
+	settings.set_setting(SETTINGS_PREFIX + "prefixes", _show_prefixes_checkbox.button_pressed)
 	settings.set_setting(SETTINGS_PREFIX + "errors", _show_errors_checkbox.button_pressed)
 	settings.set_setting(SETTINGS_PREFIX + "warnings", _show_warnings_checkbox.button_pressed)
 	settings.set_setting(SETTINGS_PREFIX + "dev", _dev_mode_checkbox.button_pressed)
@@ -906,6 +954,8 @@ func _extract_detail_lines(entry: String) -> PackedStringArray:
 	for line in entry.split("\n", false):
 		var trimmed: String = line.strip_edges()
 		if trimmed.is_empty():
+			continue
+		if trimmed.begins_with("__meta_type:"):
 			continue
 		if trimmed == summary and details.is_empty():
 			continue

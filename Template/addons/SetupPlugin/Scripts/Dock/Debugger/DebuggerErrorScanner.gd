@@ -20,12 +20,20 @@ func find_tab_controls_by_prefixes(root: Control, tab_title_prefixes: PackedStri
 			for index in range(tabs.get_tab_count()):
 				var tab_title: String = tabs.get_tab_title(index)
 				for prefix in tab_title_prefixes:
-					if tab_title.begins_with(prefix):
+					if _tab_title_matches_prefix(tab_title, prefix):
 						var tab_control: Control = tabs.get_tab_control(index)
 						if tab_control != null:
 							results.append(tab_control)
 						break
 	return results
+
+func _tab_title_matches_prefix(tab_title: String, prefix: String) -> bool:
+	if not tab_title.begins_with(prefix):
+		return false
+	# Exclude custom tabs like "Debugger+" when searching for built-in Debugger.
+	if prefix == "Debugger" and tab_title.begins_with("Debugger+"):
+		return false
+	return true
 
 # Returns controls for tabs we mirror in Debugger+.
 func find_debugger_related_tab_controls(root: Control) -> Array[Control]:
