@@ -98,7 +98,7 @@ func _build_ui() -> void:
 	_warning_case_option.add_item("None", 0)
 	_warning_case_option.add_item("Lowercase", 1)
 	_warning_case_option.add_item("UPPERCASE", 2)
-	_warning_case_option.tooltip_text = "Choose how warning prefixes are displayed before warning entries."
+	_warning_case_option.tooltip_text = "Choose how warning prefixes are displayed."
 	_warning_case_option.item_selected.connect(_on_warning_case_selected)
 	options_content.add_child(_labeled_option_row("Warnings Prefix", _warning_case_option))
 
@@ -106,7 +106,7 @@ func _build_ui() -> void:
 	_error_case_option.add_item("None", 0)
 	_error_case_option.add_item("Lowercase", 1)
 	_error_case_option.add_item("UPPERCASE", 2)
-	_error_case_option.tooltip_text = "Choose how error prefixes are displayed before error entries."
+	_error_case_option.tooltip_text = "Choose how error prefixes are displayed."
 	_error_case_option.item_selected.connect(_on_error_case_selected)
 	options_content.add_child(_labeled_option_row("Errors Prefix", _error_case_option))
 
@@ -124,7 +124,7 @@ func _build_ui() -> void:
 	var enabled_toggle: CheckButton = CheckButton.new()
 	enabled_toggle.name = "EnabledToggle"
 	enabled_toggle.text = "Enable Colors"
-	enabled_toggle.tooltip_text = "Enable or disable custom colors while keeping your saved color choices."
+	enabled_toggle.tooltip_text = "Toggle visibility of all colors."
 	enabled_toggle.button_pressed = true
 	enabled_toggle.toggled.connect(_on_enabled_toggled)
 	colors_content.add_child(enabled_toggle)
@@ -160,13 +160,11 @@ func _build_ui() -> void:
 
 	var reset_button: Button = Button.new()
 	reset_button.text = "Reset to Defaults"
-	reset_button.tooltip_text = "Reset all settings in this popup to their default values."
 	reset_button.pressed.connect(_on_reset_pressed)
 	actions.add_child(reset_button)
 
 	var close_button: Button = Button.new()
 	close_button.text = "Close"
-	close_button.tooltip_text = "Close the settings popup."
 	close_button.pressed.connect(_on_close_pressed)
 	actions.add_child(close_button)
 
@@ -193,7 +191,6 @@ func _add_picker_row(parent: VBoxContainer, label_text: String, color_key: Strin
 
 	var picker: ColorPickerButton = ColorPickerButton.new()
 	picker.custom_minimum_size = PICKER_MIN_SIZE
-	picker.tooltip_text = "Pick a color for %s." % label_text
 	picker.color_changed.connect(_on_picker_color_changed.bind(color_key))
 	row.add_child(picker)
 

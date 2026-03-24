@@ -96,7 +96,7 @@ func _create_controls() -> void:
 
 	_include_stack_trace_checkbox = CheckButton.new()
 	_include_stack_trace_checkbox.text = "Stack Trace"
-	_include_stack_trace_checkbox.tooltip_text = "Include stack trace details in each entry."
+	_include_stack_trace_checkbox.tooltip_text = "Include stack trace details for errors."
 	_include_stack_trace_checkbox.button_pressed = true
 
 	_use_short_type_names_checkbox = CheckButton.new()
@@ -116,12 +116,12 @@ func _create_controls() -> void:
 
 	_show_errors_checkbox = CheckButton.new()
 	_show_errors_checkbox.text = "Errors"
-	_show_errors_checkbox.tooltip_text = "Toggle visibility of error/exception entries."
+	_show_errors_checkbox.tooltip_text = "Toggle visibility of errors."
 	_show_errors_checkbox.button_pressed = true
 
 	_show_warnings_checkbox = CheckButton.new()
 	_show_warnings_checkbox.text = "Warnings"
-	_show_warnings_checkbox.tooltip_text = "Toggle visibility of warning entries."
+	_show_warnings_checkbox.tooltip_text = "Toggle visibility of warnings."
 	_show_warnings_checkbox.button_pressed = true
 
 	_dev_mode_checkbox = CheckButton.new()
