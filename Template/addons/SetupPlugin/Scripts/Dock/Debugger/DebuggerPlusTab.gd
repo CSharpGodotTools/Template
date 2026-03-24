@@ -5,8 +5,8 @@ extends VBoxContainer
 const DebuggerErrorScannerScript = preload("../DebuggerErrorScanner.gd")
 const DebuggerErrorFormatterScript = preload("../DebuggerErrorFormatter.gd")
 const DebuggerSettingsPopupScript = preload("DebuggerSettingsPopup.gd")
+const DebuggerPlusSettingsScript = preload("DebuggerPlusSettings.gd")
 const DETAIL_ROW_INDENT := "    "
-const SETTINGS_PREFIX := "setup_plugin/debugger_plus/"
 const REFRESH_BUTTON_WIDTH := 110
 const COPY_BUTTON_WIDTH := 120
 const TOGGLE_BUTTON_WIDTH := 130
@@ -15,34 +15,9 @@ const TREE_FONT_SIZE := 15
 const TIMESTAMP_COLUMN_WIDTH := 110
 const ENTRY_TOGGLE_GUTTER_X := 22.0
 const CONTEXT_MENU_Y_OFFSET := 12
-const DEFAULT_COLOR_TREE_FONT := Color(0.9, 0.9, 0.9)
-const DEFAULT_COLOR_PANEL_BACKGROUND := Color(0.05, 0.05, 0.05)
-const DEFAULT_COLOR_FEEDBACK_WARNING := Color(0.9, 0.9, 0.9)
-const DEFAULT_COLOR_FEEDBACK_SUCCESS := Color(0.9, 0.9, 0.9)
-const DEFAULT_COLOR_TIMESTAMP_TEXT := Color(0.68, 0.68, 0.68)
-const DEFAULT_COLOR_SOURCE_TEXT := Color(0.45, 0.75, 1.0)
-const DEFAULT_COLOR_ENTRY_DEFAULT := Color(0.9, 0.9, 0.9)
-const DEFAULT_COLOR_ENTRY_ERROR := Color(0.95, 0.35, 0.35)
-const DEFAULT_COLOR_ENTRY_WARNING := Color(1.0, 0.8, 0.5)
-const DEFAULT_COLOR_DETAIL_DEFAULT := Color(0.9, 0.9, 0.9)
-const DEFAULT_COLOR_DETAIL_STACK_HEADER := Color(0.9, 0.9, 0.9)
-const DEFAULT_COLOR_DETAIL_STACK_FRAME := Color(0.9, 0.9, 0.9)
-
-var COLOR_TREE_FONT := DEFAULT_COLOR_TREE_FONT
-var COLOR_PANEL_BACKGROUND := DEFAULT_COLOR_PANEL_BACKGROUND
-var COLOR_FEEDBACK_WARNING := DEFAULT_COLOR_FEEDBACK_WARNING
-var COLOR_FEEDBACK_SUCCESS := DEFAULT_COLOR_FEEDBACK_SUCCESS
-var COLOR_TIMESTAMP_TEXT := DEFAULT_COLOR_TIMESTAMP_TEXT
-var COLOR_SOURCE_TEXT := DEFAULT_COLOR_SOURCE_TEXT
-var COLOR_ENTRY_DEFAULT := DEFAULT_COLOR_ENTRY_DEFAULT
-var COLOR_ENTRY_ERROR := DEFAULT_COLOR_ENTRY_ERROR
-var COLOR_ENTRY_WARNING := DEFAULT_COLOR_ENTRY_WARNING
-var COLOR_DETAIL_DEFAULT := DEFAULT_COLOR_DETAIL_DEFAULT
-var COLOR_DETAIL_STACK_HEADER := DEFAULT_COLOR_DETAIL_STACK_HEADER
-var COLOR_DETAIL_STACK_FRAME := DEFAULT_COLOR_DETAIL_STACK_FRAME
-
 var _scanner: DebuggerErrorScanner
 var _formatter: DebuggerErrorFormatter
+var _settings
 var _refresh_button: Button
 var _copy_all_button: Button
 var _expand_all_button: Button
@@ -74,13 +49,11 @@ var _debugger_event_bridge
 var _run_started_at_msec: int = 0
 var _entry_timestamps_by_raw: Dictionary = {}
 var _pending_error_capture_elapsed_msec: Array = []
-var _colors_enabled: bool = true
-var _warning_prefix_case: int = 1
-var _error_prefix_case: int = 1
 
 func _ready() -> void:
 	_scanner = DebuggerErrorScannerScript.new()
 	_formatter = DebuggerErrorFormatterScript.new()
+	_settings = DebuggerPlusSettingsScript.new()
 	_create_controls()
 	_load_persistent_state()
 	_build_layout()
@@ -168,14 +141,14 @@ func _create_controls() -> void:
 	_error_tree.hide_root = true
 	_error_tree.auto_tooltip = false
 	_error_tree.add_theme_font_size_override("font_size", TREE_FONT_SIZE)
-	_error_tree.add_theme_color_override("font_color", COLOR_TREE_FONT)
+	_error_tree.add_theme_color_override("font_color", _settings.color_tree_font)
 
 	_tree_scroll_container = ScrollContainer.new()
 	_tree_scroll_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_tree_scroll_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_tree_scroll_container.custom_minimum_size = Vector2(0, TREE_MIN_HEIGHT)
 	_tree_panel_style = StyleBoxFlat.new()
-	_tree_panel_style.bg_color = COLOR_PANEL_BACKGROUND
+	_tree_panel_style.bg_color = _settings.color_panel_background
 	_tree_panel_style.border_width_left = 0
 	_tree_panel_style.border_width_top = 0
 	_tree_panel_style.border_width_right = 0
@@ -225,7 +198,7 @@ func _build_layout() -> void:
 		_show_warnings_checkbox
 	])
 	_settings_popup.set_dev_control(_dev_mode_checkbox)
-	_settings_popup.set_prefix_cases(_warning_prefix_case, _error_prefix_case)
+	_settings_popup.set_prefix_cases(_settings.warning_prefix_case, _settings.error_prefix_case)
 
 func _register_events() -> void:
 	_refresh_button.pressed.connect(_on_refresh_pressed)
@@ -309,9 +282,9 @@ func _refresh_errors() -> void:
 		_all_entries = latest_entries
 	_apply_filter()
 	if _visible_entries.is_empty():
-		_show_feedback("No debugger errors found.", COLOR_FEEDBACK_WARNING)
+		_show_feedback("No debugger errors found.", _settings.color_feedback_warning)
 	else:
-		_show_feedback("Showing %d of %d errors." % [_visible_entries.size(), _all_entries.size()], COLOR_FEEDBACK_SUCCESS)
+		_show_feedback("Showing %d of %d errors." % [_visible_entries.size(), _all_entries.size()], _settings.color_feedback_success)
 
 func _apply_timestamps_to_entries(raw_entries: PackedStringArray) -> PackedStringArray:
 	var now_msec: int = Time.get_ticks_msec()
@@ -460,9 +433,9 @@ func _on_refresh_pressed() -> void:
 func _on_filter_text_changed(_text: String) -> void:
 	_apply_filter()
 	if _visible_entries.is_empty():
-		_show_feedback("No errors match filter.", COLOR_FEEDBACK_WARNING)
+		_show_feedback("No errors match filter.", _settings.color_feedback_warning)
 	else:
-		_show_feedback("Showing %d of %d errors." % [_visible_entries.size(), _all_entries.size()], COLOR_FEEDBACK_SUCCESS)
+		_show_feedback("Showing %d of %d errors." % [_visible_entries.size(), _all_entries.size()], _settings.color_feedback_success)
 
 func _on_options_toggled(_enabled: bool) -> void:
 	_save_persistent_state()
@@ -536,7 +509,7 @@ func _on_entry_context_menu_id_pressed(id: int) -> void:
 	if id != 0 or _context_entry_to_copy.is_empty():
 		return
 	DisplayServer.clipboard_set(_context_entry_to_copy)
-	_show_feedback("Copied selected error to clipboard.", COLOR_FEEDBACK_SUCCESS)
+	_show_feedback("Copied selected error to clipboard.", _settings.color_feedback_success)
 
 func _on_tree_item_activated() -> void:
 	var item: TreeItem = _error_tree.get_selected()
@@ -551,18 +524,18 @@ func _on_tree_item_activated() -> void:
 
 func _on_copy_all_pressed() -> void:
 	if _visible_entries.is_empty():
-		_show_feedback("No errors to copy.", COLOR_FEEDBACK_WARNING)
+		_show_feedback("No errors to copy.", _settings.color_feedback_warning)
 		return
 	DisplayServer.clipboard_set("\n\n".join(_visible_entries))
-	_show_feedback("Copied %d errors." % _visible_entries.size(), COLOR_FEEDBACK_SUCCESS)
+	_show_feedback("Copied %d errors." % _visible_entries.size(), _settings.color_feedback_success)
 
 func _on_expand_all_pressed() -> void:
 	_set_all_entries_collapsed(false)
-	_show_feedback("Expanded all errors.", COLOR_FEEDBACK_SUCCESS)
+	_show_feedback("Expanded all errors.", _settings.color_feedback_success)
 
 func _on_collapse_all_pressed() -> void:
 	_set_all_entries_collapsed(true)
-	_show_feedback("Collapsed all errors.", COLOR_FEEDBACK_SUCCESS)
+	_show_feedback("Collapsed all errors.", _settings.color_feedback_success)
 
 func _collect_errors_with_scanner() -> PackedStringArray:
 	_bind_debugger_event_hooks()
@@ -628,7 +601,7 @@ func _rebuild_error_tree() -> void:
 		message = _apply_prefix_to_message(message, entry)
 		if show_timestamps and not timestamp.is_empty():
 			entry_item.set_text(0, timestamp)
-			entry_item.set_custom_color(0, COLOR_TIMESTAMP_TEXT if _colors_enabled else DEFAULT_COLOR_TIMESTAMP_TEXT)
+			entry_item.set_custom_color(0, _settings.color_timestamp if _settings.colors_enabled else _settings.DEFAULT_COLOR_TIMESTAMP_TEXT)
 		elif show_timestamps:
 			entry_item.set_text(0, "")
 		entry_item.set_text(message_column, message)
@@ -653,7 +626,7 @@ func _rebuild_error_tree() -> void:
 					detail_item.set_metadata(0, {"kind": "detail", "entry": entry})
 					continue
 				detail_item.set_text(message_column, "%s%s" % [detail_indent, detail_line])
-				detail_item.set_custom_color(message_column, COLOR_DETAIL_STACK_FRAME if _colors_enabled else DEFAULT_COLOR_DETAIL_STACK_FRAME)
+				detail_item.set_custom_color(message_column, _settings.color_stack_frame if _settings.colors_enabled else _settings.DEFAULT_COLOR_DETAIL_STACK_FRAME)
 				detail_item.set_metadata(0, {
 					"kind": "source",
 					"entry": entry,
@@ -665,7 +638,7 @@ func _rebuild_error_tree() -> void:
 			var path: String = str(source_data.get("path", ""))
 			var line_number: int = int(source_data.get("line", 1))
 			detail_item.set_text(message_column, "%sSource: %s:%d" % [detail_indent, path, line_number])
-			detail_item.set_custom_color(message_column, COLOR_SOURCE_TEXT if _colors_enabled else DEFAULT_COLOR_SOURCE_TEXT)
+			detail_item.set_custom_color(message_column, _settings.color_source if _settings.colors_enabled else _settings.DEFAULT_COLOR_SOURCE_TEXT)
 			detail_item.set_metadata(0, {
 				"kind": "source",
 				"entry": entry,
@@ -674,22 +647,22 @@ func _rebuild_error_tree() -> void:
 			})
 
 func _entry_color_for_message(message: String, entry: String = "") -> Color:
-	if not _colors_enabled:
-		return DEFAULT_COLOR_ENTRY_DEFAULT
+	if not _settings.colors_enabled:
+		return _settings.DEFAULT_COLOR_ENTRY_DEFAULT
 	if not entry.is_empty():
 		var meta_type: String = _entry_meta_type(entry)
 		if meta_type == "warning":
-			return COLOR_ENTRY_WARNING
+			return _settings.color_entry_warning
 		if meta_type == "error":
-			return COLOR_ENTRY_ERROR
+			return _settings.color_entry_error
 	var lowered: String = message.to_lower()
 	if lowered.contains("warning"):
-		return COLOR_ENTRY_WARNING
+		return _settings.color_entry_warning
 	if lowered.contains("nullreferenceexception") or lowered.contains("argumentnullexception"):
-		return COLOR_ENTRY_ERROR
+		return _settings.color_entry_error
 	if lowered.contains("exception") or lowered.contains("error"):
-		return COLOR_ENTRY_ERROR
-	return COLOR_ENTRY_DEFAULT
+		return _settings.color_entry_error
+	return _settings.color_entry_default
 
 func _apply_prefix_to_message(message: String, entry: String = "") -> String:
 	var trimmed: String = message.strip_edges()
@@ -698,13 +671,13 @@ func _apply_prefix_to_message(message: String, entry: String = "") -> String:
 		return message
 	var meta_type: String = _entry_meta_type(entry)
 	if meta_type == "warning":
-		return _with_prefix(_prefix_text("warning", _warning_prefix_case), message)
+		return _with_prefix(_prefix_text("warning", _settings.warning_prefix_case), message)
 	if meta_type == "error":
-		return _with_prefix(_prefix_text("error", _error_prefix_case), message)
+		return _with_prefix(_prefix_text("error", _settings.error_prefix_case), message)
 	if lowered.contains("warning"):
-		return _with_prefix(_prefix_text("warning", _warning_prefix_case), message)
+		return _with_prefix(_prefix_text("warning", _settings.warning_prefix_case), message)
 	if lowered.contains("exception") or lowered.contains("error"):
-		return _with_prefix(_prefix_text("error", _error_prefix_case), message)
+		return _with_prefix(_prefix_text("error", _settings.error_prefix_case), message)
 	return message
 
 func _with_prefix(prefix: String, message: String) -> String:
@@ -731,7 +704,7 @@ func _entry_meta_type(entry: String) -> String:
 func _on_colors_button_pressed() -> void:
 	if _settings_popup == null:
 		return
-	_settings_popup.popup_centered_with_state(_current_color_map(), _colors_enabled, _warning_prefix_case, _error_prefix_case)
+	_settings_popup.popup_centered_with_state(_current_color_map(), _settings.colors_enabled, _settings.warning_prefix_case, _settings.error_prefix_case)
 
 func _on_color_picker_changed(color_key: String, color: Color) -> void:
 	_set_color_by_key(color_key, color)
@@ -739,178 +712,105 @@ func _on_color_picker_changed(color_key: String, color: Color) -> void:
 	_apply_color_theme()
 
 func _on_reset_default_colors_requested() -> void:
-	_include_stack_trace_checkbox.button_pressed = true
-	_use_short_type_names_checkbox.button_pressed = true
-	_include_duplicates_checkbox.button_pressed = false
-	_show_timestamps_checkbox.button_pressed = true
-	_show_errors_checkbox.button_pressed = true
-	_show_warnings_checkbox.button_pressed = true
-	_dev_mode_checkbox.button_pressed = false
-	_warning_prefix_case = 1
-	_error_prefix_case = 1
-	_colors_enabled = true
-
-	COLOR_TREE_FONT = DEFAULT_COLOR_TREE_FONT
-	COLOR_PANEL_BACKGROUND = DEFAULT_COLOR_PANEL_BACKGROUND
-	COLOR_FEEDBACK_WARNING = DEFAULT_COLOR_FEEDBACK_WARNING
-	COLOR_FEEDBACK_SUCCESS = DEFAULT_COLOR_FEEDBACK_SUCCESS
-	COLOR_TIMESTAMP_TEXT = DEFAULT_COLOR_TIMESTAMP_TEXT
-	COLOR_SOURCE_TEXT = DEFAULT_COLOR_SOURCE_TEXT
-	COLOR_ENTRY_DEFAULT = DEFAULT_COLOR_ENTRY_DEFAULT
-	COLOR_ENTRY_ERROR = DEFAULT_COLOR_ENTRY_ERROR
-	COLOR_ENTRY_WARNING = DEFAULT_COLOR_ENTRY_WARNING
-	COLOR_DETAIL_DEFAULT = DEFAULT_COLOR_DETAIL_DEFAULT
-	COLOR_DETAIL_STACK_HEADER = DEFAULT_COLOR_DETAIL_STACK_HEADER
-	COLOR_DETAIL_STACK_FRAME = DEFAULT_COLOR_DETAIL_STACK_FRAME
+	_settings.reset_defaults()
+	_include_stack_trace_checkbox.button_pressed = _settings.stack_trace
+	_use_short_type_names_checkbox.button_pressed = _settings.short_type_names
+	_include_duplicates_checkbox.button_pressed = _settings.duplicates
+	_show_timestamps_checkbox.button_pressed = _settings.timestamps
+	_show_errors_checkbox.button_pressed = _settings.errors
+	_show_warnings_checkbox.button_pressed = _settings.warnings
+	_dev_mode_checkbox.button_pressed = _settings.dev
 	_save_persistent_state()
 	_apply_timestamp_column_visibility()
 	_apply_color_theme()
 	_refresh_errors()
-	_settings_popup.popup_centered_with_state(_current_color_map(), _colors_enabled, _warning_prefix_case, _error_prefix_case)
+	_settings_popup.popup_centered_with_state(_current_color_map(), _settings.colors_enabled, _settings.warning_prefix_case, _settings.error_prefix_case)
 
 func _on_warning_prefix_case_changed(mode: int) -> void:
-	_warning_prefix_case = clampi(mode, 0, 2)
+	_settings.warning_prefix_case = clampi(mode, 0, 2)
 	_save_persistent_state()
 	_refresh_errors()
 
 func _on_error_prefix_case_changed(mode: int) -> void:
-	_error_prefix_case = clampi(mode, 0, 2)
+	_settings.error_prefix_case = clampi(mode, 0, 2)
 	_save_persistent_state()
 	_refresh_errors()
 
 func _current_color_map() -> Dictionary:
 	return {
-		"enabled": _colors_enabled,
-		"tree_font": COLOR_TREE_FONT,
-		"panel_background": COLOR_PANEL_BACKGROUND,
-		"timestamp": COLOR_TIMESTAMP_TEXT,
-		"source": COLOR_SOURCE_TEXT,
-		"entry_default": COLOR_ENTRY_DEFAULT,
-		"entry_error": COLOR_ENTRY_ERROR,
-		"entry_warning": COLOR_ENTRY_WARNING,
-		"detail_default": COLOR_DETAIL_DEFAULT,
-		"stack_header": COLOR_DETAIL_STACK_HEADER,
-		"stack_frame": COLOR_DETAIL_STACK_FRAME
+		"enabled": _settings.colors_enabled,
+		"tree_font": _settings.color_tree_font,
+		"panel_background": _settings.color_panel_background,
+		"timestamp": _settings.color_timestamp,
+		"source": _settings.color_source,
+		"entry_default": _settings.color_entry_default,
+		"entry_error": _settings.color_entry_error,
+		"entry_warning": _settings.color_entry_warning,
+		"detail_default": _settings.color_detail_default,
+		"stack_header": _settings.color_stack_header,
+		"stack_frame": _settings.color_stack_frame
 	}
 
 func _set_color_by_key(color_key: String, color: Color) -> void:
 	match color_key:
 		"tree_font":
-			COLOR_TREE_FONT = color
+			_settings.color_tree_font = color
 		"panel_background":
-			COLOR_PANEL_BACKGROUND = color
+			_settings.color_panel_background = color
 		"timestamp":
-			COLOR_TIMESTAMP_TEXT = color
+			_settings.color_timestamp = color
 		"source":
-			COLOR_SOURCE_TEXT = color
+			_settings.color_source = color
 		"entry_default":
-			COLOR_ENTRY_DEFAULT = color
+			_settings.color_entry_default = color
 		"entry_error":
-			COLOR_ENTRY_ERROR = color
+			_settings.color_entry_error = color
 		"entry_warning":
-			COLOR_ENTRY_WARNING = color
+			_settings.color_entry_warning = color
 		"detail_default":
-			COLOR_DETAIL_DEFAULT = color
+			_settings.color_detail_default = color
 		"stack_header":
-			COLOR_DETAIL_STACK_HEADER = color
+			_settings.color_stack_header = color
 		"stack_frame":
-			COLOR_DETAIL_STACK_FRAME = color
+			_settings.color_stack_frame = color
 
 func _on_colors_enabled_toggled(enabled: bool) -> void:
-	_colors_enabled = enabled
+	_settings.colors_enabled = enabled
 	_save_persistent_state()
 	_apply_color_theme()
 
 func _apply_color_theme() -> void:
 	if _error_tree != null:
-		_error_tree.add_theme_color_override("font_color", COLOR_TREE_FONT if _colors_enabled else DEFAULT_COLOR_TREE_FONT)
+		_error_tree.add_theme_color_override("font_color", _settings.color_tree_font if _settings.colors_enabled else _settings.DEFAULT_COLOR_TREE_FONT)
 	if _tree_panel_style != null:
-		_tree_panel_style.bg_color = COLOR_PANEL_BACKGROUND if _colors_enabled else DEFAULT_COLOR_PANEL_BACKGROUND
+		_tree_panel_style.bg_color = _settings.color_panel_background if _settings.colors_enabled else _settings.DEFAULT_COLOR_PANEL_BACKGROUND
 	_rebuild_error_tree()
 
-func _editor_settings() -> EditorSettings:
-	if not Engine.is_editor_hint():
-		return null
-	return EditorInterface.get_editor_settings()
-
 func _load_persistent_state() -> void:
-	var settings: EditorSettings = _editor_settings()
-	if settings == null:
+	if _settings == null:
 		return
-
-	_include_stack_trace_checkbox.button_pressed = _load_bool_setting(settings, "stack_trace", true)
-	_use_short_type_names_checkbox.button_pressed = _load_bool_setting(settings, "short_type_names", true)
-	_include_duplicates_checkbox.button_pressed = _load_bool_setting(settings, "duplicates", false)
-	_show_timestamps_checkbox.button_pressed = _load_bool_setting(settings, "timestamps", true)
-	_show_errors_checkbox.button_pressed = _load_bool_setting(settings, "errors", true)
-	_show_warnings_checkbox.button_pressed = _load_bool_setting(settings, "warnings", true)
-	_dev_mode_checkbox.button_pressed = _load_bool_setting(settings, "dev", false)
-	_colors_enabled = _load_bool_setting(settings, "colors_enabled", true)
-	_warning_prefix_case = int(_load_int_setting(settings, "warning_prefix_case", 1))
-	_error_prefix_case = int(_load_int_setting(settings, "error_prefix_case", 1))
-
-	COLOR_TREE_FONT = _load_color_setting(settings, "color_tree_font", DEFAULT_COLOR_TREE_FONT)
-	COLOR_PANEL_BACKGROUND = _load_color_setting(settings, "color_panel_background", DEFAULT_COLOR_PANEL_BACKGROUND)
-	COLOR_FEEDBACK_WARNING = _load_color_setting(settings, "color_feedback_warning", DEFAULT_COLOR_FEEDBACK_WARNING)
-	COLOR_FEEDBACK_SUCCESS = _load_color_setting(settings, "color_feedback_success", DEFAULT_COLOR_FEEDBACK_SUCCESS)
-	COLOR_TIMESTAMP_TEXT = _load_color_setting(settings, "color_timestamp", DEFAULT_COLOR_TIMESTAMP_TEXT)
-	COLOR_SOURCE_TEXT = _load_color_setting(settings, "color_source", DEFAULT_COLOR_SOURCE_TEXT)
-	COLOR_ENTRY_DEFAULT = _load_color_setting(settings, "color_entry_default", DEFAULT_COLOR_ENTRY_DEFAULT)
-	COLOR_ENTRY_ERROR = _load_color_setting(settings, "color_entry_error", DEFAULT_COLOR_ENTRY_ERROR)
-	COLOR_ENTRY_WARNING = _load_color_setting(settings, "color_entry_warning", DEFAULT_COLOR_ENTRY_WARNING)
-	COLOR_DETAIL_DEFAULT = _load_color_setting(settings, "color_detail_default", DEFAULT_COLOR_DETAIL_DEFAULT)
-	COLOR_DETAIL_STACK_HEADER = _load_color_setting(settings, "color_stack_header", DEFAULT_COLOR_DETAIL_STACK_HEADER)
-	COLOR_DETAIL_STACK_FRAME = _load_color_setting(settings, "color_stack_frame", DEFAULT_COLOR_DETAIL_STACK_FRAME)
+	_settings.load()
+	_include_stack_trace_checkbox.button_pressed = _settings.stack_trace
+	_use_short_type_names_checkbox.button_pressed = _settings.short_type_names
+	_include_duplicates_checkbox.button_pressed = _settings.duplicates
+	_show_timestamps_checkbox.button_pressed = _settings.timestamps
+	_show_errors_checkbox.button_pressed = _settings.errors
+	_show_warnings_checkbox.button_pressed = _settings.warnings
+	_dev_mode_checkbox.button_pressed = _settings.dev
+	if _settings_popup != null:
+		_settings_popup.set_prefix_cases(_settings.warning_prefix_case, _settings.error_prefix_case)
 
 func _save_persistent_state() -> void:
-	var settings: EditorSettings = _editor_settings()
-	if settings == null:
+	if _settings == null:
 		return
-
-	settings.set_setting(SETTINGS_PREFIX + "stack_trace", _include_stack_trace_checkbox.button_pressed)
-	settings.set_setting(SETTINGS_PREFIX + "short_type_names", _use_short_type_names_checkbox.button_pressed)
-	settings.set_setting(SETTINGS_PREFIX + "duplicates", _include_duplicates_checkbox.button_pressed)
-	settings.set_setting(SETTINGS_PREFIX + "timestamps", _show_timestamps_checkbox.button_pressed)
-	settings.set_setting(SETTINGS_PREFIX + "errors", _show_errors_checkbox.button_pressed)
-	settings.set_setting(SETTINGS_PREFIX + "warnings", _show_warnings_checkbox.button_pressed)
-	settings.set_setting(SETTINGS_PREFIX + "dev", _dev_mode_checkbox.button_pressed)
-	settings.set_setting(SETTINGS_PREFIX + "colors_enabled", _colors_enabled)
-	settings.set_setting(SETTINGS_PREFIX + "warning_prefix_case", _warning_prefix_case)
-	settings.set_setting(SETTINGS_PREFIX + "error_prefix_case", _error_prefix_case)
-
-	settings.set_setting(SETTINGS_PREFIX + "color_tree_font", COLOR_TREE_FONT)
-	settings.set_setting(SETTINGS_PREFIX + "color_panel_background", COLOR_PANEL_BACKGROUND)
-	settings.set_setting(SETTINGS_PREFIX + "color_feedback_warning", COLOR_FEEDBACK_WARNING)
-	settings.set_setting(SETTINGS_PREFIX + "color_feedback_success", COLOR_FEEDBACK_SUCCESS)
-	settings.set_setting(SETTINGS_PREFIX + "color_timestamp", COLOR_TIMESTAMP_TEXT)
-	settings.set_setting(SETTINGS_PREFIX + "color_source", COLOR_SOURCE_TEXT)
-	settings.set_setting(SETTINGS_PREFIX + "color_entry_default", COLOR_ENTRY_DEFAULT)
-	settings.set_setting(SETTINGS_PREFIX + "color_entry_error", COLOR_ENTRY_ERROR)
-	settings.set_setting(SETTINGS_PREFIX + "color_entry_warning", COLOR_ENTRY_WARNING)
-	settings.set_setting(SETTINGS_PREFIX + "color_detail_default", COLOR_DETAIL_DEFAULT)
-	settings.set_setting(SETTINGS_PREFIX + "color_stack_header", COLOR_DETAIL_STACK_HEADER)
-	settings.set_setting(SETTINGS_PREFIX + "color_stack_frame", COLOR_DETAIL_STACK_FRAME)
-
-func _load_bool_setting(settings: EditorSettings, suffix: String, default_value: bool) -> bool:
-	var key: String = SETTINGS_PREFIX + suffix
-	if not settings.has_setting(key):
-		return default_value
-	return bool(settings.get_setting(key))
-
-func _load_color_setting(settings: EditorSettings, suffix: String, default_value: Color) -> Color:
-	var key: String = SETTINGS_PREFIX + suffix
-	if not settings.has_setting(key):
-		return default_value
-	var value: Variant = settings.get_setting(key)
-	if value is Color:
-		return value as Color
-	return default_value
-
-func _load_int_setting(settings: EditorSettings, suffix: String, default_value: int) -> int:
-	var key: String = SETTINGS_PREFIX + suffix
-	if not settings.has_setting(key):
-		return default_value
-	return int(settings.get_setting(key))
+	_settings.stack_trace = _include_stack_trace_checkbox.button_pressed
+	_settings.short_type_names = _use_short_type_names_checkbox.button_pressed
+	_settings.duplicates = _include_duplicates_checkbox.button_pressed
+	_settings.timestamps = _show_timestamps_checkbox.button_pressed
+	_settings.errors = _show_errors_checkbox.button_pressed
+	_settings.warnings = _show_warnings_checkbox.button_pressed
+	_settings.dev = _dev_mode_checkbox.button_pressed
+	_settings.save()
 
 func _collect_errors_from_known_panel(panel_root: Control) -> PackedStringArray:
 	var panel_rows: PackedStringArray = []
@@ -959,12 +859,12 @@ func _find_descendant_trees(root_node: Node) -> Array[Tree]:
 	return found
 
 func _detail_color_for_line(detail_line: String) -> Color:
-	if not _colors_enabled:
-		return DEFAULT_COLOR_DETAIL_DEFAULT
+	if not _settings.colors_enabled:
+		return _settings.DEFAULT_COLOR_DETAIL_DEFAULT
 	var lowered: String = detail_line.to_lower()
 	if lowered.begins_with("stack trace"):
-		return COLOR_DETAIL_STACK_HEADER
-	return COLOR_DETAIL_DEFAULT
+		return _settings.color_stack_header
+	return _settings.color_detail_default
 
 func _split_timestamp_prefix(line: String) -> Dictionary:
 	var regex: RegEx = RegEx.new()
