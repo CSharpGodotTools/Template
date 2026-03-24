@@ -20,9 +20,8 @@ const COLOR_FEEDBACK_SUCCESS := Color(0.9, 0.9, 0.9)
 const COLOR_TIMESTAMP_TEXT := Color(0.68, 0.68, 0.68)
 const COLOR_SOURCE_TEXT := Color(0.45, 0.75, 1.0)
 const COLOR_ENTRY_DEFAULT := Color(0.9, 0.9, 0.9)
-const COLOR_ENTRY_ERROR := Color(0.9, 0.9, 0.9)
-const COLOR_ENTRY_EXCEPTION := Color(0.9, 0.9, 0.9)
-const COLOR_ENTRY_WARNING := Color(0.9, 0.9, 0.9)
+const COLOR_ENTRY_ERROR := Color(0.95, 0.35, 0.35)
+const COLOR_ENTRY_WARNING := Color(1.0, 0.8, 0.5)
 const COLOR_DETAIL_DEFAULT := Color(0.9, 0.9, 0.9)
 const COLOR_DETAIL_STACK_HEADER := Color(0.9, 0.9, 0.9)
 const COLOR_DETAIL_STACK_FRAME := Color(0.9, 0.9, 0.9)
@@ -38,6 +37,9 @@ var _include_stack_trace_checkbox: CheckButton
 var _use_short_type_names_checkbox: CheckButton
 var _include_duplicates_checkbox: CheckButton
 var _show_timestamps_checkbox: CheckButton
+var _show_colors_checkbox: CheckButton
+var _show_errors_checkbox: CheckButton
+var _show_warnings_checkbox: CheckButton
 var _error_tree: Tree
 var _tree_scroll_container: ScrollContainer
 var _entry_context_menu: PopupMenu
@@ -91,20 +93,32 @@ func _create_controls() -> void:
 	_filter_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	_include_stack_trace_checkbox = CheckButton.new()
-	_include_stack_trace_checkbox.text = "Include Stack Trace"
+	_include_stack_trace_checkbox.text = "Stack Trace"
 	_include_stack_trace_checkbox.button_pressed = true
 
 	_use_short_type_names_checkbox = CheckButton.new()
-	_use_short_type_names_checkbox.text = "Use Short Type Names"
+	_use_short_type_names_checkbox.text = "Short Type Names"
 	_use_short_type_names_checkbox.button_pressed = true
 
 	_include_duplicates_checkbox = CheckButton.new()
-	_include_duplicates_checkbox.text = "Include Duplicates"
+	_include_duplicates_checkbox.text = "Duplicate Errors"
 	_include_duplicates_checkbox.button_pressed = false
 
 	_show_timestamps_checkbox = CheckButton.new()
-	_show_timestamps_checkbox.text = "Show Timestamps"
+	_show_timestamps_checkbox.text = "Timestamps"
 	_show_timestamps_checkbox.button_pressed = true
+
+	_show_colors_checkbox = CheckButton.new()
+	_show_colors_checkbox.text = "Colors"
+	_show_colors_checkbox.button_pressed = true
+
+	_show_errors_checkbox = CheckButton.new()
+	_show_errors_checkbox.text = "Errors"
+	_show_errors_checkbox.button_pressed = true
+
+	_show_warnings_checkbox = CheckButton.new()
+	_show_warnings_checkbox.text = "Warnings"
+	_show_warnings_checkbox.button_pressed = true
 
 	_error_tree = Tree.new()
 	_error_tree.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -152,6 +166,9 @@ func _build_layout() -> void:
 	options_row.add_child(_use_short_type_names_checkbox)
 	options_row.add_child(_include_duplicates_checkbox)
 	options_row.add_child(_show_timestamps_checkbox)
+	options_row.add_child(_show_colors_checkbox)
+	options_row.add_child(_show_errors_checkbox)
+	options_row.add_child(_show_warnings_checkbox)
 
 	var sections: VBoxContainer = VBoxContainer.new()
 	sections.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -176,6 +193,9 @@ func _register_events() -> void:
 	_use_short_type_names_checkbox.toggled.connect(_on_options_toggled)
 	_include_duplicates_checkbox.toggled.connect(_on_options_toggled)
 	_show_timestamps_checkbox.toggled.connect(_on_options_toggled)
+	_show_colors_checkbox.toggled.connect(_on_options_toggled)
+	_show_errors_checkbox.toggled.connect(_on_options_toggled)
+	_show_warnings_checkbox.toggled.connect(_on_options_toggled)
 	_error_tree.item_selected.connect(_on_tree_item_selected)
 	_error_tree.item_activated.connect(_on_tree_item_activated)
 	_error_tree.gui_input.connect(_on_tree_gui_input)
@@ -191,6 +211,9 @@ func _unregister_events() -> void:
 	_disconnect_signal(_use_short_type_names_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_include_duplicates_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_show_timestamps_checkbox, "toggled", "_on_options_toggled")
+	_disconnect_signal(_show_colors_checkbox, "toggled", "_on_options_toggled")
+	_disconnect_signal(_show_errors_checkbox, "toggled", "_on_options_toggled")
+	_disconnect_signal(_show_warnings_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_error_tree, "item_selected", "_on_tree_item_selected")
 	_disconnect_signal(_error_tree, "item_activated", "_on_tree_item_activated")
 	_disconnect_signal(_error_tree, "gui_input", "_on_tree_gui_input")
@@ -238,9 +261,7 @@ func _refresh_errors() -> void:
 	var has_changed: bool = not _packed_string_arrays_equal(_all_entries, latest_entries)
 	if has_changed:
 		_all_entries = latest_entries
-		_apply_filter()
-	else:
-		return
+	_apply_filter()
 	if _visible_entries.is_empty():
 		_show_feedback("No debugger errors found.", COLOR_FEEDBACK_WARNING)
 	else:
@@ -351,10 +372,26 @@ func _apply_filter() -> void:
 	var needle: String = _filter_edit.text.strip_edges().to_lower()
 	_visible_entries = []
 	for entry in _all_entries:
+		if not _should_include_entry(entry):
+			continue
 		if needle.is_empty() or entry.to_lower().contains(needle):
 			_visible_entries.append(entry)
 	_rebuild_error_tree()
 	_update_dock_title()
+
+func _should_include_entry(entry: String) -> bool:
+	if _show_errors_checkbox != null and not _show_errors_checkbox.button_pressed and _entry_is_error(entry):
+		return false
+	if _show_warnings_checkbox != null and not _show_warnings_checkbox.button_pressed and _entry_is_warning(entry):
+		return false
+	return true
+
+func _entry_is_warning(entry: String) -> bool:
+	return _single_line_summary(entry).to_lower().contains("warning")
+
+func _entry_is_error(entry: String) -> bool:
+	var summary: String = _single_line_summary(entry).to_lower()
+	return summary.contains("error") or summary.contains("exception")
 
 func _single_line_summary(entry: String) -> String:
 	var lines: PackedStringArray = entry.split("\n", false)
@@ -584,13 +621,15 @@ func _rebuild_error_tree() -> void:
 			})
 
 func _entry_color_for_message(message: String) -> Color:
+	if _show_colors_checkbox != null and not _show_colors_checkbox.button_pressed:
+		return COLOR_ENTRY_DEFAULT
 	var lowered: String = message.to_lower()
 	if lowered.contains("warning"):
 		return COLOR_ENTRY_WARNING
 	if lowered.contains("nullreferenceexception") or lowered.contains("argumentnullexception"):
 		return COLOR_ENTRY_ERROR
 	if lowered.contains("exception") or lowered.contains("error"):
-		return COLOR_ENTRY_EXCEPTION
+		return COLOR_ENTRY_ERROR
 	return COLOR_ENTRY_DEFAULT
 
 func _detail_color_for_line(detail_line: String) -> Color:
