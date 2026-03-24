@@ -6,7 +6,7 @@ const PROJECT_ROOT_PATH: String = "res://"
 const MAIN_SCENE_SETTING_PATH: String = "application/run/main_scene"
 const ROOT_LEVEL_SCENE_PATH: String = "res://Level.tscn"
 const DebuggerEventBridgeScript = preload("Scripts/Dock/Debugger/DebuggerEventBridge.gd")
-const DebuggerPlusTabScript = preload("Scripts/Dock/Debugger/DebuggerPlusTab.gd")
+const DebuggerPlusTabScript = preload("Scripts/Dock/DebuggerPlusTab.gd")
 const DevToolsTabScript = preload("Scripts/Dock/DevToolsTab.gd")
 const TemplateSetupDock = preload("Scripts/Dock/TemplateSetupDock.gd")
 

@@ -4,6 +4,7 @@ extends VBoxContainer
 
 const DebuggerErrorScannerScript = preload("../DebuggerErrorScanner.gd")
 const DebuggerErrorFormatterScript = preload("../DebuggerErrorFormatter.gd")
+const DebuggerColorsPopupScript = preload("DebuggerColorsPopup.gd")
 const DETAIL_ROW_INDENT := "    "
 const REFRESH_BUTTON_WIDTH := 110
 const COPY_BUTTON_WIDTH := 120
@@ -13,18 +14,31 @@ const TREE_FONT_SIZE := 15
 const TIMESTAMP_COLUMN_WIDTH := 110
 const ENTRY_TOGGLE_GUTTER_X := 22.0
 const CONTEXT_MENU_Y_OFFSET := 12
-const COLOR_TREE_FONT := Color(0.9, 0.9, 0.9)
-const COLOR_PANEL_BACKGROUND := Color(0.05, 0.05, 0.05)
-const COLOR_FEEDBACK_WARNING := Color(0.9, 0.9, 0.9)
-const COLOR_FEEDBACK_SUCCESS := Color(0.9, 0.9, 0.9)
-const COLOR_TIMESTAMP_TEXT := Color(0.68, 0.68, 0.68)
-const COLOR_SOURCE_TEXT := Color(0.45, 0.75, 1.0)
-const COLOR_ENTRY_DEFAULT := Color(0.9, 0.9, 0.9)
-const COLOR_ENTRY_ERROR := Color(0.95, 0.35, 0.35)
-const COLOR_ENTRY_WARNING := Color(1.0, 0.8, 0.5)
-const COLOR_DETAIL_DEFAULT := Color(0.9, 0.9, 0.9)
-const COLOR_DETAIL_STACK_HEADER := Color(0.9, 0.9, 0.9)
-const COLOR_DETAIL_STACK_FRAME := Color(0.9, 0.9, 0.9)
+const DEFAULT_COLOR_TREE_FONT := Color(0.9, 0.9, 0.9)
+const DEFAULT_COLOR_PANEL_BACKGROUND := Color(0.05, 0.05, 0.05)
+const DEFAULT_COLOR_FEEDBACK_WARNING := Color(0.9, 0.9, 0.9)
+const DEFAULT_COLOR_FEEDBACK_SUCCESS := Color(0.9, 0.9, 0.9)
+const DEFAULT_COLOR_TIMESTAMP_TEXT := Color(0.68, 0.68, 0.68)
+const DEFAULT_COLOR_SOURCE_TEXT := Color(0.45, 0.75, 1.0)
+const DEFAULT_COLOR_ENTRY_DEFAULT := Color(0.9, 0.9, 0.9)
+const DEFAULT_COLOR_ENTRY_ERROR := Color(0.95, 0.35, 0.35)
+const DEFAULT_COLOR_ENTRY_WARNING := Color(1.0, 0.8, 0.5)
+const DEFAULT_COLOR_DETAIL_DEFAULT := Color(0.9, 0.9, 0.9)
+const DEFAULT_COLOR_DETAIL_STACK_HEADER := Color(0.9, 0.9, 0.9)
+const DEFAULT_COLOR_DETAIL_STACK_FRAME := Color(0.9, 0.9, 0.9)
+
+var COLOR_TREE_FONT := DEFAULT_COLOR_TREE_FONT
+var COLOR_PANEL_BACKGROUND := DEFAULT_COLOR_PANEL_BACKGROUND
+var COLOR_FEEDBACK_WARNING := DEFAULT_COLOR_FEEDBACK_WARNING
+var COLOR_FEEDBACK_SUCCESS := DEFAULT_COLOR_FEEDBACK_SUCCESS
+var COLOR_TIMESTAMP_TEXT := DEFAULT_COLOR_TIMESTAMP_TEXT
+var COLOR_SOURCE_TEXT := DEFAULT_COLOR_SOURCE_TEXT
+var COLOR_ENTRY_DEFAULT := DEFAULT_COLOR_ENTRY_DEFAULT
+var COLOR_ENTRY_ERROR := DEFAULT_COLOR_ENTRY_ERROR
+var COLOR_ENTRY_WARNING := DEFAULT_COLOR_ENTRY_WARNING
+var COLOR_DETAIL_DEFAULT := DEFAULT_COLOR_DETAIL_DEFAULT
+var COLOR_DETAIL_STACK_HEADER := DEFAULT_COLOR_DETAIL_STACK_HEADER
+var COLOR_DETAIL_STACK_FRAME := DEFAULT_COLOR_DETAIL_STACK_FRAME
 
 var _scanner: DebuggerErrorScanner
 var _formatter: DebuggerErrorFormatter
@@ -32,17 +46,19 @@ var _refresh_button: Button
 var _copy_all_button: Button
 var _expand_all_button: Button
 var _collapse_all_button: Button
+var _colors_button: Button
 var _filter_edit: LineEdit
 var _include_stack_trace_checkbox: CheckButton
 var _use_short_type_names_checkbox: CheckButton
 var _include_duplicates_checkbox: CheckButton
 var _show_timestamps_checkbox: CheckButton
-var _show_colors_checkbox: CheckButton
 var _show_errors_checkbox: CheckButton
 var _show_warnings_checkbox: CheckButton
 var _error_tree: Tree
 var _tree_scroll_container: ScrollContainer
+var _tree_panel_style: StyleBoxFlat
 var _entry_context_menu: PopupMenu
+var _colors_popup
 var _all_entries: PackedStringArray = []
 var _visible_entries: PackedStringArray = []
 var _expanded_entries: Dictionary = {}
@@ -56,6 +72,7 @@ var _debugger_event_bridge
 var _run_started_at_msec: int = 0
 var _entry_timestamps_by_raw: Dictionary = {}
 var _pending_error_capture_elapsed_msec: Array = []
+var _colors_enabled: bool = true
 
 func _ready() -> void:
 	_scanner = DebuggerErrorScannerScript.new()
@@ -88,6 +105,9 @@ func _create_controls() -> void:
 	_collapse_all_button.text = "Collapse All"
 	_collapse_all_button.custom_minimum_size = Vector2(TOGGLE_BUTTON_WIDTH, 0)
 
+	_colors_button = Button.new()
+	_colors_button.text = "Colors"
+
 	_filter_edit = LineEdit.new()
 	_filter_edit.placeholder_text = "Filter errors (message, source, stack)"
 	_filter_edit.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -101,16 +121,12 @@ func _create_controls() -> void:
 	_use_short_type_names_checkbox.button_pressed = true
 
 	_include_duplicates_checkbox = CheckButton.new()
-	_include_duplicates_checkbox.text = "Duplicate Errors"
+	_include_duplicates_checkbox.text = "Duplicates"
 	_include_duplicates_checkbox.button_pressed = false
 
 	_show_timestamps_checkbox = CheckButton.new()
 	_show_timestamps_checkbox.text = "Timestamps"
 	_show_timestamps_checkbox.button_pressed = true
-
-	_show_colors_checkbox = CheckButton.new()
-	_show_colors_checkbox.text = "Colors"
-	_show_colors_checkbox.button_pressed = true
 
 	_show_errors_checkbox = CheckButton.new()
 	_show_errors_checkbox.text = "Errors"
@@ -138,17 +154,22 @@ func _create_controls() -> void:
 	_tree_scroll_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_tree_scroll_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_tree_scroll_container.custom_minimum_size = Vector2(0, TREE_MIN_HEIGHT)
-	var panel_style: StyleBoxFlat = StyleBoxFlat.new()
-	panel_style.bg_color = COLOR_PANEL_BACKGROUND
-	panel_style.border_width_left = 0
-	panel_style.border_width_top = 0
-	panel_style.border_width_right = 0
-	panel_style.border_width_bottom = 0
-	_tree_scroll_container.add_theme_stylebox_override("panel", panel_style)
+	_tree_panel_style = StyleBoxFlat.new()
+	_tree_panel_style.bg_color = COLOR_PANEL_BACKGROUND
+	_tree_panel_style.border_width_left = 0
+	_tree_panel_style.border_width_top = 0
+	_tree_panel_style.border_width_right = 0
+	_tree_panel_style.border_width_bottom = 0
+	_tree_scroll_container.add_theme_stylebox_override("panel", _tree_panel_style)
 	_tree_scroll_container.add_child(_error_tree)
 
 	_entry_context_menu = PopupMenu.new()
 	_entry_context_menu.add_item("Copy Error", 0)
+
+	_colors_popup = DebuggerColorsPopupScript.new()
+	_colors_popup.color_changed.connect(_on_color_picker_changed)
+	_colors_popup.reset_defaults_requested.connect(_on_reset_default_colors_requested)
+	_colors_popup.colors_enabled_toggled.connect(_on_colors_enabled_toggled)
 
 func _build_layout() -> void:
 	add_theme_constant_override("separation", 8)
@@ -159,6 +180,7 @@ func _build_layout() -> void:
 	toolbar.add_child(_copy_all_button)
 	toolbar.add_child(_expand_all_button)
 	toolbar.add_child(_collapse_all_button)
+	toolbar.add_child(_colors_button)
 
 	var options_row: HBoxContainer = HBoxContainer.new()
 	options_row.add_theme_constant_override("separation", 16)
@@ -166,7 +188,6 @@ func _build_layout() -> void:
 	options_row.add_child(_use_short_type_names_checkbox)
 	options_row.add_child(_include_duplicates_checkbox)
 	options_row.add_child(_show_timestamps_checkbox)
-	options_row.add_child(_show_colors_checkbox)
 	options_row.add_child(_show_errors_checkbox)
 	options_row.add_child(_show_warnings_checkbox)
 
@@ -182,18 +203,19 @@ func _build_layout() -> void:
 	add_child(options_row)
 	add_child(sections)
 	add_child(_entry_context_menu)
+	add_child(_colors_popup)
 
 func _register_events() -> void:
 	_refresh_button.pressed.connect(_on_refresh_pressed)
 	_copy_all_button.pressed.connect(_on_copy_all_pressed)
 	_expand_all_button.pressed.connect(_on_expand_all_pressed)
 	_collapse_all_button.pressed.connect(_on_collapse_all_pressed)
+	_colors_button.pressed.connect(_on_colors_button_pressed)
 	_filter_edit.text_changed.connect(_on_filter_text_changed)
 	_include_stack_trace_checkbox.toggled.connect(_on_options_toggled)
 	_use_short_type_names_checkbox.toggled.connect(_on_options_toggled)
 	_include_duplicates_checkbox.toggled.connect(_on_options_toggled)
 	_show_timestamps_checkbox.toggled.connect(_on_options_toggled)
-	_show_colors_checkbox.toggled.connect(_on_options_toggled)
 	_show_errors_checkbox.toggled.connect(_on_options_toggled)
 	_show_warnings_checkbox.toggled.connect(_on_options_toggled)
 	_error_tree.item_selected.connect(_on_tree_item_selected)
@@ -206,12 +228,12 @@ func _unregister_events() -> void:
 	_disconnect_signal(_copy_all_button, "pressed", "_on_copy_all_pressed")
 	_disconnect_signal(_expand_all_button, "pressed", "_on_expand_all_pressed")
 	_disconnect_signal(_collapse_all_button, "pressed", "_on_collapse_all_pressed")
+	_disconnect_signal(_colors_button, "pressed", "_on_colors_button_pressed")
 	_disconnect_signal(_filter_edit, "text_changed", "_on_filter_text_changed")
 	_disconnect_signal(_include_stack_trace_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_use_short_type_names_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_include_duplicates_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_show_timestamps_checkbox, "toggled", "_on_options_toggled")
-	_disconnect_signal(_show_colors_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_show_errors_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_show_warnings_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_error_tree, "item_selected", "_on_tree_item_selected")
@@ -575,7 +597,7 @@ func _rebuild_error_tree() -> void:
 		var message: String = str(parts.get("message", summary))
 		if show_timestamps and not timestamp.is_empty():
 			entry_item.set_text(0, timestamp)
-			entry_item.set_custom_color(0, COLOR_TIMESTAMP_TEXT)
+			entry_item.set_custom_color(0, COLOR_TIMESTAMP_TEXT if _colors_enabled else DEFAULT_COLOR_TIMESTAMP_TEXT)
 		elif show_timestamps:
 			entry_item.set_text(0, "")
 		entry_item.set_text(message_column, message)
@@ -600,7 +622,7 @@ func _rebuild_error_tree() -> void:
 					detail_item.set_metadata(0, {"kind": "detail", "entry": entry})
 					continue
 				detail_item.set_text(message_column, "%s%s" % [detail_indent, detail_line])
-				detail_item.set_custom_color(message_column, COLOR_DETAIL_STACK_FRAME)
+				detail_item.set_custom_color(message_column, COLOR_DETAIL_STACK_FRAME if _colors_enabled else DEFAULT_COLOR_DETAIL_STACK_FRAME)
 				detail_item.set_metadata(0, {
 					"kind": "source",
 					"entry": entry,
@@ -612,7 +634,7 @@ func _rebuild_error_tree() -> void:
 			var path: String = str(source_data.get("path", ""))
 			var line_number: int = int(source_data.get("line", 1))
 			detail_item.set_text(message_column, "%sSource: %s:%d" % [detail_indent, path, line_number])
-			detail_item.set_custom_color(message_column, COLOR_SOURCE_TEXT)
+			detail_item.set_custom_color(message_column, COLOR_SOURCE_TEXT if _colors_enabled else DEFAULT_COLOR_SOURCE_TEXT)
 			detail_item.set_metadata(0, {
 				"kind": "source",
 				"entry": entry,
@@ -621,8 +643,8 @@ func _rebuild_error_tree() -> void:
 			})
 
 func _entry_color_for_message(message: String) -> Color:
-	if _show_colors_checkbox != null and not _show_colors_checkbox.button_pressed:
-		return COLOR_ENTRY_DEFAULT
+	if not _colors_enabled:
+		return DEFAULT_COLOR_ENTRY_DEFAULT
 	var lowered: String = message.to_lower()
 	if lowered.contains("warning"):
 		return COLOR_ENTRY_WARNING
@@ -632,7 +654,83 @@ func _entry_color_for_message(message: String) -> Color:
 		return COLOR_ENTRY_ERROR
 	return COLOR_ENTRY_DEFAULT
 
+func _on_colors_button_pressed() -> void:
+	if _colors_popup == null:
+		return
+	_colors_popup.popup_centered_with_colors(_current_color_map())
+
+func _on_color_picker_changed(color_key: String, color: Color) -> void:
+	_set_color_by_key(color_key, color)
+	_apply_color_theme()
+
+func _on_reset_default_colors_requested() -> void:
+	COLOR_TREE_FONT = DEFAULT_COLOR_TREE_FONT
+	COLOR_PANEL_BACKGROUND = DEFAULT_COLOR_PANEL_BACKGROUND
+	COLOR_FEEDBACK_WARNING = DEFAULT_COLOR_FEEDBACK_WARNING
+	COLOR_FEEDBACK_SUCCESS = DEFAULT_COLOR_FEEDBACK_SUCCESS
+	COLOR_TIMESTAMP_TEXT = DEFAULT_COLOR_TIMESTAMP_TEXT
+	COLOR_SOURCE_TEXT = DEFAULT_COLOR_SOURCE_TEXT
+	COLOR_ENTRY_DEFAULT = DEFAULT_COLOR_ENTRY_DEFAULT
+	COLOR_ENTRY_ERROR = DEFAULT_COLOR_ENTRY_ERROR
+	COLOR_ENTRY_WARNING = DEFAULT_COLOR_ENTRY_WARNING
+	COLOR_DETAIL_DEFAULT = DEFAULT_COLOR_DETAIL_DEFAULT
+	COLOR_DETAIL_STACK_HEADER = DEFAULT_COLOR_DETAIL_STACK_HEADER
+	COLOR_DETAIL_STACK_FRAME = DEFAULT_COLOR_DETAIL_STACK_FRAME
+	_apply_color_theme()
+	_colors_popup.popup_centered_with_colors(_current_color_map())
+
+func _current_color_map() -> Dictionary:
+	return {
+		"enabled": _colors_enabled,
+		"tree_font": COLOR_TREE_FONT,
+		"panel_background": COLOR_PANEL_BACKGROUND,
+		"timestamp": COLOR_TIMESTAMP_TEXT,
+		"source": COLOR_SOURCE_TEXT,
+		"entry_default": COLOR_ENTRY_DEFAULT,
+		"entry_error": COLOR_ENTRY_ERROR,
+		"entry_warning": COLOR_ENTRY_WARNING,
+		"detail_default": COLOR_DETAIL_DEFAULT,
+		"stack_header": COLOR_DETAIL_STACK_HEADER,
+		"stack_frame": COLOR_DETAIL_STACK_FRAME
+	}
+
+func _set_color_by_key(color_key: String, color: Color) -> void:
+	match color_key:
+		"tree_font":
+			COLOR_TREE_FONT = color
+		"panel_background":
+			COLOR_PANEL_BACKGROUND = color
+		"timestamp":
+			COLOR_TIMESTAMP_TEXT = color
+		"source":
+			COLOR_SOURCE_TEXT = color
+		"entry_default":
+			COLOR_ENTRY_DEFAULT = color
+		"entry_error":
+			COLOR_ENTRY_ERROR = color
+		"entry_warning":
+			COLOR_ENTRY_WARNING = color
+		"detail_default":
+			COLOR_DETAIL_DEFAULT = color
+		"stack_header":
+			COLOR_DETAIL_STACK_HEADER = color
+		"stack_frame":
+			COLOR_DETAIL_STACK_FRAME = color
+
+func _on_colors_enabled_toggled(enabled: bool) -> void:
+	_colors_enabled = enabled
+	_apply_color_theme()
+
+func _apply_color_theme() -> void:
+	if _error_tree != null:
+		_error_tree.add_theme_color_override("font_color", COLOR_TREE_FONT if _colors_enabled else DEFAULT_COLOR_TREE_FONT)
+	if _tree_panel_style != null:
+		_tree_panel_style.bg_color = COLOR_PANEL_BACKGROUND if _colors_enabled else DEFAULT_COLOR_PANEL_BACKGROUND
+	_rebuild_error_tree()
+
 func _detail_color_for_line(detail_line: String) -> Color:
+	if not _colors_enabled:
+		return DEFAULT_COLOR_DETAIL_DEFAULT
 	var lowered: String = detail_line.to_lower()
 	if lowered.begins_with("stack trace"):
 		return COLOR_DETAIL_STACK_HEADER
