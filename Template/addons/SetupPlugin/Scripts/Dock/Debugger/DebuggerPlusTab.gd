@@ -480,20 +480,23 @@ func _collect_errors_with_scanner() -> PackedStringArray:
 	if root == null:
 		return []
 
-	var debugger_root: Control = _scanner.find_debugger_tab_control(root)
-	if debugger_root == null:
+	var panel_roots: Array[Control] = _scanner.find_debugger_related_tab_controls(root)
+	if panel_roots.is_empty():
 		return []
 
 	var rows: PackedStringArray = []
-	var pending: Array[Node] = [debugger_root]
-	while not pending.is_empty():
-		var node: Node = pending.pop_back()
-		for child in node.get_children():
-			if child is Node:
-				pending.append(child)
-		if node is Tree:
-			var tree: Tree = node as Tree
-			rows.append_array(_scanner.collect_tree_error_rows(tree, _formatter, _include_stack_trace_checkbox.button_pressed, _use_short_type_names_checkbox.button_pressed))
+	for panel_root in panel_roots:
+		if panel_root == null:
+			continue
+		var pending: Array[Node] = [panel_root]
+		while not pending.is_empty():
+			var node: Node = pending.pop_back()
+			for child in node.get_children():
+				if child is Node:
+					pending.append(child)
+			if node is Tree:
+				var tree: Tree = node as Tree
+				rows.append_array(_scanner.collect_tree_error_rows(tree, _formatter, _include_stack_trace_checkbox.button_pressed, _use_short_type_names_checkbox.button_pressed))
 
 	if _include_duplicates_checkbox != null and _include_duplicates_checkbox.button_pressed:
 		return _non_empty_rows(rows)
@@ -781,22 +784,43 @@ func _bind_debugger_event_hooks() -> void:
 	var root: Control = EditorInterface.get_base_control()
 	if root == null:
 		return
-	var debugger_root_candidate: Control = _scanner.find_debugger_tab_control(root)
-	if debugger_root_candidate == null:
+	var panel_roots: Array[Control] = _scanner.find_debugger_related_tab_controls(root)
+	if panel_roots.is_empty():
 		return
 
-	if _debugger_root != debugger_root_candidate:
-		_unwatch_debugger_trees()
-		_debugger_root = debugger_root_candidate
+	var seen_tree_ids: Dictionary = {}
+	for panel_root in panel_roots:
+		if panel_root == null:
+			continue
+		var pending: Array[Node] = [panel_root]
+		while not pending.is_empty():
+			var node: Node = pending.pop_back()
+			for child in node.get_children():
+				if child is Node:
+					pending.append(child)
+			if node is Tree:
+				var tree: Tree = node as Tree
+				seen_tree_ids[tree.get_instance_id()] = true
+				_watch_debugger_tree(tree)
 
-	var pending: Array[Node] = [_debugger_root]
-	while not pending.is_empty():
-		var node: Node = pending.pop_back()
-		for child in node.get_children():
-			if child is Node:
-				pending.append(child)
-		if node is Tree:
-			_watch_debugger_tree(node as Tree)
+	_prune_watched_debugger_trees(seen_tree_ids)
+
+func _prune_watched_debugger_trees(keep_tree_ids: Dictionary) -> void:
+	var retained: Array[Tree] = []
+	for tree in _watched_debugger_trees:
+		if tree == null or not is_instance_valid(tree):
+			continue
+		var tree_id: int = tree.get_instance_id()
+		if keep_tree_ids.has(tree_id):
+			retained.append(tree)
+			continue
+		_disconnect_signal(tree, "item_selected", "_on_debugger_tree_changed")
+		_disconnect_signal(tree, "item_activated", "_on_debugger_tree_changed")
+		_disconnect_signal(tree, "nothing_selected", "_on_debugger_tree_changed")
+		_disconnect_signal(tree, "minimum_size_changed", "_on_debugger_tree_changed")
+		_disconnect_signal(tree, "draw", "_on_debugger_tree_draw")
+		_debugger_tree_signatures.erase(tree_id)
+	_watched_debugger_trees = retained
 
 func _watch_debugger_tree(tree: Tree) -> void:
 	for existing in _watched_debugger_trees:
@@ -864,19 +888,19 @@ func _compute_tree_signature(tree: Tree) -> int:
 	var root: TreeItem = tree.get_root()
 	if root == null:
 		return 0
-	return _accumulate_tree_signature(root.get_first_child(), 17, 0)
+	return _accumulate_tree_signature(root.get_first_child(), 17, 0, tree.columns)
 
-func _accumulate_tree_signature(item: TreeItem, signature: int, depth: int) -> int:
+func _accumulate_tree_signature(item: TreeItem, signature: int, depth: int, column_count: int) -> int:
 	var current: TreeItem = item
 	var result: int = signature
 	var index: int = 0
 	while current != null:
 		var a: String = current.get_text(0)
-		var b: String = current.get_text(1)
+		var b: String = current.get_text(1) if column_count > 1 else ""
 		result = result * 31 + (a.hash() ^ (b.hash() * 7) ^ (depth * 17) ^ (index * 13))
 		var child: TreeItem = current.get_first_child()
 		if child != null:
-			result = _accumulate_tree_signature(child, result, depth + 1)
+			result = _accumulate_tree_signature(child, result, depth + 1, column_count)
 		index += 1
 		current = current.get_next()
 	return result

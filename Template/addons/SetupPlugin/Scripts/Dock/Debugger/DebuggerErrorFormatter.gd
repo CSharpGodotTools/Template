@@ -6,10 +6,16 @@ extends RefCounted
 # Formats one debugger TreeItem as a multi-line string.
 # Returns an empty string if the item does not look like an error entry.
 func format_item(item: TreeItem, include_stack_trace: bool, use_short_type_names: bool) -> String:
-	var title: String = item.get_text(1).strip_edges()
+	var is_msbuild_problem: bool = _is_msbuild_problem_item(item)
+	var msbuild_details: Dictionary = _extract_msbuild_details(item) if is_msbuild_problem else {}
+	var title: String = _extract_item_title(item)
 	if use_short_type_names:
 		title = _strip_fully_qualified_names(title)
-	if not _looks_like_error_line(title):
+	if is_msbuild_problem:
+		title = _normalize_msbuild_title(title, msbuild_details)
+	if _is_non_problem_group_row(item, title):
+		return ""
+	if not is_msbuild_problem and not _looks_like_error_line(title):
 		return ""
 	var row_timestamp: String = _extract_row_timestamp(item)
 	if not row_timestamp.is_empty():
@@ -17,6 +23,14 @@ func format_item(item: TreeItem, include_stack_trace: bool, use_short_type_names
 
 	var lines: PackedStringArray = [title]
 	var source: String = _format_tree_item_source(item)
+	if source.is_empty() and is_msbuild_problem:
+		source = _source_from_msbuild_details(msbuild_details)
+	if source.is_empty():
+		source = _extract_source_from_text_or_context(title, item)
+	if source.is_empty() and _contains_compiler_code(title.to_lower()):
+		return ""
+	if is_msbuild_problem and source.is_empty():
+		return ""
 	if _is_helper_source(source) or _is_non_actionable_source(source):
 		var stack_source: String = _find_first_user_source_from_stack(item)
 		if not stack_source.is_empty():
@@ -30,6 +44,79 @@ func format_item(item: TreeItem, include_stack_trace: bool, use_short_type_names
 			for frame in stack:
 				lines.append("    %s" % frame)
 	return "\n".join(lines)
+
+func _is_msbuild_problem_item(item: TreeItem) -> bool:
+	return typeof(item.get_metadata(0)) == TYPE_INT
+
+func _extract_msbuild_details(item: TreeItem) -> Dictionary:
+	var tooltip: String = item.get_tooltip_text(0).strip_edges()
+	if tooltip.is_empty():
+		var tree: Tree = item.get_tree()
+		if tree != null and tree.columns > 1:
+			tooltip = item.get_tooltip_text(1).strip_edges()
+	if tooltip.is_empty():
+		return {}
+
+	var details: Dictionary = {}
+	for raw_line in tooltip.split("\n", false):
+		var line: String = raw_line.strip_edges()
+		if line.begins_with("Code:"):
+			details["code"] = line.trim_prefix("Code:").strip_edges()
+		elif line.begins_with("Type:"):
+			details["type"] = line.trim_prefix("Type:").strip_edges().to_lower()
+		elif line.begins_with("File:"):
+			details["file"] = line.trim_prefix("File:").strip_edges()
+		elif line.begins_with("Line:"):
+			var line_text: String = line.trim_prefix("Line:").strip_edges()
+			if line_text.is_valid_int():
+				details["line"] = int(line_text)
+	return details
+
+func _normalize_msbuild_title(title: String, details: Dictionary) -> String:
+	var result: String = title.strip_edges()
+	var code: String = str(details.get("code", "")).strip_edges()
+	if not code.is_empty() and not result.to_lower().begins_with(code.to_lower() + ":"):
+		result = "%s: %s" % [code, result]
+	var diagnostic_type: String = str(details.get("type", "")).strip_edges()
+	if diagnostic_type == "warning" and not result.to_lower().contains("warning"):
+		result = "Warning: %s" % result
+	elif diagnostic_type == "error" and not result.to_lower().contains("error"):
+		result = "Error: %s" % result
+	return result
+
+func _source_from_msbuild_details(details: Dictionary) -> String:
+	var file_path: String = str(details.get("file", "")).strip_edges()
+	if file_path.is_empty():
+		return ""
+	var line_number: int = int(details.get("line", 1))
+	return "%s:%d" % [file_path, maxi(1, line_number)]
+
+func _extract_item_title(item: TreeItem) -> String:
+	var tree: Tree = item.get_tree()
+	if tree != null and tree.columns > 1:
+		var secondary: String = item.get_text(1).strip_edges()
+		if not secondary.is_empty():
+			return secondary
+	return item.get_text(0).strip_edges()
+
+func _is_non_problem_group_row(item: TreeItem, title: String) -> bool:
+	var meta: Variant = item.get_metadata(0)
+	if typeof(meta) == TYPE_INT:
+		return false
+	if meta is Array:
+		# Debugger entries store source metadata arrays.
+		return false
+	if title.is_empty():
+		return true
+
+	var lower: String = title.to_lower()
+	if lower.ends_with(" issues)"):
+		return true
+	if lower.ends_with(".csproj"):
+		return true
+	if not lower.contains("error") and not lower.contains("warning") and not _contains_compiler_code(lower):
+		return true
+	return false
 
 # Extracts the source file path and line number from the item's metadata.
 # Godot's debugger stores this as a two-element array: [file, line].
@@ -202,7 +289,81 @@ func _looks_like_error_line(text: String) -> bool:
 	if text.is_empty():
 		return false
 	var lower: String = text.to_lower()
-	return lower.contains("error") or lower.contains("exception") or lower.contains("failed")
+	if lower.contains("error") or lower.contains("exception") or lower.contains("failed") or lower.contains("warning"):
+		return true
+	if _contains_compiler_code(lower):
+		return true
+	return false
+
+func _contains_compiler_code(text: String) -> bool:
+	var regex: RegEx = RegEx.new()
+	if regex.compile("\\b(?:cs|nu|msb|ca)\\d{3,5}\\b") != OK:
+		return false
+	return regex.search(text) != null
+
+func _extract_source_from_text_or_context(text: String, item: TreeItem) -> String:
+	var from_text: String = _extract_source_from_msbuild_text(text)
+	if not from_text.is_empty():
+		return from_text
+
+	# In MSBuild tree layout, file path may be on any ancestor row.
+	var parent_path: String = _find_path_in_ancestors(item)
+	if parent_path.is_empty():
+		return ""
+	var line_number: int = _extract_line_number_from_text(text)
+	if line_number <= 0:
+		line_number = 1
+	return "%s:%d" % [parent_path, line_number]
+
+func _find_path_in_ancestors(item: TreeItem) -> String:
+	var current: TreeItem = item.get_parent()
+	while current != null:
+		var from_col0: String = _extract_file_path_from_group_row(current.get_text(0).strip_edges())
+		if not from_col0.is_empty():
+			return from_col0
+		var tree: Tree = current.get_tree()
+		if tree != null and tree.columns > 1:
+			var from_col1: String = _extract_file_path_from_group_row(current.get_text(1).strip_edges())
+			if not from_col1.is_empty():
+				return from_col1
+		current = current.get_parent()
+	return ""
+
+func _extract_source_from_msbuild_text(text: String) -> String:
+	var regex: RegEx = RegEx.new()
+	if regex.compile("([^\\s]+\\.(?:cs|gd))\\((\\d+)(?:,\\d+)?\\)") != OK:
+		return ""
+	var match: RegExMatch = regex.search(text)
+	if match == null:
+		return ""
+	var path: String = match.get_string(1).strip_edges()
+	var line_text: String = match.get_string(2).strip_edges()
+	if path.is_empty() or not line_text.is_valid_int():
+		return ""
+	return "%s:%d" % [path, int(line_text)]
+
+func _extract_file_path_from_group_row(text: String) -> String:
+	if text.is_empty():
+		return ""
+	var regex: RegEx = RegEx.new()
+	if regex.compile("(.+\\.(?:cs|gd))(?:\\s+\\(\\d+\\s+issues\\))?$") != OK:
+		return ""
+	var match: RegExMatch = regex.search(text)
+	if match == null:
+		return ""
+	return match.get_string(1).strip_edges()
+
+func _extract_line_number_from_text(text: String) -> int:
+	var regex: RegEx = RegEx.new()
+	if regex.compile("\\((\\d+)(?:,\\d+)?\\)") != OK:
+		return -1
+	var match: RegExMatch = regex.search(text)
+	if match == null:
+		return -1
+	var line_text: String = match.get_string(1)
+	if not line_text.is_valid_int():
+		return -1
+	return int(line_text)
 
 # If the frame contains " @ ", strips fully-qualified type names from the
 # method-signature portion while leaving the file/line portion intact.
