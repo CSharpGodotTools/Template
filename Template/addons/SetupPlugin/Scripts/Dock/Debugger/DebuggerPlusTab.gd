@@ -4,7 +4,7 @@ extends VBoxContainer
 
 const DebuggerErrorScannerScript = preload("../DebuggerErrorScanner.gd")
 const DebuggerErrorFormatterScript = preload("../DebuggerErrorFormatter.gd")
-const DebuggerColorsPopupScript = preload("DebuggerColorsPopup.gd")
+const DebuggerSettingsPopupScript = preload("DebuggerSettingsPopup.gd")
 const DETAIL_ROW_INDENT := "    "
 const SETTINGS_PREFIX := "setup_plugin/debugger_plus/"
 const REFRESH_BUTTON_WIDTH := 110
@@ -53,7 +53,6 @@ var _include_stack_trace_checkbox: CheckButton
 var _use_short_type_names_checkbox: CheckButton
 var _include_duplicates_checkbox: CheckButton
 var _show_timestamps_checkbox: CheckButton
-var _show_prefixes_checkbox: CheckButton
 var _show_errors_checkbox: CheckButton
 var _show_warnings_checkbox: CheckButton
 var _dev_mode_checkbox: CheckButton
@@ -61,7 +60,7 @@ var _error_tree: Tree
 var _tree_scroll_container: ScrollContainer
 var _tree_panel_style: StyleBoxFlat
 var _entry_context_menu: PopupMenu
-var _colors_popup
+var _settings_popup
 var _all_entries: PackedStringArray = []
 var _visible_entries: PackedStringArray = []
 var _expanded_entries: Dictionary = {}
@@ -76,6 +75,8 @@ var _run_started_at_msec: int = 0
 var _entry_timestamps_by_raw: Dictionary = {}
 var _pending_error_capture_elapsed_msec: Array = []
 var _colors_enabled: bool = true
+var _warning_prefix_case: int = 1
+var _error_prefix_case: int = 1
 
 func _ready() -> void:
 	_scanner = DebuggerErrorScannerScript.new()
@@ -112,8 +113,9 @@ func _create_controls() -> void:
 	_collapse_all_button.custom_minimum_size = Vector2(TOGGLE_BUTTON_WIDTH, 0)
 
 	_colors_button = Button.new()
-	_colors_button.text = "Colors"
+	_colors_button.text = "Settings"
 	_colors_button.custom_minimum_size = Vector2(TOGGLE_BUTTON_WIDTH, 0)
+	_colors_button.tooltip_text = "Open Debugger+ settings."
 
 	_filter_edit = LineEdit.new()
 	_filter_edit.placeholder_text = "Filter errors (message, source, stack)"
@@ -121,34 +123,37 @@ func _create_controls() -> void:
 
 	_include_stack_trace_checkbox = CheckButton.new()
 	_include_stack_trace_checkbox.text = "Stack Trace"
+	_include_stack_trace_checkbox.tooltip_text = "Include stack trace details in each entry."
 	_include_stack_trace_checkbox.button_pressed = true
 
 	_use_short_type_names_checkbox = CheckButton.new()
 	_use_short_type_names_checkbox.text = "Short Type Names"
+	_use_short_type_names_checkbox.tooltip_text = "Use compact type names in messages and stack frames."
 	_use_short_type_names_checkbox.button_pressed = true
 
 	_include_duplicates_checkbox = CheckButton.new()
 	_include_duplicates_checkbox.text = "Duplicates"
+	_include_duplicates_checkbox.tooltip_text = "Show duplicate entries instead of collapsing identical ones."
 	_include_duplicates_checkbox.button_pressed = false
 
 	_show_timestamps_checkbox = CheckButton.new()
 	_show_timestamps_checkbox.text = "Timestamps"
+	_show_timestamps_checkbox.tooltip_text = "Show elapsed timestamps for entries."
 	_show_timestamps_checkbox.button_pressed = true
-
-	_show_prefixes_checkbox = CheckButton.new()
-	_show_prefixes_checkbox.text = "Prefixes"
-	_show_prefixes_checkbox.button_pressed = false
 
 	_show_errors_checkbox = CheckButton.new()
 	_show_errors_checkbox.text = "Errors"
+	_show_errors_checkbox.tooltip_text = "Toggle visibility of error/exception entries."
 	_show_errors_checkbox.button_pressed = true
 
 	_show_warnings_checkbox = CheckButton.new()
 	_show_warnings_checkbox.text = "Warnings"
+	_show_warnings_checkbox.tooltip_text = "Toggle visibility of warning entries."
 	_show_warnings_checkbox.button_pressed = true
 
 	_dev_mode_checkbox = CheckButton.new()
 	_dev_mode_checkbox.text = "Dev"
+	_dev_mode_checkbox.tooltip_text = "Enables additional debug info meant for project maintainers."
 	_dev_mode_checkbox.button_pressed = false
 
 	_error_tree = Tree.new()
@@ -181,10 +186,12 @@ func _create_controls() -> void:
 	_entry_context_menu = PopupMenu.new()
 	_entry_context_menu.add_item("Copy Error", 0)
 
-	_colors_popup = DebuggerColorsPopupScript.new()
-	_colors_popup.color_changed.connect(_on_color_picker_changed)
-	_colors_popup.reset_defaults_requested.connect(_on_reset_default_colors_requested)
-	_colors_popup.colors_enabled_toggled.connect(_on_colors_enabled_toggled)
+	_settings_popup = DebuggerSettingsPopupScript.new()
+	_settings_popup.color_changed.connect(_on_color_picker_changed)
+	_settings_popup.reset_defaults_requested.connect(_on_reset_default_colors_requested)
+	_settings_popup.colors_enabled_toggled.connect(_on_colors_enabled_toggled)
+	_settings_popup.warning_prefix_case_changed.connect(_on_warning_prefix_case_changed)
+	_settings_popup.error_prefix_case_changed.connect(_on_error_prefix_case_changed)
 
 func _build_layout() -> void:
 	add_theme_constant_override("separation", 8)
@@ -197,17 +204,6 @@ func _build_layout() -> void:
 	toolbar.add_child(_collapse_all_button)
 	toolbar.add_child(_colors_button)
 
-	var options_row: HBoxContainer = HBoxContainer.new()
-	options_row.add_theme_constant_override("separation", 16)
-	options_row.add_child(_include_stack_trace_checkbox)
-	options_row.add_child(_use_short_type_names_checkbox)
-	options_row.add_child(_include_duplicates_checkbox)
-	options_row.add_child(_show_timestamps_checkbox)
-	options_row.add_child(_show_prefixes_checkbox)
-	options_row.add_child(_show_errors_checkbox)
-	options_row.add_child(_show_warnings_checkbox)
-	options_row.add_child(_dev_mode_checkbox)
-
 	var sections: VBoxContainer = VBoxContainer.new()
 	sections.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	sections.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -217,10 +213,19 @@ func _build_layout() -> void:
 
 	add_child(toolbar)
 	add_child(_filter_edit)
-	add_child(options_row)
 	add_child(sections)
 	add_child(_entry_context_menu)
-	add_child(_colors_popup)
+	add_child(_settings_popup)
+	_settings_popup.set_option_controls([
+		_include_stack_trace_checkbox,
+		_use_short_type_names_checkbox,
+		_include_duplicates_checkbox,
+		_show_timestamps_checkbox,
+		_show_errors_checkbox,
+		_show_warnings_checkbox
+	])
+	_settings_popup.set_dev_control(_dev_mode_checkbox)
+	_settings_popup.set_prefix_cases(_warning_prefix_case, _error_prefix_case)
 
 func _register_events() -> void:
 	_refresh_button.pressed.connect(_on_refresh_pressed)
@@ -233,7 +238,6 @@ func _register_events() -> void:
 	_use_short_type_names_checkbox.toggled.connect(_on_options_toggled)
 	_include_duplicates_checkbox.toggled.connect(_on_options_toggled)
 	_show_timestamps_checkbox.toggled.connect(_on_options_toggled)
-	_show_prefixes_checkbox.toggled.connect(_on_options_toggled)
 	_show_errors_checkbox.toggled.connect(_on_options_toggled)
 	_show_warnings_checkbox.toggled.connect(_on_options_toggled)
 	_dev_mode_checkbox.toggled.connect(_on_options_toggled)
@@ -253,7 +257,6 @@ func _unregister_events() -> void:
 	_disconnect_signal(_use_short_type_names_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_include_duplicates_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_show_timestamps_checkbox, "toggled", "_on_options_toggled")
-	_disconnect_signal(_show_prefixes_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_show_errors_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_show_warnings_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_dev_mode_checkbox, "toggled", "_on_options_toggled")
@@ -689,22 +692,34 @@ func _entry_color_for_message(message: String, entry: String = "") -> Color:
 	return COLOR_ENTRY_DEFAULT
 
 func _apply_prefix_to_message(message: String, entry: String = "") -> String:
-	if _show_prefixes_checkbox == null or not _show_prefixes_checkbox.button_pressed:
-		return message
 	var trimmed: String = message.strip_edges()
 	var lowered: String = trimmed.to_lower()
 	if lowered.begins_with("warning:") or lowered.begins_with("error:"):
 		return message
 	var meta_type: String = _entry_meta_type(entry)
 	if meta_type == "warning":
-		return "Warning: %s" % message
+		return _with_prefix(_prefix_text("warning", _warning_prefix_case), message)
 	if meta_type == "error":
-		return "Error: %s" % message
+		return _with_prefix(_prefix_text("error", _error_prefix_case), message)
 	if lowered.contains("warning"):
-		return "Warning: %s" % message
+		return _with_prefix(_prefix_text("warning", _warning_prefix_case), message)
 	if lowered.contains("exception") or lowered.contains("error"):
-		return "Error: %s" % message
+		return _with_prefix(_prefix_text("error", _error_prefix_case), message)
 	return message
+
+func _with_prefix(prefix: String, message: String) -> String:
+	if prefix.is_empty():
+		return message
+	return "%s: %s" % [prefix, message]
+
+func _prefix_text(base: String, mode: int) -> String:
+	if mode == 0:
+		return ""
+	if mode == 1:
+		return "%s%s" % [base.substr(0, 1).to_upper(), base.substr(1, base.length() - 1).to_lower()]
+	if mode == 2:
+		return base.to_upper()
+	return base
 
 func _entry_meta_type(entry: String) -> String:
 	for line in entry.split("\n", false):
@@ -714,9 +729,9 @@ func _entry_meta_type(entry: String) -> String:
 	return ""
 
 func _on_colors_button_pressed() -> void:
-	if _colors_popup == null:
+	if _settings_popup == null:
 		return
-	_colors_popup.popup_centered_with_colors(_current_color_map())
+	_settings_popup.popup_centered_with_state(_current_color_map(), _colors_enabled, _warning_prefix_case, _error_prefix_case)
 
 func _on_color_picker_changed(color_key: String, color: Color) -> void:
 	_set_color_by_key(color_key, color)
@@ -724,6 +739,17 @@ func _on_color_picker_changed(color_key: String, color: Color) -> void:
 	_apply_color_theme()
 
 func _on_reset_default_colors_requested() -> void:
+	_include_stack_trace_checkbox.button_pressed = true
+	_use_short_type_names_checkbox.button_pressed = true
+	_include_duplicates_checkbox.button_pressed = false
+	_show_timestamps_checkbox.button_pressed = true
+	_show_errors_checkbox.button_pressed = true
+	_show_warnings_checkbox.button_pressed = true
+	_dev_mode_checkbox.button_pressed = false
+	_warning_prefix_case = 1
+	_error_prefix_case = 1
+	_colors_enabled = true
+
 	COLOR_TREE_FONT = DEFAULT_COLOR_TREE_FONT
 	COLOR_PANEL_BACKGROUND = DEFAULT_COLOR_PANEL_BACKGROUND
 	COLOR_FEEDBACK_WARNING = DEFAULT_COLOR_FEEDBACK_WARNING
@@ -737,8 +763,20 @@ func _on_reset_default_colors_requested() -> void:
 	COLOR_DETAIL_STACK_HEADER = DEFAULT_COLOR_DETAIL_STACK_HEADER
 	COLOR_DETAIL_STACK_FRAME = DEFAULT_COLOR_DETAIL_STACK_FRAME
 	_save_persistent_state()
+	_apply_timestamp_column_visibility()
 	_apply_color_theme()
-	_colors_popup.popup_centered_with_colors(_current_color_map())
+	_refresh_errors()
+	_settings_popup.popup_centered_with_state(_current_color_map(), _colors_enabled, _warning_prefix_case, _error_prefix_case)
+
+func _on_warning_prefix_case_changed(mode: int) -> void:
+	_warning_prefix_case = clampi(mode, 0, 2)
+	_save_persistent_state()
+	_refresh_errors()
+
+func _on_error_prefix_case_changed(mode: int) -> void:
+	_error_prefix_case = clampi(mode, 0, 2)
+	_save_persistent_state()
+	_refresh_errors()
 
 func _current_color_map() -> Dictionary:
 	return {
@@ -804,11 +842,12 @@ func _load_persistent_state() -> void:
 	_use_short_type_names_checkbox.button_pressed = _load_bool_setting(settings, "short_type_names", true)
 	_include_duplicates_checkbox.button_pressed = _load_bool_setting(settings, "duplicates", false)
 	_show_timestamps_checkbox.button_pressed = _load_bool_setting(settings, "timestamps", true)
-	_show_prefixes_checkbox.button_pressed = _load_bool_setting(settings, "prefixes", false)
 	_show_errors_checkbox.button_pressed = _load_bool_setting(settings, "errors", true)
 	_show_warnings_checkbox.button_pressed = _load_bool_setting(settings, "warnings", true)
 	_dev_mode_checkbox.button_pressed = _load_bool_setting(settings, "dev", false)
 	_colors_enabled = _load_bool_setting(settings, "colors_enabled", true)
+	_warning_prefix_case = int(_load_int_setting(settings, "warning_prefix_case", 1))
+	_error_prefix_case = int(_load_int_setting(settings, "error_prefix_case", 1))
 
 	COLOR_TREE_FONT = _load_color_setting(settings, "color_tree_font", DEFAULT_COLOR_TREE_FONT)
 	COLOR_PANEL_BACKGROUND = _load_color_setting(settings, "color_panel_background", DEFAULT_COLOR_PANEL_BACKGROUND)
@@ -832,11 +871,12 @@ func _save_persistent_state() -> void:
 	settings.set_setting(SETTINGS_PREFIX + "short_type_names", _use_short_type_names_checkbox.button_pressed)
 	settings.set_setting(SETTINGS_PREFIX + "duplicates", _include_duplicates_checkbox.button_pressed)
 	settings.set_setting(SETTINGS_PREFIX + "timestamps", _show_timestamps_checkbox.button_pressed)
-	settings.set_setting(SETTINGS_PREFIX + "prefixes", _show_prefixes_checkbox.button_pressed)
 	settings.set_setting(SETTINGS_PREFIX + "errors", _show_errors_checkbox.button_pressed)
 	settings.set_setting(SETTINGS_PREFIX + "warnings", _show_warnings_checkbox.button_pressed)
 	settings.set_setting(SETTINGS_PREFIX + "dev", _dev_mode_checkbox.button_pressed)
 	settings.set_setting(SETTINGS_PREFIX + "colors_enabled", _colors_enabled)
+	settings.set_setting(SETTINGS_PREFIX + "warning_prefix_case", _warning_prefix_case)
+	settings.set_setting(SETTINGS_PREFIX + "error_prefix_case", _error_prefix_case)
 
 	settings.set_setting(SETTINGS_PREFIX + "color_tree_font", COLOR_TREE_FONT)
 	settings.set_setting(SETTINGS_PREFIX + "color_panel_background", COLOR_PANEL_BACKGROUND)
@@ -865,6 +905,12 @@ func _load_color_setting(settings: EditorSettings, suffix: String, default_value
 	if value is Color:
 		return value as Color
 	return default_value
+
+func _load_int_setting(settings: EditorSettings, suffix: String, default_value: int) -> int:
+	var key: String = SETTINGS_PREFIX + suffix
+	if not settings.has_setting(key):
+		return default_value
+	return int(settings.get_setting(key))
 
 func _collect_errors_from_known_panel(panel_root: Control) -> PackedStringArray:
 	var panel_rows: PackedStringArray = []
