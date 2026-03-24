@@ -7,6 +7,7 @@ class_name TemplateUpdateApplier
 extends RefCounted
 
 const UpdateFileOps = preload("UpdateFileOps.gd")
+const TemplateCsprojSynchronizerScript = preload("TemplateCsprojSynchronizer.gd")
 
 # Sequentially applies each part of the update.
 # Stops and returns an error dictionary on the first failure.
@@ -47,7 +48,9 @@ func apply(template_root: String, project_root: String, status_callback: Callabl
 		return result
 
 	_notify(status_callback, "Synchronizing project .csproj...")
-	var csproj_sync = load("TemplateCsprojSynchronizer.gd").new()
+	if TemplateCsprojSynchronizerScript == null:
+		return {"success": false, "message": "Failed to load TemplateCsprojSynchronizer.gd from updater scripts."}
+	var csproj_sync = TemplateCsprojSynchronizerScript.new()
 	result = csproj_sync.sync_template_settings(template_root.path_join("Template.csproj"), project_root)
 	if not result.get("success", false):
 		return result
