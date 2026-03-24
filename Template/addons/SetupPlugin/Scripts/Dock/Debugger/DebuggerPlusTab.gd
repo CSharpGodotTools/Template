@@ -54,6 +54,7 @@ var _include_duplicates_checkbox: CheckButton
 var _show_timestamps_checkbox: CheckButton
 var _show_errors_checkbox: CheckButton
 var _show_warnings_checkbox: CheckButton
+var _dev_mode_checkbox: CheckButton
 var _error_tree: Tree
 var _tree_scroll_container: ScrollContainer
 var _tree_panel_style: StyleBoxFlat
@@ -107,6 +108,7 @@ func _create_controls() -> void:
 
 	_colors_button = Button.new()
 	_colors_button.text = "Colors"
+	_colors_button.custom_minimum_size = Vector2(TOGGLE_BUTTON_WIDTH, 0)
 
 	_filter_edit = LineEdit.new()
 	_filter_edit.placeholder_text = "Filter errors (message, source, stack)"
@@ -135,6 +137,10 @@ func _create_controls() -> void:
 	_show_warnings_checkbox = CheckButton.new()
 	_show_warnings_checkbox.text = "Warnings"
 	_show_warnings_checkbox.button_pressed = true
+
+	_dev_mode_checkbox = CheckButton.new()
+	_dev_mode_checkbox.text = "Dev"
+	_dev_mode_checkbox.button_pressed = false
 
 	_error_tree = Tree.new()
 	_error_tree.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -190,6 +196,7 @@ func _build_layout() -> void:
 	options_row.add_child(_show_timestamps_checkbox)
 	options_row.add_child(_show_errors_checkbox)
 	options_row.add_child(_show_warnings_checkbox)
+	options_row.add_child(_dev_mode_checkbox)
 
 	var sections: VBoxContainer = VBoxContainer.new()
 	sections.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -218,6 +225,7 @@ func _register_events() -> void:
 	_show_timestamps_checkbox.toggled.connect(_on_options_toggled)
 	_show_errors_checkbox.toggled.connect(_on_options_toggled)
 	_show_warnings_checkbox.toggled.connect(_on_options_toggled)
+	_dev_mode_checkbox.toggled.connect(_on_options_toggled)
 	_error_tree.item_selected.connect(_on_tree_item_selected)
 	_error_tree.item_activated.connect(_on_tree_item_activated)
 	_error_tree.gui_input.connect(_on_tree_gui_input)
@@ -236,6 +244,7 @@ func _unregister_events() -> void:
 	_disconnect_signal(_show_timestamps_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_show_errors_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_show_warnings_checkbox, "toggled", "_on_options_toggled")
+	_disconnect_signal(_dev_mode_checkbox, "toggled", "_on_options_toggled")
 	_disconnect_signal(_error_tree, "item_selected", "_on_tree_item_selected")
 	_disconnect_signal(_error_tree, "item_activated", "_on_tree_item_activated")
 	_disconnect_signal(_error_tree, "gui_input", "_on_tree_gui_input")
@@ -547,15 +556,14 @@ func _collect_errors_with_scanner() -> PackedStringArray:
 	for panel_root in panel_roots:
 		if panel_root == null:
 			continue
-		var pending: Array[Node] = [panel_root]
-		while not pending.is_empty():
-			var node: Node = pending.pop_back()
-			for child in node.get_children():
-				if child is Node:
-					pending.append(child)
-			if node is Tree:
-				var tree: Tree = node as Tree
-				rows.append_array(_scanner.collect_tree_error_rows(tree, _formatter, _include_stack_trace_checkbox.button_pressed, _use_short_type_names_checkbox.button_pressed))
+		var targeted_rows: PackedStringArray = _collect_errors_from_known_panel(panel_root)
+		if not targeted_rows.is_empty():
+			rows.append_array(targeted_rows)
+			continue
+		var fallback_rows: PackedStringArray = _collect_errors_with_recursive_fallback(panel_root)
+		if _dev_mode_checkbox != null and _dev_mode_checkbox.button_pressed and not fallback_rows.is_empty():
+			push_warning("Debugger+ fallback scan used for panel: %s (recovered %d entries)" % [str(panel_root.get_path()), fallback_rows.size()])
+		rows.append_array(fallback_rows)
 
 	if _include_duplicates_checkbox != null and _include_duplicates_checkbox.button_pressed:
 		return _non_empty_rows(rows)
@@ -727,6 +735,52 @@ func _apply_color_theme() -> void:
 	if _tree_panel_style != null:
 		_tree_panel_style.bg_color = COLOR_PANEL_BACKGROUND if _colors_enabled else DEFAULT_COLOR_PANEL_BACKGROUND
 	_rebuild_error_tree()
+
+func _collect_errors_from_known_panel(panel_root: Control) -> PackedStringArray:
+	var panel_rows: PackedStringArray = []
+	var panel_path: String = str(panel_root.get_path())
+	var trees: Array[Tree] = _find_descendant_trees(panel_root)
+
+	if panel_path.ends_with("/Debugger"):
+		for tree in trees:
+			var tree_path: String = str(tree.get_path())
+			if tree.columns == 2 and tree_path.contains("/Errors"):
+				panel_rows.append_array(_scanner.collect_tree_error_rows(tree, _formatter, _include_stack_trace_checkbox.button_pressed, _use_short_type_names_checkbox.button_pressed))
+		return panel_rows
+
+	if panel_path.ends_with("/MSBuild"):
+		for tree in trees:
+			var tree_path: String = str(tree.get_path())
+			if tree.columns == 1 and tree_path.contains("/Problems"):
+				panel_rows.append_array(_scanner.collect_tree_error_rows(tree, _formatter, _include_stack_trace_checkbox.button_pressed, _use_short_type_names_checkbox.button_pressed))
+		return panel_rows
+
+	return panel_rows
+
+func _collect_errors_with_recursive_fallback(panel_root: Control) -> PackedStringArray:
+	var rows: PackedStringArray = []
+	var pending: Array[Node] = [panel_root]
+	while not pending.is_empty():
+		var node: Node = pending.pop_back()
+		for child in node.get_children():
+			if child is Node:
+				pending.append(child)
+		if node is Tree:
+			var tree: Tree = node as Tree
+			rows.append_array(_scanner.collect_tree_error_rows(tree, _formatter, _include_stack_trace_checkbox.button_pressed, _use_short_type_names_checkbox.button_pressed))
+	return rows
+
+func _find_descendant_trees(root_node: Node) -> Array[Tree]:
+	var found: Array[Tree] = []
+	var pending: Array[Node] = [root_node]
+	while not pending.is_empty():
+		var node: Node = pending.pop_back()
+		for child in node.get_children():
+			if child is Node:
+				pending.append(child)
+		if node is Tree:
+			found.append(node as Tree)
+	return found
 
 func _detail_color_for_line(detail_line: String) -> Color:
 	if not _colors_enabled:
