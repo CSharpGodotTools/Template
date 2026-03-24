@@ -34,6 +34,8 @@ var _update_from_release_button: Button
 var _check_updates_button: Button
 var _reset_update_cache_button: Button
 var _view_template_repo_button: Button
+var _link_to_commits_button: Button
+var _link_to_release_notes_button: Button
 var _check_updates_on_startup_checkbox: CheckButton
 var _tracked_main_commit_label: Label
 var _tracked_release_version_label: Label
@@ -83,7 +85,9 @@ func _create_controls() -> void:
 	_update_from_release_button = _create_button("Update From Latest Release", 230)
 	_check_updates_button = _create_button("Check For Updates", 230)
 	_reset_update_cache_button = _create_button("Reset Update Cache", 230)
-	_view_template_repo_button = _create_button("View Template Repository")
+	_view_template_repo_button = _create_button("Link to Repo")
+	_link_to_commits_button = _create_button("Link to Commits")
+	_link_to_release_notes_button = _create_button("Link to Release Notes")
 	_check_updates_on_startup_checkbox = _create_checkbox("Check for updates when project starts up", true)
 
 	_tracked_main_commit_label = Label.new()
@@ -163,7 +167,7 @@ func _build_dev_tab() -> VBoxContainer:
 
 	var content: VBoxContainer = VBoxContainer.new()
 	content.add_theme_constant_override("separation", 8)
-	content.add_child(_create_row([_cleanup_uids_button, _remove_empty_folders_button, _nullable_button, _close_all_scene_tabs_button, _restart_editor_button, _view_template_repo_button], 8))
+	content.add_child(_create_row([_cleanup_uids_button, _remove_empty_folders_button, _nullable_button, _close_all_scene_tabs_button, _restart_editor_button], 8))
 	content.add_child(_status_label)
 
 	dev_tab.add_child(_wrap_with_tab_margin(content))
@@ -219,10 +223,17 @@ func _build_update_tab() -> VBoxContainer:
 	left_column.add_theme_constant_override("separation", 8)
 	left_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
+	var title_row: HBoxContainer = HBoxContainer.new()
+	title_row.add_theme_constant_override("separation", 8)
+
 	var title_label: Label = Label.new()
 	title_label.text = "Template Updater"
 	title_label.add_theme_font_size_override("font_size", 18)
-	left_column.add_child(title_label)
+	title_row.add_child(title_label)
+	title_row.add_child(_view_template_repo_button)
+	title_row.add_child(_link_to_commits_button)
+	title_row.add_child(_link_to_release_notes_button)
+	left_column.add_child(title_row)
 
 	var subtitle_label: Label = Label.new()
 	subtitle_label.text = "Sync your project with upstream commits or releases."
