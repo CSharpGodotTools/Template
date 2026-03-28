@@ -1,5 +1,6 @@
 using Godot;
 using GodotUtils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using VSyncMode = Godot.DisplayServer.VSyncMode;
@@ -8,9 +9,10 @@ namespace __TEMPLATE__.Ui;
 
 public sealed class OptionsDisplayTab : IOptionsTabRegistrar
 {
-    private const int MinResolutionStep = 1;
-    private const int MaxResolutionStep = 36;
     private const int MaxFpsLimit = 240;
+    private const string WindowSizeLabel = "WINDOW_SIZE";
+    private const string MaxFpsLabel = "MAX_FPS";
+    private readonly Dictionary<Control, IDisposable> _rightControlDisposables = [];
 
     private static readonly Vector2I[] _baseWindowSizes =
     [
@@ -46,24 +48,20 @@ public sealed class OptionsDisplayTab : IOptionsTabRegistrar
         optionsService.AddOption(
             OptionDefinitions.Dropdown(
                 tab: TabName,
-                label: "WINDOW_SIZE",
+                label: WindowSizeLabel,
                 items: [.. windowSizes.Select(size => $"{size.X} x {size.Y}")],
                 getValue: () => GetCurrentWindowSizeIndex(optionsService, windowSizes),
                 setValue: value => ApplyWindowSize(optionsService, windowSizes, value),
                 saveKey: OptionsSaveKeys.WindowSize,
                 defaultValue: GetCurrentWindowSizeIndex(optionsService, windowSizes)));
 
-        optionsService.AddOption(
-            OptionDefinitions.Slider(
+        optionsService.AddRightControl(
+            OptionDefinitions.RightControl(
                 tab: TabName,
-                label: "RESOLUTION",
-                minValue: MinResolutionStep,
-                maxValue: MaxResolutionStep,
-                getValue: () => optionsService.Settings.Resolution,
-                setValue: value => optionsService.Settings.Resolution = value,
-                step: 1.0,
-                saveKey: OptionsSaveKeys.Resolution,
-                defaultValue: MinResolutionStep));
+                targetLabel: WindowSizeLabel,
+                name: "WindowSizeCustomButton",
+                createControl: anchorControl => CreateWindowSizeCustomControl(anchorControl, optionsService),
+                onDetaching: (control, _) => DetachRightControl(control)));
 
         optionsService.AddOption(
             OptionDefinitions.Dropdown(
@@ -78,7 +76,7 @@ public sealed class OptionsDisplayTab : IOptionsTabRegistrar
         optionsService.AddOption(
             OptionDefinitions.Slider(
                 tab: TabName,
-                label: "MAX_FPS",
+                label: MaxFpsLabel,
                 minValue: 0,
                 maxValue: MaxFpsLimit,
                 getValue: () => optionsService.Settings.MaxFPS,
@@ -86,6 +84,61 @@ public sealed class OptionsDisplayTab : IOptionsTabRegistrar
                 step: 1.0,
                 saveKey: OptionsSaveKeys.MaxFps,
                 defaultValue: 60));
+
+        optionsService.AddRightControl(
+            OptionDefinitions.RightControl(
+                tab: TabName,
+                targetLabel: MaxFpsLabel,
+                name: "MaxFpsFeedback",
+                createControl: anchorControl => CreateMaxFpsFeedbackControl(anchorControl, optionsService),
+                onDetaching: (control, _) => DetachRightControl(control)));
+    }
+
+    private Control CreateWindowSizeCustomControl(Control _anchorControl, IOptionsService optionsService)
+    {
+        Button button = new()
+        {
+            Name = "WindowSizeCustomButton",
+            Text = "Custom",
+            CustomMinimumSize = new Vector2(90, 0)
+        };
+
+        TrackRightControl(button, new WindowSizeCustomButtonController(button, optionsService));
+        return button;
+    }
+
+    private Control CreateMaxFpsFeedbackControl(Control anchorControl, IOptionsService optionsService)
+    {
+        LineEdit feedback = new()
+        {
+            Name = "MaxFpsFeedback",
+            Editable = false,
+            FocusMode = Control.FocusModeEnum.None,
+            CustomMinimumSize = new Vector2(90, 0),
+            Text = optionsService.Settings.MaxFPS.ToString()
+        };
+
+        if (anchorControl is HSlider slider)
+            TrackRightControl(feedback, new MaxFpsFeedbackController(slider, feedback));
+
+        return feedback;
+    }
+
+    private void TrackRightControl(Control control, IDisposable disposable)
+    {
+        if (_rightControlDisposables.TryGetValue(control, out IDisposable? existing))
+            existing.Dispose();
+
+        _rightControlDisposables[control] = disposable;
+    }
+
+    private void DetachRightControl(Control control)
+    {
+        if (!_rightControlDisposables.TryGetValue(control, out IDisposable? disposable))
+            return;
+
+        disposable.Dispose();
+        _rightControlDisposables.Remove(control);
     }
 
     private static void ApplyWindowSize(IOptionsService optionsService, IReadOnlyList<Vector2I> windowSizes, int index)

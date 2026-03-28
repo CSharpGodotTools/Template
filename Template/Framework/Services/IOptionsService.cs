@@ -17,4 +17,5 @@ public interface IOptionsService
     void ResetHotkeys();
 
     void AddOption(OptionDefinition option);
+    void AddRightControl(OptionRightControlDefinition definition);
 }

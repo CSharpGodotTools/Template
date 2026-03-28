@@ -13,11 +13,13 @@ public sealed class OptionsCustom : IDisposable
     private readonly Action<RegisteredDropdownOption> _dropdownHandler;
     private readonly Action<RegisteredLineEditOption> _lineEditHandler;
     private readonly Action<RegisteredToggleOption> _toggleHandler;
+    private readonly Action<RegisteredRightControl> _rightControlHandler;
 
     // Properties
     internal OptionsNav Nav { get; }
     internal OptionsManager OptionsManager { get; }
     internal Dictionary<int, IDisposable> Bindings { get; } = [];
+    internal Dictionary<int, IDisposable> RightControlBindings { get; } = [];
 
     /// <summary>
     /// Constructs the custom options UI manager and subscribes to option registration events.
@@ -32,6 +34,7 @@ public sealed class OptionsCustom : IDisposable
         _dropdownHandler = d => CustomOptionSetup.OnDropdownRegistered(this, d);
         _lineEditHandler = l => CustomOptionSetup.OnLineEditRegistered(this, l);
         _toggleHandler = t => CustomOptionSetup.OnToggleRegistered(this, t);
+        _rightControlHandler = r => CustomOptionSetup.OnRightControlRegistered(this, r);
 
         // Build UI for options that were registered before this screen opened
         CustomOptionSetup.Setup(this);
@@ -41,6 +44,7 @@ public sealed class OptionsCustom : IDisposable
         OptionsManager.DropdownOptionRegistered += _dropdownHandler;
         OptionsManager.LineEditOptionRegistered += _lineEditHandler;
         OptionsManager.ToggleOptionRegistered += _toggleHandler;
+        OptionsManager.RightControlRegistered += _rightControlHandler;
     }
 
     /// <summary>
@@ -52,10 +56,15 @@ public sealed class OptionsCustom : IDisposable
         OptionsManager.DropdownOptionRegistered -= _dropdownHandler;
         OptionsManager.LineEditOptionRegistered -= _lineEditHandler;
         OptionsManager.ToggleOptionRegistered -= _toggleHandler;
+        OptionsManager.RightControlRegistered -= _rightControlHandler;
 
         foreach (IDisposable binding in Bindings.Values)
             binding.Dispose();
 
+        foreach (IDisposable binding in RightControlBindings.Values)
+            binding.Dispose();
+
         Bindings.Clear();
+        RightControlBindings.Clear();
     }
 }

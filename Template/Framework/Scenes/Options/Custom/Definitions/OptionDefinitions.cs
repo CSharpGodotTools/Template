@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Godot;
 
 namespace __TEMPLATE__.Ui;
 
@@ -8,6 +9,18 @@ namespace __TEMPLATE__.Ui;
 /// </summary>
 public static class OptionDefinitions
 {
+    public static OptionRightControlDefinition RightControl(
+        string tab,
+        string targetLabel,
+        string name,
+        Func<Control, Control> createControl,
+        Action<Control, Control>? onAttached = null,
+        Action<Control, Control>? onDetaching = null)
+    {
+        ArgumentNullException.ThrowIfNull(createControl);
+        return new OptionRightControlDefinition(tab, targetLabel, name, createControl, onAttached, onDetaching);
+    }
+
     public static SliderOptionDefinition Slider(
         string tab,
         string label,

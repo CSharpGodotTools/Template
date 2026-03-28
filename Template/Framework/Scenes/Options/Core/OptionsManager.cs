@@ -2,6 +2,7 @@ using Godot;
 using GodotUtils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using VSyncMode = Godot.DisplayServer.VSyncMode;
 
@@ -27,16 +28,20 @@ public partial class OptionsManager : IDisposable, IOptionsService
     internal event Action<RegisteredDropdownOption> DropdownOptionRegistered = null!;
     internal event Action<RegisteredLineEditOption> LineEditOptionRegistered = null!;
     internal event Action<RegisteredToggleOption> ToggleOptionRegistered = null!;
+    internal event Action<RegisteredRightControl> RightControlRegistered = null!;
 
     // Fields
     private readonly OptionsSettingsStore _settingsStore = new();
     private readonly OptionsHotkeysService _hotkeysService = new();
     private readonly OptionsCustomRegistry _customRegistry;
     private readonly OptionsSettings _settings;
+    private readonly Dictionary<string, int> _rightControlIds = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<int, RegisteredRightControl> _rightControls = [];
 
     private ResourceOptions _options;
     private string _currentOptionsTab = OptionsTabs.General;
     private AutoloadsFramework _autoloads = null!;
+    private int _nextRightControlId;
 
     public OptionsManager(AutoloadsFramework autoloads)
     {
@@ -184,9 +189,6 @@ public partial class OptionsManager : IDisposable, IOptionsService
             case OptionsSaveKeys.SfxVolume:
                 SetSFXVolume(value);
                 return;
-            case OptionsSaveKeys.Resolution:
-                SetResolution((int)value);
-                return;
             case OptionsSaveKeys.MaxFps:
                 SetMaxFPS((int)value);
                 return;
@@ -264,11 +266,6 @@ public partial class OptionsManager : IDisposable, IOptionsService
             ApplyWindowSize();
     }
 
-    private void SetResolution(int resolution)
-    {
-        WriteOptionInt(OptionsSaveKeys.Resolution, Math.Clamp(resolution, 1, 36));
-    }
-
     private void SetVSyncMode(VSyncMode vsyncMode)
     {
         VSyncMode clamped = CoerceVSyncMode((int)vsyncMode);
@@ -303,6 +300,11 @@ public partial class OptionsManager : IDisposable, IOptionsService
         return _customRegistry.GetToggleOptions();
     }
 
+    internal IEnumerable<RegisteredRightControl> GetRightControls()
+    {
+        return _rightControls.Values.OrderBy(control => control.Id);
+    }
+
     /// <summary>
     /// Registers a custom option class.
     /// </summary>
@@ -331,6 +333,31 @@ public partial class OptionsManager : IDisposable, IOptionsService
             default:
                 throw new NotSupportedException($"Unsupported option definition type: {option.GetType().Name}");
         }
+    }
+
+    public void AddRightControl(OptionRightControlDefinition definition)
+    {
+        ArgumentNullException.ThrowIfNull(definition);
+
+        OptionValidator.ValidateTab(definition.Tab);
+        OptionValidator.ValidateLabel(definition.TargetLabel, "RightControl target");
+        OptionValidator.ValidateLabel(definition.Name, "RightControl name");
+
+        string key = CreateRightControlKey(definition.Tab, definition.TargetLabel, definition.Name);
+        if (!_rightControlIds.TryGetValue(key, out int id))
+        {
+            id = ++_nextRightControlId;
+            _rightControlIds[key] = id;
+        }
+
+        RegisteredRightControl registered = new(id, definition);
+        _rightControls[id] = registered;
+        RightControlRegistered?.Invoke(registered);
+    }
+
+    private static string CreateRightControlKey(string tab, string targetLabel, string name)
+    {
+        return $"{tab.Trim()}::{targetLabel.Trim()}::{name.Trim()}";
     }
 
     private void ToggleFullscreen()

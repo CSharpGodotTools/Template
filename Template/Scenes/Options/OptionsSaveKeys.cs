@@ -10,7 +10,6 @@ public static class OptionsSaveKeys
     public const string WindowSize = "WindowSize";
     public const string WindowWidth = "WindowWidth";
     public const string WindowHeight = "WindowHeight";
-    public const string Resolution = "Resolution";
     public const string VSyncMode = "VSyncMode";
     public const string MaxFps = "MaxFPS";
 

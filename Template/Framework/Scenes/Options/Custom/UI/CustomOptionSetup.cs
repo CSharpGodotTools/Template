@@ -25,6 +25,12 @@ internal static class CustomOptionSetup
 
         foreach (CustomOptionDescriptor option in options)
             AddOrReplace(custom, option);
+
+        List<RegisteredRightControl> rightControls = custom.OptionsManager.GetRightControls().ToList();
+        rightControls.Sort(static (left, right) => left.Id.CompareTo(right.Id));
+
+        foreach (RegisteredRightControl rightControl in rightControls)
+            AddOrReplaceRightControl(custom, rightControl);
     }
 
     // Event handlers for runtime registration
@@ -32,6 +38,7 @@ internal static class CustomOptionSetup
     public static void OnDropdownRegistered(OptionsCustom c, RegisteredDropdownOption d) => AddOrReplace(c, new CustomOptionDescriptor(d));
     public static void OnLineEditRegistered(OptionsCustom c, RegisteredLineEditOption l) => AddOrReplace(c, new CustomOptionDescriptor(l));
     public static void OnToggleRegistered(OptionsCustom c, RegisteredToggleOption t) => AddOrReplace(c, new CustomOptionDescriptor(t));
+    public static void OnRightControlRegistered(OptionsCustom c, RegisteredRightControl r) => AddOrReplaceRightControl(c, r);
 
     private static void AddOrReplace(OptionsCustom custom, CustomOptionDescriptor option)
     {
@@ -60,7 +67,57 @@ internal static class CustomOptionSetup
         if (binding != null)
             custom.Bindings.Add(option.Id, binding);
 
+        foreach (RegisteredRightControl rightControl in custom.OptionsManager.GetRightControls())
+            AddOrReplaceRightControl(custom, rightControl);
+
         custom.Nav.EnsureCurrentTabSelection();
+    }
+
+    private static void AddOrReplaceRightControl(OptionsCustom custom, RegisteredRightControl rightControl)
+    {
+        OptionRightControlDefinition definition = rightControl.Definition;
+
+        if (!custom.Nav.TryGetTabContainer(definition.Tab, out VBoxContainer tabContainer))
+            return;
+
+        if (!TryFindRowByLabel(tabContainer, definition.TargetLabel, out HBoxContainer row))
+            return;
+
+        if (!OptionRowFactory.TryGetPrimaryControl(row, out Control anchorControl))
+            return;
+
+        if (!OptionRowFactory.TryGetControlsContainer(row, out HBoxContainer controlsContainer))
+            return;
+
+        if (custom.RightControlBindings.TryGetValue(rightControl.Id, out IDisposable? existing))
+        {
+            existing.Dispose();
+            custom.RightControlBindings.Remove(rightControl.Id);
+        }
+
+        RightControlBinding binding = RightControlBinding.Create(controlsContainer, anchorControl, rightControl);
+        custom.RightControlBindings.Add(rightControl.Id, binding);
+    }
+
+    private static bool TryFindRowByLabel(VBoxContainer tabContainer, string targetLabel, out HBoxContainer row)
+    {
+        foreach (Node child in tabContainer.GetChildren())
+        {
+            if (child is not HBoxContainer candidate)
+                continue;
+
+            if (candidate.GetChildCount() == 0 || candidate.GetChild(0) is not Label label)
+                continue;
+
+            if (!string.Equals(label.Text, targetLabel, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            row = candidate;
+            return true;
+        }
+
+        row = null!;
+        return false;
     }
 
     private static int CompareByTabThenOrder(CustomOptionDescriptor left, CustomOptionDescriptor right)
