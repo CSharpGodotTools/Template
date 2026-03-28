@@ -1,3 +1,4 @@
+using __TEMPLATE__;
 using __TEMPLATE__.Netcode;
 using __TEMPLATE__.Netcode.Client;
 using System;
@@ -18,6 +19,7 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
     public TestServer<TPacket> Server { get; }
     public TestClient Client { get; }
     public Task ConnectTask { get; private set; } = null!;
+    private readonly Logger _loggerService;
 
     private static int _enetRefCount;
 
@@ -26,6 +28,9 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
         AddEnetRef();
         Server = new TestServer<TPacket>(onPacket);
         Client = new TestClient();
+        _loggerService = new Logger();
+        Server.ConfigureLoggerService(_loggerService);
+        Client.ConfigureLoggerService(_loggerService);
     }
 
     public async Task<bool> ConnectAsync(TimeSpan timeout, ENetOptions? options = null)
@@ -79,6 +84,7 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
 
         await WaitForStoppedAsync("client", () => Client.IsRunning, _shutdownTimeout);
         await WaitForStoppedAsync("server", () => Server.IsRunning, _shutdownTimeout);
+        _loggerService.Dispose();
         ReleaseEnetRef();
     }
 

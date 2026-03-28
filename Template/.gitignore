@@ -3,6 +3,9 @@
 export.cfg
 export_presets.cfg
 **/*.translation
+!Framework/Localisation/text.en.translation
+!Framework/Localisation/text.fr.translation
+!Framework/Localisation/text.ja.translation
 
 # Mono-specific
 .mono/
