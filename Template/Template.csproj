@@ -17,6 +17,12 @@
         <NoWarn>NU1605;CS0108;IDE0290</NoWarn>
     </PropertyGroup>
 
+    <!-- gdUnit4 analyzer currently crashes on GitHub Actions with net10 builds. -->
+    <PropertyGroup Condition="'$(CI)' == 'true'">
+        <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
+        <RunAnalyzersDuringCompilation>false</RunAnalyzersDuringCompilation>
+    </PropertyGroup>
+
     <ItemGroup>
         <!-- Package References -->
         <!-- Condition="!Exists('ENet-CSharp.dll')" is required for other platforms -->
