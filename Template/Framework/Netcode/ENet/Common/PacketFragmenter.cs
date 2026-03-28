@@ -18,6 +18,8 @@ namespace __TEMPLATE__.Netcode;
 // into fragments, each within MaxSize. The receiver reassembles them before dispatch.
 internal static class PacketFragmenter
 {
+    public const ushort ProtocolMaxFragments = ushort.MaxValue;
+
     private static int HeaderSize => PacketRegistry.OpcodeSize + 6;
 
     /// <summary>
@@ -37,10 +39,33 @@ internal static class PacketFragmenter
     /// </summary>
     public static byte[][] Fragment(byte[] data, ushort streamId)
     {
+        return Fragment(data, streamId, ProtocolMaxFragments);
+    }
+
+    /// <summary>
+    /// Splits <paramref name="data"/> into fragment packets, enforcing a caller-defined max fragment count.
+    /// </summary>
+    public static byte[][] Fragment(byte[] data, ushort streamId, ushort maxFragments)
+    {
+        ArgumentNullException.ThrowIfNull(data);
+
+        if (maxFragments == 0)
+            throw new ArgumentOutOfRangeException(nameof(maxFragments), "maxFragments must be greater than zero.");
+
         int opcodeSize = PacketRegistry.OpcodeSize;
         int headerSize = HeaderSize;
         int maxPayload = MaxPayloadPerFragment;
         int totalFrags = (int)Math.Ceiling((double)data.Length / maxPayload);
+
+        if (totalFrags <= 0)
+            throw new InvalidOperationException("Fragmentation requires at least one fragment.");
+
+        if (totalFrags > ProtocolMaxFragments)
+            throw new InvalidOperationException($"Payload requires {totalFrags} fragments which exceeds protocol max {ProtocolMaxFragments}.");
+
+        if (totalFrags > maxFragments)
+            throw new InvalidOperationException($"Payload requires {totalFrags} fragments which exceeds configured max {maxFragments}.");
+
         byte[][] fragments = new byte[totalFrags][];
 
         for (int i = 0; i < totalFrags; i++)
@@ -58,6 +83,39 @@ internal static class PacketFragmenter
         }
 
         return fragments;
+    }
+
+    /// <summary>
+    /// Validates fragment header values extracted from untrusted network data.
+    /// </summary>
+    public static bool IsValidHeader(ushort fragIndex, ushort totalFragments, ushort maxFragments, out string reason)
+    {
+        if (maxFragments == 0)
+        {
+            reason = "Configured max fragments is zero.";
+            return false;
+        }
+
+        if (totalFragments == 0)
+        {
+            reason = "totalFragments was zero.";
+            return false;
+        }
+
+        if (totalFragments > maxFragments)
+        {
+            reason = $"totalFragments {totalFragments} exceeds configured max {maxFragments}.";
+            return false;
+        }
+
+        if (fragIndex >= totalFragments)
+        {
+            reason = $"fragIndex {fragIndex} was outside totalFragments {totalFragments}.";
+            return false;
+        }
+
+        reason = string.Empty;
+        return true;
     }
 
     /// <summary>
@@ -107,6 +165,7 @@ internal sealed class FragmentBuffer(ushort totalFragments)
     private readonly byte[][] _payloads = new byte[totalFragments][];
     private int _received;
 
+    public int TotalFragments => _payloads.Length;
     public bool IsComplete => _received == _payloads.Length;
 
     /// <summary>
@@ -115,6 +174,11 @@ internal sealed class FragmentBuffer(ushort totalFragments)
     /// </summary>
     public bool Add(ushort index, byte[] payload)
     {
+        if (index >= _payloads.Length)
+            return false;
+
+        ArgumentNullException.ThrowIfNull(payload);
+
         if (_payloads[index] != null)
             return IsComplete;
 

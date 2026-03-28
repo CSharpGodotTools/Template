@@ -42,6 +42,12 @@ public class PacketWriter : IDisposable
 
         Type valueType = value.GetType();
 
+        if (typeof(GamePacket).IsAssignableFrom(valueType))
+        {
+            throw new InvalidOperationException(
+                $"PacketWriter: serializing nested {nameof(GamePacket)} types through legacy reflection fallback is not supported.");
+        }
+
         if (IsPrimitiveLike(valueType))
         {
             WritePrimitive(value);
@@ -106,25 +112,31 @@ public class PacketWriter : IDisposable
     /// </summary>
     private void WritePrimitive<T>(T value)
     {
-        switch (value)
+        ArgumentNullException.ThrowIfNull(value);
+        WritePrimitiveByType(value.GetType(), value);
+    }
+
+    private void WritePrimitiveByType(Type type, object value)
+    {
+        switch (Type.GetTypeCode(type))
         {
-            case byte primitive: _writer.Write(primitive); break;
-            case sbyte primitive: _writer.Write(primitive); break;
-            case char primitive: _writer.Write(primitive); break;
-            case string primitive: _writer.Write(primitive); break;
-            case bool primitive: _writer.Write(primitive); break;
-            case short primitive: _writer.Write(primitive); break;
-            case ushort primitive: _writer.Write(primitive); break;
-            case int primitive: _writer.Write(primitive); break;
-            case uint primitive: _writer.Write(primitive); break;
-            case float primitive: _writer.Write(primitive); break;
-            case double primitive: _writer.Write(primitive); break;
-            case long primitive: _writer.Write(primitive); break;
-            case ulong primitive: _writer.Write(primitive); break;
-            case decimal primitive: _writer.Write(primitive); break;
+            case TypeCode.Byte: _writer.Write((byte)value); break;
+            case TypeCode.SByte: _writer.Write((sbyte)value); break;
+            case TypeCode.Char: _writer.Write((char)value); break;
+            case TypeCode.String: _writer.Write((string)value); break;
+            case TypeCode.Boolean: _writer.Write((bool)value); break;
+            case TypeCode.Int16: _writer.Write((short)value); break;
+            case TypeCode.UInt16: _writer.Write((ushort)value); break;
+            case TypeCode.Int32: _writer.Write((int)value); break;
+            case TypeCode.UInt32: _writer.Write((uint)value); break;
+            case TypeCode.Single: _writer.Write((float)value); break;
+            case TypeCode.Double: _writer.Write((double)value); break;
+            case TypeCode.Int64: _writer.Write((long)value); break;
+            case TypeCode.UInt64: _writer.Write((ulong)value); break;
+            case TypeCode.Decimal: _writer.Write((decimal)value); break;
 
             default:
-                throw new NotImplementedException($"PacketWriter: {value!.GetType()} is not a supported primitive type.");
+                throw new NotImplementedException($"PacketWriter: {type} is not a supported primitive type.");
         }
     }
 
@@ -161,7 +173,12 @@ public class PacketWriter : IDisposable
     /// </summary>
     private void WriteEnum<T>(T value)
     {
-        Write((byte)Convert.ChangeType(value, typeof(byte))!);
+        ArgumentNullException.ThrowIfNull(value);
+
+        Type enumType = value.GetType();
+        Type underlyingType = Enum.GetUnderlyingType(enumType);
+        object primitiveValue = Convert.ChangeType(value, underlyingType)!;
+        WritePrimitiveByType(underlyingType, primitiveValue);
     }
 
     /// <summary>
@@ -253,12 +270,14 @@ public class PacketWriter : IDisposable
         {
             FieldInfo[] fields = [.. cachedType
                 .GetFields(BindingFlags.Public | BindingFlags.Instance)
-                .OrderBy(field => field.MetadataToken)];
+                .OrderBy(GetOrderOrFallback)
+                .ThenBy(field => field.MetadataToken)];
 
             PropertyInfo[] properties = [.. cachedType
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(ShouldIncludePropertyForWrite)
-                .OrderBy(property => property.MetadataToken)];
+                .OrderBy(GetOrderOrFallback)
+                .ThenBy(property => property.MetadataToken)];
 
             return new PacketMemberMap
             {
@@ -274,7 +293,14 @@ public class PacketWriter : IDisposable
     private static bool ShouldIncludePropertyForWrite(PropertyInfo property)
     {
         return property.CanRead
+            && property.GetIndexParameters().Length == 0
             && property.GetCustomAttributes(typeof(NetExcludeAttribute), true).Length == 0;
+    }
+
+    private static int GetOrderOrFallback(MemberInfo member)
+    {
+        NetOrderAttribute? order = member.GetCustomAttribute<NetOrderAttribute>(inherit: true);
+        return order?.Order ?? int.MaxValue;
     }
 
     /// <summary>

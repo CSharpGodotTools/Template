@@ -21,6 +21,7 @@ public partial class Game
     public static FocusOutlineManager FocusOutline => RuntimeServices.FocusOutline;
 
     public static ILoggerService Logger => RuntimeServices.Logger;
+    public static IBackgroundTaskTracker BackgroundTasks => RuntimeServices.BackgroundTasks;
 
     public static IApplicationLifetime Application => RuntimeServices.ApplicationLifetime;
 

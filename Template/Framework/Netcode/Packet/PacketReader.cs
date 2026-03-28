@@ -173,6 +173,12 @@ public class PacketReader : IDisposable
     /// </summary>
     private T ReadTyped<T>(Type type)
     {
+        if (typeof(GamePacket).IsAssignableFrom(type))
+        {
+            throw new InvalidOperationException(
+                $"PacketReader: deserializing nested {nameof(GamePacket)} types through legacy reflection fallback is not supported.");
+        }
+
         if (IsPrimitiveLike(type))
         {
             return ReadPrimitive<T>(type);
@@ -230,20 +236,26 @@ public class PacketReader : IDisposable
     /// </summary>
     private T ReadPrimitive<T>(Type type)
     {
-        if (type == typeof(byte)) return (T)(object)ReadByte();
-        if (type == typeof(sbyte)) return (T)(object)ReadSByte();
-        if (type == typeof(char)) return (T)(object)ReadChar();
-        if (type == typeof(string)) return (T)(object)ReadString();
-        if (type == typeof(bool)) return (T)(object)ReadBool();
-        if (type == typeof(short)) return (T)(object)ReadShort();
-        if (type == typeof(ushort)) return (T)(object)ReadUShort();
-        if (type == typeof(int)) return (T)(object)ReadInt();
-        if (type == typeof(uint)) return (T)(object)ReadUInt();
-        if (type == typeof(float)) return (T)(object)ReadFloat();
-        if (type == typeof(double)) return (T)(object)ReadDouble();
-        if (type == typeof(long)) return (T)(object)ReadLong();
-        if (type == typeof(ulong)) return (T)(object)ReadULong();
-        if (type == typeof(decimal)) return (T)(object)ReadDecimal();
+        object value = ReadPrimitiveObject(type);
+        return (T)value;
+    }
+
+    private object ReadPrimitiveObject(Type type)
+    {
+        if (type == typeof(byte)) return ReadByte();
+        if (type == typeof(sbyte)) return ReadSByte();
+        if (type == typeof(char)) return ReadChar();
+        if (type == typeof(string)) return ReadString();
+        if (type == typeof(bool)) return ReadBool();
+        if (type == typeof(short)) return ReadShort();
+        if (type == typeof(ushort)) return ReadUShort();
+        if (type == typeof(int)) return ReadInt();
+        if (type == typeof(uint)) return ReadUInt();
+        if (type == typeof(float)) return ReadFloat();
+        if (type == typeof(double)) return ReadDouble();
+        if (type == typeof(long)) return ReadLong();
+        if (type == typeof(ulong)) return ReadULong();
+        if (type == typeof(decimal)) return ReadDecimal();
 
         throw new NotImplementedException($"PacketReader: {type} is not a supported primitive type.");
     }
@@ -253,7 +265,10 @@ public class PacketReader : IDisposable
     /// </summary>
     private T ReadEnum<T>()
     {
-        return (T)Enum.ToObject(typeof(T), ReadByte());
+        Type enumType = typeof(T);
+        Type underlyingType = Enum.GetUnderlyingType(enumType);
+        object primitiveValue = ReadPrimitiveObject(underlyingType);
+        return (T)Enum.ToObject(enumType, primitiveValue);
     }
 
     /// <summary>
@@ -358,12 +373,14 @@ public class PacketReader : IDisposable
         {
             FieldInfo[] fields = [.. cachedType
                 .GetFields(BindingFlags.Public | BindingFlags.Instance)
-                .OrderBy(field => field.MetadataToken)];
+                .OrderBy(GetOrderOrFallback)
+                .ThenBy(field => field.MetadataToken)];
 
             PropertyInfo[] properties = [.. cachedType
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(ShouldIncludePropertyForRead)
-                .OrderBy(property => property.MetadataToken)];
+                .OrderBy(GetOrderOrFallback)
+                .ThenBy(property => property.MetadataToken)];
 
             return new PacketMemberMap
             {
@@ -379,7 +396,14 @@ public class PacketReader : IDisposable
     private static bool ShouldIncludePropertyForRead(PropertyInfo property)
     {
         return property.CanWrite
+            && property.GetIndexParameters().Length == 0
             && property.GetCustomAttributes(typeof(NetExcludeAttribute), true).Length == 0;
+    }
+
+    private static int GetOrderOrFallback(MemberInfo member)
+    {
+        NetOrderAttribute? order = member.GetCustomAttribute<NetOrderAttribute>(inherit: true);
+        return order?.Order ?? int.MaxValue;
     }
 
     /// <summary>

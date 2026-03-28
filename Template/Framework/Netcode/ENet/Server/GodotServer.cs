@@ -55,6 +55,10 @@ public abstract class GodotServer : ENetServer
         {
             // Expected when stopping the server.
         }
+        catch (InvalidOperationException exception)
+        {
+            LoggerService.LogErr(exception, $"{LogTag}: server worker failed to start due to invalid state");
+        }
         catch (Exception exception)
         {
             LoggerService.LogErr(exception, LogTag);

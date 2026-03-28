@@ -29,6 +29,8 @@ public class Net<TGameClient, TGameServer> : IDisposable
     private readonly bool _enetInitialized;
     private readonly ILoggerService _loggerService;
     private readonly IApplicationLifetime _applicationLifetime;
+    private readonly IBackgroundTaskTracker _backgroundTasks;
+    private readonly bool _ownsBackgroundTaskTracker;
     private long _shutdownStarted;
     private int _disposed;
 
@@ -61,10 +63,15 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Creates a network coordinator that owns the active server and client instances.
     /// </summary>
-    public Net(ILoggerService loggerService, IApplicationLifetime applicationLifetime)
+    public Net(
+        ILoggerService loggerService,
+        IApplicationLifetime applicationLifetime,
+        IBackgroundTaskTracker? backgroundTasks = null)
     {
         _loggerService = loggerService;
         _applicationLifetime = applicationLifetime;
+        _backgroundTasks = backgroundTasks ?? new BackgroundTaskTracker(loggerService);
+        _ownsBackgroundTaskTracker = backgroundTasks == null;
 
         _enetInitialized = TryInitializeEnet();
 
@@ -132,8 +139,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
         Client.ConfigureLoggerService(_loggerService);
         ClientCreated?.Invoke(Client);
 
-        // Fire-and-forget connect (if Connect is async)
-        _ = Client.Connect(ip, port, CloneDefaultOptions());
+        _backgroundTasks.Run(_ => Client.Connect(ip, port, CloneDefaultOptions()), "Net.StartClient.Connect");
     }
 
     /// <summary>
@@ -223,7 +229,16 @@ public class Net<TGameClient, TGameServer> : IDisposable
             PrintPacketData = _defaultOptions.PrintPacketData,
             PrintPacketReceived = _defaultOptions.PrintPacketReceived,
             PrintPacketSent = _defaultOptions.PrintPacketSent,
-            ShowLogTimestamps = _defaultOptions.ShowLogTimestamps
+            ShowLogTimestamps = _defaultOptions.ShowLogTimestamps,
+            MaxCommandQueueDepth = _defaultOptions.MaxCommandQueueDepth,
+            MaxIncomingQueueDepth = _defaultOptions.MaxIncomingQueueDepth,
+            MaxOutgoingQueueDepth = _defaultOptions.MaxOutgoingQueueDepth,
+            CommandQueueOverflowPolicy = _defaultOptions.CommandQueueOverflowPolicy,
+            IncomingQueueOverflowPolicy = _defaultOptions.IncomingQueueOverflowPolicy,
+            OutgoingQueueOverflowPolicy = _defaultOptions.OutgoingQueueOverflowPolicy,
+            MaxFragmentsPerPacket = _defaultOptions.MaxFragmentsPerPacket,
+            MalformedFragmentLogIntervalMs = _defaultOptions.MalformedFragmentLogIntervalMs,
+            QueueOverflowLogIntervalMs = _defaultOptions.QueueOverflowLogIntervalMs
         };
     }
 
@@ -269,7 +284,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// </summary>
     public void RequestShutdown()
     {
-        _ = StopThreads();
+        QueueStopThreads("Net.RequestShutdown");
     }
 
     /// <summary>
@@ -286,7 +301,17 @@ public class Net<TGameClient, TGameServer> : IDisposable
 
         if (Interlocked.Read(ref _shutdownStarted) == 0)
         {
-            _ = StopThreads();
+            QueueStopThreads("Net.Dispose.StopThreads");
         }
+
+        if (_ownsBackgroundTaskTracker)
+        {
+            _backgroundTasks.Dispose();
+        }
+    }
+
+    private void QueueStopThreads(string operationName)
+    {
+        _backgroundTasks.Track(StopThreads(), operationName);
     }
 }

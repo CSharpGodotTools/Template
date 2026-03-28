@@ -15,7 +15,8 @@ public sealed class GameServices(
     Services scopedServices,
     FocusOutlineManager focusOutline,
     ILoggerService logger,
-    IApplicationLifetime applicationLifetime)
+    IApplicationLifetime applicationLifetime,
+    IBackgroundTaskTracker backgroundTasks)
 {
     public GameComponentManager ComponentManager { get; } = componentManager;
     public GameConsole GameConsole { get; } = gameConsole;
@@ -28,6 +29,7 @@ public sealed class GameServices(
     public FocusOutlineManager FocusOutline { get; } = focusOutline;
     public ILoggerService Logger { get; } = logger;
     public IApplicationLifetime ApplicationLifetime { get; } = applicationLifetime;
+    public IBackgroundTaskTracker BackgroundTasks { get; } = backgroundTasks;
 
     // Concrete convenience accessors for transition compatibility.
     public AudioManager AudioManager => (AudioManager)Audio;

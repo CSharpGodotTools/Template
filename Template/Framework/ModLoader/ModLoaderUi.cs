@@ -60,73 +60,86 @@ public class ModLoaderUi
         {
             if (!dir.CurrentIsDir())
             {
-                goto Next;
+                filename = dir.GetNext();
+                continue;
             }
 
-            string modRoot = $@"{modsPath}/{filename}";
-            string modJson = $@"{modRoot}/mod.json";
-
-            if (!File.Exists(modJson))
-            {
-                _logger.LogWarning($"The mod folder '{filename}' does not have a mod.json so it will not be loaded");
-                goto Next;
-            }
-
-            string jsonFileContents = File.ReadAllText(modJson);
-
-            jsonFileContents = jsonFileContents.Replace("*", "Any");
-
-            if (!TryDeserializeModInfo(modJson, jsonFileContents, options, out ModInfo? modInfo))
-            {
-                goto Next;
-            }
-
-            modInfo!.Normalize();
-
-            if (string.IsNullOrWhiteSpace(modInfo.Id))
-            {
-                _logger.LogWarning($"The mod folder '{filename}' has an invalid or empty id and will be skipped");
-                goto Next;
-            }
-
-            if (_mods.ContainsKey(modInfo.Id))
-            {
-                _logger.LogWarning($"Duplicate mod id '{modInfo.Id}' was skipped");
-                goto Next;
-            }
-
-            _mods.Add(modInfo.Id, modInfo);
-
-            // Load pck
-            string pckPath = $@"{modRoot}/mod.pck";
-
-            if (File.Exists(pckPath))
-            {
-                bool success = ProjectSettings.LoadResourcePack(pckPath, replaceFiles: false);
-
-                if (!success)
-                {
-                    _logger.LogWarning($"Failed to load pck file for mod '{modInfo.Name}'");
-                }
-                else
-                {
-                    TryInstantiateModScene(node, modInfo);
-                }
-            }
-
-            // Load dll
-            string dllPath = $@"{modRoot}/Mod.dll";
-            if (File.Exists(dllPath))
-            {
-                TryLoadManagedMod(node, modInfo, dllPath);
-            }
-
-        Next:
+            TryLoadModDirectory(node, modsPath, filename, options);
             filename = dir.GetNext();
         }
 
         dir.ListDirEnd();
         dir.Dispose();
+    }
+
+    private void TryLoadModDirectory(Node hostNode, string modsPath, string folderName, JsonSerializerOptions options)
+    {
+        string modRoot = $@"{modsPath}/{folderName}";
+        string modJson = $@"{modRoot}/mod.json";
+
+        if (!File.Exists(modJson))
+        {
+            _logger.LogWarning($"The mod folder '{folderName}' does not have a mod.json so it will not be loaded");
+            return;
+        }
+
+        string jsonFileContents;
+        try
+        {
+            jsonFileContents = File.ReadAllText(modJson);
+        }
+        catch (IOException exception)
+        {
+            _logger.LogWarning($"Failed to read '{modJson}': {exception.Message}");
+            return;
+        }
+        catch (UnauthorizedAccessException exception)
+        {
+            _logger.LogWarning($"Access denied while reading '{modJson}': {exception.Message}");
+            return;
+        }
+
+        jsonFileContents = jsonFileContents.Replace("*", "Any");
+
+        if (!TryDeserializeModInfo(modJson, jsonFileContents, options, out ModInfo? modInfo))
+            return;
+
+        modInfo!.Normalize();
+
+        if (string.IsNullOrWhiteSpace(modInfo.Id))
+        {
+            _logger.LogWarning($"The mod folder '{folderName}' has an invalid or empty id and will be skipped");
+            return;
+        }
+
+        if (_mods.ContainsKey(modInfo.Id))
+        {
+            _logger.LogWarning($"Duplicate mod id '{modInfo.Id}' was skipped");
+            return;
+        }
+
+        _mods.Add(modInfo.Id, modInfo);
+
+        string pckPath = $@"{modRoot}/mod.pck";
+        if (File.Exists(pckPath))
+        {
+            bool success = ProjectSettings.LoadResourcePack(pckPath, replaceFiles: false);
+
+            if (!success)
+            {
+                _logger.LogWarning($"Failed to load pck file for mod '{modInfo.Name}'");
+            }
+            else
+            {
+                TryInstantiateModScene(hostNode, modInfo);
+            }
+        }
+
+        string dllPath = $@"{modRoot}/Mod.dll";
+        if (File.Exists(dllPath))
+        {
+            TryLoadManagedMod(hostNode, modInfo, dllPath);
+        }
     }
 
     private bool TryDeserializeModInfo(
@@ -188,6 +201,18 @@ public class ModLoaderUi
             ManagedModRuntime runtime = new(loadContext, assembly, entrypoints);
             _managedMods.Add(modInfo.Id, runtime);
         }
+        catch (FileNotFoundException exception)
+        {
+            _logger.LogErr(exception, $"Managed mod '{modInfo.Id}' assembly was not found");
+        }
+        catch (FileLoadException exception)
+        {
+            _logger.LogErr(exception, $"Managed mod '{modInfo.Id}' assembly could not be loaded");
+        }
+        catch (BadImageFormatException exception)
+        {
+            _logger.LogErr(exception, $"Managed mod '{modInfo.Id}' assembly is not a valid .NET assembly");
+        }
         catch (Exception exception)
         {
             _logger.LogErr(exception, $"Failed to load managed mod '{modInfo.Id}'");
@@ -212,6 +237,18 @@ public class ModLoaderUi
                     entrypoint.OnLoad(context);
                     entrypoints.Add(entrypoint);
                 }
+            }
+            catch (MissingMethodException exception)
+            {
+                _logger.LogErr(exception, $"Entrypoint '{type.FullName}' for mod '{modInfo.Id}' requires a public parameterless constructor");
+            }
+            catch (MemberAccessException exception)
+            {
+                _logger.LogErr(exception, $"Entrypoint '{type.FullName}' for mod '{modInfo.Id}' is not accessible");
+            }
+            catch (TargetInvocationException exception)
+            {
+                _logger.LogErr(exception, $"Entrypoint '{type.FullName}' for mod '{modInfo.Id}' threw during activation");
             }
             catch (Exception exception)
             {

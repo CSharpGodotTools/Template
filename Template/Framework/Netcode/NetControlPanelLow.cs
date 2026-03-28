@@ -23,6 +23,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     private GodotClient? _subscribedClient;
     private ILoggerService _loggerService = null!;
     private IApplicationLifetime _applicationLifetime = null!;
+    private IBackgroundTaskTracker _backgroundTasks = null!;
     private bool _isConfigured;
 
     public Net<TGameClient, TGameServer>? Net { get; private set; }
@@ -38,6 +39,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     {
         _loggerService = services.Logger;
         _applicationLifetime = services.ApplicationLifetime;
+        _backgroundTasks = services.BackgroundTasks;
         _isConfigured = true;
     }
 
@@ -54,7 +56,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
         _port = DefaultPort;
         _ip = DefaultLocalIp;
 
-        Net = new Net<TGameClient, TGameServer>(_loggerService, _applicationLifetime);
+        Net = new Net<TGameClient, TGameServer>(_loggerService, _applicationLifetime, _backgroundTasks);
         BindUiEvents();
         BindNetEvents();
     }

@@ -11,7 +11,7 @@ public partial class World : Node
 
     public override void _Ready()
     {
-        _net = new Net<GameClient, GameServer>(Game.Logger, Game.Application);
+        _net = new Net<GameClient, GameServer>(Game.Logger, Game.Application, Game.BackgroundTasks);
         _net.StartServer(Port);
         _net.StartClient(Ip, Port);
     }

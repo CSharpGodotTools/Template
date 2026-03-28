@@ -80,11 +80,6 @@ public partial class World
             _stopButton.Pressed += OnStopPressed;
         }
 
-        ~WorldStressTest()
-        {
-            _targetClientsInput.TextSubmitted -= OnTargetClientsChanged;
-        }
-
         private void OnTargetClientsChanged(string newText)
         {
             _targetClients = ReadInt(_targetClientsInput.Text, DefaultTargetClients, minValue: 1);
@@ -196,6 +191,7 @@ public partial class World
         public void Dispose()
         {
             Stop();
+            _targetClientsInput.TextSubmitted -= OnTargetClientsChanged;
             _startButton.Pressed -= OnStartPressed;
             _stopButton.Pressed -= OnStopPressed;
         }

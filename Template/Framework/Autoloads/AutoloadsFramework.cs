@@ -38,6 +38,7 @@ public abstract partial class AutoloadsFramework : Node
     public FocusOutlineManager FocusOutline { get; private set; } = null!;
     public Logger Logger { get; private set; } = null!;
     public IApplicationLifetime ApplicationLifetime { get; private set; } = null!;
+    public IBackgroundTaskTracker BackgroundTasks { get; private set; } = null!;
     public GameServices RuntimeServices { get; private set; } = null!;
 
 #if DEBUG
@@ -64,6 +65,7 @@ public abstract partial class AutoloadsFramework : Node
         GameConsole = GetNode<GameConsole>("%Console");
         FocusOutline = new FocusOutlineManager(this);
         Logger = new Logger(GameConsole);
+        BackgroundTasks = new BackgroundTaskTracker(Logger);
 
         OptionsManager = new OptionsManager(this);
         AudioManager = new AudioManager(this, OptionsManager);
@@ -83,7 +85,8 @@ public abstract partial class AutoloadsFramework : Node
             Services,
             FocusOutline,
             Logger,
-            ApplicationLifetime);
+            ApplicationLifetime,
+            BackgroundTasks);
         Game.Initialize(RuntimeServices);
 
         SceneComposition.ConfigureNodeTree(this, RuntimeServices);
@@ -126,7 +129,7 @@ public abstract partial class AutoloadsFramework : Node
     {
         if (what == NotificationWMCloseRequest)
         {
-            TaskUtils.FireAndForget(ExitGame);
+            BackgroundTasks.Run(_ => ExitGame(), "Autoloads.ExitGame");
         }
 
         Notification(what);
@@ -143,6 +146,7 @@ public abstract partial class AutoloadsFramework : Node
 #endif
 
         Logger.Dispose();
+        BackgroundTasks.Dispose();
         Profiler.Dispose();
 
         Game.Reset();
@@ -171,6 +175,10 @@ public abstract partial class AutoloadsFramework : Node
                 try
                 {
                     await subscriber();
+                }
+                catch (OperationCanceledException ex)
+                {
+                    GD.Print($"PreQuit subscriber canceled: {ex.Message}");
                 }
                 catch (Exception ex)
                 {

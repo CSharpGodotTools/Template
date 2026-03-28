@@ -31,6 +31,7 @@ public partial class PopupMenu : Control, ISceneDependencyReceiver
     private FocusOutlineManager _focusOutline = null!;
     private SceneManager _sceneManager = null!;
     private IApplicationLifetime _applicationLifetime = null!;
+    private IBackgroundTaskTracker _backgroundTasks = null!;
     private AudioManager _audioManager = null!;
     private OptionsManager _optionsManager = null!;
     private GameConsole _console = null!;
@@ -46,6 +47,7 @@ public partial class PopupMenu : Control, ISceneDependencyReceiver
         _focusOutline = services.FocusOutline;
         _sceneManager = services.SceneManager;
         _applicationLifetime = services.ApplicationLifetime;
+        _backgroundTasks = services.BackgroundTasks;
         _audioManager = services.AudioManager;
         _optionsManager = services.OptionsManager;
         _console = services.GameConsole;
@@ -205,6 +207,6 @@ public partial class PopupMenu : Control, ISceneDependencyReceiver
 
     private void OnQuitPressed()
     {
-        TaskUtils.FireAndForget(_applicationLifetime.ExitGameAsync);
+        _backgroundTasks.Run(_ => _applicationLifetime.ExitGameAsync(), "PopupMenu.ExitGame");
     }
 }
