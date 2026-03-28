@@ -15,6 +15,7 @@ public partial class OptionsInput
         private readonly string _removeHotkeyAction;
         private readonly string _uiPrefix;
         private readonly string _ellipsis;
+        private readonly FocusOutlineManager _focusOutline;
 
         private readonly Dictionary<StringName, HotkeyRow> _rows = [];
 
@@ -27,7 +28,8 @@ public partial class OptionsInput
             HotkeyStore store,
             string removeHotkeyAction,
             string uiPrefix,
-            string ellipsis)
+            string ellipsis,
+            FocusOutlineManager focusOutline)
         {
             _content = content;
             _inputNavBtn = inputNavBtn;
@@ -35,6 +37,7 @@ public partial class OptionsInput
             _removeHotkeyAction = removeHotkeyAction;
             _uiPrefix = uiPrefix;
             _ellipsis = ellipsis;
+            _focusOutline = focusOutline;
         }
 
         public void Build()
@@ -44,7 +47,7 @@ public partial class OptionsInput
                 if (!ShouldDisplayAction(action))
                     continue;
 
-                HotkeyRow row = new(action, _inputNavBtn, GetDisplayName(action), HandleHotkeyPressed, HandlePlusPressed);
+                HotkeyRow row = new(action, _inputNavBtn, GetDisplayName(action), HandleHotkeyPressed, HandlePlusPressed, _focusOutline);
                 _rows.Add(action, row);
 
                 _content.AddChild(row.RowRoot);
@@ -124,5 +127,3 @@ public partial class OptionsInput
         }
     }
 }
-
-

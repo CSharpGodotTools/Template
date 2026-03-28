@@ -30,11 +30,13 @@ public class OptionsNav : IDisposable
     private readonly Dictionary<Button, Action> _pressedHandlers = [];
     private readonly Options _options;
     private readonly Label _titleLabel;
+    private readonly OptionsManager _optionsManager;
 
-    public OptionsNav(Options options, Label titleLabel)
+    public OptionsNav(Options options, Label titleLabel, OptionsManager optionsManager)
     {
         _options = options;
         _titleLabel = titleLabel;
+        _optionsManager = optionsManager;
         _navBtns = options.GetNode("%Nav").GetChildren();
 
         SetupContent();
@@ -99,18 +101,18 @@ public class OptionsNav : IDisposable
 
     private void FocusOnLastClickedNavBtn()
     {
-        _buttons[Game.Options.GetCurrentTab()].GrabFocus();
+        _buttons[_optionsManager.GetCurrentTab()].GrabFocus();
     }
 
     private void ShowCurrentTab(Label titleLabel)
     {
-        ShowTab(titleLabel, Game.Options.GetCurrentTab());
+        ShowTab(titleLabel, _optionsManager.GetCurrentTab());
     }
 
     private void ShowTab(Label titleLabel, string tabName)
     {
         titleLabel.Text = tabName;
-        Game.Options.SetCurrentTab(tabName);
+        _optionsManager.SetCurrentTab(tabName);
         HideAllTabs();
         _tabs[tabName].Show();
     }

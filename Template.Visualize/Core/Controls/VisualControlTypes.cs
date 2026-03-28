@@ -15,42 +15,42 @@ internal static partial class VisualControlTypes
     {
         VisualControlInfo info = type switch
         {
-            _ when type == typeof(bool)       => VisualBool(context),
-            _ when type == typeof(string)     => VisualString(context),
-            _ when type == typeof(object)     => VisualObject(context),
-            _ when type == typeof(Color)      => VisualColor(context),
-            _ when type == typeof(Vector2)    => VisualVector2(context),
-            _ when type == typeof(Vector2I)   => VisualVector2I(context),
-            _ when type == typeof(Vector3)    => VisualVector3(context),
-            _ when type == typeof(Vector3I)   => VisualVector3I(context),
-            _ when type == typeof(Vector4)    => VisualVector4(context),
-            _ when type == typeof(Vector4I)   => VisualVector4I(context),
+            _ when type == typeof(bool) => VisualBool(context),
+            _ when type == typeof(string) => VisualString(context),
+            _ when type == typeof(object) => VisualObject(context),
+            _ when type == typeof(Color) => VisualColor(context),
+            _ when type == typeof(Vector2) => VisualVector2(context),
+            _ when type == typeof(Vector2I) => VisualVector2I(context),
+            _ when type == typeof(Vector3) => VisualVector3(context),
+            _ when type == typeof(Vector3I) => VisualVector3I(context),
+            _ when type == typeof(Vector4) => VisualVector4(context),
+            _ when type == typeof(Vector4I) => VisualVector4I(context),
             _ when type == typeof(Quaternion) => VisualQuaternion(context),
-            _ when type == typeof(NodePath)   => VisualNodePath(context),
+            _ when type == typeof(NodePath) => VisualNodePath(context),
             _ when type == typeof(StringName) => VisualStringName(context),
-            _ when type.IsNumericType()       => VisualNumeric(type, memberInfo, context),
-            _ when type.IsEnum                => VisualEnum(type, context),
-            
+            _ when type.IsNumericType() => VisualNumeric(type, memberInfo, context),
+            _ when type.IsEnum => VisualEnum(type, context),
+
             // Arrays
             _ when type.IsArray => VisualArray(type, context),
             _ when type == typeof(Godot.Collections.Array) => VisualGodotArray(context),
             _ when type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>) => VisualList(type, context),
             // Reuse the list renderer for Godot's generic array API.
             _ when type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Godot.Collections.Array<>) => VisualList(type, context),
-            _ when type == typeof(Godot.Collections.Dictionary) => VisualDictionary(type, context),
-            _ when type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>) => VisualDictionary(type, context),
+            _ when type == typeof(Godot.Collections.Dictionary) => CreateDictionaryControl(type, context),
+            _ when type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Dictionary<,>) => CreateDictionaryControl(type, context),
             // Reuse the dictionary renderer for Godot's generic dictionary API.
-            _ when type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Godot.Collections.Dictionary<,>) => VisualDictionary(type, context),
-            
+            _ when type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Godot.Collections.Dictionary<,>) => CreateDictionaryControl(type, context),
+
             // Godot Resource
             _ when type.IsClass && type.IsSubclassOf(typeof(Resource)) => VisualClass(type, context),
-            
+
             // Class
             _ when type.IsClass && !type.IsSubclassOf(typeof(GodotObject)) => VisualClass(type, context),
-            
+
             // Struct
             _ when type.IsValueType && !type.IsClass && !type.IsSubclassOf(typeof(GodotObject)) => VisualClass(type, context),
-            
+
             // Not defined
             _ => new VisualControlInfo(null)
         };
@@ -61,6 +61,19 @@ internal static partial class VisualControlTypes
         }
 
         return info;
+    }
+
+    private static VisualControlInfo CreateDictionaryControl(Type dictionaryType, VisualControlContext context)
+    {
+        VisualDictionaryControlProvider provider = new(
+            new VisualDictionaryAdapterFactory(new VisualDictionaryValueConverter()),
+            new VisualDictionaryKeyResolver(),
+            new VisualDictionaryDisplayOrderTrackerFactory(),
+            (type, visualContext) => CreateControlForType(type, null, visualContext),
+            VisualMethods.CreateDefaultValue,
+            CleanupOnTreeExited);
+
+        return provider.CreateControl(dictionaryType, context);
     }
 }
 #endif

@@ -16,6 +16,8 @@ const ACTIONS_BOTTOM_MARGIN := 10
 var _pickers_by_key: Dictionary = {}
 var _options_host: VBoxContainer
 var _dev_host: VBoxContainer
+var _pending_option_controls: Array[Control] = []
+var _pending_dev_control: Control
 var _warning_case_option: OptionButton
 var _error_case_option: OptionButton
 
@@ -31,26 +33,19 @@ func popup_centered_with_state(colors_by_key: Dictionary, colors_enabled: bool, 
 	popup_centered()
 
 func set_option_controls(controls: Array) -> void:
+	_pending_option_controls.clear()
+	for control in controls:
+		if control is Control:
+			_pending_option_controls.append(control as Control)
 	if _options_host == null:
 		return
-	for child in _options_host.get_children():
-		_options_host.remove_child(child)
-	for control in controls:
-		if not (control is Control):
-			continue
-		var node: Control = control as Control
-		if node.get_parent() != null:
-			node.get_parent().remove_child(node)
-		_options_host.add_child(node)
+	_apply_option_controls()
 
 func set_dev_control(control: Control) -> void:
+	_pending_dev_control = control
 	if _dev_host == null or control == null:
 		return
-	for child in _dev_host.get_children():
-		_dev_host.remove_child(child)
-	if control.get_parent() != null:
-		control.get_parent().remove_child(control)
-	_dev_host.add_child(control)
+	_apply_dev_control()
 
 func set_colors_enabled(enabled: bool) -> void:
 	var toggle: CheckButton = _find_enabled_toggle()
@@ -147,6 +142,9 @@ func _build_ui() -> void:
 	_dev_host.add_theme_constant_override("separation", 8)
 	dev_tab.add_child(_dev_host)
 
+	_apply_option_controls()
+	_apply_dev_control()
+
 	var actions_margin: MarginContainer = MarginContainer.new()
 	actions_margin.add_theme_constant_override("margin_left", ACTIONS_SIDE_MARGIN)
 	actions_margin.add_theme_constant_override("margin_right", ACTIONS_SIDE_MARGIN)
@@ -195,6 +193,29 @@ func _add_picker_row(parent: VBoxContainer, label_text: String, color_key: Strin
 	row.add_child(picker)
 
 	_pickers_by_key[color_key] = picker
+
+func _apply_option_controls() -> void:
+	if _options_host == null:
+		return
+	for child in _options_host.get_children():
+		_options_host.remove_child(child)
+	for control in _pending_option_controls:
+		if control == null:
+			continue
+		if control.get_parent() != null:
+			control.get_parent().remove_child(control)
+		_options_host.add_child(control)
+
+func _apply_dev_control() -> void:
+	if _dev_host == null:
+		return
+	for child in _dev_host.get_children():
+		_dev_host.remove_child(child)
+	if _pending_dev_control == null:
+		return
+	if _pending_dev_control.get_parent() != null:
+		_pending_dev_control.get_parent().remove_child(_pending_dev_control)
+	_dev_host.add_child(_pending_dev_control)
 
 func _apply_colors(colors_by_key: Dictionary) -> void:
 	for color_key in _pickers_by_key.keys():

@@ -44,7 +44,7 @@ public class ComponentList
     {
         _components.Clear();
     }
-    
+
     /// <summary>
     /// Get a component.
     /// </summary>

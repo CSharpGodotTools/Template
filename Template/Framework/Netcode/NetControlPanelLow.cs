@@ -2,10 +2,11 @@ using __TEMPLATE__.Netcode.Client;
 using __TEMPLATE__.Netcode.Server;
 using Godot;
 using GodotUtils;
+using System;
 
 namespace __TEMPLATE__.Netcode;
 
-public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Control
+public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Control, ISceneDependencyReceiver
     where TGameClient : GodotClient, new()
     where TGameServer : GodotServer, new()
 {
@@ -20,6 +21,9 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     private ushort _port;
     private string _ip = null!;
     private GodotClient? _subscribedClient;
+    private ILoggerService _loggerService = null!;
+    private IApplicationLifetime _applicationLifetime = null!;
+    private bool _isConfigured;
 
     public Net<TGameClient, TGameServer>? Net { get; private set; }
     public ushort CurrentPort => _port;
@@ -30,12 +34,22 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     protected virtual string DefaultLocalIp { get; } = "127.0.0.1";
     protected virtual ushort DefaultPort { get; } = 25565;
 
+    public void Configure(GameServices services)
+    {
+        _loggerService = services.Logger;
+        _applicationLifetime = services.ApplicationLifetime;
+        _isConfigured = true;
+    }
+
     public override void _Ready()
     {
+        if (!_isConfigured)
+            throw new InvalidOperationException($"{nameof(NetControlPanelLow<TGameClient, TGameServer>)} was not configured before _Ready.");
+
         _port = DefaultPort;
         _ip = DefaultLocalIp;
 
-        Net = new Net<TGameClient, TGameServer>();
+        Net = new Net<TGameClient, TGameServer>(_loggerService, _applicationLifetime);
         BindUiEvents();
         BindNetEvents();
     }

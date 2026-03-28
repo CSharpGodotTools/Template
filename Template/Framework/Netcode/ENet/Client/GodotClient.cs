@@ -83,7 +83,7 @@ public abstract class GodotClient : ENetClient
         catch (Exception exception)
         {
             Interlocked.Exchange(ref _running, 0);
-            Game.Logger.LogErr(exception, LogTag);
+            LoggerService.LogErr(exception, LogTag);
         }
     }
 
@@ -154,7 +154,7 @@ public abstract class GodotClient : ENetClient
             }
             catch (Exception exception)
             {
-                Game.Logger.LogErr(exception, LogTag);
+                LoggerService.LogErr(exception, LogTag);
             }
             finally
             {
@@ -231,7 +231,7 @@ public abstract class GodotClient : ENetClient
     /// <summary>
     /// Invokes an action, catching and logging any exceptions thrown during event dispatch.
     /// </summary>
-    private static void TryInvoke(Action action)
+    private void TryInvoke(Action action)
     {
         try
         {
@@ -239,7 +239,7 @@ public abstract class GodotClient : ENetClient
         }
         catch (Exception exception)
         {
-            Game.Logger.LogErr(exception, LogTag);
+            LoggerService.LogErr(exception, LogTag);
         }
     }
 }

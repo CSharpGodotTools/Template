@@ -1,6 +1,6 @@
 using Godot;
-using static Godot.Tween;
 using System;
+using static Godot.Tween;
 
 namespace GodotUtils;
 
@@ -20,7 +20,7 @@ public class ShaderTween : BaseTween<ShaderTween>
     {
         if (canvasItem.Material is not ShaderMaterial shaderMaterial)
         {
-            throw new Exception("Animating shader material has not been set. Ensure the node has a ShaderMaterial assigned.");
+            throw new InvalidOperationException("Animating shader material has not been set. Ensure the node has a ShaderMaterial assigned.");
         }
 
         _shaderMaterial = shaderMaterial;

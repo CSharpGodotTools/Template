@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "godot": {
+      "command": "npx",
+      "args": ["@coding-solo/godot-mcp"],
+      "env": {
+        "GODOT_PATH": "/opt/godot-4.6.1/Godot_v4.6.1-stable_mono_linux.x86_64",
+        "DEBUG": "true"
+      }
+    }
+  }
+}

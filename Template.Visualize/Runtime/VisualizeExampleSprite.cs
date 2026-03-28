@@ -17,19 +17,22 @@ internal partial class VisualizeExampleSprite : Sprite2D
     [Visualize] private Godot.Collections.Array _godotArray = null!;
     [Visualize] private Godot.Collections.Dictionary _godotDict = null!;
 
-    [Visualize] private ExampleStruct _structValue = new()
+    [Visualize]
+    private ExampleStruct _structValue = new()
     {
         HitCount = 3
     };
 
-    [Visualize] private ExampleClass _classValue = new()
+    [Visualize]
+    private ExampleClass _classValue = new()
     {
         Name = "Inner Class",
         Speed = 4.5f,
         Values = [10, 20, 30]
     };
 
-    [Visualize] private ExampleResource _resourceValue = new()
+    [Visualize]
+    private ExampleResource _resourceValue = new()
     {
         Tint = Colors.Coral,
         Curve = new Vector2(2.5f, 1.25f)

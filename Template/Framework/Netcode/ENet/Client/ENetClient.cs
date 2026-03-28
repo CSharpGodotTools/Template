@@ -61,7 +61,7 @@ public abstract class ENetClient : ENetLow
     public sealed override void Log(object message, BBColor color = BBColor.Gray)
     {
         string timestampPrefix = BuildTimestampPrefix();
-        Game.Logger.Log($"{timestampPrefix}[Client] {message}", color);
+        LoggerService.Log($"{timestampPrefix}[Client] {message}", color);
     }
 
     /// <summary>
@@ -372,7 +372,7 @@ public abstract class ENetClient : ENetLow
             }
             catch (Exception exception)
             {
-                Game.Logger.LogErr(exception, LogTag);
+                LoggerService.LogErr(exception, LogTag);
             }
         }
     }
@@ -406,7 +406,7 @@ public abstract class ENetClient : ENetLow
     /// <summary>
     /// Invokes an action, catching and logging any exceptions thrown by the worker-thread hook.
     /// </summary>
-    private static void TryInvoke(Action action)
+    private void TryInvoke(Action action)
     {
         try
         {
@@ -414,7 +414,7 @@ public abstract class ENetClient : ENetLow
         }
         catch (Exception exception)
         {
-            Game.Logger.LogErr(exception, LogTag);
+            LoggerService.LogErr(exception, LogTag);
         }
     }
 }

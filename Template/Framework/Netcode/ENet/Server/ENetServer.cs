@@ -54,7 +54,7 @@ public abstract partial class ENetServer : ENetLow
     public sealed override void Log(object message, BBColor color = BBColor.Gray)
     {
         string timestampPrefix = BuildTimestampPrefix();
-        Game.Logger.Log($"{timestampPrefix}[Server] {message}", color);
+        LoggerService.Log($"{timestampPrefix}[Server] {message}", color);
     }
 
     /// <summary>
@@ -144,7 +144,7 @@ public abstract partial class ENetServer : ENetLow
     protected sealed override void OnReceiveLow(Event netEvent)
     {
         Packet packet = netEvent.Packet;
-        
+
         if (packet.Length > GamePacket.MaxSize)
         {
             Log($"Tried to read packet from client of size {packet.Length} when max packet size is {GamePacket.MaxSize}");
@@ -451,7 +451,7 @@ public abstract partial class ENetServer : ENetLow
     /// <summary>
     /// Invokes a registered client packet handler, catching and logging any exceptions.
     /// </summary>
-    private static bool TryInvokePacketHandler(Action<PacketFromPeer<ClientPacket>> handler, PacketFromPeer<ClientPacket> peer)
+    private bool TryInvokePacketHandler(Action<PacketFromPeer<ClientPacket>> handler, PacketFromPeer<ClientPacket> peer)
     {
         try
         {
@@ -460,7 +460,7 @@ public abstract partial class ENetServer : ENetLow
         }
         catch (Exception exception)
         {
-            Game.Logger.LogErr(exception, LogTag);
+            LoggerService.LogErr(exception, LogTag);
             return false;
         }
     }
@@ -505,7 +505,7 @@ public abstract partial class ENetServer : ENetLow
         }
         catch (Exception exception)
         {
-            Game.Logger.LogErr(exception, LogTag);
+            LoggerService.LogErr(exception, LogTag);
         }
     }
 
@@ -529,7 +529,7 @@ public abstract partial class ENetServer : ENetLow
             }
             catch (Exception exception)
             {
-                Game.Logger.LogErr(exception, LogTag);
+                LoggerService.LogErr(exception, LogTag);
             }
         }
     }

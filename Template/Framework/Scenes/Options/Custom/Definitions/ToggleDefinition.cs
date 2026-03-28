@@ -3,7 +3,7 @@ namespace __TEMPLATE__.Ui;
 /// <summary>
 /// Class‑based definition for a custom boolean toggle option (displayed as a checkbox).
 /// Implement this in game code, then register with:
-/// Game.Options.AddToggle(new YourToggleOption()).
+/// Game.OptionsManager.AddToggle(new YourToggleOption()).
 /// </summary>
 public abstract class ToggleOptionDefinition : OptionDefinition
 {

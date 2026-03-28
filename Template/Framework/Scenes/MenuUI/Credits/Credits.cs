@@ -4,7 +4,7 @@ using System;
 
 namespace __TEMPLATE__.Ui;
 
-public partial class Credits : Node
+public partial class Credits : Node, ISceneDependencyReceiver
 {
     // Constants
     private const string HeaderOneIdentifier = "[h1]";
@@ -35,6 +35,13 @@ public partial class Credits : Node
     private bool _paused;
     private byte _curSpeedSetting = 1;
     private int _direction = 1;
+    private bool _isConfigured;
+
+    public void Configure(GameServices services)
+    {
+        _scene = services.SceneManager;
+        _isConfigured = true;
+    }
 
     // Godot Overrides
     public override void _Ready()
@@ -74,7 +81,9 @@ public partial class Credits : Node
     // Private Methods
     private void SetupFields()
     {
-        _scene = Game.Scene;
+        if (!_isConfigured)
+            throw new InvalidOperationException($"{nameof(Credits)} was not configured before _Ready.");
+
         _btnPause = GetNode<Button>("%Pause");
         _btnSpeed = GetNode<Button>("%Speed");
         _btnReverse = GetNode<Button>("%Reverse");

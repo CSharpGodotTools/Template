@@ -4,6 +4,86 @@
         <name>Visualize</name>
     </assembly>
     <members>
+        <member name="T:GodotUtils.Debugging.ParameterConverter">
+            <summary>
+            Utility class for converting provided values to method parameters
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualData">
+            <summary>
+            Represents a node to be visualized
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualData.#ctor(Godot.Node,System.Object,System.Collections.Generic.IReadOnlyList{System.Reflection.PropertyInfo},System.Collections.Generic.IReadOnlyList{System.Reflection.FieldInfo},System.Collections.Generic.IReadOnlyList{System.Reflection.MethodInfo})">
+            <summary>
+            Represents a node to be visualized
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualHandler">
+            <summary>
+            A set of utility methods for handling the VisualizeAttribute
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeAttributeHandler">
+            <summary>
+            Handles the VisualizeAttribute
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualMethods">
+            <summary>
+            Methods that can be executed manually by pressing a button in-game. Parameters are supported.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualMethods.CreateMethodParameterControls(System.Reflection.MethodInfo,System.Object[])">
+            <summary>
+            Creates the UI needed for the method parameters
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VBoxContainerControl.ApplyEditableRecursive(Godot.Control,System.Boolean)">
+            <summary>
+            Applies editable state to this control and all control descendants.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualControlContext">
+            <summary>
+            Represents the context for a visual control
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlContext.#ctor(System.Object,System.Action{System.Object})">
+            <summary>
+            Represents the context for a visual control
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualControlTypes">
+            <summary>
+            More utility methods
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.CreateControlForType(System.Type,System.Reflection.MemberInfo,GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a control for the given member type and context
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.TryGetExportAttributeRange(System.Reflection.MemberInfo,GodotUtils.Debugging.VisualControlTypes.ExportAttributeRange@)">
+            <summary>
+            Checks if the member has [Export(PropertyHint.Range, "0, 1, 0.1")] and gets the min, max, and step values.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualAnchorSettings.NormalizedAnchor">
+            <summary>
+            Normalized anchor where (0,0)=top-left and (1,1)=bottom-right.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualUI">
+            <summary>
+            The main core class for the visualizer UI
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.CreateVisualPanel(GodotUtils.Debugging.VisualData)">
+            <summary>
+            Creates the visual panel for a specified visual node.
+            </summary>
+        </member>
         <member name="T:GodotUtils.Debugging.Autoload.MethodName">
             <summary>
             Cached StringNames for the methods contained in this class, for fast lookup.
@@ -51,106 +131,6 @@
         <member name="T:GodotUtils.Debugging.Autoload.SignalName">
             <summary>
             Cached StringNames for the signals contained in this class, for fast lookup.
-            </summary>
-        </member>
-        <member name="T:GodotUtils.Debugging.ParameterConverter">
-            <summary>
-            Utility class for converting provided values to method parameters
-            </summary>
-        </member>
-        <member name="M:GodotUtils.Debugging.VBoxContainerControl.ApplyEditableRecursive(Godot.Control,System.Boolean)">
-            <summary>
-            Applies editable state to this control and all control descendants.
-            </summary>
-        </member>
-        <member name="T:GodotUtils.Debugging.VisualControlTypes">
-            <summary>
-            More utility methods
-            </summary>
-        </member>
-        <member name="M:GodotUtils.Debugging.VisualControlTypes.CreateDictionaryAdapter(System.Object,System.Type,System.Type)">
-            <summary>
-            Builds a common dictionary adapter for both CLR and Godot generic dictionary implementations.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.Debugging.VisualControlTypes.EnumerateDictionaryEntries(System.Collections.IDictionary)">
-            <summary>
-            Enumerates key/value pairs from an <see cref="T:System.Collections.IDictionary"/>.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.Debugging.VisualControlTypes.EnumerateObjectDictionaryEntries(System.Object)">
-            <summary>
-            Enumerates key/value pairs from dictionary-like objects that expose an enumerable of entries.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.Debugging.VisualControlTypes.TryGetNextAvailableKey(System.Object,System.Object,System.Type,System.Func{System.Object,System.Boolean},System.Object@)">
-            <summary>
-            Resolves duplicate numeric or enum keys by walking in the user's edit direction until a free key is found.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.Debugging.VisualControlTypes.TryGetExportAttributeRange(System.Reflection.MemberInfo,GodotUtils.Debugging.VisualControlTypes.ExportAttributeRange@)">
-            <summary>
-            Checks if the member has [Export(PropertyHint.Range, "0, 1, 0.1")] and gets the min, max, and step values.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.Debugging.VisualControlTypes.CreateControlForType(System.Type,System.Reflection.MemberInfo,GodotUtils.Debugging.VisualControlContext)">
-            <summary>
-            Creates a control for the given member type and context
-            </summary>
-        </member>
-        <member name="P:GodotUtils.Debugging.VisualAnchorSettings.NormalizedAnchor">
-            <summary>
-            Normalized anchor where (0,0)=top-left and (1,1)=bottom-right.
-            </summary>
-        </member>
-        <member name="T:GodotUtils.Debugging.VisualControlContext">
-            <summary>
-            Represents the context for a visual control
-            </summary>
-        </member>
-        <member name="M:GodotUtils.Debugging.VisualControlContext.#ctor(System.Object,System.Action{System.Object})">
-            <summary>
-            Represents the context for a visual control
-            </summary>
-        </member>
-        <member name="T:GodotUtils.Debugging.VisualData">
-            <summary>
-            Represents a node to be visualized
-            </summary>
-        </member>
-        <member name="M:GodotUtils.Debugging.VisualData.#ctor(Godot.Node,System.Object,System.Collections.Generic.IReadOnlyList{System.Reflection.PropertyInfo},System.Collections.Generic.IReadOnlyList{System.Reflection.FieldInfo},System.Collections.Generic.IReadOnlyList{System.Reflection.MethodInfo})">
-            <summary>
-            Represents a node to be visualized
-            </summary>
-        </member>
-        <member name="T:GodotUtils.Debugging.VisualHandler">
-            <summary>
-            A set of utility methods for handling the VisualizeAttribute
-            </summary>
-        </member>
-        <member name="T:GodotUtils.Debugging.VisualizeAttributeHandler">
-            <summary>
-            Handles the VisualizeAttribute
-            </summary>
-        </member>
-        <member name="T:GodotUtils.Debugging.VisualMethods">
-            <summary>
-            Methods that can be executed manually by pressing a button in-game. Parameters are supported.
-            </summary>
-        </member>
-        <member name="M:GodotUtils.Debugging.VisualMethods.CreateMethodParameterControls(System.Reflection.MethodInfo,System.Object[])">
-            <summary>
-            Creates the UI needed for the method parameters
-            </summary>
-        </member>
-        <member name="T:GodotUtils.Debugging.VisualUI">
-            <summary>
-            The main core class for the visualizer UI
-            </summary>
-        </member>
-        <member name="M:GodotUtils.Debugging.VisualUI.CreateVisualPanel(GodotUtils.Debugging.VisualData)">
-            <summary>
-            Creates the visual panel for a specified visual node.
             </summary>
         </member>
         <member name="T:GodotUtils.Debugging.ExampleScene.MethodName">
@@ -231,6 +211,11 @@
         <member name="T:GodotUtils.Debugging.ExampleScene.SignalName">
             <summary>
             Cached StringNames for the signals contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.Visualize">
+            <summary>
+            This logger shows all messages in game making it easier to debug
             </summary>
         </member>
         <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource.MethodName">
@@ -402,11 +387,6 @@
         <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.SignalName">
             <summary>
             Cached StringNames for the signals contained in this class, for fast lookup.
-            </summary>
-        </member>
-        <member name="T:GodotUtils.Debugging.Visualize">
-            <summary>
-            This logger shows all messages in game making it easier to debug
             </summary>
         </member>
         <member name="T:Godot.OnImportEditorPlugin.MethodName">

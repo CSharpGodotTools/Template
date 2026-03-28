@@ -19,7 +19,7 @@ public class RectArea2D : ShapeArea2D<RectangleShape2D>
     /// <summary>
     /// Creates a rectangle area with the provided size.
     /// </summary>
-    internal RectArea2D(Vector2 size) : base(new RectangleShape2D { Size = size }) 
-    { 
+    internal RectArea2D(Vector2 size) : base(new RectangleShape2D { Size = size })
+    {
     }
 }

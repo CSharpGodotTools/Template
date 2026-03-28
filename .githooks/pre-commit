@@ -30,6 +30,9 @@ build_godotutils=false
 build_visualize=false
 build_packetgen=false
 
+# Only run full solution validation when staged files can affect compilation.
+requires_full_build=false
+
 echo "$STAGED" | grep -q "^Template\.GodotUtils/" && build_godotutils=true || true
 echo "$STAGED" | grep -q "^Template\.Visualize/" && build_visualize=true || true
 echo "$STAGED" | grep -q "^Template\.PacketGen/" && build_packetgen=true || true
@@ -38,6 +41,17 @@ echo "$STAGED" | grep -q "^Template\.PacketGen/" && build_packetgen=true || true
 if $build_visualize; then
     build_godotutils=true
 fi
+
+while IFS= read -r staged_path; do
+    [ -z "$staged_path" ] && continue
+
+    case "$staged_path" in
+        *.cs|*.csproj|*.sln|*.props|*.targets|global.json|NuGet.config|nuget.config|*/NuGet.config|*/nuget.config)
+            requires_full_build=true
+            break
+            ;;
+    esac
+done <<< "$STAGED"
 
 # ------------------------------------------------------------
 # Sync .editorconfig
@@ -144,24 +158,28 @@ fi
 # Verify everything still works by building all projects
 # ------------------------------------------------------------
 
-echo "[pre-commit] Running full solution build..."
+if $requires_full_build; then
+    echo "[pre-commit] Running full solution build (build-affecting changes detected)..."
 
-if ! BUILD_OUTPUT=$(dotnet_cmd build 2>&1); then
-    echo ""
-    echo "========================================"
-    echo "[pre-commit] ❌ FINAL BUILD FAILED"
-    echo "========================================"
-    echo ""
-    echo "$BUILD_OUTPUT"
-    echo ""
-    echo "[pre-commit] Commit aborted due to build failure."
-    echo "Fix the errors above before committing."
-    echo "========================================"
-    echo ""
+    if ! BUILD_OUTPUT=$(dotnet_cmd build 2>&1); then
+        echo ""
+        echo "========================================"
+        echo "[pre-commit] ❌ FINAL BUILD FAILED"
+        echo "========================================"
+        echo ""
+        echo "$BUILD_OUTPUT"
+        echo ""
+        echo "[pre-commit] Commit aborted due to build failure."
+        echo "Fix the errors above before committing."
+        echo "========================================"
+        echo ""
 
-    exit 1
+        exit 1
+    fi
+
+    echo "[pre-commit] ✅ Full build succeeded"
+else
+    echo "[pre-commit] Skipping full solution build (no build-affecting staged files)."
 fi
-
-echo "[pre-commit] ✅ Full build succeeded"
 
 exit 0

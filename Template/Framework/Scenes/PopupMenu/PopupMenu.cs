@@ -5,9 +5,9 @@ using System;
 
 // This was intentionally set to GodotUtils instead of __TEMPLATE__ as GodotUtils relies on MainMenuBtnPressed
 // and GodotUtils should NOT have any trace of using __TEMPLATE__.
-namespace __TEMPLATE__.Ui; 
+namespace __TEMPLATE__.Ui;
 
-public partial class PopupMenu : Control
+public partial class PopupMenu : Control, ISceneDependencyReceiver
 {
     // Exports
     [Export] private PackedScene _optionsPrefab = null!;
@@ -27,16 +27,40 @@ public partial class PopupMenu : Control
     private Button _quitBtn = null!;
 
     private VBoxContainer _nav = null!;
+    private Services _services = null!;
+    private FocusOutlineManager _focusOutline = null!;
+    private SceneManager _sceneManager = null!;
+    private IApplicationLifetime _applicationLifetime = null!;
+    private AudioManager _audioManager = null!;
+    private OptionsManager _optionsManager = null!;
     private GameConsole _console = null!;
+    private GameServices _runtimeServices = null!;
     private Options _options = null!;
     private Control _menu = null!;
+    private bool _isConfigured;
+
+    public void Configure(GameServices services)
+    {
+        _runtimeServices = services;
+        _services = services.ScopedServices;
+        _focusOutline = services.FocusOutline;
+        _sceneManager = services.SceneManager;
+        _applicationLifetime = services.ApplicationLifetime;
+        _audioManager = services.AudioManager;
+        _optionsManager = services.OptionsManager;
+        _console = services.GameConsole;
+        _isConfigured = true;
+    }
 
     // Godot Overrides
     public override void _Ready()
     {
+        if (!_isConfigured)
+            throw new InvalidOperationException($"{nameof(PopupMenu)} was not configured before _Ready.");
+
         ProcessMode = ProcessModeEnum.Always;
-        Game.Services.Register(this);
         InitializeNodes();
+        _services.Register(this);
         RegisterNodeEvents();
 
         CreateOptions();
@@ -73,7 +97,6 @@ public partial class PopupMenu : Control
     // Initialization Methods
     private void InitializeNodes()
     {
-        _console = Game.Console;
         _nav = GetNode<VBoxContainer>("%Navigation");
         _menu = GetNode<Control>("Menu");
 
@@ -105,7 +128,7 @@ public partial class PopupMenu : Control
     // Popup Menu
     private void CreateOptions()
     {
-        _options = _optionsPrefab.Instantiate<Options>();
+        _options = SceneComposition.InstantiateAndConfigure<Options>(_optionsPrefab, _runtimeServices);
         AddChild(_options);
     }
 
@@ -121,7 +144,7 @@ public partial class PopupMenu : Control
         _options.ProcessMode = ProcessModeEnum.Disabled;
         _options.Hide();
         OptionsClosed?.Invoke();
-        Game.FocusOutline.ClearFocus();
+        _focusOutline.ClearFocus();
         FocusResumeBtn();
     }
 
@@ -146,7 +169,7 @@ public partial class PopupMenu : Control
         Visible = false;
         GetTree().Paused = false;
         Closed?.Invoke();
-        Game.FocusOutline.ClearFocus();
+        _focusOutline.ClearFocus();
     }
 
     private void FocusResumeBtn() => _resumeBtn.GrabFocus();
@@ -159,7 +182,7 @@ public partial class PopupMenu : Control
     private void OnRestartPressed()
     {
         GetTree().Paused = false;
-        Game.Scene.ResetCurrentScene();
+        _sceneManager.ResetCurrentScene();
     }
 
     private void OnOptionsPressed()
@@ -172,11 +195,11 @@ public partial class PopupMenu : Control
     {
         MainMenuBtnPressed?.Invoke();
         GetTree().Paused = false;
-        Game.Scene.SwitchToMainMenu();
+        _sceneManager.SwitchToMainMenu();
     }
 
     private void OnQuitPressed()
     {
-        TaskUtils.FireAndForget(Autoloads.Instance!.ExitGame);
+        TaskUtils.FireAndForget(_applicationLifetime.ExitGameAsync);
     }
 }

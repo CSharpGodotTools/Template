@@ -7,33 +7,32 @@ namespace __TEMPLATE__.Ui;
 
 public class Commands
 {
-    public static void RegisterAll()
+    public static void RegisterAll(GameConsole console, ILoggerService logger, IApplicationLifetime applicationLifetime)
     {
-        GameConsole console = Game.Console;
-        console.RegisterCommand("help", CommandHelp);
-        console.RegisterCommand("quit", CommandQuit).WithAliases("exit");
-        console.RegisterCommand("debug", CommandDebug);
+        console.RegisterCommand("help", args => CommandHelp(args, console, logger));
+        console.RegisterCommand("quit", args => CommandQuit(args, applicationLifetime)).WithAliases("exit");
+        console.RegisterCommand("debug", args => CommandDebug(args, logger));
     }
 
-    private static void CommandHelp(string[] args)
+    private static void CommandHelp(string[] args, GameConsole console, ILoggerService logger)
     {
-        IEnumerable<string> cmds = Game.Console.GetCommands().Select(x => x.Name);
-        Game.Logger.Log(cmds.ToFormattedString()!);
+        IEnumerable<string> cmds = console.GetCommands().Select(x => x.Name);
+        logger.Log(cmds.ToFormattedString()!);
     }
 
-    private async static void CommandQuit(string[] args)
+    private async static void CommandQuit(string[] args, IApplicationLifetime applicationLifetime)
     {
-        await Autoloads.Instance!.ExitGame();
+        await applicationLifetime.ExitGameAsync();
     }
 
-    private static void CommandDebug(string[] args)
+    private static void CommandDebug(string[] args, ILoggerService logger)
     {
         if (args.Length <= 0)
         {
-            Game.Logger.Log("Specify at least one argument");
+            logger.Log("Specify at least one argument");
             return;
         }
 
-        Game.Logger.Log(args[0]);
+        logger.Log(args[0]);
     }
 }

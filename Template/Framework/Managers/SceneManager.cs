@@ -6,7 +6,7 @@ using System;
 namespace __TEMPLATE__;
 
 // About Scene Switching: https://docs.godotengine.org/en/latest/tutorials/scripting/singletons_autoload.html
-public class SceneManager
+public class SceneManager : ISceneService
 {
     // Events
     private const int SceneTransitionLayer = 10;
@@ -21,6 +21,8 @@ public class SceneManager
     private SceneTree _tree = null!;
     private AutoloadsFramework _autoloads = null!;
     private Node _currentScene = null!;
+    private IAudioService? _audioService;
+    private FocusOutlineManager? _focusOutline;
 
     public SceneManager(AutoloadsFramework autoloads, MenuScenes scenes)
     {
@@ -75,7 +77,7 @@ public class SceneManager
         PackedScene nextScene = GD.Load<PackedScene>(rawName)!;
 
         // Internal the new scene.
-        _currentScene = nextScene.Instantiate();
+        _currentScene = SceneComposition.InstantiateAndConfigure(nextScene, _autoloads.RuntimeServices);
 
         // Add it to the active scene, as child of root.
         _tree.Root.AddChild(_currentScene);
@@ -95,7 +97,13 @@ public class SceneManager
         }
 
         PostSceneChanged?.Invoke();
-        Game.FocusOutline.ClearFocus();
+        _focusOutline?.ClearFocus();
+    }
+
+    public void BindRuntimeServices(IAudioService audioService, FocusOutlineManager focusOutline)
+    {
+        _audioService = audioService;
+        _focusOutline = focusOutline;
     }
 
     // Private Methods
@@ -110,7 +118,7 @@ public class SceneManager
         _currentScene = root.GetChild(root.GetChildCount() - 1);
     }
 
-    private void OnPreSceneChanged() => Game.Audio.FadeOutSFX();
+    private void OnPreSceneChanged() => _audioService?.FadeOutSFX();
 
     private void ChangeScene(string scenePath, TransType transType)
     {

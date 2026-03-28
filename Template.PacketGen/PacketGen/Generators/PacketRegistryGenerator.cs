@@ -100,13 +100,13 @@ internal static class PacketRegistryGenerator
         // Helpers used by the runtime for type-aware opcode serialization.
         string readOpcodeExpression = idTypeName switch
         {
-            "byte"   => "(ushort)reader.ReadByte()",
-            "sbyte"  => "(ushort)(byte)reader.ReadSByte()",
-            "short"  => "(ushort)reader.ReadShort()",
+            "byte" => "(ushort)reader.ReadByte()",
+            "sbyte" => "(ushort)(byte)reader.ReadSByte()",
+            "short" => "(ushort)reader.ReadShort()",
             "ushort" => "reader.ReadUShort()",
-            "int"    => "(ushort)reader.ReadInt()",
-            "uint"   => "(ushort)reader.ReadUInt()",
-            _        => "reader.ReadUShort()"
+            "int" => "(ushort)reader.ReadInt()",
+            "uint" => "(ushort)reader.ReadUInt()",
+            _ => "reader.ReadUShort()"
         };
 
         string isFragmentExpression = idTypeName switch

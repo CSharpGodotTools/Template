@@ -11,11 +11,16 @@ public static class TaskUtils
     /// <para>For example:</para>
     /// <code>TaskUtils.FireAndForget(() =&gt; ExitGame());</code>
     /// </summary>
-    public static async void FireAndForget(this Func<Task> task)
+    public static void FireAndForget(this Func<Task> task)
     {
         if (task == null)
             return;
 
+        _ = FireAndForgetInternal(task);
+    }
+
+    private static async Task FireAndForgetInternal(Func<Task> task)
+    {
         try
         {
             await task();

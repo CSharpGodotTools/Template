@@ -24,7 +24,7 @@ public static class ParamValidator
 
             node.ProcessMode = Node.ProcessModeEnum.Disabled;
 
-            throw new Exception($"Value cannot be null. (Parameter '{paramName}' in {scriptName})");
+            throw new ArgumentNullException(paramName, $"Value cannot be null. (In {scriptName})");
         }
     }
 }

@@ -1,7 +1,7 @@
+using __TEMPLATE__.Netcode.Examples.Topdown.Server;
 using __TEMPLATE__.Netcode.Server;
 using Godot;
 using System.Collections.Generic;
-using __TEMPLATE__.Netcode.Examples.Topdown.Server;
 
 namespace __TEMPLATE__.Netcode.Examples.Topdown;
 

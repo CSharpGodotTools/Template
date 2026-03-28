@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dpt16oa8hjtej"]
 
-[ext_resource type="Script" uid="uid://osw45l54xmwh" path="res://Example Scene/ExampleScene.cs" id="1_4e0k5"]
+[ext_resource type="Script" path="res://Runtime/ExampleScene.cs" id="1_4e0k5"]
 [ext_resource type="PackedScene" uid="uid://dnawp2ojmq7fy" path="res://Example Scene/VisualizeExampleSprite.tscn" id="2_6hp5q"]
 [ext_resource type="Texture2D" uid="uid://b3xtrd0sfqxqm" path="res://Icon.svg" id="2_fedb0"]
 

@@ -1,9 +1,17 @@
+using __TEMPLATE__;
 using __TEMPLATE__.Ui;
 
 namespace __TEMPLATE__.FPS;
 
 public sealed class MouseSensitivitySlider : SliderOptionDefinition
 {
+    private readonly IOptionsService _optionsService;
+
+    public MouseSensitivitySlider(IOptionsService optionsService)
+    {
+        _optionsService = optionsService;
+    }
+
     public override OptionsTab Tab => OptionsTab.Gameplay;
     public override string Label => "MOUSE_SENSITIVITY";
     public override double MinValue => 0.1;
@@ -13,11 +21,11 @@ public sealed class MouseSensitivitySlider : SliderOptionDefinition
 
     public override float GetValue()
     {
-        return Game.Settings.MouseSensitivity;
+        return _optionsService.Settings.MouseSensitivity;
     }
 
     public override void SetValue(float value)
     {
-        Game.Settings.MouseSensitivity = value;
+        _optionsService.SetMouseSensitivity(value);
     }
 }

@@ -24,12 +24,12 @@ public static class CodeHighlighterFactory
     {
         CodeHighlighter editor = new()
         {
-            KeywordColors       = [],
-            NumberColor         = new Color(Pink),
-            SymbolColor         = new Color(LavenderGray),
-            FunctionColor       = new Color(LightPurple),
+            KeywordColors = [],
+            NumberColor = new Color(Pink),
+            SymbolColor = new Color(LavenderGray),
+            FunctionColor = new Color(LightPurple),
             MemberVariableColor = new Color(Periwinkle),
-            ColorRegions        = new Godot.Collections.Dictionary
+            ColorRegions = new Godot.Collections.Dictionary
             {
                 { "//", new Color(DarkGray) }
             },

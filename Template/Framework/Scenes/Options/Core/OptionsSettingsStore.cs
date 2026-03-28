@@ -21,14 +21,18 @@ internal sealed class OptionsSettingsStore
         {
             using FileAccess file = FileAccess.Open(PathOptions, FileAccess.ModeFlags.Read);
             ResourceOptions options = JsonSerializer.Deserialize<ResourceOptions>(file.GetAsText()) ?? new();
-            return options;
+            return Migrate(options);
         }
 
-        return new ResourceOptions();
+        ResourceOptions defaults = new();
+        defaults.Normalize();
+        return defaults;
     }
 
     public void Save(ResourceOptions options)
     {
+        options.Normalize();
+
         // Remove any inline values that correspond to actual typed properties so we
         // don't duplicate them in the JSON.  This can happen when game code defines
         // a property and also registers a "custom" option for the same key.
@@ -47,5 +51,17 @@ internal sealed class OptionsSettingsStore
         string json = JsonSerializer.Serialize(options, _jsonOptions);
         using FileAccess file = FileAccess.Open(PathOptions, FileAccess.ModeFlags.Write);
         file.StoreString(json);
+    }
+
+    private static ResourceOptions Migrate(ResourceOptions options)
+    {
+        // Schema version 0 is treated as legacy unversioned options files.
+        if (options.SchemaVersion <= 0)
+            options.SchemaVersion = 1;
+
+        // Current migration path keeps data shape stable and normalizes invalid values.
+        // Future schema transitions should be handled here in ascending-version steps.
+        options.Normalize();
+        return options;
     }
 }

@@ -16,7 +16,7 @@ namespace __TEMPLATE__;
  * Remember to put Logger.Update() in _PhysicsProcess(double delta) otherwise you will be wondering why 
  * Logger.Log(...) is printing nothing to the console.
  */
-public class Logger : IDisposable
+public class Logger : IDisposable, ILoggerService
 {
     public event Action<string>? MessageLogged;
 

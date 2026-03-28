@@ -16,15 +16,16 @@ public sealed class OptionsCustom : IDisposable
 
     // Properties
     internal OptionsNav Nav { get; }
-    internal OptionsManager OptionsManager { get; } = Game.Options;
+    internal OptionsManager OptionsManager { get; }
     internal Dictionary<int, IDisposable> Bindings { get; } = [];
 
     /// <summary>
     /// Constructs the custom options UI manager and subscribes to option registration events.
     /// </summary>
-    public OptionsCustom(OptionsNav nav)
+    public OptionsCustom(OptionsNav nav, OptionsManager optionsManager)
     {
         Nav = nav;
+        OptionsManager = optionsManager;
 
         // Wire event handlers that delegate to the setup helper
         _sliderHandler = s => CustomOptionSetup.OnSliderRegistered(this, s);

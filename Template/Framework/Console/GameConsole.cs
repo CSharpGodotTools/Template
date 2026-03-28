@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace __TEMPLATE__.Ui.Console;
 
-public partial class GameConsole : Node
+public partial class GameConsole : Node, ISceneDependencyReceiver
 {
     private const int MaxTextFeed = 1000;
 
@@ -18,14 +18,27 @@ public partial class GameConsole : Node
     private TextEdit _feed = null!;
     private LineEdit _input = null!;
     private Button _settingsBtn = null!;
+    private FocusOutlineManager _focusOutline = null!;
+    private ILoggerService _logger = null!;
 
     private bool _autoScroll = true;
     private bool _isReady;
+    private bool _isConfigured;
+
+    public void Configure(GameServices services)
+    {
+        _focusOutline = services.FocusOutline;
+        _logger = services.Logger;
+        _isConfigured = true;
+    }
 
     public bool Visible => _mainContainer.Visible;
 
     public override void _Ready()
     {
+        if (!_isConfigured)
+            throw new InvalidOperationException($"{nameof(GameConsole)} was not configured before _Ready.");
+
         CacheNodes();
         BindEvents();
 
@@ -149,7 +162,7 @@ public partial class GameConsole : Node
     private void CloseConsole()
     {
         _mainContainer.Hide();
-        Game.FocusOutline.ClearFocus();
+        _focusOutline.ClearFocus();
     }
 
     private void ScrollDownIfEnabled()
@@ -169,7 +182,7 @@ public partial class GameConsole : Node
         string commandName = parts[0];
         if (!TryGetCommand(commandName, out ConsoleCommandInfo commandInfo))
         {
-            Game.Logger.Log($"The command '{commandName}' does not exist");
+            _logger.Log($"The command '{commandName}' does not exist");
             return false;
         }
 

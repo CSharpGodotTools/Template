@@ -14,10 +14,10 @@ const TAB_MARGIN_TOP_PX: int = 10
 const TAB_MARGIN_BOTTOM_PX: int = 0
 const ANTI_ALIASING_PATH_2D: String = "rendering/anti_aliasing/quality/msaa_2d"
 const DEFAULT_CLEAR_COLOR_PATH: String = "rendering/environment/defaults/default_clear_color"
-const EXTERNAL_EDITOR_AUTO: String = "auto"
 const EXTERNAL_EDITOR_VSCODE: String = "vscode"
 const EXTERNAL_EDITOR_VISUAL_STUDIO: String = "visual_studio"
 const EXTERNAL_EDITOR_RIDER: String = "rider"
+const DEFAULT_EXTERNAL_EDITOR_INDEX: int = 0
 
 var _status_label: Label
 var _external_editor_options: OptionButton
@@ -63,10 +63,10 @@ func _create_controls() -> void:
 	_external_editor_options = OptionButton.new()
 	_external_editor_options.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_external_editor_options.custom_minimum_size = Vector2(220, 0)
-	_add_external_editor_option("Auto (System Default)", EXTERNAL_EDITOR_AUTO)
 	_add_external_editor_option("Visual Studio Code", EXTERNAL_EDITOR_VSCODE)
 	_add_external_editor_option("Visual Studio", EXTERNAL_EDITOR_VISUAL_STUDIO)
 	_add_external_editor_option("JetBrains Rider", EXTERNAL_EDITOR_RIDER)
+	_external_editor_options.select(DEFAULT_EXTERNAL_EDITOR_INDEX)
 
 	_open_external_editor_button = _create_button("Open External Editor", 210)
 

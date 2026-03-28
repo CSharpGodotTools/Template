@@ -1,10 +1,12 @@
+using __TEMPLATE__;
+
 namespace __TEMPLATE__.FPS;
 
 public static class FpsOptions
 {
-    public static void Register()
+    public static void Register(IOptionsService optionsService)
     {
-        Game.Options.AddDropdown(new DifficultyDropdown());
-        Game.Options.AddSlider(new MouseSensitivitySlider());
+        optionsService.AddDropdown(new DifficultyDropdown(optionsService));
+        optionsService.AddSlider(new MouseSensitivitySlider(optionsService));
     }
 }

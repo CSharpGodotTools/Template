@@ -1,32 +1,33 @@
+using __TEMPLATE__.Ui;
 using Godot;
 using GodotUtils;
 using System;
 
 namespace __TEMPLATE__;
 
-public class AudioManager : IDisposable
+public class AudioManager : IDisposable, IAudioService
 {
     // Config
-    private const float MinDefaultRandomPitch = 0.8f;   // Default minimum pitch value for SFX.
-    private const float MaxDefaultRandomPitch = 1.2f;   // Default maximum pitch value for SFX.
-    private const float RandomPitchThreshold  = 0.1f;   // Minimum difference in pitch between repeated sounds.
-    private const int   MutedVolume           = -80;    // dB value representing mute.
-    private const int   MutedVolumeNormalized = -40;    // Normalized muted volume for volume mapping.
+    private const float MinDefaultRandomPitch = 0.8f; // Default minimum pitch value for SFX.
+    private const float MaxDefaultRandomPitch = 1.2f; // Default maximum pitch value for SFX.
+    private const float RandomPitchThreshold = 0.1f; // Minimum difference in pitch between repeated sounds.
+    private const int MutedVolume = -80; // dB value representing mute.
+    private const int MutedVolumeNormalized = -40; // Normalized muted volume for volume mapping.
 
     // Variables
     private readonly RandomNumberGenerator _randomNumberGenerator = new();
     private NodePool<AudioStreamPlayer2D> _sfxPool = null!;
     private AudioStreamPlayer _musicPlayer = null!;
-    private ResourceOptions _options = null!;
+    private OptionsManager _optionsManager = null!;
     private AutoloadsFramework _autoloads = null!;
     private float _lastPitch;
 
     /// <summary>
     /// Initializes the AudioManager by attaching a music player to the given autoload node.
     /// </summary>
-    public AudioManager(AutoloadsFramework autoloads)
+    public AudioManager(AutoloadsFramework autoloads, OptionsManager optionsManager)
     {
-        SetupFields(autoloads);
+        SetupFields(autoloads, optionsManager);
         _randomNumberGenerator.Randomize();
         SetupSfxPool();
         SetupMusicPlayer();
@@ -38,15 +39,17 @@ public class AudioManager : IDisposable
     /// </summary>
     public void PlayMusic(AudioStream song, bool instant = true, double fadeOut = 1.5, double fadeIn = 0.5)
     {
+        ResourceOptions settings = _optionsManager.Settings;
+
         if (!instant && _musicPlayer.Playing)
         {
             // Slowly transition to the new song
-            PlayAudioCrossfade(_musicPlayer, song, _options.MusicVolume, fadeOut, fadeIn);
+            PlayAudioCrossfade(_musicPlayer, song, settings.MusicVolume, fadeOut, fadeIn);
         }
         else
         {
             // Instantly switch to the new song
-            PlayAudio(_musicPlayer, song, _options.MusicVolume);
+            PlayAudio(_musicPlayer, song, settings.MusicVolume);
         }
     }
 
@@ -55,11 +58,12 @@ public class AudioManager : IDisposable
     /// </summary>
     public void PlaySFX(AudioStream sound, Vector2 position, float minPitch = MinDefaultRandomPitch, float maxPitch = MaxDefaultRandomPitch)
     {
+        ResourceOptions settings = _optionsManager.Settings;
         AudioStreamPlayer2D sfxPlayer = _sfxPool.Acquire();
 
         sfxPlayer.GlobalPosition = position;
         sfxPlayer.Stream = sound;
-        sfxPlayer.VolumeDb = NormalizeConfigVolume(_options.SFXVolume);
+        sfxPlayer.VolumeDb = NormalizeConfigVolume(settings.SFXVolume);
         sfxPlayer.PitchScale = GetRandomPitch(minPitch, maxPitch);
         sfxPlayer.Finished += OnFinished;
         sfxPlayer.Play();
@@ -88,7 +92,7 @@ public class AudioManager : IDisposable
     public void SetMusicVolume(float volume)
     {
         _musicPlayer.VolumeDb = NormalizeConfigVolume(volume);
-        _options.MusicVolume = volume;
+        _optionsManager.SetMusicVolume(volume);
     }
 
     /// <summary>
@@ -96,7 +100,7 @@ public class AudioManager : IDisposable
     /// </summary>
     public void SetSFXVolume(float volume)
     {
-        _options.SFXVolume = volume;
+        _optionsManager.SetSFXVolume(volume);
 
         float mappedVolume = NormalizeConfigVolume(volume);
 
@@ -107,10 +111,10 @@ public class AudioManager : IDisposable
     }
 
     // Private Methods
-    private void SetupFields(AutoloadsFramework autoloads)
+    private void SetupFields(AutoloadsFramework autoloads, OptionsManager optionsManager)
     {
         _autoloads = autoloads;
-        _options = Game.Options.GetOptions();
+        _optionsManager = optionsManager;
     }
 
     private void SetupSfxPool()

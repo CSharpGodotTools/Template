@@ -3,16 +3,16 @@ name: GdUnit4 Tests
 on:
   push: &project_change_filter
     paths:
-      - '**/*.cs'
-      - '**/*.gd'
-      - '**/*.tscn'
-      - '**/*.tres'
-      - '**/*.import'
-      - '**/*.csproj'
-      - '**/*.sln'
-      - '**/*.yml'
-      - 'NuGet.config'
-      - 'project.godot'
+      - 'Template/**/*.cs'
+      - 'Template/**/*.gd'
+      - 'Template/**/*.tscn'
+      - 'Template/**/*.tres'
+      - 'Template/**/*.import'
+      - 'Template/**/*.csproj'
+      - 'Template/**/*.sln'
+      - 'Template/NuGet.config'
+      - 'Template/project.godot'
+      - '.github/workflows/build_and_test.yml'
 
   pull_request: *project_change_filter
 
@@ -29,7 +29,10 @@ jobs:
           godot-version: '4.6'
           godot-status: 'stable'
           godot-net: true
-          paths: 'res://Setup/Testing'
+          project_dir: './Template'
+          paths: |
+            res://Framework/Testing
+            res://Framework/Netcode/Testing
           console-verbosity: 'normal'
           publish-report: false
           upload-report: true

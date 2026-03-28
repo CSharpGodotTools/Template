@@ -4,27 +4,40 @@ using System;
 
 namespace __TEMPLATE__.Ui;
 
-public abstract partial class MainMenuNavFramework : Node
+public abstract partial class MainMenuNavFramework : Node, ISceneDependencyReceiver
 {
     // Exports
     [Export] private PackedScene _gameScene = null!;
 
     // Fields
     private SceneManager _scene = null!;
+    private FocusOutlineManager _focusOutline = null!;
+    private IApplicationLifetime _applicationLifetime = null!;
+    private bool _isConfigured;
     private Viewport _viewport = null!;
     private Button _playBtn = null!;
     private bool _focusWasNeverChanged = true;
 
+    public void Configure(GameServices services)
+    {
+        _scene = services.SceneManager;
+        _focusOutline = services.FocusOutline;
+        _applicationLifetime = services.ApplicationLifetime;
+        _isConfigured = true;
+    }
+
     // Godot Overrides
     public override void _Ready()
     {
-        _scene = Game.Scene;
+        if (!_isConfigured)
+            throw new InvalidOperationException($"{nameof(MainMenuNavFramework)} was not configured before _Ready.");
+
         _viewport = GetViewport();
         _playBtn = GetNode<Button>("Play");
 
         FocusOnPlayBtn();
 
-        Game.Scene.PostSceneChanged += OnPostSceneChanged;
+        _scene.PostSceneChanged += OnPostSceneChanged;
 
         _viewport.GuiFocusChanged += OnGuiFocusChanged;
     }
@@ -49,13 +62,13 @@ public abstract partial class MainMenuNavFramework : Node
     public override void _ExitTree()
     {
         _viewport.GuiFocusChanged -= OnGuiFocusChanged;
-        Game.Scene.PostSceneChanged -= OnPostSceneChanged;
+        _scene.PostSceneChanged -= OnPostSceneChanged;
     }
 
     // FocusOnPlayBtn
     private void FocusOnPlayBtn()
     {
-        Game.FocusOutline.Focus(_playBtn);
+        _focusOutline.Focus(_playBtn);
     }
 
     // Abstract
@@ -91,9 +104,9 @@ public abstract partial class MainMenuNavFramework : Node
         Credits();
     }
 
-    private async static void OnQuitPressed()
+    private async void OnQuitPressed()
     {
-        await Autoloads.Instance!.ExitGame();
+        await _applicationLifetime.ExitGameAsync();
     }
 
     private void OnPostSceneChanged()

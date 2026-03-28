@@ -523,15 +523,18 @@ public partial class Player : Node
     // Use _EnterTree() if the service is not being registered soon enough
     public override void _Ready()
     {
-        Services.Register(this);
+        Game.Services.Register(this);
     }
 }
 ```
 
 ```cs
 // Get the service from anywhere in your code
-Player player = Services.Get<Player>();
+Player player = Game.Services.Get<Player>();
 ```
+
+> [!TIP]
+> Runtime framework services are exposed via `Game`. Use `Game.OptionsManager` for updates, `Game.Options.Settings` for reads, and `Game.Application.ExitGameAsync()` for shutdown.
 
 ### Custom Main Run Args
 

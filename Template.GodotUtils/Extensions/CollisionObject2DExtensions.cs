@@ -64,9 +64,9 @@ public static class CollisionObject2DExtensions
     {
         if (string.IsNullOrEmpty(numberString))
             return [];
-        
+
         var uniqueNumbers = new HashSet<int>();
-        
+
         foreach (char c in numberString)
         {
             if (char.IsDigit(c))
@@ -74,7 +74,7 @@ public static class CollisionObject2DExtensions
                 uniqueNumbers.Add(int.Parse(c.ToString()));
             }
         }
-        
+
         return [.. uniqueNumbers];
     }
 }

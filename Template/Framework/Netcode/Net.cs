@@ -27,6 +27,8 @@ public class Net<TGameClient, TGameServer> : IDisposable
     };
 
     private readonly bool _enetInitialized;
+    private readonly ILoggerService _loggerService;
+    private readonly IApplicationLifetime _applicationLifetime;
     private long _shutdownStarted;
     private int _disposed;
 
@@ -59,14 +61,19 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Creates a network coordinator that owns the active server and client instances.
     /// </summary>
-    public Net()
+    public Net(ILoggerService loggerService, IApplicationLifetime applicationLifetime)
     {
+        _loggerService = loggerService;
+        _applicationLifetime = applicationLifetime;
+
         _enetInitialized = TryInitializeEnet();
 
-        Autoloads.Instance!.PreQuit += StopThreads;
+        _applicationLifetime.PreQuit += StopThreads;
 
         Client = new TGameClient();
+        Client.ConfigureLoggerService(_loggerService);
         Server = new TGameServer();
+        Server.ConfigureLoggerService(_loggerService);
     }
 
     /// <summary>
@@ -92,6 +99,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
         ServerMaxClients = maxClients;
 
         Server = new TGameServer();
+        Server.ConfigureLoggerService(_loggerService);
         ServerCreated?.Invoke(Server);
         Server.Start(port, maxClients, options);
     }
@@ -121,6 +129,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
         }
 
         Client = new TGameClient();
+        Client.ConfigureLoggerService(_loggerService);
         ClientCreated?.Invoke(Client);
 
         // Fire-and-forget connect (if Connect is async)
@@ -145,7 +154,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Attempts to initialize the ENet native library. Returns <c>false</c> if the DLL is missing.
     /// </summary>
-    private static bool TryInitializeEnet()
+    private bool TryInitializeEnet()
     {
         try
         {
@@ -154,7 +163,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
         }
         catch (DllNotFoundException exception)
         {
-            Game.Logger.LogErr(exception);
+            _loggerService.LogErr(exception);
             return false;
         }
     }
@@ -178,7 +187,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
                 ENet.Library.Deinitialize();
             }
 
-            while (Game.Logger.StillWorking())
+            while (_loggerService.StillWorking())
             {
                 await Task.Delay(ShutdownPollIntervalMs);
             }
@@ -199,7 +208,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
             return true;
         }
 
-        Game.Logger.LogWarning("ENet is not initialized. Network operation was ignored.");
+        _loggerService.LogWarning("ENet is not initialized. Network operation was ignored.");
         return false;
     }
 
@@ -273,7 +282,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
             return;
         }
 
-        Autoloads.Instance!.PreQuit -= StopThreads;
+        _applicationLifetime.PreQuit -= StopThreads;
 
         if (Interlocked.Read(ref _shutdownStarted) == 0)
         {

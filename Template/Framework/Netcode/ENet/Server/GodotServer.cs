@@ -57,7 +57,7 @@ public abstract class GodotServer : ENetServer
         }
         catch (Exception exception)
         {
-            Game.Logger.LogErr(exception, LogTag);
+            LoggerService.LogErr(exception, LogTag);
         }
     }
 

@@ -14,23 +14,30 @@ public partial class OptionsInput : IDisposable
     // Fields
     private readonly Button _resetInputToDefaultsBtn;
     private readonly SceneManager _scene;
+    private readonly FocusOutlineManager _focusOutline;
     private readonly HotkeyStore _store;
     private readonly HotkeyListView _view;
     private readonly HotkeyEditor _editor;
 
-    public OptionsInput(Options options, Button inputNavBtn)
+    public OptionsInput(
+        Options options,
+        Button inputNavBtn,
+        OptionsManager optionsManager,
+        SceneManager sceneManager,
+        FocusOutlineManager focusOutline)
     {
-        _scene = Game.Scene;
+        _scene = sceneManager;
+        _focusOutline = focusOutline;
 
         VBoxContainer content = options.GetNode<VBoxContainer>("%InputContent");
 
-        _store = new HotkeyStore(Game.Options);
-        _view = new HotkeyListView(content, inputNavBtn, _store, InputActions.RemoveHotkey, UiPrefix, Ellipsis);
+        _store = new HotkeyStore(optionsManager);
+        _view = new HotkeyListView(content, inputNavBtn, _store, InputActions.RemoveHotkey, UiPrefix, Ellipsis, _focusOutline);
         _view.HotkeyPressed += OnHotkeyButtonPressed;
         _view.PlusPressed += OnPlusButtonPressed;
         _view.Build();
 
-        _editor = new HotkeyEditor(_store, _view, InputActions.RemoveHotkey, InputActions.Fullscreen);
+        _editor = new HotkeyEditor(_store, _view, InputActions.RemoveHotkey, InputActions.Fullscreen, _focusOutline);
 
         _resetInputToDefaultsBtn = options.GetNode<Button>("%ResetInputToDefaults");
         _resetInputToDefaultsBtn.Pressed += OnResetToDefaultsPressed;
@@ -103,5 +110,3 @@ public partial class OptionsInput : IDisposable
         return string.Empty;
     }
 }
-
-

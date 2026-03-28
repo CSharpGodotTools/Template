@@ -10,18 +10,25 @@ public partial class OptionsInput
         private readonly HotkeyListView _view;
         private readonly string _removeHotkeyAction;
         private readonly string _fullscreenAction;
+        private readonly FocusOutlineManager _focusOutline;
 
         private HotkeyButtonInfo? _current;
         private bool _listeningOnPlus;
         private bool _actionSuppressed;
         private StringName _suppressedAction = null!;
 
-        public HotkeyEditor(HotkeyStore store, HotkeyListView view, string removeHotkeyAction, string fullscreenAction)
+        public HotkeyEditor(
+            HotkeyStore store,
+            HotkeyListView view,
+            string removeHotkeyAction,
+            string fullscreenAction,
+            FocusOutlineManager focusOutline)
         {
             _store = store;
             _view = view;
             _removeHotkeyAction = removeHotkeyAction;
             _fullscreenAction = fullscreenAction;
+            _focusOutline = focusOutline;
         }
 
         public bool IsListening => _current != null;
@@ -98,7 +105,7 @@ public partial class OptionsInput
             if (action == _fullscreenAction && @event is InputEventMouseButton)
                 return;
 
-            Game.FocusOutline.ClearFocus();
+            _focusOutline.ClearFocus();
 
             InputEvent persistentEvent = (InputEvent)@event.Duplicate();
 
@@ -135,5 +142,3 @@ public partial class OptionsInput
         }
     }
 }
-
-

@@ -21,12 +21,12 @@ public sealed class ShaderTweenProp : BaseTween<ShaderTweenProp>
     {
         if (node is not CanvasItem canvasItem)
         {
-            throw new Exception("ShaderTweenProp only supports CanvasItem-derived nodes (Node2D, Control).");
+            throw new ArgumentException("ShaderTweenProp only supports CanvasItem-derived nodes (Node2D, Control).", nameof(node));
         }
 
         if (canvasItem.Material is not ShaderMaterial shaderMaterial)
         {
-            throw new Exception("Animating shader material has not been set. Ensure the node has a ShaderMaterial assigned.");
+            throw new InvalidOperationException("Animating shader material has not been set. Ensure the node has a ShaderMaterial assigned.");
         }
 
         _shaderMaterial = shaderMaterial;

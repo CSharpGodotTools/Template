@@ -25,11 +25,20 @@ public abstract class ENetLow
 
     /// <summary>Packet types excluded from verbose logging output.</summary>
     protected HashSet<Type> IgnoredPackets { get; private set; } = [];
+    private ILoggerService? _loggerService;
 
     protected long _running;
 
+    protected ILoggerService LoggerService =>
+        _loggerService ?? throw new InvalidOperationException("ENet logger service was not configured.");
+
     /// <summary>True while the worker thread is active.</summary>
     public bool IsRunning => Interlocked.Read(ref _running) == 1;
+
+    public void ConfigureLoggerService(ILoggerService loggerService)
+    {
+        _loggerService = loggerService;
+    }
 
     /// <summary>
     /// Logs a message with transport-specific context.

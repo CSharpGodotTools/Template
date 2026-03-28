@@ -60,24 +60,24 @@ internal static class MainProjectSource
 
             private T ReadValue<T>() => (T)_values.Dequeue()!;
 
-            public byte    ReadByte()           => ReadValue<byte>();
-            public sbyte   ReadSByte()          => ReadValue<sbyte>();
-            public char    ReadChar()           => ReadValue<char>();
-            public string  ReadString()         => ReadValue<string>();
-            public bool    ReadBool()           => ReadValue<bool>();
-            public short   ReadShort()          => ReadValue<short>();
-            public ushort  ReadUShort()         => ReadValue<ushort>();
-            public int     ReadInt()            => ReadValue<int>();
-            public uint    ReadUInt()           => ReadValue<uint>();
-            public float   ReadFloat()          => ReadValue<float>();
-            public double  ReadDouble()         => ReadValue<double>();
-            public decimal ReadDecimal()        => ReadValue<decimal>();
-            public long    ReadLong()           => ReadValue<long>();
-            public ulong   ReadULong()          => ReadValue<ulong>();
-            public byte[]  ReadBytes(int count) => ReadValue<byte[]>();
-            public byte[]  ReadBytes()          => ReadValue<byte[]>();
-            public Godot.Vector2 ReadVector2()  => ReadValue<Godot.Vector2>();
-            public Godot.Vector3 ReadVector3()  => ReadValue<Godot.Vector3>();
+            public byte ReadByte() => ReadValue<byte>();
+            public sbyte ReadSByte() => ReadValue<sbyte>();
+            public char ReadChar() => ReadValue<char>();
+            public string ReadString() => ReadValue<string>();
+            public bool ReadBool() => ReadValue<bool>();
+            public short ReadShort() => ReadValue<short>();
+            public ushort ReadUShort() => ReadValue<ushort>();
+            public int ReadInt() => ReadValue<int>();
+            public uint ReadUInt() => ReadValue<uint>();
+            public float ReadFloat() => ReadValue<float>();
+            public double ReadDouble() => ReadValue<double>();
+            public decimal ReadDecimal() => ReadValue<decimal>();
+            public long ReadLong() => ReadValue<long>();
+            public ulong ReadULong() => ReadValue<ulong>();
+            public byte[] ReadBytes(int count) => ReadValue<byte[]>();
+            public byte[] ReadBytes() => ReadValue<byte[]>();
+            public Godot.Vector2 ReadVector2() => ReadValue<Godot.Vector2>();
+            public Godot.Vector3 ReadVector3() => ReadValue<Godot.Vector3>();
 
             public T Read<T>() => ReadValue<T>();
 

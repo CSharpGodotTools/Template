@@ -272,7 +272,7 @@ public abstract class BaseTween<TSelf> where TSelf : BaseTween<TSelf>
     {
         if (_tweener == null)
         {
-            throw new Exception($"Cannot call {methodName}() because no tweener has been set with tween.Animate(...)");
+            throw new InvalidOperationException($"Cannot call {methodName}() because no tweener has been set with tween.Animate(...)");
         }
 
         action();

@@ -15,7 +15,7 @@ public class OptionsDisplay : IDisposable
     public event Action<int> OnResolutionChanged = null!;
 
     // Fields
-    private readonly ResourceOptions _resourceOptions;
+    private readonly OptionsManager _optionsManager;
     private Action<WindowMode> _selectWindowModeAction = null!;
 
     // Window Size
@@ -33,18 +33,18 @@ public class OptionsDisplay : IDisposable
     // Common display sizes, sorted by area; filtered at runtime against screen resolution.
     private static readonly Vector2I[] BaseWindowSizes =
     [
-        new(800, 600),    // 4:3
-        new(1024, 768),   // 4:3
-        new(1280, 720),   // 16:9
-        new(1280, 960),   // 4:3
-        new(1366, 768),   // 16:9
-        new(1600, 900),   // 16:9
-        new(1600, 1200),  // 4:3
-        new(1920, 1080),  // 16:9
-        new(2560, 1080),  // 21:9
-        new(2560, 1440),  // 16:9
-        new(3440, 1440),  // 21:9
-        new(3840, 2160),  // 4K 16:9
+        new(800, 600), // 4:3
+        new(1024, 768), // 4:3
+        new(1280, 720), // 16:9
+        new(1280, 960), // 4:3
+        new(1366, 768), // 16:9
+        new(1600, 900), // 16:9
+        new(1600, 1200), // 4:3
+        new(1920, 1080), // 16:9
+        new(2560, 1080), // 21:9
+        new(2560, 1440), // 16:9
+        new(3440, 1440), // 21:9
+        new(3840, 2160), // 4K 16:9
     ];
 
     // Nodes
@@ -54,7 +54,7 @@ public class OptionsDisplay : IDisposable
     private readonly OptionButton _vsyncMode;
     private readonly OptionButton _windowMode;
 
-    public OptionsDisplay(Options options, Button displayBtn)
+    public OptionsDisplay(Options options, Button displayBtn, OptionsManager optionsManager)
     {
         _options = options;
         _sliderMaxFps = options.GetNode<HSlider>("%MaxFPS");
@@ -62,7 +62,7 @@ public class OptionsDisplay : IDisposable
         _resolutionSlider = options.GetNode<HSlider>("%Resolution");
         _vsyncMode = options.GetNode<OptionButton>("%VSyncMode");
         _windowMode = options.GetNode<OptionButton>("%WindowMode");
-        _resourceOptions = Game.Settings;
+        _optionsManager = optionsManager;
 
         SetupMaxFps(displayBtn);
         SetupWindowSize(displayBtn);
@@ -87,7 +87,7 @@ public class OptionsDisplay : IDisposable
 
         _windowMode.ItemSelected -= OnWindowModeItemSelected;
 
-        Game.Options.WindowModeChanged -= _selectWindowModeAction;
+        _optionsManager.WindowModeChanged -= _selectWindowModeAction;
 
         _resolutionSlider.ValueChanged -= OnResolutionValueChanged;
 
@@ -96,14 +96,16 @@ public class OptionsDisplay : IDisposable
 
     private void SetupMaxFps(Button displayBtn)
     {
+        ResourceOptions settings = _optionsManager.Settings;
+
         _sliderMaxFps.ValueChanged += OnMaxFpsValueChanged;
         _sliderMaxFps.DragEnded += OnMaxFpsDragEnded;
         _sliderMaxFps.FocusNeighborLeft = displayBtn.GetPath();
 
-        _labelMaxFpsFeedback.Text = _resourceOptions.MaxFPS == 0 ? "UNLIMITED" : _resourceOptions.MaxFPS + "";
+        _labelMaxFpsFeedback.Text = settings.MaxFPS == 0 ? "UNLIMITED" : settings.MaxFPS + "";
 
-        _sliderMaxFps.Value = _resourceOptions.MaxFPS;
-        _sliderMaxFps.Editable = _resourceOptions.VSyncMode == VSyncMode.Disabled;
+        _sliderMaxFps.Value = settings.MaxFPS;
+        _sliderMaxFps.Editable = settings.VSyncMode == VSyncMode.Disabled;
     }
 
     private void SetupWindowSize(Button displayBtn)
@@ -116,7 +118,7 @@ public class OptionsDisplay : IDisposable
         PopulateWindowSizeDropdown();
         CreateCustomSizePopup();
 
-        bool isWindowed = _resourceOptions.WindowMode == WindowMode.Windowed;
+        bool isWindowed = _optionsManager.Settings.WindowMode == WindowMode.Windowed;
         _windowSizeDropdown.Disabled = !isWindowed;
         _windowSizeCustomBtn.Disabled = !isWindowed;
 
@@ -248,12 +250,12 @@ public class OptionsDisplay : IDisposable
     private void SetupWindowMode(Button displayBtn)
     {
         _windowMode.ItemSelected += OnWindowModeItemSelected;
-        _windowMode.Select((int)_resourceOptions.WindowMode);
+        _windowMode.Select((int)_optionsManager.Settings.WindowMode);
         _windowMode.FocusNeighborLeft = displayBtn.GetPath();
 
         _selectWindowModeAction = SelectWindowMode;
 
-        Game.Options.WindowModeChanged += _selectWindowModeAction;
+        _optionsManager.WindowModeChanged += _selectWindowModeAction;
 
         void SelectWindowMode(WindowMode windowMode)
         {
@@ -270,14 +272,14 @@ public class OptionsDisplay : IDisposable
     private void SetupResolution(Button displayBtn)
     {
         _resolutionSlider.FocusNeighborLeft = displayBtn.GetPath();
-        _resolutionSlider.Value = 1 + ResolutionSteps - _resourceOptions.Resolution;
+        _resolutionSlider.Value = 1 + ResolutionSteps - _optionsManager.Settings.Resolution;
         _resolutionSlider.ValueChanged += OnResolutionValueChanged;
     }
 
     private void SetupVSyncMode(Button displayBtn)
     {
         _vsyncMode.FocusNeighborLeft = displayBtn.GetPath();
-        _vsyncMode.Select((int)_resourceOptions.VSyncMode);
+        _vsyncMode.Select((int)_optionsManager.Settings.VSyncMode);
         _vsyncMode.ItemSelected += OnVSyncModeItemSelected;
     }
 
@@ -292,8 +294,7 @@ public class OptionsDisplay : IDisposable
         Vector2I winSize = _options.GetTree().Root.Size;
         DisplayServer.WindowSetPosition(DisplayServer.ScreenGetSize() / 2 - winSize / 2);
 
-        _resourceOptions.WindowWidth = winSize.X;
-        _resourceOptions.WindowHeight = winSize.Y;
+        _optionsManager.SetWindowSize(winSize.X, winSize.Y);
 
         PopulateWindowSizeDropdown();
     }
@@ -304,15 +305,15 @@ public class OptionsDisplay : IDisposable
         {
             case WindowMode.Windowed:
                 DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
-                _resourceOptions.WindowMode = WindowMode.Windowed;
+                _optionsManager.SetWindowMode(WindowMode.Windowed);
                 break;
             case WindowMode.Borderless:
                 DisplayServer.WindowSetMode(DisplayServer.WindowMode.Fullscreen);
-                _resourceOptions.WindowMode = WindowMode.Borderless;
+                _optionsManager.SetWindowMode(WindowMode.Borderless);
                 break;
             case WindowMode.Fullscreen:
                 DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
-                _resourceOptions.WindowMode = WindowMode.Fullscreen;
+                _optionsManager.SetWindowMode(WindowMode.Fullscreen);
                 break;
         }
 
@@ -324,8 +325,7 @@ public class OptionsDisplay : IDisposable
         _prevNumX = winSize.X;
         _prevNumY = winSize.Y;
 
-        _resourceOptions.WindowWidth = winSize.X;
-        _resourceOptions.WindowHeight = winSize.Y;
+        _optionsManager.SetWindowSize(winSize.X, winSize.Y);
 
         PopulateWindowSizeDropdown();
     }
@@ -369,22 +369,23 @@ public class OptionsDisplay : IDisposable
 
     private void OnResolutionValueChanged(double value)
     {
-        _resourceOptions.Resolution = ResolutionSteps - (int)value + 1;
-        OnResolutionChanged?.Invoke(_resourceOptions.Resolution);
+        int resolution = ResolutionSteps - (int)value + 1;
+        _optionsManager.SetResolution(resolution);
+        OnResolutionChanged?.Invoke(resolution);
     }
 
     private void OnVSyncModeItemSelected(long index)
     {
         VSyncMode vsyncMode = (VSyncMode)index;
         WindowSetVsyncMode(vsyncMode);
-        _resourceOptions.VSyncMode = vsyncMode;
-        _sliderMaxFps.Editable = _resourceOptions.VSyncMode == VSyncMode.Disabled;
+        _optionsManager.SetVSyncMode(vsyncMode);
+        _sliderMaxFps.Editable = _optionsManager.Settings.VSyncMode == VSyncMode.Disabled;
     }
 
     private void OnMaxFpsValueChanged(double value)
     {
         _labelMaxFpsFeedback.Text = value == 0 ? "UNLIMITED" : value + "";
-        _resourceOptions.MaxFPS = (int)value;
+        _optionsManager.SetMaxFPS((int)value);
     }
 
     private void OnMaxFpsDragEnded(bool valueChanged)
@@ -392,6 +393,6 @@ public class OptionsDisplay : IDisposable
         if (!valueChanged)
             return;
 
-        Engine.MaxFps = _resourceOptions.MaxFPS;
+        Engine.MaxFps = _optionsManager.Settings.MaxFPS;
     }
 }
