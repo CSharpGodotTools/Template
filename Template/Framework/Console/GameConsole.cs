@@ -34,6 +34,11 @@ public partial class GameConsole : Node, ISceneDependencyReceiver
 
     public bool Visible => _mainContainer.Visible;
 
+    public override void _EnterTree()
+    {
+        SceneComposition.ConfigureNodeFromGame(this);
+    }
+
     public override void _Ready()
     {
         if (!_isConfigured)

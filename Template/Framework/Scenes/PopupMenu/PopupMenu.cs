@@ -52,6 +52,11 @@ public partial class PopupMenu : Control, ISceneDependencyReceiver
         _isConfigured = true;
     }
 
+    public override void _EnterTree()
+    {
+        SceneComposition.ConfigureNodeFromGame(this);
+    }
+
     // Godot Overrides
     public override void _Ready()
     {

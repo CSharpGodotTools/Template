@@ -16,20 +16,40 @@ public static class SceneComposition
         ArgumentNullException.ThrowIfNull(services);
 
         T node = scene.Instantiate<T>();
-        ConfigureNodeTree(node, services);
+        ConfigureNode(node, services);
         return node;
     }
 
     public static void ConfigureNodeTree(Node root, GameServices services)
     {
-        if (root is ISceneDependencyReceiver receiver)
+        ConfigureNode(root, services);
+    }
+
+    public static void ConfigureNode(Node node, GameServices services)
+    {
+        ArgumentNullException.ThrowIfNull(node);
+        ArgumentNullException.ThrowIfNull(services);
+
+        if (node is ISceneDependencyReceiver receiver)
         {
             receiver.Configure(services);
         }
+    }
 
-        foreach (Node child in root.GetChildren())
+    public static void ConfigureNodeFromGame(Node node)
+    {
+        ArgumentNullException.ThrowIfNull(node);
+
+        if (node is not ISceneDependencyReceiver receiver)
         {
-            ConfigureNodeTree(child, services);
+            return;
         }
+
+        if (!Game.TryGetServices(out GameServices services))
+        {
+            return;
+        }
+
+        receiver.Configure(services);
     }
 }

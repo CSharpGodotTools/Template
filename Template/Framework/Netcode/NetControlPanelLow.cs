@@ -41,6 +41,11 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
         _isConfigured = true;
     }
 
+    public override void _EnterTree()
+    {
+        SceneComposition.ConfigureNodeFromGame(this);
+    }
+
     public override void _Ready()
     {
         if (!_isConfigured)

@@ -26,6 +26,11 @@ public abstract partial class MainMenuNavFramework : Node, ISceneDependencyRecei
         _isConfigured = true;
     }
 
+    public override void _EnterTree()
+    {
+        SceneComposition.ConfigureNodeFromGame(this);
+    }
+
     // Godot Overrides
     public override void _Ready()
     {

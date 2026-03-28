@@ -17,6 +17,18 @@ public partial class Game
         _services = services;
     }
 
+    internal static bool TryGetServices(out GameServices services)
+    {
+        if (_services is null)
+        {
+            services = null!;
+            return false;
+        }
+
+        services = _services;
+        return true;
+    }
+
     internal static void Reset()
     {
         _services = null;

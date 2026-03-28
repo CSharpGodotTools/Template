@@ -33,6 +33,11 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
         _isConfigured = true;
     }
 
+    public override void _EnterTree()
+    {
+        SceneComposition.ConfigureNodeFromGame(this);
+    }
+
     // Godot Overrides
     public override void _Ready()
     {
