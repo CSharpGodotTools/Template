@@ -5,7 +5,7 @@ namespace __TEMPLATE__.Ui;
 /// <summary>
 /// Class-based definition for a custom dropdown option.
 /// Implement this in game code, then register with:
-/// Game.Options.AddDropdown(new YourDropdownOption()).
+/// Game.OptionsManager.AddDropdown(new YourDropdownOption()).
 /// </summary>
 public abstract class DropdownOptionDefinition : OptionDefinition
 {

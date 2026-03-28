@@ -74,7 +74,7 @@ public partial class Credits : Node
     // Private Methods
     private void SetupFields()
     {
-        _scene = Game.Scene;
+        _scene = Game.SceneManager;
         _btnPause = GetNode<Button>("%Pause");
         _btnSpeed = GetNode<Button>("%Speed");
         _btnReverse = GetNode<Button>("%Reverse");

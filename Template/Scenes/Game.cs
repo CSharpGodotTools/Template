@@ -1,8 +1,8 @@
 namespace __TEMPLATE__;
 
-// Anything added here will need to be added in Autoloads.cs as well
+// Anything added here should be initialized in Autoloads and surfaced through Game.
 public partial class Game
 {
     // For example:
-    // public static WorldManager World => Autoloads.Instance.WorldManager;
+    // public static WorldManager World => (WorldManager)Services.Get<WorldManager>();
 }

@@ -18,22 +18,31 @@ public partial class Options : PanelContainer
     private OptionsInput _optionsInput = null!;
     private OptionsCustom _optionsCustom = null!;
     private Node _navNode = null!;
+    private OptionsManager _optionsManager = null!;
+    private SceneManager _sceneManager = null!;
+    private FocusOutlineManager _focusOutlineManager = null!;
+    private AudioManager _audioManager = null!;
 
     // Godot Overrides
     public override void _Ready()
     {
+        _optionsManager = Game.OptionsManager;
+        _sceneManager = Game.SceneManager;
+        _focusOutlineManager = Game.FocusOutline;
+        _audioManager = Game.AudioManager;
+
         _navNode = GetNode("%Nav");
-        _optionsNav = new OptionsNav(this, GetNode<Label>("%Title"));
-        _optionsGeneral = new OptionsGeneral(this, _optionsNav.GeneralButton);
-        _optionsDisplay = new OptionsDisplay(this, _optionsNav.DisplayButton);
-        _optionsGraphics = new OptionsGraphics(this, _optionsNav.GraphicsButton);
-        _optionsAudio = new OptionsAudio(this);
-        _optionsInput = new OptionsInput(this, _optionsNav.InputButton);
-        _optionsCustom = new OptionsCustom(_optionsNav);
+        _optionsNav = new OptionsNav(this, GetNode<Label>("%Title"), _optionsManager);
+        _optionsGeneral = new OptionsGeneral(this, _optionsNav.GeneralButton, _optionsManager);
+        _optionsDisplay = new OptionsDisplay(this, _optionsNav.DisplayButton, _optionsManager);
+        _optionsGraphics = new OptionsGraphics(this, _optionsNav.GraphicsButton, _optionsManager);
+        _optionsAudio = new OptionsAudio(this, _optionsManager, _audioManager);
+        _optionsInput = new OptionsInput(this, _optionsNav.InputButton, _optionsManager, _sceneManager, _focusOutlineManager);
+        _optionsCustom = new OptionsCustom(_optionsNav, _optionsManager);
 
         VisibilityChanged += OnVisibilityChanged;
 
-        Game.Scene.PostSceneChanged += OnPostSceneChanged;
+        _sceneManager.PostSceneChanged += OnPostSceneChanged;
 
         SetupPopupAnimations();
     }
@@ -58,7 +67,7 @@ public partial class Options : PanelContainer
         _optionsInput.Dispose();
         _optionsCustom.Dispose();
 
-        Game.Scene.PostSceneChanged -= OnPostSceneChanged;
+        _sceneManager.PostSceneChanged -= OnPostSceneChanged;
         VisibilityChanged -= OnVisibilityChanged;
     }
 
@@ -100,7 +109,7 @@ public partial class Options : PanelContainer
     {
         if (Visible)
         {
-            Game.FocusOutline.Focus(_navNode.GetNode<Button>(Game.Options.GetCurrentTab()));
+            _focusOutlineManager.Focus(_navNode.GetNode<Button>(_optionsManager.GetCurrentTab()));
         }
     }
 
@@ -108,7 +117,7 @@ public partial class Options : PanelContainer
     {
         if (Visible)
         {
-            _navNode.GetNode<Button>(Game.Options.GetCurrentTab()).GrabFocus();
+            _navNode.GetNode<Button>(_optionsManager.GetCurrentTab()).GrabFocus();
             _optionsDisplay.RefreshWindowSizeDisplay();
         }
     }

@@ -4,7 +4,7 @@ public static class FpsOptions
 {
     public static void Register()
     {
-        Game.Options.AddDropdown(new DifficultyDropdown());
-        Game.Options.AddSlider(new MouseSensitivitySlider());
+        Game.OptionsManager.AddDropdown(new DifficultyDropdown());
+        Game.OptionsManager.AddSlider(new MouseSensitivitySlider());
     }
 }

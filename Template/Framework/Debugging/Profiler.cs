@@ -8,6 +8,7 @@ public class Profiler
 {
     // Variables
     private static readonly Dictionary<string, ProfilerEntry> _entries = [];
+    private static readonly Dictionary<string, IDisposable> _monitorHandles = [];
     private const int DefaultAccuracy = 2;
 
     // API
@@ -39,7 +40,7 @@ public class Profiler
 
     public static void StartProcess(string key, int accuracy = DefaultAccuracy)
     {
-        StartMonitor(key, accuracy, Game.Metrics.StartMonitoring);
+        StartMonitor(key, accuracy, Game.Metrics);
     }
 
     public static void StopProcess(string key)
@@ -51,13 +52,16 @@ public class Profiler
         }
 
         entry.Stop();
+
+        if (_monitorHandles.Remove(key, out IDisposable? monitorHandle))
+            monitorHandle.Dispose();
     }
 
     // Private Methods
     private static void LogMissingKey(string key) =>
         GD.PrintErr($"Profiler key '{key}' was not started.");
 
-    private static void StartMonitor(string key, int accuracy, Action<string, Func<object>> registerAction)
+    private static void StartMonitor(string key, int accuracy, IMetricsOverlay metrics)
     {
         if (!_entries.TryGetValue(key, out ProfilerEntry? entry))
         {
@@ -65,8 +69,10 @@ public class Profiler
             _entries[key] = entry;
         }
 
-        // Register (or update) the metric with the overlay for this key.
-        registerAction(key, () => _entries[key].GetAverageMs(accuracy) + " ms");
+        if (_monitorHandles.Remove(key, out IDisposable? existingHandle))
+            existingHandle.Dispose();
+
+        _monitorHandles[key] = metrics.StartMonitoring(key, () => _entries[key].GetAverageMs(accuracy) + " ms");
 
         entry.Start();
     }
@@ -74,6 +80,10 @@ public class Profiler
     // Dispose
     public static void Dispose()
     {
+        foreach (IDisposable monitorHandle in _monitorHandles.Values)
+            monitorHandle.Dispose();
+
+        _monitorHandles.Clear();
         _entries.Clear();
     }
 }

@@ -1,0 +1,128 @@
+name: PR CI
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Format, Build, Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            10.0.x
+            8.0.x
+
+      - name: Detect changed projects
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          CHANGED="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+
+          echo "Changed files:"
+          printf '%s\n' "$CHANGED"
+
+          build_godotutils=false
+          build_visualize=false
+          build_packetgen=false
+          build_template=false
+
+          echo "$CHANGED" | grep -q "^Template\.GodotUtils/" && build_godotutils=true || true
+          echo "$CHANGED" | grep -q "^Template\.Visualize/" && build_visualize=true || true
+          echo "$CHANGED" | grep -q "^Template\.PacketGen/" && build_packetgen=true || true
+          echo "$CHANGED" | grep -q "^Template/" && build_template=true || true
+
+          if $build_visualize; then
+            build_godotutils=true
+          fi
+
+          if echo "$CHANGED" | grep -Eq "^(Template\.sln|\.editorconfig|NuGet\.config|\.githooks/|\.github/workflows/)"; then
+            build_godotutils=true
+            build_visualize=true
+            build_packetgen=true
+            build_template=true
+          fi
+
+          if ! $build_godotutils && ! $build_visualize && ! $build_packetgen && ! $build_template; then
+            echo "No known project paths changed. Falling back to full validation."
+            build_godotutils=true
+            build_visualize=true
+            build_packetgen=true
+            build_template=true
+          fi
+
+          {
+            echo "build_godotutils=$build_godotutils"
+            echo "build_visualize=$build_visualize"
+            echo "build_packetgen=$build_packetgen"
+            echo "build_template=$build_template"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Restore
+        run: dotnet restore Template.sln
+
+      - name: Format checks (targeted)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ steps.changes.outputs.build_godotutils }}" == "true" ]]; then
+            dotnet format Template.GodotUtils/GodotUtils.csproj --verify-no-changes
+          fi
+
+          if [[ "${{ steps.changes.outputs.build_visualize }}" == "true" ]]; then
+            dotnet format Template.Visualize/Visualize.csproj --verify-no-changes
+          fi
+
+          if [[ "${{ steps.changes.outputs.build_packetgen }}" == "true" ]]; then
+            dotnet format Template.PacketGen/PacketGen.sln --verify-no-changes
+          fi
+
+          if [[ "${{ steps.changes.outputs.build_template }}" == "true" ]]; then
+            dotnet format Template/Template.csproj --verify-no-changes
+          fi
+
+      - name: Targeted builds
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ steps.changes.outputs.build_godotutils }}" == "true" ]]; then
+            dotnet build Template.GodotUtils/GodotUtils.csproj --no-restore -p:BuildExtras=true
+          fi
+
+          if [[ "${{ steps.changes.outputs.build_visualize }}" == "true" ]]; then
+            dotnet build Template.Visualize/Visualize.csproj --no-restore -p:BuildExtras=true
+          fi
+
+          if [[ "${{ steps.changes.outputs.build_packetgen }}" == "true" ]]; then
+            dotnet build Template.PacketGen/PacketGen/PacketGen.csproj -c Release --no-restore
+          fi
+
+          if [[ "${{ steps.changes.outputs.build_template }}" == "true" ]]; then
+            dotnet build Template/Template.csproj --no-restore
+          fi
+
+      - name: Full solution build
+        run: dotnet build Template.sln --no-restore
+
+      - name: Tests
+        run: dotnet test Template.PacketGen/PacketGen.Tests/PacketGen.Tests.csproj --no-build

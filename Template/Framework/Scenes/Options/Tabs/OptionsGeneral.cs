@@ -6,15 +6,15 @@ namespace __TEMPLATE__.Ui;
 public class OptionsGeneral : IDisposable
 {
     // Fields
-    private readonly ResourceOptions _resourceOptions;
+    private readonly OptionsManager _optionsManager;
     private readonly Button _generalBtn;
     private readonly OptionButton _languageBtn;
 
-    public OptionsGeneral(Options options, Button generalBtn)
+    public OptionsGeneral(Options options, Button generalBtn, OptionsManager optionsManager)
     {
         _generalBtn = generalBtn;
         _languageBtn = options.GetNode<OptionButton>("%LanguageButton");
-        _resourceOptions = Game.Settings;
+        _optionsManager = optionsManager;
 
         SetupLanguage();
     }
@@ -23,16 +23,12 @@ public class OptionsGeneral : IDisposable
     {
         _languageBtn.FocusNeighborLeft = _generalBtn.GetPath();
         _languageBtn.ItemSelected += OnLanguageItemSelected;
-        _languageBtn.Select((int)_resourceOptions.Language);
+        _languageBtn.Select((int)_optionsManager.Settings.Language);
     }
 
     private void OnLanguageItemSelected(long index)
     {
-        string locale = ((Language)index).ToString()[..2].ToLower();
-
-        TranslationServer.SetLocale(locale);
-
-        _resourceOptions.Language = (Language)index;
+        _optionsManager.SetLanguage((Language)index);
     }
 
     public void Dispose()

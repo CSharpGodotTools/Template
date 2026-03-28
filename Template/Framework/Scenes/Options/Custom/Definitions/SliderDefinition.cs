@@ -3,7 +3,7 @@ namespace __TEMPLATE__.Ui;
 /// <summary>
 /// Class-based definition for a custom slider option.
 /// Implement this in game code, then register with:
-/// Game.Options.AddSlider(new YourSliderOption()).
+/// Game.OptionsManager.AddSlider(new YourSliderOption()).
 /// </summary>
 public abstract class SliderOptionDefinition : OptionDefinition
 {

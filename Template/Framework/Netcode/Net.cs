@@ -63,7 +63,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     {
         _enetInitialized = TryInitializeEnet();
 
-        Autoloads.Instance!.PreQuit += StopThreads;
+        Game.Application.PreQuit += StopThreads;
 
         Client = new TGameClient();
         Server = new TGameServer();
@@ -273,7 +273,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
             return;
         }
 
-        Autoloads.Instance!.PreQuit -= StopThreads;
+        Game.Application.PreQuit -= StopThreads;
 
         if (Interlocked.Read(ref _shutdownStarted) == 0)
         {

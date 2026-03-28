@@ -6,7 +6,7 @@ using System;
 namespace __TEMPLATE__;
 
 // About Scene Switching: https://docs.godotengine.org/en/latest/tutorials/scripting/singletons_autoload.html
-public class SceneManager
+public class SceneManager : ISceneService
 {
     // Events
     private const int SceneTransitionLayer = 10;
@@ -110,7 +110,7 @@ public class SceneManager
         _currentScene = root.GetChild(root.GetChildCount() - 1);
     }
 
-    private void OnPreSceneChanged() => Game.Audio.FadeOutSFX();
+    private void OnPreSceneChanged() => Game.AudioManager.FadeOutSFX();
 
     private void ChangeScene(string scenePath, TransType transType)
     {

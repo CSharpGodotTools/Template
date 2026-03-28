@@ -35,7 +35,7 @@ public partial class PopupMenu : Control
     public override void _Ready()
     {
         ProcessMode = ProcessModeEnum.Always;
-        Game.Services.Register(this);
+        Game.ScopedServices.Register(this);
         InitializeNodes();
         RegisterNodeEvents();
 
@@ -73,7 +73,7 @@ public partial class PopupMenu : Control
     // Initialization Methods
     private void InitializeNodes()
     {
-        _console = Game.Console;
+        _console = Game.GameConsole;
         _nav = GetNode<VBoxContainer>("%Navigation");
         _menu = GetNode<Control>("Menu");
 
@@ -159,7 +159,7 @@ public partial class PopupMenu : Control
     private void OnRestartPressed()
     {
         GetTree().Paused = false;
-        Game.Scene.ResetCurrentScene();
+        Game.SceneManager.ResetCurrentScene();
     }
 
     private void OnOptionsPressed()
@@ -172,11 +172,11 @@ public partial class PopupMenu : Control
     {
         MainMenuBtnPressed?.Invoke();
         GetTree().Paused = false;
-        Game.Scene.SwitchToMainMenu();
+        Game.SceneManager.SwitchToMainMenu();
     }
 
     private void OnQuitPressed()
     {
-        TaskUtils.FireAndForget(Autoloads.Instance!.ExitGame);
+        TaskUtils.FireAndForget(Game.Application.ExitGameAsync);
     }
 }

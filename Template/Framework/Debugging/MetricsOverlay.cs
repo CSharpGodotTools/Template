@@ -27,10 +27,8 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     private static readonly Color GraphFillColor = new(0.26f, 0.59f, 0.98f, 0.3f);
 
     // Variables
-    private readonly Dictionary<Func<object>, (string DisplayName, Func<object> Provider)> _delegateMonitors = [];
-    private readonly Dictionary<string, Func<object>> _namedMonitors = [];
+    private readonly Dictionary<int, (string DisplayName, Func<object> Provider)> _monitors = [];
     private readonly Dictionary<string, Func<string>> _currentMetrics = [];
-    private readonly Dictionary<string, int> _methodMonitorCounts = [];
     private readonly float[] _fpsBuffer = new float[MaxFpsBuffer];
 
     private PanelContainer _panel = null!;
@@ -43,6 +41,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 
     private float _cachedFps;
     private int _fpsIndex;
+    private int _nextMonitorId;
     private bool _metricsExpanded = true;
     private bool _variablesExpanded = true;
 
@@ -101,47 +100,23 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     }
 
     // API
-    public void StartMonitoring(Func<object> function)
+    public IDisposable StartMonitoring(string key, Func<object> function)
     {
-        // Support repeated registrations (e.g. from _Process/_PhysicsProcess) by updating the provider.
-        if (_delegateMonitors.TryGetValue(function, out (string DisplayName, Func<object> Provider) existing))
-        {
-            _delegateMonitors[function] = (existing.DisplayName, function);
-            return;
-        }
+        ArgumentNullException.ThrowIfNull(function);
+
+        string displayName = string.IsNullOrWhiteSpace(key) ? "Monitor" : key;
+        int monitorId = ++_nextMonitorId;
 
         Visible = true;
-        _delegateMonitors.Add(function, (GetGeneratedMonitorName(function), function));
+        _monitors[monitorId] = (displayName, function);
         UpdateVariablesSection();
+
+        return new MonitorHandle(this, monitorId);
     }
 
-    public void StartMonitoring(string key, Func<object> function)
+    private void StopMonitoring(int monitorId)
     {
-        // Support repeated registrations with explicit keys by updating the provider.
-        if (_namedMonitors.ContainsKey(key))
-        {
-            _namedMonitors[key] = function;
-            return;
-        }
-
-        Visible = true;
-        _namedMonitors.Add(key, function);
-        UpdateVariablesSection();
-    }
-
-    public void StopMonitoring(Func<object> function)
-    {
-        // Allow the developer to call in for e.g. _Process
-        if (!_delegateMonitors.Remove(function))
-            return;
-
-        UpdateVariablesSection();
-    }
-
-    public void StopMonitoring(string key)
-    {
-        // Allow the developer to call in for e.g. _Process
-        if (!_namedMonitors.Remove(key))
+        if (!_monitors.Remove(monitorId))
             return;
 
         UpdateVariablesSection();
@@ -250,7 +225,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         _fpsGraph.UpdateData(_fpsBuffer, _fpsIndex);
         UpdateMetricsSection();
 
-        if (_delegateMonitors.Count > 0 || _namedMonitors.Count > 0)
+        if (_monitors.Count > 0)
         {
             UpdateVariablesSection();
         }
@@ -269,7 +244,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 
     private void UpdateVariablesSection()
     {
-        bool hasVariables = _delegateMonitors.Count > 0 || _namedMonitors.Count > 0;
+        bool hasVariables = _monitors.Count > 0;
         _variablesHeader.Visible = hasVariables;
         _variablesContainer.Visible = hasVariables && _variablesExpanded;
 
@@ -280,45 +255,11 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
             return;
         }
 
-        foreach ((string key, Func<object> provider) in _namedMonitors)
-        {
-            Label label = CreateLabel($"{key}: {FormatMonitorValue(provider())}");
-            _variablesContainer.AddChild(label);
-        }
-
-        foreach ((string displayName, Func<object> provider) in _delegateMonitors.Values)
+        foreach ((string displayName, Func<object> provider) in _monitors.Values)
         {
             Label label = CreateLabel($"{displayName}: {FormatMonitorValue(provider())}");
             _variablesContainer.AddChild(label);
         }
-    }
-
-    private string GetGeneratedMonitorName(Func<object> function)
-    {
-        string className = function.Method.DeclaringType?.Name ?? "UnknownClass";
-        string methodName = GetDisplayMethodName(function.Method.Name);
-        if (string.IsNullOrWhiteSpace(methodName))
-        {
-            methodName = "UnknownMethod";
-        }
-
-        string methodKey = $"{className}:{methodName}";
-        int monitorIndex = _methodMonitorCounts.TryGetValue(methodKey, out int count)
-            ? count + 1
-            : 1;
-        _methodMonitorCounts[methodKey] = monitorIndex;
-
-        return $"{className}:{methodName}:{monitorIndex}";
-    }
-
-    private static string GetDisplayMethodName(string rawMethodName)
-    {
-        Match compilerGeneratedMatch = CompilerGeneratedMethodRegex().Match(rawMethodName);
-        string cleanedMethodName = compilerGeneratedMatch.Success
-            ? compilerGeneratedMatch.Groups["name"].Value
-            : rawMethodName;
-
-        return cleanedMethodName.TrimStart('_');
     }
 
     private static string FormatMonitorValue(object? value)
@@ -360,9 +301,6 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         });
     }
 
-    [GeneratedRegex("^<(?<name>[^>]+)>b__\\d+(?:_\\d+)?$")]
-    private static partial Regex CompilerGeneratedMethodRegex();
-
     [GeneratedRegex(@"-?\d+\.\d+")]
     private static partial Regex DecimalNumberRegex();
 
@@ -392,6 +330,23 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     }
 
     private static double Retrieve(Monitor monitor) => Performance.GetMonitor(monitor);
+
+    private sealed class MonitorHandle(MetricsOverlay owner, int monitorId) : IDisposable
+    {
+        private MetricsOverlay? _owner = owner;
+        private readonly int _monitorId = monitorId;
+
+        public void Dispose()
+        {
+            if (_owner == null)
+                return;
+
+            if (GodotObject.IsInstanceValid(_owner))
+                _owner.StopMonitoring(_monitorId);
+
+            _owner = null;
+        }
+    }
 
     // Nested Class: FPS Graph
     private partial class FpsGraph : Control

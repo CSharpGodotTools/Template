@@ -3,7 +3,7 @@ namespace __TEMPLATE__.Ui;
 /// <summary>
 /// Class-based definition for a custom line edit option.
 /// Implement this in game code, then register with:
-/// Game.Options.AddLineEdit(new YourLineEditOption()).
+/// Game.OptionsManager.AddLineEdit(new YourLineEditOption()).
 /// </summary>
 public abstract class LineEditOptionDefinition : OptionDefinition
 {

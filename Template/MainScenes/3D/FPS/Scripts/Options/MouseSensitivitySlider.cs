@@ -13,11 +13,11 @@ public sealed class MouseSensitivitySlider : SliderOptionDefinition
 
     public override float GetValue()
     {
-        return Game.Settings.MouseSensitivity;
+        return Game.Options.Settings.MouseSensitivity;
     }
 
     public override void SetValue(float value)
     {
-        Game.Settings.MouseSensitivity = value;
+        Game.OptionsManager.SetMouseSensitivity(value);
     }
 }

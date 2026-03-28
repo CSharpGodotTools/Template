@@ -1,5 +1,6 @@
 using __TEMPLATE__.Ui;
 using GodotUtils;
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -12,6 +13,10 @@ namespace __TEMPLATE__;
 // by adding `public partial class ResourceOptions` files in their own folders.
 public partial class ResourceOptions
 {
+    public const int CurrentSchemaVersion = 2;
+
+    public int SchemaVersion { get; set; } = CurrentSchemaVersion;
+
     // General
     public Language Language { get; set; } = Language.English;
 
@@ -43,4 +48,21 @@ public partial class ResourceOptions
     // Custom options are persisted inline at the root of options.json.
     [JsonExtensionData]
     public Dictionary<string, JsonElement> CustomOptionValues { get; set; } = [];
+
+    public void Normalize()
+    {
+        SchemaVersion = CurrentSchemaVersion;
+        MusicVolume = Math.Clamp(MusicVolume, 0f, 100f);
+        SFXVolume = Math.Clamp(SFXVolume, 0f, 100f);
+        WindowWidth = Math.Max(0, WindowWidth);
+        WindowHeight = Math.Max(0, WindowHeight);
+        MaxFPS = Math.Max(0, MaxFPS);
+        Resolution = Math.Clamp(Resolution, 1, 36);
+        Antialiasing = Math.Clamp(Antialiasing, 0, 3);
+        CustomOptionValues ??= [];
+
+        NormalizeExtended();
+    }
+
+    partial void NormalizeExtended();
 }

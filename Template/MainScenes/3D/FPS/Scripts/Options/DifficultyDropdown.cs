@@ -12,11 +12,11 @@ public sealed class DifficultyDropdown : DropdownOptionDefinition
 
     public override int GetValue()
     {
-        return (int)Game.Settings.Difficulty;
+        return (int)Game.Options.Settings.Difficulty;
     }
 
     public override void SetValue(int value)
     {
-        Game.Settings.Difficulty = (Difficulty)value;
+        Game.OptionsManager.SetDifficulty((Difficulty)value);
     }
 }

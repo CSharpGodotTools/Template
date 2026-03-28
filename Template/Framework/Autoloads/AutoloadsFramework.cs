@@ -15,7 +15,7 @@ using GodotUtils.Debugging;
 namespace __TEMPLATE__;
 
 // Autoload
-// Access the managers that live in here through through Game.(...)
+// Access runtime services via Game.*.
 // Alternatively access through GetNode<Autoloads>("/root/Autoloads")
 public abstract partial class AutoloadsFramework : Node
 {
@@ -26,7 +26,7 @@ public abstract partial class AutoloadsFramework : Node
     public event Func<Task>? PreQuit;
 
     // Autoloads
-    // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
+    // Access runtime services via Game.
     public GameComponentManager ComponentManager { get; private set; } = null!;
     public GameConsole GameConsole { get; private set; } = null!;
     public AudioManager AudioManager { get; private set; } = null!;
@@ -37,6 +37,8 @@ public abstract partial class AutoloadsFramework : Node
     public Profiler Profiler { get; private set; } = null!;
     public FocusOutlineManager FocusOutline { get; private set; } = null!;
     public Logger Logger { get; private set; } = null!;
+    public IApplicationLifetime ApplicationLifetime { get; private set; } = null!;
+    public GameServices RuntimeServices { get; private set; } = null!;
 
 #if DEBUG
     private VisualizeAutoload _visualizeAutoload = null!;
@@ -71,8 +73,23 @@ public abstract partial class AutoloadsFramework : Node
         Commands.RegisterAll();
 
         OptionsManager = new OptionsManager(this);
-        AudioManager = new AudioManager(this);
+        AudioManager = new AudioManager(this, OptionsManager);
         CommandLineArgs.Initialize();
+        ApplicationLifetime = new ApplicationLifetimeService(this);
+
+        RuntimeServices = new GameServices(
+            ComponentManager,
+            GameConsole,
+            AudioManager,
+            OptionsManager,
+            Metrics,
+            SceneManager,
+            Profiler,
+            Services,
+            FocusOutline,
+            Logger,
+            ApplicationLifetime);
+        Game.Initialize(RuntimeServices);
 
 #if DEBUG
         _visualizeAutoload = new VisualizeAutoload();
@@ -121,6 +138,8 @@ public abstract partial class AutoloadsFramework : Node
 
         Logger.Dispose();
         Profiler.Dispose();
+
+        Game.Reset();
 
         ExitTree();
     }

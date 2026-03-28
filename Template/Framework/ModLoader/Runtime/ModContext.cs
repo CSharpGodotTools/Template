@@ -14,6 +14,6 @@ internal sealed class ModContext(Node hostNode, ModMetadata metadata) : IModCont
 
     public T GetService<T>() where T : Node
     {
-        return Game.Services.Get<T>();
+        return Game.ScopedServices.Get<T>();
     }
 }

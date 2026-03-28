@@ -9,7 +9,7 @@ public class Commands
 {
     public static void RegisterAll()
     {
-        GameConsole console = Game.Console;
+        GameConsole console = Game.GameConsole;
         console.RegisterCommand("help", CommandHelp);
         console.RegisterCommand("quit", CommandQuit).WithAliases("exit");
         console.RegisterCommand("debug", CommandDebug);
@@ -17,13 +17,13 @@ public class Commands
 
     private static void CommandHelp(string[] args)
     {
-        IEnumerable<string> cmds = Game.Console.GetCommands().Select(x => x.Name);
+        IEnumerable<string> cmds = Game.GameConsole.GetCommands().Select(x => x.Name);
         Game.Logger.Log(cmds.ToFormattedString()!);
     }
 
     private async static void CommandQuit(string[] args)
     {
-        await Autoloads.Instance!.ExitGame();
+        await Game.Application.ExitGameAsync();
     }
 
     private static void CommandDebug(string[] args)

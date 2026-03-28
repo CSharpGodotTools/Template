@@ -12,6 +12,7 @@ public partial class OptionsInput
         private readonly Button _inputNavBtn;
         private readonly Action<HotkeyButtonInfo> _onHotkeyPressed;
         private readonly Action<HotkeyButtonInfo> _onPlusPressed;
+        private readonly FocusOutlineManager _focusOutline;
 
         private readonly HBoxContainer _rowRoot;
         private readonly HBoxContainer _events;
@@ -21,12 +22,14 @@ public partial class OptionsInput
             Button inputNavBtn,
             string displayName,
             Action<HotkeyButtonInfo> onHotkeyPressed,
-            Action<HotkeyButtonInfo> onPlusPressed)
+            Action<HotkeyButtonInfo> onPlusPressed,
+            FocusOutlineManager focusOutline)
         {
             _action = action;
             _inputNavBtn = inputNavBtn;
             _onHotkeyPressed = onHotkeyPressed;
             _onPlusPressed = onPlusPressed;
+            _focusOutline = focusOutline;
 
             _rowRoot = new HBoxContainer();
 
@@ -90,7 +93,7 @@ public partial class OptionsInput
                 return;
 
             Button plusBtn = _events.GetChild<Button>(_events.GetChildCount() - 1);
-            Game.FocusOutline.Focus(plusBtn);
+            _focusOutline.Focus(plusBtn);
         }
 
         private HotkeyButton CreateBindingButton(InputEvent inputEvent, bool isFirst)
@@ -136,5 +139,3 @@ public partial class OptionsInput
         }
     }
 }
-
-

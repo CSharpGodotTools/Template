@@ -18,13 +18,13 @@ public abstract partial class MainMenuNavFramework : Node
     // Godot Overrides
     public override void _Ready()
     {
-        _scene = Game.Scene;
+        _scene = Game.SceneManager;
         _viewport = GetViewport();
         _playBtn = GetNode<Button>("Play");
 
         FocusOnPlayBtn();
 
-        Game.Scene.PostSceneChanged += OnPostSceneChanged;
+        Game.SceneManager.PostSceneChanged += OnPostSceneChanged;
 
         _viewport.GuiFocusChanged += OnGuiFocusChanged;
     }
@@ -49,7 +49,7 @@ public abstract partial class MainMenuNavFramework : Node
     public override void _ExitTree()
     {
         _viewport.GuiFocusChanged -= OnGuiFocusChanged;
-        Game.Scene.PostSceneChanged -= OnPostSceneChanged;
+        Game.SceneManager.PostSceneChanged -= OnPostSceneChanged;
     }
 
     // FocusOnPlayBtn
@@ -93,7 +93,7 @@ public abstract partial class MainMenuNavFramework : Node
 
     private async static void OnQuitPressed()
     {
-        await Autoloads.Instance!.ExitGame();
+        await Game.Application.ExitGameAsync();
     }
 
     private void OnPostSceneChanged()

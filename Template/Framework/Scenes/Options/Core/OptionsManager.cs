@@ -3,6 +3,7 @@ using GodotUtils;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using VSyncMode = Godot.DisplayServer.VSyncMode;
 
 namespace __TEMPLATE__.Ui;
 
@@ -10,7 +11,7 @@ namespace __TEMPLATE__.Ui;
 /// <summary>
 /// Coordinates options systems and exposes a stable API to the rest of the project.
 /// </summary>
-public partial class OptionsManager : IDisposable
+public partial class OptionsManager : IDisposable, IOptionsService
 {
     // Events
     public event Action<WindowMode> WindowModeChanged = null!;
@@ -33,16 +34,17 @@ public partial class OptionsManager : IDisposable
         SetupAutoloads(autoloads);
 
         _options = _settingsStore.Load();
+        _options.Normalize();
         _customRegistry = new OptionsCustomRegistry(_options);
 
         _hotkeysService.Initialize();
 
-        SetWindowMode();
-        SetVSyncMode();
-        SetWinSize();
-        SetMaxFPS();
-        SetLanguage();
-        SetAntialiasing();
+        ApplyWindowMode();
+        ApplyVSyncMode();
+        ApplyWindowSize();
+        ApplyMaxFPS();
+        ApplyLanguage();
+        ApplyAntialiasing();
     }
 
     private void SetupAutoloads(AutoloadsFramework autoloads)
@@ -76,16 +78,75 @@ public partial class OptionsManager : IDisposable
         _currentOptionsTab = tab;
     }
 
-    public ResourceOptions GetOptions()
-    {
-        return _options;
-    }
-
     public ResourceOptions Settings => _options;
 
     public ResourceHotkeys GetHotkeys()
     {
         return _hotkeysService.Hotkeys;
+    }
+
+    public void SetMusicVolume(float volume)
+    {
+        _options.MusicVolume = Math.Clamp(volume, 0f, 100f);
+    }
+
+    public void SetSFXVolume(float volume)
+    {
+        _options.SFXVolume = Math.Clamp(volume, 0f, 100f);
+    }
+
+    public void SetLanguage(Language language)
+    {
+        _options.Language = language;
+        ApplyLanguage();
+    }
+
+    public void SetQualityPreset(QualityPreset qualityPreset)
+    {
+        _options.QualityPreset = qualityPreset;
+    }
+
+    public void SetAntialiasing(int antialiasing)
+    {
+        _options.Antialiasing = Math.Clamp(antialiasing, 0, 3);
+        ApplyAntialiasing();
+    }
+
+    public void SetWindowMode(WindowMode windowMode)
+    {
+        _options.WindowMode = windowMode;
+        WindowModeChanged?.Invoke(windowMode);
+    }
+
+    public void SetWindowSize(int width, int height)
+    {
+        _options.WindowWidth = Math.Max(0, width);
+        _options.WindowHeight = Math.Max(0, height);
+    }
+
+    public void SetResolution(int resolution)
+    {
+        _options.Resolution = Math.Clamp(resolution, 1, 36);
+    }
+
+    public void SetVSyncMode(VSyncMode vsyncMode)
+    {
+        _options.VSyncMode = vsyncMode;
+    }
+
+    public void SetMaxFPS(int maxFps)
+    {
+        _options.MaxFPS = Math.Max(0, maxFps);
+    }
+
+    public void SetDifficulty(Difficulty difficulty)
+    {
+        _options.Difficulty = difficulty;
+    }
+
+    public void SetMouseSensitivity(float sensitivity)
+    {
+        _options.MouseSensitivity = Math.Clamp(sensitivity, 0.1f, 2.0f);
     }
 
     internal IEnumerable<RegisteredSliderOption> GetSliderOptions()
@@ -171,7 +232,7 @@ public partial class OptionsManager : IDisposable
         _hotkeysService.ResetToDefaults();
     }
 
-    private void SetWindowMode()
+    private void ApplyWindowMode()
     {
         if (Engine.IsEmbeddedInEditor())
             return;
@@ -196,8 +257,7 @@ public partial class OptionsManager : IDisposable
             return;
 
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
-        _options.WindowMode = WindowMode.Fullscreen;
-        WindowModeChanged?.Invoke(WindowMode.Fullscreen);
+        SetWindowMode(WindowMode.Fullscreen);
     }
 
     private void SwitchToWindow()
@@ -206,16 +266,15 @@ public partial class OptionsManager : IDisposable
             return;
 
         DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
-        _options.WindowMode = WindowMode.Windowed;
-        WindowModeChanged?.Invoke(WindowMode.Windowed);
+        SetWindowMode(WindowMode.Windowed);
     }
 
-    private void SetVSyncMode()
+    private void ApplyVSyncMode()
     {
         DisplayServer.WindowSetVsyncMode(_options.VSyncMode);
     }
 
-    private void SetWinSize()
+    private void ApplyWindowSize()
     {
         if (Engine.IsEmbeddedInEditor())
             return;
@@ -234,7 +293,7 @@ public partial class OptionsManager : IDisposable
         }
     }
 
-    private void SetMaxFPS()
+    private void ApplyMaxFPS()
     {
         if (DisplayServer.WindowGetVsyncMode() == DisplayServer.VSyncMode.Disabled)
         {
@@ -242,13 +301,12 @@ public partial class OptionsManager : IDisposable
         }
     }
 
-    private void SetLanguage()
+    private void ApplyLanguage()
     {
-        TranslationServer.SetLocale(
-        _options.Language.ToString()[..2].ToLower());
+        TranslationServer.SetLocale(_options.Language.ToString()[..2].ToLower());
     }
 
-    private void SetAntialiasing()
+    private void ApplyAntialiasing()
     {
         // Set both 2D and 3D settings to the same value.
         ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_2d", _options.Antialiasing);
@@ -261,8 +319,7 @@ public partial class OptionsManager : IDisposable
             return;
 
         Vector2I size = DisplayServer.WindowGetSize();
-        _options.WindowWidth = size.X;
-        _options.WindowHeight = size.Y;
+        SetWindowSize(size.X, size.Y);
     }
 
     private Task SaveSettingsOnQuit()
