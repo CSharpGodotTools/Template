@@ -38,7 +38,6 @@ echo "$STAGED" | grep -q "^Template\.GodotUtils/" && build_godotutils=true || tr
 echo "$STAGED" | grep -q "^Template\.Visualize/" && build_visualize=true || true
 echo "$STAGED" | grep -q "^Template\.PacketGen/" && build_packetgen=true || true
 echo "$STAGED" | grep -q "^Template\.OptionsGen/" && build_optionsgen=true || true
-echo "$STAGED" | grep -Eq "\.cs$" && build_optionsgen=true || true
 
 # Visualize depends on GodotUtils
 if $build_visualize; then
