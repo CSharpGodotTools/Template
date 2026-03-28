@@ -4,7 +4,7 @@ namespace Template.Setup.Testing;
 
 public static class TestOutput
 {
-    
+
     private const int MinHeaderWidth = 40;
     private const int HeaderSideDashes = 10;
 

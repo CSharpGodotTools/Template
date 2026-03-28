@@ -24,14 +24,14 @@ internal partial class ExampleScene : Node
         //        AddChild(sprite);
         //        sprite.GlobalPosition = new Vector2(0, 0);
         //    });
-        
+
         //AddChild(sprite);
     }
 
     public override void _PhysicsProcess(double delta)
     {
         Vector2 dir = Input.GetVector("ui_left", "ui_right", "ui_up", "ui_down");
-        
+
         _camera.Position += dir * _cameraSpeed;
     }
 }

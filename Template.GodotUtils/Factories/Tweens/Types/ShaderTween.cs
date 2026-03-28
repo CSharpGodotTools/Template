@@ -1,6 +1,6 @@
 using Godot;
-using static Godot.Tween;
 using System;
+using static Godot.Tween;
 
 namespace GodotUtils;
 

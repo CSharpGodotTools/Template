@@ -33,18 +33,18 @@ public class OptionsDisplay : IDisposable
     // Common display sizes, sorted by area; filtered at runtime against screen resolution.
     private static readonly Vector2I[] BaseWindowSizes =
     [
-        new(800, 600),    // 4:3
-        new(1024, 768),   // 4:3
-        new(1280, 720),   // 16:9
-        new(1280, 960),   // 4:3
-        new(1366, 768),   // 16:9
-        new(1600, 900),   // 16:9
-        new(1600, 1200),  // 4:3
-        new(1920, 1080),  // 16:9
-        new(2560, 1080),  // 21:9
-        new(2560, 1440),  // 16:9
-        new(3440, 1440),  // 21:9
-        new(3840, 2160),  // 4K 16:9
+        new(800, 600), // 4:3
+        new(1024, 768), // 4:3
+        new(1280, 720), // 16:9
+        new(1280, 960), // 4:3
+        new(1366, 768), // 16:9
+        new(1600, 900), // 16:9
+        new(1600, 1200), // 4:3
+        new(1920, 1080), // 16:9
+        new(2560, 1080), // 21:9
+        new(2560, 1440), // 16:9
+        new(3440, 1440), // 21:9
+        new(3840, 2160), // 4K 16:9
     ];
 
     // Nodes

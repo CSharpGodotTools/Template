@@ -28,15 +28,15 @@ public abstract partial class AutoloadsFramework : Node
     // Autoloads
     // Cannot use [Export] here because Godot will bug out and unlink export path in editor after setup completes and restarts the editor
     public GameComponentManager ComponentManager { get; private set; } = null!;
-    public GameConsole          GameConsole      { get; private set; } = null!;
-    public AudioManager         AudioManager     { get; private set; } = null!;
-    public OptionsManager       OptionsManager   { get; private set; } = null!;
-    public Services             Services         { get; private set; } = null!;
-    public IMetricsOverlay      Metrics          { get; private set; } = null!;
-    public SceneManager         SceneManager     { get; private set; } = null!;
-    public Profiler             Profiler         { get; private set; } = null!;
-    public FocusOutlineManager  FocusOutline     { get; private set; } = null!;
-    public Logger               Logger           { get; private set; } = null!;
+    public GameConsole GameConsole { get; private set; } = null!;
+    public AudioManager AudioManager { get; private set; } = null!;
+    public OptionsManager OptionsManager { get; private set; } = null!;
+    public Services Services { get; private set; } = null!;
+    public IMetricsOverlay Metrics { get; private set; } = null!;
+    public SceneManager SceneManager { get; private set; } = null!;
+    public Profiler Profiler { get; private set; } = null!;
+    public FocusOutlineManager FocusOutline { get; private set; } = null!;
+    public Logger Logger { get; private set; } = null!;
 
 #if DEBUG
     private VisualizeAutoload _visualizeAutoload = null!;

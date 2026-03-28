@@ -311,13 +311,13 @@ internal static class VisualTitleBarBuilder
         System.Collections.Generic.List<(Button Button, Vector2 Anchor)> anchorButtons = [];
 
         AddAnchorButton(grid, popup, anchorButtons, "TL", new Vector2(0.0f, 0.0f));
-        AddAnchorButton(grid, popup, anchorButtons, "T",  new Vector2(0.5f, 0.0f));
+        AddAnchorButton(grid, popup, anchorButtons, "T", new Vector2(0.5f, 0.0f));
         AddAnchorButton(grid, popup, anchorButtons, "TR", new Vector2(1.0f, 0.0f));
-        AddAnchorButton(grid, popup, anchorButtons, "L",  new Vector2(0.0f, 0.5f));
-        AddAnchorButton(grid, popup, anchorButtons, "C",  new Vector2(0.5f, 0.5f));
-        AddAnchorButton(grid, popup, anchorButtons, "R",  new Vector2(1.0f, 0.5f));
+        AddAnchorButton(grid, popup, anchorButtons, "L", new Vector2(0.0f, 0.5f));
+        AddAnchorButton(grid, popup, anchorButtons, "C", new Vector2(0.5f, 0.5f));
+        AddAnchorButton(grid, popup, anchorButtons, "R", new Vector2(1.0f, 0.5f));
         AddAnchorButton(grid, popup, anchorButtons, "BL", new Vector2(0.0f, 1.0f));
-        AddAnchorButton(grid, popup, anchorButtons, "B",  new Vector2(0.5f, 1.0f));
+        AddAnchorButton(grid, popup, anchorButtons, "B", new Vector2(0.5f, 1.0f));
         AddAnchorButton(grid, popup, anchorButtons, "BR", new Vector2(1.0f, 1.0f));
 
         refreshSelection = () =>

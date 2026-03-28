@@ -19,7 +19,7 @@ public class CircleArea2D : ShapeArea2D<CircleShape2D>
     /// <summary>
     /// Creates a circle area with the provided radius.
     /// </summary>
-    internal CircleArea2D(float radius) : base(new CircleShape2D { Radius = radius }) 
+    internal CircleArea2D(float radius) : base(new CircleShape2D { Radius = radius })
     {
     }
 }

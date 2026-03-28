@@ -5,7 +5,7 @@ using System;
 
 // This was intentionally set to GodotUtils instead of __TEMPLATE__ as GodotUtils relies on MainMenuBtnPressed
 // and GodotUtils should NOT have any trace of using __TEMPLATE__.
-namespace __TEMPLATE__.Ui; 
+namespace __TEMPLATE__.Ui;
 
 public partial class PopupMenu : Control
 {

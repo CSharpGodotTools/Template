@@ -1,7 +1,7 @@
+using GodotUtils.RegEx;
+using System;
 using System.Globalization;
 using System.Linq;
-using System;
-using GodotUtils.RegEx;
 
 namespace GodotUtils;
 

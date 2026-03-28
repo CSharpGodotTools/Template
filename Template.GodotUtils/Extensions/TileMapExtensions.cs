@@ -10,7 +10,7 @@ public static class TileMapExtensions
     /// <summary>
     /// Gets custom data of type <typeparamref name="T"/> at the tile coordinates.
     /// </summary>
-    public static T GetCustomData<[MustBeVariant]T>(this TileMapLayer tileMap, Vector2I tileCoordinates, string customDataLayerName)
+    public static T GetCustomData<[MustBeVariant] T>(this TileMapLayer tileMap, Vector2I tileCoordinates, string customDataLayerName)
     {
         TileData tileData = tileMap.GetCellTileData(tileCoordinates);
 

@@ -280,14 +280,14 @@ public class ModLoaderUi
 
 public class ModInfo
 {
-    public string Name        { get; set; } = string.Empty;
-    public string Id          { get; set; } = string.Empty;
-    public string ModVersion  { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Id { get; set; } = string.Empty;
+    public string ModVersion { get; set; } = string.Empty;
     public string GameVersion { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
-    public string Author      { get; set; } = string.Empty;
+    public string Author { get; set; } = string.Empty;
 
-    public Dictionary<string, string> Dependencies      { get; set; } = [];
+    public Dictionary<string, string> Dependencies { get; set; } = [];
     public Dictionary<string, string> Incompatibilities { get; set; } = [];
 
     public void Normalize()

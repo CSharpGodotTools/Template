@@ -20,7 +20,7 @@ public partial class ModLoader : Node
     public override void _Ready()
     {
         Node uiMods = GetNode<VBoxContainer>("%VBoxMods");
-        
+
         _uiName = GetNode<Label>("%ModName");
         _uiModVersion = GetNode<Label>("%ModVersion");
         _uiGameVersion = GetNode<Label>("%GameVersion");
@@ -83,13 +83,13 @@ public partial class ModLoader : Node
         _uiModVersion.Text = modInfo.ModVersion;
         _uiGameVersion.Text = modInfo.GameVersion;
 
-        _uiDependencies.Text = modInfo.Dependencies.Count != 0 ? 
+        _uiDependencies.Text = modInfo.Dependencies.Count != 0 ?
             modInfo.Dependencies.ToFormattedString() : "None";
 
-        _uiIncompatibilities.Text = modInfo.Incompatibilities.Count != 0 ? 
+        _uiIncompatibilities.Text = modInfo.Incompatibilities.Count != 0 ?
             modInfo.Incompatibilities.ToFormattedString() : "None";
 
-        _uiDescription.Text = !string.IsNullOrWhiteSpace(modInfo.Description) ? 
+        _uiDescription.Text = !string.IsNullOrWhiteSpace(modInfo.Description) ?
             modInfo.Description : "The author did not set a description for this mod";
 
         _uiAuthors.Text = modInfo.Author;

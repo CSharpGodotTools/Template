@@ -15,7 +15,7 @@ public static class CursorUtils
     {
         return GetPhysicsNodesAtPosition<Area2D>(node, node.GetGlobalMousePosition(), true, false, false, maxResults);
     }
-    
+
     /// <summary>
     /// Returns physics body nodes under the mouse cursor.
     /// </summary>
@@ -23,7 +23,7 @@ public static class CursorUtils
     {
         return GetPhysicsNodesAtPosition<PhysicsBody2D>(node, node.GetGlobalMousePosition(), false, true, false, maxResults);
     }
-    
+
     /// <summary>
     /// Returns area nodes under the provided node position.
     /// </summary>
@@ -31,7 +31,7 @@ public static class CursorUtils
     {
         return GetPhysicsNodesAtPosition<Area2D>(node, node.GlobalPosition, true, false, true, maxResults);
     }
-    
+
     /// <summary>
     /// Returns physics body nodes under the provided node position.
     /// </summary>
@@ -39,7 +39,7 @@ public static class CursorUtils
     {
         return GetPhysicsNodesAtPosition<PhysicsBody2D>(node, node.GlobalPosition, false, true, true, maxResults);
     }
-    
+
     private static List<TNode> GetPhysicsNodesAtPosition<TNode>(Node2D node, Vector2 position, bool collideWithAreas, bool collideWithBodies, bool excludeSelf = false, int maxResults = 1)
         where TNode : Node
     {
@@ -69,7 +69,7 @@ public static class CursorUtils
 
         // Perform the query
         PhysicsDirectSpaceState2D spaceState = PhysicsServer2D.SpaceGetDirectState(node.GetWorld2D().GetSpace());
-        
+
         Godot.Collections.Array<Godot.Collections.Dictionary> results = spaceState.IntersectPoint(queryParams, maxResults);
 
         int resultCount = results.Count;

@@ -12,7 +12,7 @@ public class State(string name = "")
     public Action Exit { get; set; } = _noop;
 
     private readonly string _name = name;
-    
+
     /// <summary>
     /// Returns the state name in lowercase.
     /// </summary>

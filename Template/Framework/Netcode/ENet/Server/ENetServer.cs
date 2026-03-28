@@ -144,7 +144,7 @@ public abstract partial class ENetServer : ENetLow
     protected sealed override void OnReceiveLow(Event netEvent)
     {
         Packet packet = netEvent.Packet;
-        
+
         if (packet.Length > GamePacket.MaxSize)
         {
             Log($"Tried to read packet from client of size {packet.Length} when max packet size is {GamePacket.MaxSize}");

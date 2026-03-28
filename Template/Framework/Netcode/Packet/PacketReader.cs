@@ -1,12 +1,12 @@
 using Godot;
 using System;
-using SysVector2 = System.Numerics.Vector2;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using SysVector2 = System.Numerics.Vector2;
 
 namespace __TEMPLATE__.Netcode;
 

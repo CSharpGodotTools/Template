@@ -27,7 +27,7 @@ public static class CanvasItemExtensions
         // Relevant Godot Docs at https://docs.godotengine.org/en/stable/tutorials/2d/2d_transforms.html#transform-functions
         Window root = canvasItem.GetTree().Root;
 
-        return (root.GetFinalTransform() * canvasItem.GetGlobalTransformWithCanvas()).Origin 
+        return (root.GetFinalTransform() * canvasItem.GetGlobalTransformWithCanvas()).Origin
             + root.Position;
     }
 

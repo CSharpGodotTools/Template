@@ -7,11 +7,11 @@ namespace __TEMPLATE__;
 public class AudioManager : IDisposable
 {
     // Config
-    private const float MinDefaultRandomPitch = 0.8f;   // Default minimum pitch value for SFX.
-    private const float MaxDefaultRandomPitch = 1.2f;   // Default maximum pitch value for SFX.
-    private const float RandomPitchThreshold  = 0.1f;   // Minimum difference in pitch between repeated sounds.
-    private const int   MutedVolume           = -80;    // dB value representing mute.
-    private const int   MutedVolumeNormalized = -40;    // Normalized muted volume for volume mapping.
+    private const float MinDefaultRandomPitch = 0.8f; // Default minimum pitch value for SFX.
+    private const float MaxDefaultRandomPitch = 1.2f; // Default maximum pitch value for SFX.
+    private const float RandomPitchThreshold = 0.1f; // Minimum difference in pitch between repeated sounds.
+    private const int MutedVolume = -80; // dB value representing mute.
+    private const int MutedVolumeNormalized = -40; // Normalized muted volume for volume mapping.
 
     // Variables
     private readonly RandomNumberGenerator _randomNumberGenerator = new();
