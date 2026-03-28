@@ -8,10 +8,7 @@
     <a href="https://discord.gg/j8HQZZ76r8"><img src="https://img.shields.io/discord/955956101554266132?label=discord&style=flat&color=000000&labelColor=1a1a1a" alt="Discord" /></a>
 </div>
 
-This is an on-going project I've been working on and it has evolved into more than just a template. I hope you will find it as useful as I have.
-
-![MainMenuPreview](https://github.com/user-attachments/assets/e2cf3c4f-ea22-4b26-85df-a953383a9b99)  
-![OptionsPreview](https://github.com/user-attachments/assets/7d744362-7c70-4f17-9262-c5e77182e942)  
+This is just another Godot 4 C# template, right?
 
 ## Overview
 - [Multiplayer](#multiplayer)
@@ -24,18 +21,19 @@ This is an on-going project I've been working on and it has evolved into more th
   - Minimal 3D scene
   - [FPS scene](#fps-scene)
 - [Performance](#performance)
-  - [Centralized Component Scripts](#centralized-component-scripts)
-- [In-Game Debugging](#in-game-debugging)
-  - [Visual Debugging](#visual-debugging)
-  - [Metrics Overlay](#metrics-overlay)
-  - [Console Commands](#console-commands)
+  - [Centralized component scripts](#centralized-component-scripts)
+- [In-Game debugging](#in-game-debugging)
+  - [Visual debugging](#visual-debugging)
+  - [Metrics overlay](#metrics-overlay)
+  - [Console commands](#console-commands)
 - [Utilities](#utilities)
-  - [Cat Lips Source Generators](https://github.com/Cat-Lips/GodotSharp.SourceGenerators)
-  - [Improved Debugger Dock](#improved-debugger-dock)
-  - [Simplified Tweens](#simplified-tweens)
+  - [Cat lips source generators](https://github.com/Cat-Lips/GodotSharp.SourceGenerators)
+  - [Improved debugger dock](#improved-debugger-dock)
+  - [Simplified tweens](#simplified-tweens)
+  - [Script driven options](#script-driven-options)
   - [Services](#services)
-  - [Custom Main Run Args](#custom-main-run-args)
-  - [GDUnit4 Testing](#gdunit-testing)
+  - [Custom main run args](#custom-main-run-args)
+  - [GDUnit4 testing](#gdunit-testing)
 - [Prerequisites](#prerequisites)
 - [Install](#install)
 - [Update](#update)
@@ -47,7 +45,7 @@ Minimum packet data sent. For example if we send the string "Dog", we have 3 byt
 
 Packet scripts are kept small. The `Write` and `Read` methods are generated for you.
 
-Tested and works with up to 500 clients sending positions to each other.
+Tested and reliably works with up to 475 clients sending positions to each other.
 
 ### Your First Netcode
 
@@ -223,6 +221,10 @@ If you are running on an OS without a build for your platform (such as Apple ARM
 may need to provide your own build of `ENet-CSharp`. To do so, follow the build instructions
 [here](https://github.com/nxrighthere/ENet-CSharp), and place the resulting `ENet-CSharp.dll`
 and `.so` or `.dylib` in the games root directory.
+
+### 475 Bot Stress Test
+
+[Stress Test.webm](https://github.com/user-attachments/assets/997ab9c1-7875-4c83-86e2-a3d98075b4a7)
 
 ## Templates
 
@@ -494,6 +496,51 @@ Tween.Animate(colorRect, "color")
 
 > [!TIP]
 > Prefer strongly typed names over strings? Instead of typing for example `"scale"` do `Control.PropertyName.Scale`
+
+### Script Driven Options
+
+All option scripts can be found in `res://Template/Scenes/Options`.
+
+For example this is what the audio tab looks like.
+
+```cs
+public sealed class OptionsAudioTab : IOptionsTabRegistrar
+{
+    public string TabName => OptionsTabs.Audio;
+
+    public void Register(IOptionsService optionsService)
+    {
+        optionsService.AddOption(
+            OptionDefinitions.Slider(
+                tab: TabName,
+                label: "MUSIC",
+                minValue: 0,
+                maxValue: 100,
+                getValue: () => optionsService.Settings.MusicVolume,
+                setValue: value => optionsService.Settings.MusicVolume = value,
+                step: 1.0,
+                saveKey: OptionsSaveKeys.MusicVolume,
+                defaultValue: 100));
+
+        optionsService.AddOption(
+            OptionDefinitions.Slider(
+                tab: TabName,
+                label: "SOUNDS",
+                minValue: 0,
+                maxValue: 100,
+                getValue: () => optionsService.Settings.SFXVolume,
+                setValue: value => optionsService.Settings.SFXVolume = value,
+                step: 1.0,
+                saveKey: OptionsSaveKeys.SfxVolume,
+                defaultValue: 100));
+    }
+}
+```
+
+Here are some screenshots of what the options look like in-game.
+
+<img width="1588" height="914" alt="image" src="https://github.com/user-attachments/assets/fec32708-3d88-4a9d-af3f-16244edcaec7" />  
+<img width="1588" height="914" alt="image" src="https://github.com/user-attachments/assets/fb07af28-08b2-4959-aa2e-9027976bcdde" />  
 
 ### Services
 
