@@ -14,5 +14,3 @@ public partial class OptionsInput
         public bool IsPlus { get; init; }
     }
 }
-
-

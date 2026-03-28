@@ -10,8 +10,7 @@ namespace __TEMPLATE__.Ui;
 internal readonly struct CustomOptionDescriptor
 {
     public int Id { get; }
-    public OptionsTab Tab { get; }
-    public int Order { get; }
+    public string Tab { get; }
     public CustomOptionType Type { get; }
 
     public RegisteredSliderOption? Slider { get; }
@@ -21,7 +20,7 @@ internal readonly struct CustomOptionDescriptor
 
     // Shared constructor — every public overload delegates here
     private CustomOptionDescriptor(
-        int id, OptionsTab tab, int order, CustomOptionType type,
+        int id, string tab, CustomOptionType type,
         RegisteredSliderOption? slider = null,
         RegisteredDropdownOption? dropdown = null,
         RegisteredLineEditOption? lineEdit = null,
@@ -29,7 +28,6 @@ internal readonly struct CustomOptionDescriptor
     {
         Id = id;
         Tab = tab;
-        Order = order;
         Type = type;
         Slider = slider;
         Dropdown = dropdown;
@@ -38,14 +36,14 @@ internal readonly struct CustomOptionDescriptor
     }
 
     public CustomOptionDescriptor(RegisteredSliderOption s)
-        : this(s.Id, s.Definition.Tab, s.Definition.Order, CustomOptionType.Slider, slider: s) { }
+        : this(s.Id, s.Definition.Tab, CustomOptionType.Slider, slider: s) { }
 
     public CustomOptionDescriptor(RegisteredDropdownOption d)
-        : this(d.Id, d.Definition.Tab, d.Definition.Order, CustomOptionType.Dropdown, dropdown: d) { }
+        : this(d.Id, d.Definition.Tab, CustomOptionType.Dropdown, dropdown: d) { }
 
     public CustomOptionDescriptor(RegisteredLineEditOption l)
-        : this(l.Id, l.Definition.Tab, l.Definition.Order, CustomOptionType.LineEdit, lineEdit: l) { }
+        : this(l.Id, l.Definition.Tab, CustomOptionType.LineEdit, lineEdit: l) { }
 
     public CustomOptionDescriptor(RegisteredToggleOption t)
-        : this(t.Id, t.Definition.Tab, t.Definition.Order, CustomOptionType.Toggle, toggle: t) { }
+        : this(t.Id, t.Definition.Tab, CustomOptionType.Toggle, toggle: t) { }
 }

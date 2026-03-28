@@ -7,9 +7,9 @@ namespace __TEMPLATE__.Ui;
 public abstract class OptionDefinition
 {
     /// <summary>
-    /// Which tab this option appears under (Gameplay, Audio, etc).
+    /// Which tab this option appears under (for example: "Gameplay").
     /// </summary>
-    public abstract OptionsTab Tab { get; }
+    public abstract string Tab { get; }
 
     /// <summary>
     /// Display text key used in the options UI (for example: "MOUSE_SENSITIVITY").
@@ -17,7 +17,8 @@ public abstract class OptionDefinition
     public abstract string Label { get; }
 
     /// <summary>
-    /// Optional ordering inside the tab. Lower numbers are shown first.
+    /// Optional explicit persistence key for options.json.
+    /// Leave null to use the framework-generated key.
     /// </summary>
-    public virtual int Order => 0;
+    public virtual string? SaveKey => null;
 }

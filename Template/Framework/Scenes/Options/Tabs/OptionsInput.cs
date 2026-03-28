@@ -4,7 +4,7 @@ using System;
 
 namespace __TEMPLATE__.Ui;
 
-public partial class OptionsInput : IDisposable
+public sealed partial class OptionsInput : IDisposable
 {
     // Constants
     private const string OptionsSceneName = "Options";
@@ -21,7 +21,7 @@ public partial class OptionsInput : IDisposable
 
     public OptionsInput(
         Options options,
-        Button inputNavBtn,
+        Button inputNavButton,
         OptionsManager optionsManager,
         SceneManager sceneManager,
         FocusOutlineManager focusOutline)
@@ -32,7 +32,7 @@ public partial class OptionsInput : IDisposable
         VBoxContainer content = options.GetNode<VBoxContainer>("%InputContent");
 
         _store = new HotkeyStore(optionsManager);
-        _view = new HotkeyListView(content, inputNavBtn, _store, InputActions.RemoveHotkey, UiPrefix, Ellipsis, _focusOutline);
+        _view = new HotkeyListView(content, inputNavButton, _store, InputActions.RemoveHotkey, UiPrefix, Ellipsis, _focusOutline);
         _view.HotkeyPressed += OnHotkeyButtonPressed;
         _view.PlusPressed += OnPlusButtonPressed;
         _view.Build();

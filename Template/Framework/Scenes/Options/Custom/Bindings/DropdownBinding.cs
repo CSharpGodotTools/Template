@@ -8,8 +8,6 @@ namespace __TEMPLATE__.Ui;
 /// </summary>
 internal sealed class DropdownBinding(HBoxContainer row, OptionButton dropdown, OptionButton.ItemSelectedEventHandler onItemSelected) : IDisposable
 {
-    private const float ControlMinWidth = 250f;
-
     private readonly HBoxContainer _row = row;
     private readonly OptionButton _dropdown = dropdown;
     private readonly OptionButton.ItemSelectedEventHandler _onItemSelected = onItemSelected;
@@ -23,7 +21,8 @@ internal sealed class DropdownBinding(HBoxContainer row, OptionButton dropdown, 
     {
         DropdownOptionDefinition definition = dropdownOption.Definition;
 
-        OptionButton dropdown = new() { CustomMinimumSize = new Vector2(ControlMinWidth, 0) };
+        float controlMinWidth = Mathf.Max(1f, definition.ControlMinWidth);
+        OptionButton dropdown = new() { CustomMinimumSize = new Vector2(controlMinWidth, 0) };
 
         for (int index = 0; index < definition.Items.Count; index++)
             dropdown.AddItem(definition.Items[index], index);

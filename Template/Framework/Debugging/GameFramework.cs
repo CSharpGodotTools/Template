@@ -43,7 +43,7 @@ public partial class Game
 
     public static IOptionsService Options => RuntimeServices.Options;
     public static OptionsManager OptionsManager => RuntimeServices.OptionsManager;
-    public static ResourceOptions Settings => RuntimeServices.Options.Settings;
+    public static OptionsSettings Settings => RuntimeServices.Options.Settings;
 
     public static IMetricsOverlay Metrics => RuntimeServices.Metrics;
 

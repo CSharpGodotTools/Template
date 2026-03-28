@@ -43,11 +43,14 @@ jobs:
           build_godotutils=false
           build_visualize=false
           build_packetgen=false
+          build_optionsgen=false
           build_template=false
 
           echo "$CHANGED" | grep -q "^Template\.GodotUtils/" && build_godotutils=true || true
           echo "$CHANGED" | grep -q "^Template\.Visualize/" && build_visualize=true || true
           echo "$CHANGED" | grep -q "^Template\.PacketGen/" && build_packetgen=true || true
+          echo "$CHANGED" | grep -q "^Template\.OptionsGen/" && build_optionsgen=true || true
+          echo "$CHANGED" | grep -Eq "\.cs$" && build_optionsgen=true || true
           echo "$CHANGED" | grep -q "^Template/" && build_template=true || true
 
           if $build_visualize; then
@@ -58,14 +61,16 @@ jobs:
             build_godotutils=true
             build_visualize=true
             build_packetgen=true
+            build_optionsgen=true
             build_template=true
           fi
 
-          if ! $build_godotutils && ! $build_visualize && ! $build_packetgen && ! $build_template; then
+          if ! $build_godotutils && ! $build_visualize && ! $build_packetgen && ! $build_optionsgen && ! $build_template; then
             echo "No known project paths changed. Falling back to full validation."
             build_godotutils=true
             build_visualize=true
             build_packetgen=true
+            build_optionsgen=true
             build_template=true
           fi
 
@@ -73,6 +78,7 @@ jobs:
             echo "build_godotutils=$build_godotutils"
             echo "build_visualize=$build_visualize"
             echo "build_packetgen=$build_packetgen"
+            echo "build_optionsgen=$build_optionsgen"
             echo "build_template=$build_template"
           } >> "$GITHUB_OUTPUT"
 
@@ -96,6 +102,10 @@ jobs:
             dotnet format Template.PacketGen/PacketGen.sln --verify-no-changes
           fi
 
+          if [[ "${{ steps.changes.outputs.build_optionsgen }}" == "true" ]]; then
+            dotnet format Template.OptionsGen/OptionsGen/OptionsGen.csproj --verify-no-changes
+          fi
+
           if [[ "${{ steps.changes.outputs.build_template }}" == "true" ]]; then
             dotnet format Template/Template.csproj --verify-no-changes
           fi
@@ -115,6 +125,10 @@ jobs:
 
           if [[ "${{ steps.changes.outputs.build_packetgen }}" == "true" ]]; then
             dotnet build Template.PacketGen/PacketGen/PacketGen.csproj -c Release --no-restore
+          fi
+
+          if [[ "${{ steps.changes.outputs.build_optionsgen }}" == "true" ]]; then
+            dotnet build Template.OptionsGen/OptionsGen/OptionsGen.csproj -c Release --no-restore
           fi
 
           if [[ "${{ steps.changes.outputs.build_template }}" == "true" ]]; then

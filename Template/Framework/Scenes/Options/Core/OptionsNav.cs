@@ -7,25 +7,10 @@ namespace __TEMPLATE__.Ui;
 
 public class OptionsNav : IDisposable
 {
-    // Nodes
-    public Button GeneralButton => _generalButton;
-    public Button GameplayButton => _gameplayButton;
-    public Button DisplayButton => _displayButton;
-    public Button GraphicsButton => _graphicsButton;
-    public Button AudioButton => _audioButton;
-    public Button InputButton => _inputButton;
-
-    private Button _generalButton = null!;
-    private Button _gameplayButton = null!;
-    private Button _displayButton = null!;
-    private Button _graphicsButton = null!;
-    private Button _audioButton = null!;
-    private Button _inputButton = null!;
-
     // Fields
     private readonly Godot.Collections.Array<Node> _navBtns;
-    private readonly Dictionary<string, Control> _tabs = [];
-    private readonly Dictionary<string, Button> _buttons = [];
+    private readonly Dictionary<string, Control> _tabs = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, Button> _buttons = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<Button, Action> _focusEnteredHandlers = [];
     private readonly Dictionary<Button, Action> _pressedHandlers = [];
     private readonly Options _options;
@@ -40,11 +25,10 @@ public class OptionsNav : IDisposable
         _navBtns = options.GetNode("%Nav").GetChildren();
 
         SetupContent();
-        SubscribeToNavBtns(_titleLabel);
-        SetButtonFields();
-        FocusOnLastClickedNavBtn();
+        SubscribeToNavBtns();
         HideAllTabs();
-        ShowCurrentTab(_titleLabel);
+        EnsureCurrentTabSelection();
+        FocusCurrentTabButton();
     }
 
     // Private Methods
@@ -58,7 +42,7 @@ public class OptionsNav : IDisposable
         }
     }
 
-    private void SubscribeToNavBtns(Label titleLabel)
+    private void SubscribeToNavBtns()
     {
         foreach (Button button in _navBtns.Cast<Button>())
         {
@@ -72,8 +56,8 @@ public class OptionsNav : IDisposable
 
             _buttons.Add(btnName, button);
 
-            void FocusEntered() => ShowTab(titleLabel, btnName);
-            void Pressed() => ShowTab(titleLabel, btnName);
+            void FocusEntered() => ShowTab(btnName);
+            void Pressed() => ShowTab(btnName);
         }
     }
 
@@ -89,29 +73,42 @@ public class OptionsNav : IDisposable
         _pressedHandlers.Clear();
     }
 
-    private void SetButtonFields()
+    private void FocusCurrentTabButton()
     {
-        _generalButton = _buttons["General"];
-        _gameplayButton = _buttons["Gameplay"];
-        _displayButton = _buttons["Display"];
-        _graphicsButton = _buttons["Graphics"];
-        _audioButton = _buttons["Audio"];
-        _inputButton = _buttons["Input"];
+        if (_buttons.TryGetValue(_optionsManager.GetCurrentTab(), out Button? current) && IsTabSelectable(current.Name))
+        {
+            current.GrabFocus();
+            return;
+        }
+
+        string? fallback = GetFirstSelectableTabName();
+
+        if (fallback != null && _buttons.TryGetValue(fallback, out Button? first))
+            first.GrabFocus();
     }
 
-    private void FocusOnLastClickedNavBtn()
+    public void EnsureCurrentTabSelection()
     {
-        _buttons[_optionsManager.GetCurrentTab()].GrabFocus();
+        string currentTab = _optionsManager.GetCurrentTab();
+
+        if (IsTabSelectable(currentTab))
+        {
+            ShowTab(currentTab);
+            return;
+        }
+
+        string? fallback = GetFirstSelectableTabName();
+
+        if (fallback != null)
+            ShowTab(fallback);
     }
 
-    private void ShowCurrentTab(Label titleLabel)
+    private void ShowTab(string tabName)
     {
-        ShowTab(titleLabel, _optionsManager.GetCurrentTab());
-    }
+        if (!IsTabSelectable(tabName))
+            return;
 
-    private void ShowTab(Label titleLabel, string tabName)
-    {
-        titleLabel.Text = tabName;
+        _titleLabel.Text = tabName;
         _optionsManager.SetCurrentTab(tabName);
         HideAllTabs();
         _tabs[tabName].Show();
@@ -125,15 +122,92 @@ public class OptionsNav : IDisposable
         }
     }
 
-    public bool TryGetTabContainer(OptionsTab tab, out VBoxContainer container)
+    public IEnumerable<string> GetTabNames()
     {
-        if (_tabs.TryGetValue(tab.ToString(), out Control? tabControl) && tabControl is VBoxContainer tabContainer)
+        return _tabs.Keys;
+    }
+
+    public void SetTabEnabled(string tabName, bool enabled, bool ensureSelection = true)
+    {
+        if (!_tabs.TryGetValue(tabName, out Control? tab))
+            return;
+
+        if (_buttons.TryGetValue(tabName, out Button? button))
+        {
+            button.Visible = enabled;
+            button.Disabled = !enabled;
+        }
+
+        if (!enabled)
+            tab.Hide();
+
+        if (ensureSelection)
+            EnsureCurrentTabSelection();
+    }
+
+    public void RefreshOptionalTabs(string alwaysVisibleTabName)
+    {
+        foreach ((string tabName, Control tabControl) in _tabs)
+        {
+            bool keepVisible = string.Equals(tabName, alwaysVisibleTabName, StringComparison.OrdinalIgnoreCase);
+            bool hasContent = tabControl.GetChildCount() > 0;
+            SetTabEnabled(tabName, keepVisible || hasContent, ensureSelection: false);
+        }
+
+        EnsureCurrentTabSelection();
+        FocusCurrentTabButton();
+    }
+
+    private bool IsTabSelectable(string tabName)
+    {
+        return _tabs.ContainsKey(tabName)
+            && _buttons.TryGetValue(tabName, out Button? button)
+            && button.Visible
+            && !button.Disabled;
+    }
+
+    private string? GetFirstSelectableTabName()
+    {
+        foreach (KeyValuePair<string, Button> pair in _buttons)
+        {
+            if (IsTabSelectable(pair.Key))
+                return pair.Key;
+        }
+
+        return null;
+    }
+
+    public bool TryGetTabContainer(string tabName, out VBoxContainer container)
+    {
+        if (_tabs.TryGetValue(tabName, out Control? tabControl) && tabControl is VBoxContainer tabContainer)
         {
             container = tabContainer;
             return true;
         }
 
         container = null!;
+        return false;
+    }
+
+    public bool TryGetTabButton(string tabName, out Button button)
+    {
+        if (_buttons.TryGetValue(tabName, out Button? tabButton))
+        {
+            button = tabButton;
+            return true;
+        }
+
+        button = null!;
+        return false;
+    }
+
+    public bool TryGetTab(string tabName, out VBoxContainer container, out Button button)
+    {
+        if (TryGetTabContainer(tabName, out container) && TryGetTabButton(tabName, out button))
+            return true;
+
+        container = null!;
+        button = null!;
         return false;
     }
 

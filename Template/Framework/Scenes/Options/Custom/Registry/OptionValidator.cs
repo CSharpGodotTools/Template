@@ -9,6 +9,15 @@ namespace __TEMPLATE__.Ui;
 internal static class OptionValidator
 {
     /// <summary>
+    /// Ensures the option tab name is not blank.
+    /// </summary>
+    public static void ValidateTab(string tab)
+    {
+        if (string.IsNullOrWhiteSpace(tab))
+            throw new ArgumentException("Option tab cannot be empty.");
+    }
+
+    /// <summary>
     /// Ensures the option label is not blank.
     /// </summary>
     public static void ValidateLabel(string label, string optionType)

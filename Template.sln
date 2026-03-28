@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template", "Template\Templa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketGen", "Template.PacketGen\PacketGen\PacketGen.csproj", "{25E1BE1B-45E4-F21B-911D-5FD10EA7D77A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Template.OptionsGen", "Template.OptionsGen\OptionsGen\OptionsGen.csproj", "{6C8F8E45-8E08-44E2-9DCB-9E5F4D76FB5C}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PacketGen.Tests", "Template.PacketGen\PacketGen.Tests\PacketGen.Tests.csproj", "{B26E910C-A515-B1E0-7155-66F0C81271CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotUtils", "Template.GodotUtils\GodotUtils.csproj", "{B6ED6DA3-C986-9C94-A8D1-2E8F7B65D087}"
@@ -32,6 +34,12 @@ Global
 		{25E1BE1B-45E4-F21B-911D-5FD10EA7D77A}.ExportDebug|Any CPU.Build.0 = Release|Any CPU
 		{25E1BE1B-45E4-F21B-911D-5FD10EA7D77A}.ExportRelease|Any CPU.ActiveCfg = Release|Any CPU
 		{25E1BE1B-45E4-F21B-911D-5FD10EA7D77A}.ExportRelease|Any CPU.Build.0 = Release|Any CPU
+		{6C8F8E45-8E08-44E2-9DCB-9E5F4D76FB5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C8F8E45-8E08-44E2-9DCB-9E5F4D76FB5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C8F8E45-8E08-44E2-9DCB-9E5F4D76FB5C}.ExportDebug|Any CPU.ActiveCfg = Release|Any CPU
+		{6C8F8E45-8E08-44E2-9DCB-9E5F4D76FB5C}.ExportDebug|Any CPU.Build.0 = Release|Any CPU
+		{6C8F8E45-8E08-44E2-9DCB-9E5F4D76FB5C}.ExportRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{6C8F8E45-8E08-44E2-9DCB-9E5F4D76FB5C}.ExportRelease|Any CPU.Build.0 = Release|Any CPU
 		{B26E910C-A515-B1E0-7155-66F0C81271CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B26E910C-A515-B1E0-7155-66F0C81271CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B26E910C-A515-B1E0-7155-66F0C81271CD}.ExportDebug|Any CPU.ActiveCfg = Release|Any CPU

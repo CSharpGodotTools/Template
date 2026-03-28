@@ -13,6 +13,14 @@ namespace __TEMPLATE__.Ui;
 /// </summary>
 public partial class OptionsManager : IDisposable, IOptionsService
 {
+    private const int DefaultLanguage = (int)Language.English;
+    private const int DefaultAntialiasing = 3;
+    private const int DefaultWindowMode = (int)WindowMode.Windowed;
+    private const int DefaultVSyncMode = (int)VSyncMode.Enabled;
+    private const int DefaultWindowWidth = 0;
+    private const int DefaultWindowHeight = 0;
+    private const int DefaultMaxFps = 60;
+
     // Events
     public event Action<WindowMode> WindowModeChanged = null!;
     internal event Action<RegisteredSliderOption> SliderOptionRegistered = null!;
@@ -24,9 +32,10 @@ public partial class OptionsManager : IDisposable, IOptionsService
     private readonly OptionsSettingsStore _settingsStore = new();
     private readonly OptionsHotkeysService _hotkeysService = new();
     private readonly OptionsCustomRegistry _customRegistry;
+    private readonly OptionsSettings _settings;
 
     private ResourceOptions _options;
-    private string _currentOptionsTab = "General";
+    private string _currentOptionsTab = OptionsTabs.General;
     private AutoloadsFramework _autoloads = null!;
 
     public OptionsManager(AutoloadsFramework autoloads)
@@ -36,6 +45,15 @@ public partial class OptionsManager : IDisposable, IOptionsService
         _options = _settingsStore.Load();
         _options.Normalize();
         _customRegistry = new OptionsCustomRegistry(_options);
+        _settings = new OptionsSettings(
+            ReadOptionInt,
+            ReadOptionFloat,
+            ReadOptionString,
+            ReadOptionBool,
+            SetIntSetting,
+            SetFloatSetting,
+            SetStringSetting,
+            SetBoolSetting);
 
         _hotkeysService.Initialize();
 
@@ -75,78 +93,194 @@ public partial class OptionsManager : IDisposable, IOptionsService
 
     public void SetCurrentTab(string tab)
     {
-        _currentOptionsTab = tab;
+        _currentOptionsTab = string.IsNullOrWhiteSpace(tab) ? _currentOptionsTab : tab;
     }
 
-    public ResourceOptions Settings => _options;
+    public OptionsSettings Settings => _settings;
 
     public ResourceHotkeys GetHotkeys()
     {
         return _hotkeysService.Hotkeys;
     }
 
-    public void SetMusicVolume(float volume)
+    private int ReadOptionInt(string key, int defaultValue)
     {
-        _options.MusicVolume = Math.Clamp(volume, 0f, 100f);
+        return _customRegistry.GetOptionInt(key, defaultValue);
     }
 
-    public void SetSFXVolume(float volume)
+    private float ReadOptionFloat(string key, float defaultValue)
     {
-        _options.SFXVolume = Math.Clamp(volume, 0f, 100f);
+        return _customRegistry.GetOptionFloat(key, defaultValue);
     }
 
-    public void SetLanguage(Language language)
+    private string ReadOptionString(string key, string defaultValue)
     {
-        _options.Language = language;
+        return _customRegistry.GetOptionString(key, defaultValue);
+    }
+
+    private bool ReadOptionBool(string key, bool defaultValue)
+    {
+        return _customRegistry.GetOptionBool(key, defaultValue);
+    }
+
+    private void WriteOptionInt(string key, int value)
+    {
+        _customRegistry.SetOptionInt(key, value);
+    }
+
+    private void WriteOptionFloat(string key, float value)
+    {
+        _customRegistry.SetOptionFloat(key, value);
+    }
+
+    private void WriteOptionString(string key, string value)
+    {
+        _customRegistry.SetOptionString(key, value);
+    }
+
+    private void WriteOptionBool(string key, bool value)
+    {
+        _customRegistry.SetOptionBool(key, value);
+    }
+
+    private void SetIntSetting(string key, int value)
+    {
+        switch (key)
+        {
+            case OptionsSaveKeys.Language:
+                SetLanguage((Language)value);
+                return;
+            case OptionsSaveKeys.QualityPreset:
+                SetQualityPreset((QualityPreset)value);
+                return;
+            case OptionsSaveKeys.Antialiasing:
+                SetAntialiasing(value);
+                return;
+            case OptionsSaveKeys.WindowMode:
+                SetWindowMode((WindowMode)value);
+                return;
+            case OptionsSaveKeys.WindowWidth:
+                SetWindowSize(value, ReadOptionInt(OptionsSaveKeys.WindowHeight, DefaultWindowHeight));
+                return;
+            case OptionsSaveKeys.WindowHeight:
+                SetWindowSize(ReadOptionInt(OptionsSaveKeys.WindowWidth, DefaultWindowWidth), value);
+                return;
+            case OptionsSaveKeys.VSyncMode:
+                SetVSyncMode((VSyncMode)value);
+                return;
+            default:
+                WriteOptionInt(key, value);
+                return;
+        }
+    }
+
+    private void SetFloatSetting(string key, float value)
+    {
+        switch (key)
+        {
+            case OptionsSaveKeys.MusicVolume:
+                SetMusicVolume(value);
+                return;
+            case OptionsSaveKeys.SfxVolume:
+                SetSFXVolume(value);
+                return;
+            case OptionsSaveKeys.Resolution:
+                SetResolution((int)value);
+                return;
+            case OptionsSaveKeys.MaxFps:
+                SetMaxFPS((int)value);
+                return;
+            default:
+                WriteOptionFloat(key, value);
+                return;
+        }
+    }
+
+    private void SetStringSetting(string key, string value)
+    {
+        WriteOptionString(key, value);
+    }
+
+    private void SetBoolSetting(string key, bool value)
+    {
+        WriteOptionBool(key, value);
+    }
+
+    private void SetMusicVolume(float volume)
+    {
+        float clamped = Math.Clamp(volume, 0f, 100f);
+        if (_autoloads.AudioManager is not null)
+            _autoloads.AudioManager.ApplyMusicVolumeFromSettings(clamped);
+
+        WriteOptionFloat(OptionsSaveKeys.MusicVolume, clamped);
+    }
+
+    private void SetSFXVolume(float volume)
+    {
+        float clamped = Math.Clamp(volume, 0f, 100f);
+        if (_autoloads.AudioManager is not null)
+            _autoloads.AudioManager.ApplySfxVolumeFromSettings(clamped);
+
+        WriteOptionFloat(OptionsSaveKeys.SfxVolume, clamped);
+    }
+
+    private void SetLanguage(Language language)
+    {
+        Language clamped = CoerceLanguage((int)language);
+        WriteOptionInt(OptionsSaveKeys.Language, (int)clamped);
         ApplyLanguage();
     }
 
-    public void SetQualityPreset(QualityPreset qualityPreset)
+    private void SetQualityPreset(QualityPreset qualityPreset)
     {
-        _options.QualityPreset = qualityPreset;
+        int clamped = Math.Clamp((int)qualityPreset, (int)QualityPreset.Low, (int)QualityPreset.High);
+        WriteOptionInt(OptionsSaveKeys.QualityPreset, clamped);
     }
 
-    public void SetAntialiasing(int antialiasing)
+    private void SetAntialiasing(int antialiasing)
     {
-        _options.Antialiasing = Math.Clamp(antialiasing, 0, 3);
+        WriteOptionInt(OptionsSaveKeys.Antialiasing, Math.Clamp(antialiasing, 0, 3));
         ApplyAntialiasing();
     }
 
-    public void SetWindowMode(WindowMode windowMode)
+    private void SetWindowMode(WindowMode windowMode)
     {
-        _options.WindowMode = windowMode;
-        WindowModeChanged?.Invoke(windowMode);
+        WindowMode clamped = CoerceWindowMode((int)windowMode);
+        WriteOptionInt(OptionsSaveKeys.WindowMode, (int)clamped);
+        ApplyWindowMode();
+
+        if (clamped == WindowMode.Windowed)
+            ApplyWindowSize();
+
+        WindowModeChanged?.Invoke(clamped);
     }
 
-    public void SetWindowSize(int width, int height)
+    private void SetWindowSize(int width, int height)
     {
-        _options.WindowWidth = Math.Max(0, width);
-        _options.WindowHeight = Math.Max(0, height);
+        WriteOptionInt(OptionsSaveKeys.WindowWidth, Math.Max(0, width));
+        WriteOptionInt(OptionsSaveKeys.WindowHeight, Math.Max(0, height));
+
+        if (DisplayServer.WindowGetMode() == DisplayServer.WindowMode.Windowed)
+            ApplyWindowSize();
     }
 
-    public void SetResolution(int resolution)
+    private void SetResolution(int resolution)
     {
-        _options.Resolution = Math.Clamp(resolution, 1, 36);
+        WriteOptionInt(OptionsSaveKeys.Resolution, Math.Clamp(resolution, 1, 36));
     }
 
-    public void SetVSyncMode(VSyncMode vsyncMode)
+    private void SetVSyncMode(VSyncMode vsyncMode)
     {
-        _options.VSyncMode = vsyncMode;
+        VSyncMode clamped = CoerceVSyncMode((int)vsyncMode);
+        WriteOptionInt(OptionsSaveKeys.VSyncMode, (int)clamped);
+        ApplyVSyncMode();
+        ApplyMaxFPS();
     }
 
-    public void SetMaxFPS(int maxFps)
+    private void SetMaxFPS(int maxFps)
     {
-        _options.MaxFPS = Math.Max(0, maxFps);
-    }
-
-    public void SetDifficulty(Difficulty difficulty)
-    {
-        _options.Difficulty = difficulty;
-    }
-
-    public void SetMouseSensitivity(float sensitivity)
-    {
-        _options.MouseSensitivity = Math.Clamp(sensitivity, 0.1f, 2.0f);
+        WriteOptionInt(OptionsSaveKeys.MaxFps, Math.Max(0, maxFps));
+        ApplyMaxFPS();
     }
 
     internal IEnumerable<RegisteredSliderOption> GetSliderOptions()
@@ -170,39 +304,33 @@ public partial class OptionsManager : IDisposable, IOptionsService
     }
 
     /// <summary>
-    /// Registers a custom slider option class.
+    /// Registers a custom option class.
     /// </summary>
-    public void AddSlider(SliderOptionDefinition option)
+    public void AddOption(OptionDefinition option)
     {
-        RegisteredSliderOption slider = _customRegistry.AddSlider(option);
-        SliderOptionRegistered?.Invoke(slider);
-    }
+        ArgumentNullException.ThrowIfNull(option);
 
-    /// <summary>
-    /// Registers a custom dropdown option class.
-    /// </summary>
-    public void AddDropdown(DropdownOptionDefinition option)
-    {
-        RegisteredDropdownOption dropdown = _customRegistry.AddDropdown(option);
-        DropdownOptionRegistered?.Invoke(dropdown);
-    }
-
-    /// <summary>
-    /// Registers a custom line edit option class.
-    /// </summary>
-    public void AddLineEdit(LineEditOptionDefinition option)
-    {
-        RegisteredLineEditOption lineEdit = _customRegistry.AddLineEdit(option);
-        LineEditOptionRegistered?.Invoke(lineEdit);
-    }
-
-    /// <summary>
-    /// Registers a custom boolean toggle option class.
-    /// </summary>
-    public void AddToggle(ToggleOptionDefinition option)
-    {
-        RegisteredToggleOption toggle = _customRegistry.AddToggle(option);
-        ToggleOptionRegistered?.Invoke(toggle);
+        switch (option)
+        {
+            case SliderOptionDefinition slider:
+                RegisteredSliderOption registeredSlider = _customRegistry.AddSlider(slider);
+                SliderOptionRegistered?.Invoke(registeredSlider);
+                break;
+            case DropdownOptionDefinition dropdown:
+                RegisteredDropdownOption registeredDropdown = _customRegistry.AddDropdown(dropdown);
+                DropdownOptionRegistered?.Invoke(registeredDropdown);
+                break;
+            case LineEditOptionDefinition lineEdit:
+                RegisteredLineEditOption registeredLineEdit = _customRegistry.AddLineEdit(lineEdit);
+                LineEditOptionRegistered?.Invoke(registeredLineEdit);
+                break;
+            case ToggleOptionDefinition toggle:
+                RegisteredToggleOption registeredToggle = _customRegistry.AddToggle(toggle);
+                ToggleOptionRegistered?.Invoke(registeredToggle);
+                break;
+            default:
+                throw new NotSupportedException($"Unsupported option definition type: {option.GetType().Name}");
+        }
     }
 
     private void ToggleFullscreen()
@@ -237,7 +365,7 @@ public partial class OptionsManager : IDisposable, IOptionsService
         if (Engine.IsEmbeddedInEditor())
             return;
 
-        switch (_options.WindowMode)
+        switch (GetWindowMode())
         {
             case WindowMode.Windowed:
                 DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
@@ -256,7 +384,6 @@ public partial class OptionsManager : IDisposable, IOptionsService
         if (Engine.IsEmbeddedInEditor())
             return;
 
-        DisplayServer.WindowSetMode(DisplayServer.WindowMode.ExclusiveFullscreen);
         SetWindowMode(WindowMode.Fullscreen);
     }
 
@@ -265,13 +392,12 @@ public partial class OptionsManager : IDisposable, IOptionsService
         if (Engine.IsEmbeddedInEditor())
             return;
 
-        DisplayServer.WindowSetMode(DisplayServer.WindowMode.Windowed);
         SetWindowMode(WindowMode.Windowed);
     }
 
     private void ApplyVSyncMode()
     {
-        DisplayServer.WindowSetVsyncMode(_options.VSyncMode);
+        DisplayServer.WindowSetVsyncMode(GetVSyncMode());
     }
 
     private void ApplyWindowSize()
@@ -279,7 +405,7 @@ public partial class OptionsManager : IDisposable, IOptionsService
         if (Engine.IsEmbeddedInEditor())
             return;
 
-        Vector2I windowSize = new(_options.WindowWidth, _options.WindowHeight);
+        Vector2I windowSize = new(GetWindowWidth(), GetWindowHeight());
 
         if (windowSize != Vector2I.Zero)
         {
@@ -297,20 +423,23 @@ public partial class OptionsManager : IDisposable, IOptionsService
     {
         if (DisplayServer.WindowGetVsyncMode() == DisplayServer.VSyncMode.Disabled)
         {
-            Engine.MaxFps = _options.MaxFPS;
+            Engine.MaxFps = GetMaxFps();
         }
     }
 
     private void ApplyLanguage()
     {
-        TranslationServer.SetLocale(_options.Language.ToString()[..2].ToLower());
+        Language language = GetLanguage();
+        TranslationServer.SetLocale(language.ToString()[..2].ToLower());
     }
 
     private void ApplyAntialiasing()
     {
+        int antialiasing = GetAntialiasing();
+
         // Set both 2D and 3D settings to the same value.
-        ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_2d", _options.Antialiasing);
-        ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_3d", _options.Antialiasing);
+        ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_2d", antialiasing);
+        ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_3d", antialiasing);
     }
 
     private void OnWindowResized()
@@ -319,7 +448,85 @@ public partial class OptionsManager : IDisposable, IOptionsService
             return;
 
         Vector2I size = DisplayServer.WindowGetSize();
-        SetWindowSize(size.X, size.Y);
+        WriteOptionInt(OptionsSaveKeys.WindowWidth, Math.Max(0, size.X));
+        WriteOptionInt(OptionsSaveKeys.WindowHeight, Math.Max(0, size.Y));
+    }
+
+    private Language GetLanguage()
+    {
+        Language language = CoerceLanguage(ReadOptionInt(OptionsSaveKeys.Language, DefaultLanguage));
+        WriteOptionInt(OptionsSaveKeys.Language, (int)language);
+        return language;
+    }
+
+    private int GetAntialiasing()
+    {
+        int antialiasing = Math.Clamp(ReadOptionInt(OptionsSaveKeys.Antialiasing, DefaultAntialiasing), 0, 3);
+        WriteOptionInt(OptionsSaveKeys.Antialiasing, antialiasing);
+        return antialiasing;
+    }
+
+    private WindowMode GetWindowMode()
+    {
+        WindowMode windowMode = CoerceWindowMode(ReadOptionInt(OptionsSaveKeys.WindowMode, DefaultWindowMode));
+        WriteOptionInt(OptionsSaveKeys.WindowMode, (int)windowMode);
+        return windowMode;
+    }
+
+    private VSyncMode GetVSyncMode()
+    {
+        VSyncMode mode = CoerceVSyncMode(ReadOptionInt(OptionsSaveKeys.VSyncMode, DefaultVSyncMode));
+        WriteOptionInt(OptionsSaveKeys.VSyncMode, (int)mode);
+        return mode;
+    }
+
+    private int GetWindowWidth()
+    {
+        int width = Math.Max(0, ReadOptionInt(OptionsSaveKeys.WindowWidth, DefaultWindowWidth));
+        WriteOptionInt(OptionsSaveKeys.WindowWidth, width);
+        return width;
+    }
+
+    private int GetWindowHeight()
+    {
+        int height = Math.Max(0, ReadOptionInt(OptionsSaveKeys.WindowHeight, DefaultWindowHeight));
+        WriteOptionInt(OptionsSaveKeys.WindowHeight, height);
+        return height;
+    }
+
+    private int GetMaxFps()
+    {
+        int fps = Math.Max(0, ReadOptionInt(OptionsSaveKeys.MaxFps, DefaultMaxFps));
+        WriteOptionInt(OptionsSaveKeys.MaxFps, fps);
+        return fps;
+    }
+
+    private static Language CoerceLanguage(int raw)
+    {
+        int clamped = Math.Clamp(raw, (int)Language.English, (int)Language.Japanese);
+        return (Language)clamped;
+    }
+
+    private static WindowMode CoerceWindowMode(int raw)
+    {
+        return raw switch
+        {
+            (int)WindowMode.Windowed => WindowMode.Windowed,
+            (int)WindowMode.Borderless => WindowMode.Borderless,
+            (int)WindowMode.Fullscreen => WindowMode.Fullscreen,
+            _ => WindowMode.Windowed,
+        };
+    }
+
+    private static VSyncMode CoerceVSyncMode(int raw)
+    {
+        return raw switch
+        {
+            (int)VSyncMode.Disabled => VSyncMode.Disabled,
+            (int)VSyncMode.Enabled => VSyncMode.Enabled,
+            (int)VSyncMode.Adaptive => VSyncMode.Adaptive,
+            _ => VSyncMode.Enabled,
+        };
     }
 
     private Task SaveSettingsOnQuit()

@@ -16,7 +16,6 @@ public partial class Player : CharacterBody3D
     public override void _Ready()
     {
         IOptionsService optionsService = Game.Options;
-
         FpsOptions.Register(optionsService);
 
         PlayerRotation rotationComponent = new(this, _camera, optionsService);

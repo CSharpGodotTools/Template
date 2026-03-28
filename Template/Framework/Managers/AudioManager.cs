@@ -39,17 +39,17 @@ public class AudioManager : IDisposable, IAudioService
     /// </summary>
     public void PlayMusic(AudioStream song, bool instant = true, double fadeOut = 1.5, double fadeIn = 0.5)
     {
-        ResourceOptions settings = _optionsManager.Settings;
+        float musicVolume = _optionsManager.Settings.MusicVolume;
 
         if (!instant && _musicPlayer.Playing)
         {
             // Slowly transition to the new song
-            PlayAudioCrossfade(_musicPlayer, song, settings.MusicVolume, fadeOut, fadeIn);
+            PlayAudioCrossfade(_musicPlayer, song, musicVolume, fadeOut, fadeIn);
         }
         else
         {
             // Instantly switch to the new song
-            PlayAudio(_musicPlayer, song, settings.MusicVolume);
+            PlayAudio(_musicPlayer, song, musicVolume);
         }
     }
 
@@ -58,12 +58,12 @@ public class AudioManager : IDisposable, IAudioService
     /// </summary>
     public void PlaySFX(AudioStream sound, Vector2 position, float minPitch = MinDefaultRandomPitch, float maxPitch = MaxDefaultRandomPitch)
     {
-        ResourceOptions settings = _optionsManager.Settings;
+        float sfxVolume = _optionsManager.Settings.SFXVolume;
         AudioStreamPlayer2D sfxPlayer = _sfxPool.Acquire();
 
         sfxPlayer.GlobalPosition = position;
         sfxPlayer.Stream = sound;
-        sfxPlayer.VolumeDb = NormalizeConfigVolume(settings.SFXVolume);
+        sfxPlayer.VolumeDb = NormalizeConfigVolume(sfxVolume);
         sfxPlayer.PitchScale = GetRandomPitch(minPitch, maxPitch);
         sfxPlayer.Finished += OnFinished;
         sfxPlayer.Play();
@@ -91,8 +91,7 @@ public class AudioManager : IDisposable, IAudioService
     /// </summary>
     public void SetMusicVolume(float volume)
     {
-        _musicPlayer.VolumeDb = NormalizeConfigVolume(volume);
-        _optionsManager.SetMusicVolume(volume);
+        _optionsManager.Settings.MusicVolume = volume;
     }
 
     /// <summary>
@@ -100,8 +99,16 @@ public class AudioManager : IDisposable, IAudioService
     /// </summary>
     public void SetSFXVolume(float volume)
     {
-        _optionsManager.SetSFXVolume(volume);
+        _optionsManager.Settings.SFXVolume = volume;
+    }
 
+    internal void ApplyMusicVolumeFromSettings(float volume)
+    {
+        _musicPlayer.VolumeDb = NormalizeConfigVolume(volume);
+    }
+
+    internal void ApplySfxVolumeFromSettings(float volume)
+    {
         float mappedVolume = NormalizeConfigVolume(volume);
 
         foreach (AudioStreamPlayer2D sfxPlayer in _sfxPool.ActiveNodes)

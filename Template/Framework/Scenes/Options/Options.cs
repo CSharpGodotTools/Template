@@ -12,30 +12,18 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
 
     // Fields
     private OptionsNav _optionsNav = null!;
-    private OptionsGeneral _optionsGeneral = null!;
-    private OptionsDisplay _optionsDisplay = null!;
-    private OptionsGraphics _optionsGraphics = null!;
-    private OptionsAudio _optionsAudio = null!;
     private OptionsInput _optionsInput = null!;
     private OptionsCustom _optionsCustom = null!;
-    private Node _navNode = null!;
     private bool _isConfigured;
     private OptionsManager _optionsManager = null!;
     private SceneManager _sceneManager = null!;
     private FocusOutlineManager _focusOutlineManager = null!;
-    private AudioManager _audioManager = null!;
 
     public void Configure(GameServices services)
     {
-        Configure(services.OptionsManager, services.SceneManager, services.FocusOutline, services.AudioManager);
-    }
-
-    public void Configure(OptionsManager optionsManager, SceneManager sceneManager, FocusOutlineManager focusOutlineManager, AudioManager audioManager)
-    {
-        _optionsManager = optionsManager;
-        _sceneManager = sceneManager;
-        _focusOutlineManager = focusOutlineManager;
-        _audioManager = audioManager;
+        _optionsManager = services.OptionsManager;
+        _sceneManager = services.SceneManager;
+        _focusOutlineManager = services.FocusOutline;
         _isConfigured = true;
     }
 
@@ -50,14 +38,17 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
         if (!_isConfigured)
             throw new InvalidOperationException($"{nameof(Options)} was not configured before _Ready.");
 
-        _navNode = GetNode("%Nav");
         _optionsNav = new OptionsNav(this, GetNode<Label>("%Title"), _optionsManager);
-        _optionsGeneral = new OptionsGeneral(this, _optionsNav.GeneralButton, _optionsManager);
-        _optionsDisplay = new OptionsDisplay(this, _optionsNav.DisplayButton, _optionsManager);
-        _optionsGraphics = new OptionsGraphics(this, _optionsNav.GraphicsButton, _optionsManager);
-        _optionsAudio = new OptionsAudio(this, _optionsManager, _audioManager);
-        _optionsInput = new OptionsInput(this, _optionsNav.InputButton, _optionsManager, _sceneManager, _focusOutlineManager);
+
+        ClearLegacyTabRows();
+        RegisterTabOptions();
+
+        if (!_optionsNav.TryGetTabButton(OptionsTabs.Input, out Button inputNavButton))
+            throw new InvalidOperationException($"Input tab button '{OptionsTabs.Input}' was not found.");
+
+        _optionsInput = new OptionsInput(this, inputNavButton, _optionsManager, _sceneManager, _focusOutlineManager);
         _optionsCustom = new OptionsCustom(_optionsNav, _optionsManager);
+        _optionsNav.RefreshOptionalTabs(OptionsTabs.Input);
 
         VisibilityChanged += OnVisibilityChanged;
 
@@ -71,18 +62,9 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
         _optionsInput.HandleInput(@event);
     }
 
-    public override void _Process(double delta)
-    {
-        _optionsDisplay.UpdatePopupIfOpen();
-    }
-
     public override void _ExitTree()
     {
         _optionsNav.Dispose();
-        _optionsGeneral.Dispose();
-        _optionsDisplay.Dispose();
-        _optionsGraphics.Dispose();
-        _optionsAudio.Dispose();
         _optionsInput.Dispose();
         _optionsCustom.Dispose();
 
@@ -91,6 +73,30 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
     }
 
     // Subscribers
+    private void ClearLegacyTabRows()
+    {
+        foreach (string tabName in _optionsNav.GetTabNames())
+        {
+            if (string.Equals(tabName, OptionsTabs.Input, StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            if (!_optionsNav.TryGetTabContainer(tabName, out VBoxContainer tabContainer))
+                continue;
+
+            foreach (Node child in tabContainer.GetChildren().Cast<Node>().ToArray())
+            {
+                tabContainer.RemoveChild(child);
+                child.QueueFree();
+            }
+        }
+    }
+
+    private void RegisterTabOptions()
+    {
+        foreach (IOptionsTabRegistrar registrar in DefaultOptionsTabRegistrars.Create())
+            registrar.Register(_optionsManager);
+    }
+
     private void SetupPopupAnimations()
     {
         SceneTree tree = GetTree();
@@ -126,18 +132,19 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
 
     private void OnPostSceneChanged()
     {
-        if (Visible)
-        {
-            _focusOutlineManager.Focus(_navNode.GetNode<Button>(_optionsManager.GetCurrentTab()));
-        }
+        if (!Visible)
+            return;
+
+        if (_optionsNav.TryGetTabButton(_optionsManager.GetCurrentTab(), out Button tabButton))
+            _focusOutlineManager.Focus(tabButton);
     }
 
     private void OnVisibilityChanged()
     {
-        if (Visible)
-        {
-            _navNode.GetNode<Button>(_optionsManager.GetCurrentTab()).GrabFocus();
-            _optionsDisplay.RefreshWindowSizeDisplay();
-        }
+        if (!Visible)
+            return;
+
+        if (_optionsNav.TryGetTabButton(_optionsManager.GetCurrentTab(), out Button tabButton))
+            tabButton.GrabFocus();
     }
 }

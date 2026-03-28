@@ -35,7 +35,7 @@ public class PlayerRotation(Player player, Camera3D camera, IOptionsService opti
 
         if (@event is InputEventMouseMotion motion)
         {
-            float sensitivity = optionsService.Settings.MouseSensitivity * 0.001f;
+            float sensitivity = FpsOptions.GetMouseSensitivity(optionsService) * 0.001f;
 
             _yaw -= motion.Relative.X * sensitivity;
             _pitch -= motion.Relative.Y * sensitivity;
