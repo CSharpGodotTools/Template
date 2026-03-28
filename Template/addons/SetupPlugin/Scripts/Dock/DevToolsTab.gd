@@ -8,6 +8,7 @@ extends "res://addons/SetupPlugin/Scripts/Dock/DevToolsTabLayout.gd"
 
 const PROJECT_ROOT_PATH: String = "res://"
 const ANTI_ALIASING_PATH_3D: String = "rendering/anti_aliasing/quality/msaa_3d"
+const SOLUTION_FILE_NAME: String = "Template.sln"
 const DevToolsUidCleanupScript = preload("DevToolsUidCleanup.gd")
 const EditorSceneActionsScript = preload("EditorSceneActions.gd")
 const NullableProjectSettingsScript = preload("NullableProjectSettings.gd")
@@ -58,7 +59,7 @@ func _project_root() -> String:
 func _register_events() -> void:
 	if _events_registered:
 		return
-	for pair in [[_cleanup_uids_button, _on_cleanup_uids_pressed], [_nullable_button, _on_nullable_pressed], [_remove_empty_folders_button, _on_remove_empty_folders_pressed], [_close_all_scene_tabs_button, _on_close_all_scene_tabs_pressed], [_restart_editor_button, _on_restart_editor_pressed], [_expand_to_level_button, _on_expand_to_level_pressed], [_fully_expand_button, _on_fully_expand_pressed], [_fully_collapse_button, _on_fully_collapse_pressed], [_update_from_main_button, _on_update_from_main_pressed], [_update_from_release_button, _on_update_from_release_pressed], [_check_updates_button, _on_check_updates_pressed], [_reset_update_cache_button, _on_reset_update_cache_pressed], [_view_template_repo_button, _on_view_template_repo_pressed], [_link_to_commits_button, _on_link_to_commits_pressed], [_link_to_release_notes_button, _on_link_to_release_notes_pressed]]:
+	for pair in [[_open_external_editor_button, _on_open_external_editor_pressed], [_cleanup_uids_button, _on_cleanup_uids_pressed], [_nullable_button, _on_nullable_pressed], [_remove_empty_folders_button, _on_remove_empty_folders_pressed], [_close_all_scene_tabs_button, _on_close_all_scene_tabs_pressed], [_restart_editor_button, _on_restart_editor_pressed], [_expand_to_level_button, _on_expand_to_level_pressed], [_fully_expand_button, _on_fully_expand_pressed], [_fully_collapse_button, _on_fully_collapse_pressed], [_update_from_main_button, _on_update_from_main_pressed], [_update_from_release_button, _on_update_from_release_pressed], [_check_updates_button, _on_check_updates_pressed], [_reset_update_cache_button, _on_reset_update_cache_pressed], [_view_template_repo_button, _on_view_template_repo_pressed], [_link_to_commits_button, _on_link_to_commits_pressed], [_link_to_release_notes_button, _on_link_to_release_notes_pressed]]:
 		pair[0].pressed.connect(pair[1])
 	_check_updates_on_startup_checkbox.toggled.connect(_on_check_updates_on_startup_toggled)
 	_clear_color_picker.color_changed.connect(_on_clear_color_changed)
@@ -72,7 +73,7 @@ func _unregister_events() -> void:
 	if not _events_registered:
 		return
 	_events_registered = false
-	for pair in [[_cleanup_uids_button, "_on_cleanup_uids_pressed"], [_nullable_button, "_on_nullable_pressed"], [_remove_empty_folders_button, "_on_remove_empty_folders_pressed"], [_close_all_scene_tabs_button, "_on_close_all_scene_tabs_pressed"], [_restart_editor_button, "_on_restart_editor_pressed"], [_expand_to_level_button, "_on_expand_to_level_pressed"], [_fully_expand_button, "_on_fully_expand_pressed"], [_fully_collapse_button, "_on_fully_collapse_pressed"], [_update_from_main_button, "_on_update_from_main_pressed"], [_update_from_release_button, "_on_update_from_release_pressed"], [_check_updates_button, "_on_check_updates_pressed"], [_reset_update_cache_button, "_on_reset_update_cache_pressed"], [_view_template_repo_button, "_on_view_template_repo_pressed"], [_link_to_commits_button, "_on_link_to_commits_pressed"], [_link_to_release_notes_button, "_on_link_to_release_notes_pressed"]]:
+	for pair in [[_open_external_editor_button, "_on_open_external_editor_pressed"], [_cleanup_uids_button, "_on_cleanup_uids_pressed"], [_nullable_button, "_on_nullable_pressed"], [_remove_empty_folders_button, "_on_remove_empty_folders_pressed"], [_close_all_scene_tabs_button, "_on_close_all_scene_tabs_pressed"], [_restart_editor_button, "_on_restart_editor_pressed"], [_expand_to_level_button, "_on_expand_to_level_pressed"], [_fully_expand_button, "_on_fully_expand_pressed"], [_fully_collapse_button, "_on_fully_collapse_pressed"], [_update_from_main_button, "_on_update_from_main_pressed"], [_update_from_release_button, "_on_update_from_release_pressed"], [_check_updates_button, "_on_check_updates_pressed"], [_reset_update_cache_button, "_on_reset_update_cache_pressed"], [_view_template_repo_button, "_on_view_template_repo_pressed"], [_link_to_commits_button, "_on_link_to_commits_pressed"], [_link_to_release_notes_button, "_on_link_to_release_notes_pressed"]]:
 		_disconnect_signal(pair[0], "pressed", pair[1])
 	_disconnect_signal(_check_updates_on_startup_checkbox, "toggled", "_on_check_updates_on_startup_toggled")
 	_disconnect_signal(_clear_color_picker, "color_changed", "_on_clear_color_changed")
@@ -94,17 +95,6 @@ func _set_status(text: String) -> void:
 	_status_label.text = text
 	_status_label.modulate = Color(0.6, 0.95, 0.6)
 
-# Updates the status label shown at the bottom of the Visual tab.
-func _set_visual_status(text: String) -> void:
-	if _visual_status_label == null:
-		return
-	if text.is_empty():
-		_visual_status_label.text = " "
-		_visual_status_label.modulate = Color(0.75, 0.75, 0.75)
-		return
-	_visual_status_label.text = text
-	_visual_status_label.modulate = Color(0.6, 0.95, 0.6)
-
 # Updates the status label in the Update tab only.
 func _set_update_status(text: String) -> void:
 	_set_update_feedback(text)
@@ -119,7 +109,6 @@ func _refresh_editor_filesystem() -> void:
 # Clears the status label once the feedback display duration elapses.
 func _on_feedback_timer_timeout() -> void:
 	_set_status("")
-	_set_visual_status("")
 
 # Updates the green update feedback label. An empty string hides its text.
 func _set_update_feedback(text: String) -> void:
@@ -171,35 +160,113 @@ func _on_restart_editor_pressed() -> void:
 	_feedback_timer.start()
 	_editor_scene_actions.restart_editor(true)
 
+# Opens the selected external editor, falling back to the system default.
+func _on_open_external_editor_pressed() -> void:
+	var project_root: String = _project_root()
+	var solution_path: String = project_root.path_join(SOLUTION_FILE_NAME)
+	var open_target: String = solution_path if FileAccess.file_exists(solution_path) else project_root
+	var selection: String = _selected_external_editor_key()
+	var opened: bool = false
+
+	match selection:
+		EXTERNAL_EDITOR_VSCODE:
+			opened = _open_in_vscode(project_root)
+		EXTERNAL_EDITOR_VISUAL_STUDIO:
+			opened = _open_in_visual_studio(open_target)
+		EXTERNAL_EDITOR_RIDER:
+			opened = _open_in_rider(open_target)
+		_:
+			opened = _open_with_default(open_target)
+
+	_set_status("Opened external editor." if opened else "Could not open external editor. Check your IDE install or PATH.")
+	_feedback_timer.start()
+
+func _selected_external_editor_key() -> String:
+	if _external_editor_options == null:
+		return EXTERNAL_EDITOR_AUTO
+	var index: int = _external_editor_options.selected
+	var meta: Variant = _external_editor_options.get_item_metadata(index)
+	if meta is String and not (meta as String).is_empty():
+		return str(meta)
+	return EXTERNAL_EDITOR_AUTO
+
+func _open_in_vscode(project_root: String) -> bool:
+	var os_name: String = OS.get_name()
+	if os_name == "macOS":
+		if _try_launch("open", ["-a", "Visual Studio Code", project_root]):
+			return true
+	if _try_launch("code", ["-r", project_root]):
+		return true
+	if _try_launch("code-insiders", ["-r", project_root]):
+		return true
+	var uri_path: String = project_root.replace(" ", "%20")
+	return OS.shell_open("vscode://file/%s" % uri_path) == OK
+
+func _open_in_visual_studio(solution_path: String) -> bool:
+	var os_name: String = OS.get_name()
+	if os_name == "Windows":
+		if _try_launch("devenv", [solution_path]):
+			return true
+		if _try_launch("devenv.exe", [solution_path]):
+			return true
+	elif os_name == "macOS":
+		if _try_launch("open", ["-a", "Visual Studio", solution_path]):
+			return true
+	return _open_with_default(solution_path)
+
+func _open_in_rider(solution_path: String) -> bool:
+	var os_name: String = OS.get_name()
+	if os_name == "Windows":
+		for exe in ["rider64.exe", "rider.exe", "rider64", "rider"]:
+			if _try_launch(exe, [solution_path]):
+				return true
+	elif os_name == "macOS":
+		if _try_launch("open", ["-a", "Rider", solution_path]):
+			return true
+		if _try_launch("open", ["-a", "JetBrains Rider", solution_path]):
+			return true
+	else:
+		for exe in ["rider", "rider64", "rider.sh", "jetbrains-rider"]:
+			if _try_launch(exe, [solution_path]):
+				return true
+	return _open_with_default(solution_path)
+
+func _open_with_default(target_path: String) -> bool:
+	return OS.shell_open(target_path) == OK
+
+func _try_launch(executable: String, args: Array[String]) -> bool:
+	var pid: int = OS.create_process(executable, args, false)
+	return pid != -1
+
 # Expands the Scene dock hierarchy to the depth set in the SpinBox.
 func _on_expand_to_level_pressed() -> void:
 	var level: int = int(_hierarchy_level_spinbox.value)
 	var changed_count: int = _scene_hierarchy_actions.expand_to_level(level)
-	_set_visual_status("Expanded hierarchy to level %d" % level if changed_count > 0 else "No scene hierarchy available")
+	_set_status("Expanded hierarchy to level %d" % level if changed_count > 0 else "No scene hierarchy available")
 	_feedback_timer.start()
 
 # Fully expands every node in the Scene dock hierarchy.
 func _on_fully_expand_pressed() -> void:
-	_set_visual_status("Fully expanded hierarchy" if _scene_hierarchy_actions.fully_expand() > 0 else "No scene hierarchy available")
+	_set_status("Fully expanded hierarchy" if _scene_hierarchy_actions.fully_expand() > 0 else "No scene hierarchy available")
 	_feedback_timer.start()
 
 # Collapses the Scene dock hierarchy to just the root level.
 func _on_fully_collapse_pressed() -> void:
-	_set_visual_status("Fully collapsed hierarchy" if _scene_hierarchy_actions.fully_collapse() > 0 else "No scene hierarchy available")
+	_set_status("Fully collapsed hierarchy" if _scene_hierarchy_actions.fully_collapse() > 0 else "No scene hierarchy available")
 	_feedback_timer.start()
 
 # Persists the chosen viewport clear colour to project settings immediately.
 func _on_clear_color_changed(color: Color) -> void:
 	ProjectSettings.set_setting(DEFAULT_CLEAR_COLOR_PATH, color)
 	ProjectSettings.save()
-	_set_visual_status("Updated clear color.")
+	_set_status("Updated clear color.")
 	_feedback_timer.start()
 
 # Writes the chosen MSAA level to both 2D and 3D project settings.
 func _on_anti_aliasing_item_selected(index: int) -> void:
 	ProjectSettings.set_setting(ANTI_ALIASING_PATH_2D, index)
 	ProjectSettings.set_setting(ANTI_ALIASING_PATH_3D, index)
-	_set_visual_status("Anti-aliasing updated.")
+	_set_status("Anti-aliasing updated.")
 	_feedback_timer.start()
 
 # Reads the current nullable state from Template.csproj and sets the button

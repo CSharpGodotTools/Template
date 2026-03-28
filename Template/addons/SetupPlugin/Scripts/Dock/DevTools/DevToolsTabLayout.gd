@@ -1,8 +1,7 @@
 @tool
 # Constructs and owns all UI controls for the Dev Tools dock.
-# Provides three tab sections:
-#   Dev    – editor utility buttons (UID cleanup, nullable toggle, scene actions, etc.)
-#   Visual – rendering settings (clear colour, anti-aliasing, hierarchy controls)
+# Provides two tab sections:
+#   Dev    – editor utilities, hierarchy controls, rendering settings, and IDE launch
 #   Update – template synchronisation buttons and backup reminder
 extends VBoxContainer
 
@@ -15,9 +14,14 @@ const TAB_MARGIN_TOP_PX: int = 10
 const TAB_MARGIN_BOTTOM_PX: int = 0
 const ANTI_ALIASING_PATH_2D: String = "rendering/anti_aliasing/quality/msaa_2d"
 const DEFAULT_CLEAR_COLOR_PATH: String = "rendering/environment/defaults/default_clear_color"
+const EXTERNAL_EDITOR_AUTO: String = "auto"
+const EXTERNAL_EDITOR_VSCODE: String = "vscode"
+const EXTERNAL_EDITOR_VISUAL_STUDIO: String = "visual_studio"
+const EXTERNAL_EDITOR_RIDER: String = "rider"
 
 var _status_label: Label
-var _visual_status_label: Label
+var _external_editor_options: OptionButton
+var _open_external_editor_button: Button
 var _cleanup_uids_button: Button
 var _nullable_button: Button
 var _remove_empty_folders_button: Button
@@ -56,12 +60,15 @@ func _create_controls() -> void:
 	_status_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_status_label.text = " "
 
-	_visual_status_label = Label.new()
-	_visual_status_label.autowrap_mode = TextServer.AutowrapMode.AUTOWRAP_WORD_SMART
-	_visual_status_label.clip_text = false
-	_visual_status_label.custom_minimum_size = Vector2(0, 22)
-	_visual_status_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_visual_status_label.text = " "
+	_external_editor_options = OptionButton.new()
+	_external_editor_options.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_external_editor_options.custom_minimum_size = Vector2(220, 0)
+	_add_external_editor_option("Auto (System Default)", EXTERNAL_EDITOR_AUTO)
+	_add_external_editor_option("Visual Studio Code", EXTERNAL_EDITOR_VSCODE)
+	_add_external_editor_option("Visual Studio", EXTERNAL_EDITOR_VISUAL_STUDIO)
+	_add_external_editor_option("JetBrains Rider", EXTERNAL_EDITOR_RIDER)
+
+	_open_external_editor_button = _create_button("Open External Editor", 210)
 
 	_cleanup_uids_button = _create_button("Cleanup uids", 150)
 	_remove_empty_folders_button = _create_button("Remove Empty Folders", 180)
@@ -137,7 +144,7 @@ func _create_controls() -> void:
 	_update_feedback_timer.wait_time = UPDATE_FEEDBACK_DURATION
 	_update_feedback_timer.one_shot = true
 
-# Assembles the three-tab container and attaches it to this VBoxContainer.
+# Assembles the two-tab container and attaches it to this VBoxContainer.
 # Must be called after _create_controls.
 func _build_layout() -> void:
 	var tabs: TabContainer = TabContainer.new()
@@ -148,7 +155,6 @@ func _build_layout() -> void:
 	tabs.add_theme_stylebox_override("panel", no_margin_style)
 	tabs.add_theme_stylebox_override("tabbar_background", no_margin_style)
 	tabs.add_child(_build_dev_tab())
-	tabs.add_child(_build_visual_tab())
 	tabs.add_child(_build_update_tab())
 
 	var content: VBoxContainer = VBoxContainer.new()
@@ -160,51 +166,70 @@ func _build_layout() -> void:
 	add_child(content)
 
 # Builds and returns the Dev tab content:
-# clipboard errors, uid cleanup, nullable toggle, hierarchy controls, scene actions.
+# external editor launch, project utilities, hierarchy tools, and rendering settings.
 func _build_dev_tab() -> VBoxContainer:
 	var dev_tab: VBoxContainer = VBoxContainer.new()
 	dev_tab.name = "Dev"
 
 	var content: VBoxContainer = VBoxContainer.new()
 	content.add_theme_constant_override("separation", 8)
-	content.add_child(_create_row([_cleanup_uids_button, _remove_empty_folders_button, _nullable_button, _close_all_scene_tabs_button, _restart_editor_button], 8))
+
+	var top_row: HBoxContainer = HBoxContainer.new()
+	top_row.add_theme_constant_override("separation", 16)
+	top_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var left_column: VBoxContainer = VBoxContainer.new()
+	left_column.add_theme_constant_override("separation", 8)
+	left_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	left_column.add_child(_create_section_label("External Editor"))
+	var editor_row: HBoxContainer = HBoxContainer.new()
+	editor_row.add_theme_constant_override("separation", 8)
+	editor_row.add_child(_external_editor_options)
+	editor_row.add_child(_open_external_editor_button)
+	left_column.add_child(editor_row)
+
+	left_column.add_child(_create_section_label("Project Tools"))
+	var tools_grid: GridContainer = GridContainer.new()
+	tools_grid.columns = 2
+	tools_grid.add_theme_constant_override("h_separation", 8)
+	tools_grid.add_theme_constant_override("v_separation", 8)
+	for tool_button in [_cleanup_uids_button, _remove_empty_folders_button, _nullable_button, _close_all_scene_tabs_button, _restart_editor_button]:
+		tool_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		tools_grid.add_child(tool_button)
+	left_column.add_child(tools_grid)
+
+	var right_column: VBoxContainer = VBoxContainer.new()
+	right_column.add_theme_constant_override("separation", 8)
+	right_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	right_column.add_child(_create_section_label("Scene Hierarchy"))
+	_expand_to_level_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_fully_expand_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_fully_collapse_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var hierarchy_row: HBoxContainer = HBoxContainer.new()
+	hierarchy_row.add_theme_constant_override("separation", 8)
+	hierarchy_row.add_child(_expand_to_level_button)
+	hierarchy_row.add_child(_hierarchy_level_spinbox)
+	hierarchy_row.add_child(_fully_expand_button)
+	hierarchy_row.add_child(_fully_collapse_button)
+	right_column.add_child(hierarchy_row)
+
+	right_column.add_child(_create_section_label("Rendering"))
+	var rendering_column: VBoxContainer = VBoxContainer.new()
+	rendering_column.add_theme_constant_override("separation", 8)
+	_add_labeled_control("Clear Color", _clear_color_picker, rendering_column)
+	_add_labeled_control("Anti Aliasing", _anti_aliasing_options, rendering_column)
+	right_column.add_child(rendering_column)
+
+	top_row.add_child(left_column)
+	top_row.add_child(right_column)
+	content.add_child(top_row)
+
 	content.add_child(_status_label)
 
 	dev_tab.add_child(_wrap_with_tab_margin(content))
 	return dev_tab
-
-# Builds and returns the Visual tab content:
-# viewport clear colour picker, MSAA dropdown, and hierarchy depth controls.
-func _build_visual_tab() -> VBoxContainer:
-	var visual_tab: VBoxContainer = VBoxContainer.new()
-	visual_tab.name = "Visual"
-
-	var content: VBoxContainer = VBoxContainer.new()
-	content.add_theme_constant_override("separation", 8)
-
-	var split_row: HBoxContainer = HBoxContainer.new()
-	split_row.add_theme_constant_override("separation", 16)
-
-	var rendering_column: VBoxContainer = VBoxContainer.new()
-	rendering_column.add_theme_constant_override("separation", 8)
-	rendering_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_add_labeled_control("Clear Color", _clear_color_picker, rendering_column)
-	_add_labeled_control("Anti Aliasing", _anti_aliasing_options, rendering_column)
-
-	var hierarchy_column: VBoxContainer = VBoxContainer.new()
-	hierarchy_column.add_theme_constant_override("separation", 8)
-	hierarchy_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	var hierarchy_label: Label = Label.new()
-	hierarchy_label.text = "Hierarchy"
-	hierarchy_column.add_child(hierarchy_label)
-	hierarchy_column.add_child(_create_row([_expand_to_level_button, _hierarchy_level_spinbox, _fully_expand_button, _fully_collapse_button], 8))
-
-	split_row.add_child(rendering_column)
-	split_row.add_child(hierarchy_column)
-	content.add_child(split_row)
-	content.add_child(_visual_status_label)
-	visual_tab.add_child(_wrap_with_tab_margin(content))
-	return visual_tab
 
 # Builds and returns the Update tab content:
 # update-from-main/release buttons and a backup reminder label.
@@ -349,3 +374,16 @@ func _create_checkbox(text: String, pressed: bool) -> CheckButton:
 	checkbox.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	checkbox.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	return checkbox
+
+func _add_external_editor_option(label: String, key: String) -> void:
+	var index: int = _external_editor_options.item_count
+	_external_editor_options.add_item(label)
+	_external_editor_options.set_item_metadata(index, key)
+
+func _create_section_label(text: String) -> Label:
+	var label: Label = Label.new()
+	label.text = text
+	label.modulate = Color(0.82, 0.82, 0.82)
+	label.add_theme_font_size_override("font_size", 14)
+	label.autowrap_mode = TextServer.AutowrapMode.AUTOWRAP_WORD_SMART
+	return label
