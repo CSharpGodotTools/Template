@@ -2,6 +2,8 @@
 name: GdUnit4 Tests
 on:
   push: &project_change_filter
+    branches:
+      - main
     paths:
       - 'Template/**/*.cs'
       - 'Template/**/*.gd'
@@ -32,7 +34,7 @@ jobs:
           project_dir: './Template'
           paths: |
             res://Framework/Testing
-            res://Framework/Netcode/Testing
+            res://Framework/Netcode/Testing/Tests
           console-verbosity: 'normal'
           publish-report: false
           upload-report: true
