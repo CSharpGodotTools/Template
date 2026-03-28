@@ -50,25 +50,20 @@ Packet scripts are kept small. The `Write` and `Read` methods are generated for 
 Tested and works with up to 500 clients sending positions to each other.
 
 ### Your First Netcode
-Create these packets.
 
 ```cs
+// Packets
 public partial class CPlayerJoined : ClientPacket
 {
     public string Username { get; set; }
 }
-```
 
-```cs
 public partial class SPlayerPositions : ServerPacket
 {
     public Dictionary<uint, Vector2> Positions { get; set; }
 }
-```
 
-Create the game client.
-
-```cs
+// Client
 public partial class GameClient : GodotClient
 {
     public GameClient()
@@ -84,11 +79,8 @@ public partial class GameClient : GodotClient
         Send(new CPlayerJoined("Valk"));
     }
 }
-```
 
-Create the game server.
-
-```cs
+// Server
 public partial class GameServer : GodotServer
 {
     public Dictionary<uint, Vector2> Players { get; } = new();
@@ -108,11 +100,8 @@ public partial class GameServer : GodotServer
         Players.Remove(peerId);
     }
 }
-```
 
-Start the server and client.
-
-```cs
+// World
 public partial class World : Node
 {
     private const int Port = 25565;
@@ -123,6 +112,8 @@ public partial class World : Node
     public override void _Ready()
     {
         _net = new Net<GameClient, GameServer>();
+
+        // Start server and client
         _net.StartServer(Port);
         _net.StartClient(Ip, Port);
     }
@@ -164,14 +155,13 @@ public partial class CPacketPlayerPosition
 
 If a type is not supported, you will need to manually override `Write` and `Read`. Manually overriding the methods prevents the source gen from generating anything. You should get a warning in your IDE telling you the type is not supported.
 
-| Type              | Supported | Example Types                       | Additional Notes |
-| ----------------- | --------- | ----------------------------------- | -------------------------------------------------------- |
-| Primitives        | ✅        | `int`, `bool`, `ulong`              |                                                          |
-| Vectors & byte[]  | ✅        | `Vector2`, `Vector3`, `byte[]`      |                                                          |
-| Generics          | ✅        | `List<List<int>>`, `Dictionary<string, List<char>>`      |                                     |
-| Arrays            | ✅        | `int[]`, `bool[]`                             |                                                |
-| Classes & Structs | ✅        | `PlayerData`                        |                                                          |
-| Msc               | ❌        | `HashSet`, `PointLight2D`           | These types are too specific and will not be supported.  |
+| Type              | Supported | Example Types                       |
+| ----------------- | --------- | ----------------------------------- |
+| Primitives        | ✅        | `int`, `bool`, `ulong`              |
+| Vectors & byte[]  | ✅        | `Vector2`, `Vector3`, `byte[]`      |
+| Generics          | ✅        | `List<List<int>>`, `Dictionary<string, List<char>>`      |
+| Arrays            | ✅        | `int[]`, `bool[]`                             |
+| Classes & Structs | ✅        | `PlayerData`                        |
 
 You have full control over the order of which data gets sent when you override `Write` and `Read`.
 
@@ -316,8 +306,6 @@ public partial class Player : Node
 
 ### Visual Debugging
 
-Visual in-game debugging!
-
 https://github.com/user-attachments/assets/1fe282b9-f044-42cd-b9be-0e26f20b1aa6
 
 https://github.com/user-attachments/assets/2f44ae8e-0c99-4bd2-b15f-a72a70ffaa74
@@ -361,28 +349,27 @@ public class PlayerMovementComponent
 
 #### Supported Members
 
-| Member Type       | Supported  | Example Types                                 | Additional Notes                                                      |
-|-------------------|------------|-----------------------------------------------|-----------------------------------------------------------------------|
-| **Numericals**    | ✅         | `int`, `float`, `double`                      | All numerical types are supported                                     |
-| **Enums**         | ✅         | `Direction`, `Colors`                         | All enum types are supported                                          |
-| **Booleans**      | ✅         | `bool`                                        |                                                                       |
-| **Strings**       | ✅         | `string`                                      |                                                                       |
-| **Color**         | ✅         | `Color`                                       |                                                                       |
-| **Vectors**       | ✅         | `Vector2`, `Vector2I`, `Vector3`, `Vector3I`, `Vector4`, `Vector4I` |                                                 |
-| **Quaternion**    | ✅         | `Quaternion`                                  |                                                                       |
-| **NodePath**      | ✅         | `NodePath`                                    |                                                                       |
-| **StringName**    | ✅         | `StringName`                                  |                                                                       |
-| **Methods**       | ✅         |                                               | Method parameters support all listed types here                       |
-| **Static Members**| ✅         |                                               | This includes static methods, fields, and properties                  |
-| **Arrays**        | ✅         | `int[]`, `string[]`, `Vector2[]`              | Arrays support all listed types here                                  |
-| **Lists**         | ✅         | `List<string[]>`, `List<Vector2>`             | Lists support all listed types here                                   |
-| **Dictionaries**  | ✅         | `Dictionary<List<Color[]>, Vector2>`          | Dictionaries support all listed types here                            |
-| **Structs**       | ✅         | `struct`                                      |                                                                       |
-| **Classes**       | ✅         | `class`                                       |                                                                       |
-| **Resources**     | ✅         | `Resource`                                    |                                                                       |
-| **Godot Array**   | ✅         | `Godot.Collections.Array<int>`                | Both generic and non-generic types are supported.                     |
-| **Godot Dictionary** | ✅      | `Godot.Collections.Dictionary<int, bool>`     | Both generic and non-generic types are supported.                     |
-| **Godot Classes** | ❌         | `PointLight2D`, `CharacterBody3D`             |                                                                       |
+| Member Type       | Supported  | Example Types                                 |
+|-------------------|------------|-----------------------------------------------|
+| **Numericals**    | ✅         | `int`, `float`, `double`                      |
+| **Enums**         | ✅         | `Direction`, `Colors`                         |
+| **Booleans**      | ✅         | `bool`                                        |
+| **Strings**       | ✅         | `string`                                      |
+| **Color**         | ✅         | `Color`                                       |
+| **Vectors**       | ✅         | `Vector2`, `Vector2I`                         |
+| **Quaternion**    | ✅         | `Quaternion`                                  |
+| **NodePath**      | ✅         | `NodePath`                                    |
+| **StringName**    | ✅         | `StringName`                                  |
+| **Methods**       | ✅         |                                               |
+| **Static Members**| ✅         |                                               |
+| **Arrays**        | ✅         | `int[]`, `string[]`, `Vector2[]`              |
+| **Lists**         | ✅         | `List<string[]>`, `List<Vector2>`             |
+| **Dictionaries**  | ✅         | `Dictionary<List<Color[]>, Vector2>`          |
+| **Structs**       | ✅         | `struct`                                      |
+| **Classes**       | ✅         | `class`                                       |
+| **Resources**     | ✅         | `Resource`                                    |
+| **Godot Array**   | ✅         | `Godot.Collections.Array<int>`                |
+| **Godot Dictionary** | ✅      | `Godot.Collections.Dictionary<int, bool>`     |
 
 > [!NOTE]
 > No mouse interactions have been implemented in 3D, so you will only be able to use it for read only.
@@ -457,8 +444,6 @@ private void CommandDebug(string[] args)
 }
 ```
 
-<img width="344" height="330" alt="image" src="https://github.com/user-attachments/assets/d5ccf33f-316a-44ca-9950-8898a6ee14e3" />
-
 ## Utilities
 
 ### Improved Debugger Dock
@@ -532,9 +517,6 @@ public partial class Player : Node
 // Get the service from anywhere in your code
 Player player = Game.Services.Get<Player>();
 ```
-
-> [!TIP]
-> Runtime framework services are exposed via `Game`. Use `Game.OptionsManager` for updates, `Game.Options.Settings` for reads, and `Game.Application.ExitGameAsync()` for shutdown.
 
 ### Custom Main Run Args
 
