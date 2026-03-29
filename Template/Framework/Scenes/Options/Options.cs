@@ -51,12 +51,7 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
         // Register after custom bindings are subscribed so rows are built from events reliably.
         RegisterTabOptions();
 
-        _optionsNav.RefreshOptionalTabs(
-            FrameworkOptionsTabs.Input,
-            FrameworkOptionsTabs.General,
-            FrameworkOptionsTabs.Display,
-            FrameworkOptionsTabs.Graphics,
-            FrameworkOptionsTabs.Audio);
+        _optionsNav.RefreshOptionalTabs(FrameworkOptionsTabs.Input);
 
         VisibilityChanged += OnVisibilityChanged;
 

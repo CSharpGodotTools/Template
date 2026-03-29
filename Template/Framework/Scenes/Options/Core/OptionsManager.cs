@@ -19,7 +19,7 @@ public class OptionsManager : IDisposable, IOptionsService
     private readonly OptionsLifecycleComponent _lifecycle;
     private readonly OptionsSettings _settings;
 
-    private string _currentOptionsTab = FrameworkOptionsTabs.General;
+    private string _currentOptionsTab = FrameworkOptionsTabs.Input;
 
     internal OptionsManager(
         OptionsHotkeysService hotkeysService,
