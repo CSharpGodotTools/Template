@@ -180,7 +180,15 @@ public abstract partial class AutoloadsFramework : Node
                 {
                     GD.Print($"PreQuit subscriber canceled: {ex.Message}");
                 }
-                catch (Exception ex)
+                catch (ObjectDisposedException ex)
+                {
+                    GD.PrintErr($"PreQuit subscriber failed: {ex}");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    GD.PrintErr($"PreQuit subscriber failed: {ex}");
+                }
+                catch (Exception ex) when (ExceptionGuard.IsNonFatal(ex))
                 {
                     GD.PrintErr($"PreQuit subscriber failed: {ex}");
                 }

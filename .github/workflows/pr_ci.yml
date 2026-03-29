@@ -116,27 +116,27 @@ jobs:
           set -euo pipefail
 
           if [[ "${{ steps.changes.outputs.build_godotutils }}" == "true" ]]; then
-            dotnet build Template.GodotUtils/GodotUtils.csproj --no-restore -p:BuildExtras=true
+            dotnet build Template.GodotUtils/GodotUtils.csproj --no-restore -p:BuildExtras=true -warnaserror
           fi
 
           if [[ "${{ steps.changes.outputs.build_visualize }}" == "true" ]]; then
-            dotnet build Template.Visualize/Visualize.csproj --no-restore -p:BuildExtras=true
+            dotnet build Template.Visualize/Visualize.csproj --no-restore -p:BuildExtras=true -warnaserror
           fi
 
           if [[ "${{ steps.changes.outputs.build_packetgen }}" == "true" ]]; then
-            dotnet build Template.PacketGen/PacketGen/PacketGen.csproj -c Release --no-restore
+            dotnet build Template.PacketGen/PacketGen/PacketGen.csproj -c Release --no-restore -warnaserror
           fi
 
           if [[ "${{ steps.changes.outputs.build_optionsgen }}" == "true" ]]; then
-            dotnet build Template.OptionsGen/OptionsGen/OptionsGen.csproj -c Release --no-restore
+            dotnet build Template.OptionsGen/OptionsGen/OptionsGen.csproj -c Release --no-restore -warnaserror
           fi
 
           if [[ "${{ steps.changes.outputs.build_template }}" == "true" ]]; then
-            dotnet build Template/Template.csproj --no-restore
+            dotnet build Template/Template.csproj --no-restore -warnaserror
           fi
 
       - name: Full solution build
-        run: dotnet build Template.sln --no-restore
+        run: dotnet build Template.sln --no-restore -warnaserror
 
       - name: Tests
         run: dotnet test Template.PacketGen/PacketGen.Tests/PacketGen.Tests.csproj --no-build

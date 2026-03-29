@@ -24,7 +24,21 @@ internal sealed class BackgroundTaskTracker(ILoggerService logger) : IBackground
         {
             task = taskFactory(_shutdownCts.Token);
         }
-        catch (Exception exception)
+        catch (OperationCanceledException) when (_shutdownCts.IsCancellationRequested)
+        {
+            return;
+        }
+        catch (ObjectDisposedException exception)
+        {
+            _logger.LogErr(exception, $"Failed to start background task '{taskName}'");
+            return;
+        }
+        catch (InvalidOperationException exception)
+        {
+            _logger.LogErr(exception, $"Failed to start background task '{taskName}'");
+            return;
+        }
+        catch (Exception exception) when (ExceptionGuard.IsNonFatal(exception))
         {
             _logger.LogErr(exception, $"Failed to start background task '{taskName}'");
             return;
@@ -80,7 +94,15 @@ internal sealed class BackgroundTaskTracker(ILoggerService logger) : IBackground
         catch (OperationCanceledException) when (_shutdownCts.IsCancellationRequested)
         {
         }
-        catch (Exception exception)
+        catch (ObjectDisposedException exception)
+        {
+            _logger.LogErr(exception, $"Background task '{taskName}' failed");
+        }
+        catch (InvalidOperationException exception)
+        {
+            _logger.LogErr(exception, $"Background task '{taskName}' failed");
+        }
+        catch (Exception exception) when (ExceptionGuard.IsNonFatal(exception))
         {
             _logger.LogErr(exception, $"Background task '{taskName}' failed");
         }

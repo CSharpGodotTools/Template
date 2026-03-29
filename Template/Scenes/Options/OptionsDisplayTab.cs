@@ -172,11 +172,13 @@ public sealed class OptionsDisplayTab : IOptionsTabRegistrar
         Vector2I screenSize = DisplayServer.ScreenGetSize();
         Vector2I current = DisplayServer.WindowGetSize();
 
-        List<Vector2I> sizes = [
-            .. _baseWindowSizes
-                .Where(size => IsWithinScreen(size, screenSize))
-                .OrderBy(size => size.X * size.Y)
-        ];
+        List<Vector2I> sizes = [];
+        for (int index = 0; index < _baseWindowSizes.Length; index++)
+        {
+            Vector2I size = _baseWindowSizes[index];
+            if (IsWithinScreen(size, screenSize))
+                sizes.Add(size);
+        }
 
         if (current != Vector2I.Zero && !sizes.Contains(current))
             sizes.Add(current);
@@ -184,7 +186,14 @@ public sealed class OptionsDisplayTab : IOptionsTabRegistrar
         if (sizes.Count == 0)
             sizes.Add(current == Vector2I.Zero ? new Vector2I(1280, 720) : current);
 
-        return sizes.OrderBy(size => size.X * size.Y).ToList();
+        sizes.Sort(static (left, right) =>
+        {
+            int leftArea = left.X * left.Y;
+            int rightArea = right.X * right.Y;
+            return leftArea.CompareTo(rightArea);
+        });
+
+        return sizes;
     }
 
     private static bool IsWithinScreen(Vector2I size, Vector2I screenSize)

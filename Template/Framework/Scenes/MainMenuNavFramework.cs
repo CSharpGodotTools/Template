@@ -1,6 +1,7 @@
 using Godot;
 using GodotUtils;
 using System;
+using System.Threading.Tasks;
 
 namespace __TEMPLATE__.Ui;
 
@@ -109,9 +110,32 @@ public abstract partial class MainMenuNavFramework : Node, ISceneDependencyRecei
         Credits();
     }
 
-    private async void OnQuitPressed()
+    private void OnQuitPressed()
     {
-        await _applicationLifetime.ExitGameAsync();
+        _ = ExitGameAsync();
+    }
+
+    private async Task ExitGameAsync()
+    {
+        try
+        {
+            await _applicationLifetime.ExitGameAsync();
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (ObjectDisposedException exception)
+        {
+            GD.PrintErr($"Failed to exit game: {exception}");
+        }
+        catch (InvalidOperationException exception)
+        {
+            GD.PrintErr($"Failed to exit game: {exception}");
+        }
+        catch (Exception exception) when (ExceptionGuard.IsNonFatal(exception))
+        {
+            GD.PrintErr($"Failed to exit game: {exception}");
+        }
     }
 
     private void OnPostSceneChanged()

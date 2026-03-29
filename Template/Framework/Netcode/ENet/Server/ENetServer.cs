@@ -492,7 +492,17 @@ public abstract partial class ENetServer : ENetLow
             handler(peer);
             return true;
         }
-        catch (Exception exception)
+        catch (ObjectDisposedException exception)
+        {
+            LoggerService.LogErr(exception, LogTag);
+            return false;
+        }
+        catch (InvalidOperationException exception)
+        {
+            LoggerService.LogErr(exception, LogTag);
+            return false;
+        }
+        catch (Exception exception) when (ExceptionGuard.IsNonFatal(exception))
         {
             LoggerService.LogErr(exception, LogTag);
             return false;
@@ -537,7 +547,15 @@ public abstract partial class ENetServer : ENetLow
         {
             OnPeerDisconnected(peerId);
         }
-        catch (Exception exception)
+        catch (ObjectDisposedException exception)
+        {
+            LoggerService.LogErr(exception, LogTag);
+        }
+        catch (InvalidOperationException exception)
+        {
+            LoggerService.LogErr(exception, LogTag);
+        }
+        catch (Exception exception) when (ExceptionGuard.IsNonFatal(exception))
         {
             LoggerService.LogErr(exception, LogTag);
         }
@@ -563,11 +581,19 @@ public abstract partial class ENetServer : ENetLow
                     SendUnicast(message);
                 }
             }
+            catch (ObjectDisposedException exception)
+            {
+                LoggerService.LogErr(exception, $"{LogTag}: outgoing packet target disposed");
+            }
             catch (InvalidOperationException exception)
             {
                 LoggerService.LogErr(exception, $"{LogTag}: invalid outgoing packet state");
             }
-            catch (Exception exception)
+            catch (ArgumentException exception)
+            {
+                LoggerService.LogErr(exception, $"{LogTag}: invalid outgoing packet arguments");
+            }
+            catch (Exception exception) when (ExceptionGuard.IsNonFatal(exception))
             {
                 LoggerService.LogErr(exception, LogTag);
             }

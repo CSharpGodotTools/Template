@@ -25,7 +25,19 @@ public static class TaskUtils
         {
             await task();
         }
-        catch (Exception e)
+        catch (OperationCanceledException)
+        {
+            // Expected when the task is canceled by shutdown/dispose flow.
+        }
+        catch (ObjectDisposedException e)
+        {
+            GD.PrintErr($"Error: {e}");
+        }
+        catch (InvalidOperationException e)
+        {
+            GD.PrintErr($"Error: {e}");
+        }
+        catch (Exception e) when (ExceptionGuard.IsNonFatal(e))
         {
             GD.PrintErr($"Error: {e}");
         }

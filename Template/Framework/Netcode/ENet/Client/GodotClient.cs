@@ -80,7 +80,17 @@ public abstract class GodotClient : ENetClient
         {
             // Expected when stopping the client.
         }
-        catch (Exception exception)
+        catch (ObjectDisposedException exception)
+        {
+            Interlocked.Exchange(ref _running, 0);
+            LoggerService.LogErr(exception, LogTag);
+        }
+        catch (InvalidOperationException exception)
+        {
+            Interlocked.Exchange(ref _running, 0);
+            LoggerService.LogErr(exception, LogTag);
+        }
+        catch (Exception exception) when (ExceptionGuard.IsNonFatal(exception))
         {
             Interlocked.Exchange(ref _running, 0);
             LoggerService.LogErr(exception, LogTag);
@@ -152,7 +162,15 @@ public abstract class GodotClient : ENetClient
                 handler(packet);
                 LogReceivedPacket(packetType, packet);
             }
-            catch (Exception exception)
+            catch (ObjectDisposedException exception)
+            {
+                LoggerService.LogErr(exception, LogTag);
+            }
+            catch (InvalidOperationException exception)
+            {
+                LoggerService.LogErr(exception, LogTag);
+            }
+            catch (Exception exception) when (ExceptionGuard.IsNonFatal(exception))
             {
                 LoggerService.LogErr(exception, LogTag);
             }
@@ -237,7 +255,15 @@ public abstract class GodotClient : ENetClient
         {
             action();
         }
-        catch (Exception exception)
+        catch (ObjectDisposedException exception)
+        {
+            LoggerService.LogErr(exception, LogTag);
+        }
+        catch (InvalidOperationException exception)
+        {
+            LoggerService.LogErr(exception, LogTag);
+        }
+        catch (Exception exception) when (ExceptionGuard.IsNonFatal(exception))
         {
             LoggerService.LogErr(exception, LogTag);
         }

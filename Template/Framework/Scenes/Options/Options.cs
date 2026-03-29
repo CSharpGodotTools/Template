@@ -83,8 +83,9 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
             if (!_optionsNav.TryGetTabContainer(tabName, out VBoxContainer tabContainer))
                 continue;
 
-            foreach (Node child in tabContainer.GetChildren().Cast<Node>().ToArray())
+            for (int childIndex = tabContainer.GetChildCount() - 1; childIndex >= 0; childIndex--)
             {
+                Node child = tabContainer.GetChild(childIndex);
                 tabContainer.RemoveChild(child);
                 child.QueueFree();
             }
