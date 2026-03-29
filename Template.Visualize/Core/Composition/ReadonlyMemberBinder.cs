@@ -12,8 +12,6 @@ internal sealed class ReadonlyMemberBinder
 {
     private const BindingFlags MemberBindingFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance;
     private const int PollDelayMilliseconds = 1000;
-    private const string NullMembersMessageTemplate = "[Visualize] AddReadonlyControls called with null members on node '{0}'";
-    private const string TrackingMessageTemplate = "[color=orange][Visualize] Tracking '{0}' to see if '{1}' value changes[/color]";
     private const int ClassReadonlyRowSeparation = 4;
     private static readonly Color _hiddenGhostTitleColor = new(1, 1, 1, 0);
 
@@ -25,7 +23,7 @@ internal sealed class ReadonlyMemberBinder
     {
         if (visualizeMembers == null)
         {
-            GD.PrintErr(string.Format(NullMembersMessageTemplate, displayName));
+            GD.PrintErr($"[Visualize] AddReadonlyControls called with null members on node '{displayName}'");
             return;
         }
 
@@ -90,7 +88,7 @@ internal sealed class ReadonlyMemberBinder
 
             if (elapsedSeconds == VisualUiLayout.MaxSecondsToWaitForInitialValues)
             {
-                GD.PrintRich(string.Format(TrackingMessageTemplate, displayName, accessor.Name));
+                GD.PrintRich($"[color=orange][Visualize] Tracking '{displayName}' to see if '{accessor.Name}' value changes[/color]");
                 break;
             }
         }

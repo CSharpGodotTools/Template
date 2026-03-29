@@ -30,17 +30,10 @@ public static class RayCast3DExtensions
     /// </summary>
     public static void ExcludeRaycastParents(this RayCast3D raycast)
     {
-        ExcludeParents(raycast, raycast.GetParent());
-    }
-
-    private static void ExcludeParents(RayCast3D raycast, Node parent)
-    {
-        if (parent == null)
-            return;
-
-        if (parent is CollisionObject3D collision)
-            raycast.AddException(collision);
-
-        ExcludeParents(raycast, parent.GetParentOrNull<Node>());
+        RayCastParentTraversal.ForEachParent(raycast.GetParent(), node =>
+        {
+            if (node is CollisionObject3D collision)
+                raycast.AddException(collision);
+        });
     }
 }

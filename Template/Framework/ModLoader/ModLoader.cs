@@ -3,6 +3,7 @@ using GodotUtils;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace __TEMPLATE__.Ui;
 
@@ -120,11 +121,26 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
         _uiAuthors.Text = modInfo.Author;
     }
 
-    private async void OnRestartGamePressed()
+    private void OnRestartGamePressed()
     {
-        //OS.CreateProcess(OS.GetExecutablePath(), null);
-        OS.CreateInstance(null);
-        await _applicationLifetime.ExitGameAsync();
+        _ = RestartGameAsync();
+    }
+
+    private async Task RestartGameAsync()
+    {
+        try
+        {
+            //OS.CreateProcess(OS.GetExecutablePath(), null);
+            OS.CreateInstance(null);
+            await _applicationLifetime.ExitGameAsync();
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        catch (Exception exception) when (ExceptionGuard.IsNonFatal(exception))
+        {
+            _logger.LogErr(exception, nameof(ModLoader));
+        }
     }
 
     private static void OnOpenModsFolderPressed()

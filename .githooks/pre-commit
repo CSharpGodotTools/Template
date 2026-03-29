@@ -1,10 +1,67 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# ------------------------------------------------------------
+# Pre-commit configuration toggles
+# Set any variable to false to disable that action.
+# ------------------------------------------------------------
+# true: skip all checks when there are no staged .cs files.
+# false: allow non-C# staged changes to continue through this hook.
+: "${PRECOMMIT_SKIP_IF_NO_CS:=true}"
+
+# true: sync root .editorconfig to known subprojects when .editorconfig is staged.
+: "${PRECOMMIT_ENABLE_EDITORCONFIG_SYNC:=true}"
+
+# true: sync root .vscode config files to Template/.vscode when staged.
+: "${PRECOMMIT_ENABLE_VSCODE_SYNC:=true}"
+
+# true: run dotnet format on detected changed C# files.
+: "${PRECOMMIT_ENABLE_FORMAT:=true}"
+
+# dotnet format mode: whitespace or full.
+# whitespace is faster for commit-time checks while still using dotnet format.
+: "${PRECOMMIT_FORMAT_MODE:=whitespace}"
+
+# true: run targeted builds for changed project areas.
+: "${PRECOMMIT_ENABLE_BUILD_GODOTUTILS:=true}"
+: "${PRECOMMIT_ENABLE_BUILD_VISUALIZE:=true}"
+: "${PRECOMMIT_ENABLE_BUILD_PACKETGEN:=true}"
+: "${PRECOMMIT_ENABLE_BUILD_OPTIONSGEN:=true}"
+: "${PRECOMMIT_ENABLE_BUILD_TEMPLATE:=true}"
+
+# true: run final full solution build when build-affecting files changed.
+: "${PRECOMMIT_ENABLE_FULL_BUILD:=true}"
+
+is_enabled() {
+    [ "${1,,}" = "true" ]
+}
+
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 LIBS="$REPO_ROOT/Template/Framework/Libraries"
 
-STAGED="$(git diff --cached --name-only)"
+mapfile -t STAGED_PATHS < <(git diff --cached --name-only --diff-filter=ACMR)
+
+if [ "${#STAGED_PATHS[@]}" -eq 0 ]; then
+    echo "[pre-commit] No staged files detected. Skipping."
+    exit 0
+fi
+
+STAGED="$(printf '%s\n' "${STAGED_PATHS[@]}")"
+
+declare -a STAGED_CS=()
+
+for staged_path in "${STAGED_PATHS[@]}"; do
+    case "$staged_path" in
+        *.cs)
+            STAGED_CS+=("$staged_path")
+            ;;
+    esac
+done
+
+if is_enabled "$PRECOMMIT_SKIP_IF_NO_CS" && [ "${#STAGED_CS[@]}" -eq 0 ]; then
+    echo "[pre-commit] No staged C# changes detected. Skipping pre-commit checks."
+    exit 0
+fi
 
 # ------------------------------------------------------------
 # dotnet resolver
@@ -30,179 +87,324 @@ build_godotutils=false
 build_visualize=false
 build_packetgen=false
 build_optionsgen=false
+build_template=false
+
+declare -a format_godotutils=()
+declare -a format_visualize=()
+declare -a format_packetgen=()
+declare -a format_optionsgen=()
+declare -a format_template=()
+declare -a format_fallback=()
 
 # Only run full solution validation when staged files can affect compilation.
 requires_full_build=false
 
-echo "$STAGED" | grep -q "^Template\.GodotUtils/" && build_godotutils=true || true
-echo "$STAGED" | grep -q "^Template\.Visualize/" && build_visualize=true || true
-echo "$STAGED" | grep -q "^Template\.PacketGen/" && build_packetgen=true || true
-echo "$STAGED" | grep -q "^Template\.OptionsGen/" && build_optionsgen=true || true
+for staged_path in "${STAGED_PATHS[@]}"; do
+    [ -z "$staged_path" ] && continue
+
+    case "$staged_path" in
+        Template.GodotUtils/*)
+            build_godotutils=true
+            ;;
+        Template.Visualize/*)
+            build_visualize=true
+            ;;
+        Template.PacketGen/*)
+            build_packetgen=true
+            ;;
+        Template.OptionsGen/*)
+            build_optionsgen=true
+            ;;
+        Template/*)
+            build_template=true
+            ;;
+    esac
+
+    case "$staged_path" in
+        *.csproj|*.sln|*.props|*.targets|global.json|NuGet.config|nuget.config|*/NuGet.config|*/nuget.config)
+            requires_full_build=true
+            ;;
+    esac
+done
+
+for cs_path in "${STAGED_CS[@]}"; do
+    case "$cs_path" in
+        Template.GodotUtils/*.cs)
+            format_godotutils+=("$cs_path")
+            ;;
+        Template.Visualize/*.cs)
+            format_visualize+=("$cs_path")
+            ;;
+        Template.PacketGen/*.cs)
+            format_packetgen+=("$cs_path")
+            ;;
+        Template.OptionsGen/*.cs)
+            format_optionsgen+=("$cs_path")
+            ;;
+        Template/*.cs)
+            format_template+=("$cs_path")
+            ;;
+        *)
+            format_fallback+=("$cs_path")
+            ;;
+    esac
+done
 
 # Visualize depends on GodotUtils
 if $build_visualize; then
     build_godotutils=true
 fi
 
-while IFS= read -r staged_path; do
-    [ -z "$staged_path" ] && continue
-
-    case "$staged_path" in
-        *.cs|*.csproj|*.sln|*.props|*.targets|global.json|NuGet.config|nuget.config|*/NuGet.config|*/nuget.config)
-            requires_full_build=true
-            break
-            ;;
-    esac
-done <<< "$STAGED"
-
 # ------------------------------------------------------------
 # Sync .editorconfig
 # ------------------------------------------------------------
 if echo "$STAGED" | grep -q "^\.editorconfig$"; then
-    echo "[pre-commit] Syncing .editorconfig to subprojects..."
+    if is_enabled "$PRECOMMIT_ENABLE_EDITORCONFIG_SYNC"; then
+        echo "[pre-commit] Syncing .editorconfig to subprojects..."
 
-    for dir in Template Template.GodotUtils Template.PacketGen Template.OptionsGen Template.Visualize
-    do
-        dest="$REPO_ROOT/$dir/.editorconfig"
-        cp "$REPO_ROOT/.editorconfig" "$dest"
-        git add "$dest"
-    done
+        for dir in Template Template.GodotUtils Template.PacketGen Template.OptionsGen Template.Visualize
+        do
+            dest="$REPO_ROOT/$dir/.editorconfig"
+            cp "$REPO_ROOT/.editorconfig" "$dest"
+            git add "$dest"
+        done
+    else
+        echo "[pre-commit] .editorconfig sync disabled by PRECOMMIT_ENABLE_EDITORCONFIG_SYNC=false"
+    fi
 fi
 
 # ------------------------------------------------------------
 # Sync root .vscode configs to Template/.vscode
 # ------------------------------------------------------------
 if echo "$STAGED" | grep -Eq "^\.vscode/(extensions|settings|tasks)\.json$"; then
-    echo "[pre-commit] Syncing .vscode configs to Template/.vscode..."
-    "$REPO_ROOT/.githooks/sync-vscode-configs" --stage
+    if is_enabled "$PRECOMMIT_ENABLE_VSCODE_SYNC"; then
+        echo "[pre-commit] Syncing .vscode configs to Template/.vscode..."
+        "$REPO_ROOT/.githooks/sync-vscode-configs" --stage
+    else
+        echo "[pre-commit] .vscode sync disabled by PRECOMMIT_ENABLE_VSCODE_SYNC=false"
+    fi
+fi
+
+# ------------------------------------------------------------
+# Format changed C# files only
+# ------------------------------------------------------------
+format_project() {
+    local project_path="$1"
+    shift
+
+    local -a includes=("$@")
+
+    if [ "${#includes[@]}" -eq 0 ]; then
+        return 0
+    fi
+
+    echo "[pre-commit] Formatting $(basename "$project_path") (${#includes[@]} staged C# file(s))..."
+    printf '[pre-commit]   include: %s\n' "${includes[@]}"
+
+    case "${PRECOMMIT_FORMAT_MODE,,}" in
+        whitespace)
+            dotnet_cmd format whitespace "$project_path" --no-restore --include "${includes[@]}"
+            ;;
+        full)
+            dotnet_cmd format "$project_path" --no-restore --include "${includes[@]}"
+            ;;
+        *)
+            echo "[pre-commit] Invalid PRECOMMIT_FORMAT_MODE=$PRECOMMIT_FORMAT_MODE (expected: whitespace or full)"
+            exit 1
+            ;;
+    esac
+
+    # Auto-stage any formatter changes to the files included in this run.
+    git add -- "${includes[@]}"
+}
+
+if is_enabled "$PRECOMMIT_ENABLE_FORMAT"; then
+    format_project "$REPO_ROOT/Template.GodotUtils/GodotUtils.csproj" "${format_godotutils[@]}"
+    format_project "$REPO_ROOT/Template.Visualize/Visualize.csproj" "${format_visualize[@]}"
+    format_project "$REPO_ROOT/Template.PacketGen/PacketGen.sln" "${format_packetgen[@]}"
+    format_project "$REPO_ROOT/Template.OptionsGen/OptionsGen/OptionsGen.csproj" "${format_optionsgen[@]}"
+    format_project "$REPO_ROOT/Template/Template.csproj" "${format_template[@]}"
+
+    if [ "${#format_fallback[@]}" -gt 0 ]; then
+        echo "[pre-commit] Formatting fallback (Template.sln) for unmapped C# paths..."
+        printf '[pre-commit]   include: %s\n' "${format_fallback[@]}"
+
+        case "${PRECOMMIT_FORMAT_MODE,,}" in
+            whitespace)
+                dotnet_cmd format whitespace "$REPO_ROOT/Template.sln" --no-restore --include "${format_fallback[@]}"
+                ;;
+            full)
+                dotnet_cmd format "$REPO_ROOT/Template.sln" --no-restore --include "${format_fallback[@]}"
+                ;;
+            *)
+                echo "[pre-commit] Invalid PRECOMMIT_FORMAT_MODE=$PRECOMMIT_FORMAT_MODE (expected: whitespace or full)"
+                exit 1
+                ;;
+        esac
+
+        git add -- "${format_fallback[@]}"
+    fi
+else
+    echo "[pre-commit] Formatting disabled by PRECOMMIT_ENABLE_FORMAT=false"
 fi
 
 # ------------------------------------------------------------
 # Build GodotUtils
 # ------------------------------------------------------------
 if $build_godotutils; then
-    echo "[pre-commit] Building GodotUtils..."
+    if is_enabled "$PRECOMMIT_ENABLE_BUILD_GODOTUTILS"; then
+        echo "[pre-commit] Building GodotUtils..."
 
-    proj="$REPO_ROOT/Template.GodotUtils/GodotUtils.csproj"
+        proj="$REPO_ROOT/Template.GodotUtils/GodotUtils.csproj"
 
-    dotnet_cmd build "$proj" --no-restore -p:BuildExtras=true
+        dotnet_cmd build "$proj" --no-restore -p:BuildExtras=true
 
-    git add \
-        "$LIBS/GodotUtils.dll" \
-        "$LIBS/GodotUtils.xml" 2>/dev/null || true
+        git add \
+            "$LIBS/GodotUtils.dll" \
+            "$LIBS/GodotUtils.xml" 2>/dev/null || true
+    else
+        echo "[pre-commit] GodotUtils build disabled by PRECOMMIT_ENABLE_BUILD_GODOTUTILS=false"
+    fi
 fi
 
 # ------------------------------------------------------------
 # Build Visualize
 # ------------------------------------------------------------
 if $build_visualize; then
-    echo "[pre-commit] Building Visualize..."
+    if is_enabled "$PRECOMMIT_ENABLE_BUILD_VISUALIZE"; then
+        echo "[pre-commit] Building Visualize..."
 
-    proj="$REPO_ROOT/Template.Visualize/Visualize.csproj"
+        proj="$REPO_ROOT/Template.Visualize/Visualize.csproj"
 
-    dotnet_cmd build "$proj" --no-restore -p:BuildExtras=true
+        dotnet_cmd build "$proj" --no-restore -p:BuildExtras=true
 
-    git add \
-        "$LIBS/Visualize.dll" \
-        "$LIBS/Visualize.xml" 2>/dev/null || true
+        git add \
+            "$LIBS/Visualize.dll" \
+            "$LIBS/Visualize.xml" 2>/dev/null || true
+    else
+        echo "[pre-commit] Visualize build disabled by PRECOMMIT_ENABLE_BUILD_VISUALIZE=false"
+    fi
 fi
 
 # ------------------------------------------------------------
 # Build PacketGen
 # ------------------------------------------------------------
 if $build_packetgen; then
-    echo "[pre-commit] Building PacketGen..."
+    if is_enabled "$PRECOMMIT_ENABLE_BUILD_PACKETGEN"; then
+        echo "[pre-commit] Building PacketGen..."
 
-    proj="$REPO_ROOT/Template.PacketGen/PacketGen/PacketGen.csproj"
-    template_csproj="$REPO_ROOT/Template/Template.csproj"
-    out_dir="$REPO_ROOT/Template.PacketGen/PacketGen/bin/Release"
+        proj="$REPO_ROOT/Template.PacketGen/PacketGen/PacketGen.csproj"
+        template_csproj="$REPO_ROOT/Template/Template.csproj"
+        out_dir="$REPO_ROOT/Template.PacketGen/PacketGen/bin/Release"
 
-    current_version="$(grep -o '<Version>[^<]*</Version>' "$proj" | head -1 | sed 's/<[^>]*>//g')"
+        current_version="$(grep -o '<Version>[^<]*</Version>' "$proj" | head -1 | sed 's/<[^>]*>//g')"
 
-    next_version=""
+        next_version=""
 
-    if [ -n "$current_version" ]; then
-        major="${current_version%%.*}"
-        rest="${current_version#*.}"
-        minor="${rest%%.*}"
-        patch="${rest#*.}"
+        if [ -n "$current_version" ]; then
+            major="${current_version%%.*}"
+            rest="${current_version#*.}"
+            minor="${rest%%.*}"
+            patch="${rest#*.}"
 
-        next_version="$major.$minor.$((patch+1))"
+            next_version="$major.$minor.$((patch+1))"
 
-        sed -i "s|<Version>$current_version</Version>|<Version>$next_version</Version>|" "$proj"
-        git add "$proj"
+            sed -i "s|<Version>$current_version</Version>|<Version>$next_version</Version>|" "$proj"
+            git add "$proj"
 
-        # Keep Template.csproj PacketGen reference in sync with the new version
-        sed -i "s|<PackageReference Include=\"PacketGen\" Version=\"[^\"]*\"|<PackageReference Include=\"PacketGen\" Version=\"$next_version\"|" "$template_csproj"
-        git add "$template_csproj"
+            # Keep Template.csproj PacketGen reference in sync with the new version
+            sed -i "s|<PackageReference Include=\"PacketGen\" Version=\"[^\"]*\"|<PackageReference Include=\"PacketGen\" Version=\"$next_version\"|" "$template_csproj"
+            git add "$template_csproj"
 
-        echo "[pre-commit] PacketGen version $current_version → $next_version"
+            echo "[pre-commit] PacketGen version $current_version → $next_version"
+        fi
+
+        # Stage deletion of any old tracked nupkgs and remove from filesystem before building
+        git -C "$REPO_ROOT" rm --cached -f --ignore-unmatch "Template/Framework/Libraries/PacketGen.*.nupkg" 2>/dev/null || true
+        find "$LIBS" -maxdepth 1 -name "PacketGen.*.nupkg" -delete || true
+
+        dotnet_cmd build "$proj" -c Release --no-restore
+
+        new_pkg="$out_dir/PacketGen.$next_version.nupkg"
+
+        if [ ! -f "$new_pkg" ]; then
+            echo "[pre-commit] ERROR: PacketGen nupkg not found at $new_pkg"
+            exit 1
+        fi
+
+        cp "$new_pkg" "$LIBS/"
+        git add "$LIBS/PacketGen.$next_version.nupkg"
+    else
+        echo "[pre-commit] PacketGen build disabled by PRECOMMIT_ENABLE_BUILD_PACKETGEN=false"
     fi
-
-    # Stage deletion of any old tracked nupkgs and remove from filesystem before building
-    git -C "$REPO_ROOT" rm --cached -f --ignore-unmatch "Template/Framework/Libraries/PacketGen.*.nupkg" 2>/dev/null || true
-    find "$LIBS" -maxdepth 1 -name "PacketGen.*.nupkg" -delete || true
-
-    dotnet_cmd build "$proj" -c Release --no-restore
-
-    new_pkg="$out_dir/PacketGen.$next_version.nupkg"
-
-    if [ ! -f "$new_pkg" ]; then
-        echo "[pre-commit] ERROR: PacketGen nupkg not found at $new_pkg"
-        exit 1
-    fi
-
-    cp "$new_pkg" "$LIBS/"
-    git add "$LIBS/PacketGen.$next_version.nupkg"
 fi
 
 # ------------------------------------------------------------
 # Build Template.OptionsGen
 # ------------------------------------------------------------
 if $build_optionsgen; then
-    echo "[pre-commit] Building Template.OptionsGen..."
+    if is_enabled "$PRECOMMIT_ENABLE_BUILD_OPTIONSGEN"; then
+        echo "[pre-commit] Building Template.OptionsGen..."
 
-    proj="$REPO_ROOT/Template.OptionsGen/OptionsGen/OptionsGen.csproj"
-    template_csproj="$REPO_ROOT/Template/Template.csproj"
-    out_dir="$REPO_ROOT/Template.OptionsGen/OptionsGen/bin/Release"
+        proj="$REPO_ROOT/Template.OptionsGen/OptionsGen/OptionsGen.csproj"
+        template_csproj="$REPO_ROOT/Template/Template.csproj"
+        out_dir="$REPO_ROOT/Template.OptionsGen/OptionsGen/bin/Release"
 
-    current_version="$(grep -o '<Version>[^<]*</Version>' "$proj" | head -1 | sed 's/<[^>]*>//g')"
+        current_version="$(grep -o '<Version>[^<]*</Version>' "$proj" | head -1 | sed 's/<[^>]*>//g')"
 
-    next_version=""
+        next_version=""
 
-    if [ -n "$current_version" ]; then
-        major="${current_version%%.*}"
-        rest="${current_version#*.}"
-        minor="${rest%%.*}"
-        patch="${rest#*.}"
+        if [ -n "$current_version" ]; then
+            major="${current_version%%.*}"
+            rest="${current_version#*.}"
+            minor="${rest%%.*}"
+            patch="${rest#*.}"
 
-        next_version="$major.$minor.$((patch+1))"
+            next_version="$major.$minor.$((patch+1))"
 
-        sed -i "s|<Version>$current_version</Version>|<Version>$next_version</Version>|" "$proj"
-        git add "$proj"
+            sed -i "s|<Version>$current_version</Version>|<Version>$next_version</Version>|" "$proj"
+            git add "$proj"
 
-        # Keep Template.csproj Template.OptionsGen reference in sync with the new version
-        sed -i "s|<PackageReference Include=\"Template.OptionsGen\" Version=\"[^\"]*\"|<PackageReference Include=\"Template.OptionsGen\" Version=\"$next_version\"|" "$template_csproj"
-        git add "$template_csproj"
+            # Keep Template.csproj Template.OptionsGen reference in sync with the new version
+            sed -i "s|<PackageReference Include=\"Template.OptionsGen\" Version=\"[^\"]*\"|<PackageReference Include=\"Template.OptionsGen\" Version=\"$next_version\"|" "$template_csproj"
+            git add "$template_csproj"
 
-        echo "[pre-commit] Template.OptionsGen version $current_version → $next_version"
+            echo "[pre-commit] Template.OptionsGen version $current_version → $next_version"
+        fi
+
+        # Stage deletion of any old tracked nupkgs and remove from filesystem before building
+        git -C "$REPO_ROOT" rm --cached -f --ignore-unmatch "Template/Framework/Libraries/Template.OptionsGen.*.nupkg" 2>/dev/null || true
+        find "$LIBS" -maxdepth 1 -name "Template.OptionsGen.*.nupkg" -delete || true
+
+        dotnet_cmd build "$proj" -c Release --no-restore
+
+        new_pkg="$out_dir/Template.OptionsGen.$next_version.nupkg"
+
+        if [ ! -f "$new_pkg" ]; then
+            echo "[pre-commit] ERROR: Template.OptionsGen nupkg not found at $new_pkg"
+            exit 1
+        fi
+
+        cp "$new_pkg" "$LIBS/"
+        git add "$LIBS/Template.OptionsGen.$next_version.nupkg"
+    else
+        echo "[pre-commit] Template.OptionsGen build disabled by PRECOMMIT_ENABLE_BUILD_OPTIONSGEN=false"
     fi
+fi
 
-    # Stage deletion of any old tracked nupkgs and remove from filesystem before building
-    git -C "$REPO_ROOT" rm --cached -f --ignore-unmatch "Template/Framework/Libraries/Template.OptionsGen.*.nupkg" 2>/dev/null || true
-    find "$LIBS" -maxdepth 1 -name "Template.OptionsGen.*.nupkg" -delete || true
+# ------------------------------------------------------------
+# Build Template
+# ------------------------------------------------------------
+if $build_template; then
+    if is_enabled "$PRECOMMIT_ENABLE_BUILD_TEMPLATE"; then
+        echo "[pre-commit] Building Template..."
 
-    dotnet_cmd build "$proj" -c Release --no-restore
+        proj="$REPO_ROOT/Template/Template.csproj"
 
-    new_pkg="$out_dir/Template.OptionsGen.$next_version.nupkg"
-
-    if [ ! -f "$new_pkg" ]; then
-        echo "[pre-commit] ERROR: Template.OptionsGen nupkg not found at $new_pkg"
-        exit 1
+        dotnet_cmd build "$proj" --no-restore
+    else
+        echo "[pre-commit] Template build disabled by PRECOMMIT_ENABLE_BUILD_TEMPLATE=false"
     fi
-
-    cp "$new_pkg" "$LIBS/"
-    git add "$LIBS/Template.OptionsGen.$next_version.nupkg"
 fi
 
 # ------------------------------------------------------------
@@ -210,25 +412,29 @@ fi
 # ------------------------------------------------------------
 
 if $requires_full_build; then
-    echo "[pre-commit] Running full solution build (build-affecting changes detected)..."
+    if is_enabled "$PRECOMMIT_ENABLE_FULL_BUILD"; then
+        echo "[pre-commit] Running full solution build (project or infrastructure changes detected)..."
 
-    if ! BUILD_OUTPUT=$(dotnet_cmd build 2>&1); then
-        echo ""
-        echo "========================================"
-        echo "[pre-commit] ❌ FINAL BUILD FAILED"
-        echo "========================================"
-        echo ""
-        echo "$BUILD_OUTPUT"
-        echo ""
-        echo "[pre-commit] Commit aborted due to build failure."
-        echo "Fix the errors above before committing."
-        echo "========================================"
-        echo ""
+        if ! BUILD_OUTPUT=$(dotnet_cmd build 2>&1); then
+            echo ""
+            echo "========================================"
+            echo "[pre-commit] ❌ FINAL BUILD FAILED"
+            echo "========================================"
+            echo ""
+            echo "$BUILD_OUTPUT"
+            echo ""
+            echo "[pre-commit] Commit aborted due to build failure."
+            echo "Fix the errors above before committing."
+            echo "========================================"
+            echo ""
 
-        exit 1
+            exit 1
+        fi
+
+        echo "[pre-commit] ✅ Full build succeeded"
+    else
+        echo "[pre-commit] Full solution build disabled by PRECOMMIT_ENABLE_FULL_BUILD=false"
     fi
-
-    echo "[pre-commit] ✅ Full build succeeded"
 else
     echo "[pre-commit] Skipping full solution build (no build-affecting staged files)."
 fi

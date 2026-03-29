@@ -67,7 +67,7 @@ public abstract partial class AutoloadsFramework : Node
         Logger = new Logger(GameConsole);
         BackgroundTasks = new BackgroundTaskTracker(Logger);
 
-        OptionsManager = new OptionsManager(this);
+        OptionsManager = OptionsManagerFactory.Create(this);
         AudioManager = new AudioManager(this, OptionsManager);
         ApplicationLifetime = new ApplicationLifetimeService(this);
 
@@ -180,7 +180,7 @@ public abstract partial class AutoloadsFramework : Node
                 {
                     GD.Print($"PreQuit subscriber canceled: {ex.Message}");
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ExceptionGuard.IsNonFatal(ex))
                 {
                     GD.PrintErr($"PreQuit subscriber failed: {ex}");
                 }

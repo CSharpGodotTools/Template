@@ -193,6 +193,22 @@ public abstract class ENetLow
     }
 
     /// <summary>
+    /// Logs a non-fatal outgoing packet send failure with a consistent context-specific message.
+    /// </summary>
+    protected void LogOutgoingSendFailure(Exception exception, string logTag)
+    {
+        string message = exception switch
+        {
+            ObjectDisposedException => $"{logTag}: outgoing packet target disposed",
+            InvalidOperationException => $"{logTag}: invalid outgoing packet state",
+            ArgumentException => $"{logTag}: invalid outgoing packet arguments",
+            _ => logTag,
+        };
+
+        LoggerService.LogErr(exception, message);
+    }
+
+    /// <summary>
     /// Logs a <see cref="GamePacket"/> as formatted JSON.
     /// </summary>
     public void Log(GamePacket packet, BBColor color = BBColor.Gray)

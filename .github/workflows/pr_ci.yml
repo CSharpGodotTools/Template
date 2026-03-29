@@ -35,10 +35,10 @@ jobs:
 
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
-          CHANGED="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+          mapfile -t CHANGED_PATHS < <(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
 
           echo "Changed files:"
-          printf '%s\n' "$CHANGED"
+          printf '%s\n' "${CHANGED_PATHS[@]}"
 
           build_godotutils=false
           build_visualize=false
@@ -46,18 +46,72 @@ jobs:
           build_optionsgen=false
           build_template=false
 
-          echo "$CHANGED" | grep -q "^Template\.GodotUtils/" && build_godotutils=true || true
-          echo "$CHANGED" | grep -q "^Template\.Visualize/" && build_visualize=true || true
-          echo "$CHANGED" | grep -q "^Template\.PacketGen/" && build_packetgen=true || true
-          echo "$CHANGED" | grep -q "^Template\.OptionsGen/" && build_optionsgen=true || true
-          echo "$CHANGED" | grep -Eq "\.cs$" && build_optionsgen=true || true
-          echo "$CHANGED" | grep -q "^Template/" && build_template=true || true
+          declare -a changed_cs=()
+          declare -a format_godotutils=()
+          declare -a format_visualize=()
+          declare -a format_packetgen=()
+          declare -a format_optionsgen=()
+          declare -a format_template=()
+          declare -a format_fallback=()
+
+          for changed_path in "${CHANGED_PATHS[@]}"; do
+            [[ -z "$changed_path" ]] && continue
+
+            case "$changed_path" in
+              Template.GodotUtils/*)
+                build_godotutils=true
+                ;;
+              Template.Visualize/*)
+                build_visualize=true
+                ;;
+              Template.PacketGen/*)
+                build_packetgen=true
+                ;;
+              Template.OptionsGen/*)
+                build_optionsgen=true
+                ;;
+              Template/*)
+                build_template=true
+                ;;
+            esac
+
+            case "$changed_path" in
+              *.cs)
+                changed_cs+=("$changed_path")
+                ;;
+            esac
+          done
+
+          for cs_path in "${changed_cs[@]}"; do
+            case "$cs_path" in
+              Template.GodotUtils/*.cs)
+                format_godotutils+=("$cs_path")
+                ;;
+              Template.Visualize/*.cs)
+                format_visualize+=("$cs_path")
+                ;;
+              Template.PacketGen/*.cs)
+                format_packetgen+=("$cs_path")
+                ;;
+              Template.OptionsGen/*.cs)
+                format_optionsgen+=("$cs_path")
+                ;;
+              Template/*.cs)
+                format_template+=("$cs_path")
+                ;;
+              *)
+                format_fallback+=("$cs_path")
+                ;;
+            esac
+          done
 
           if $build_visualize; then
             build_godotutils=true
           fi
 
-          if echo "$CHANGED" | grep -Eq "^(Template\.sln|\.editorconfig|NuGet\.config|\.githooks/|\.github/workflows/)"; then
+          changed_lines="$(printf '%s\n' "${CHANGED_PATHS[@]}")"
+
+          if echo "$changed_lines" | grep -Eq "^(Template\.sln|\.editorconfig|NuGet\.config|\.githooks/|\.github/workflows/)"; then
             build_godotutils=true
             build_visualize=true
             build_packetgen=true
@@ -74,69 +128,116 @@ jobs:
             build_template=true
           fi
 
+          has_cs_changes=false
+          if [[ "${#changed_cs[@]}" -gt 0 ]]; then
+            has_cs_changes=true
+          fi
+
+          write_output_array() {
+            local output_name="$1"
+            shift
+            local -a output_values=("$@")
+
+            {
+              echo "${output_name}<<EOF"
+              printf '%s\n' "${output_values[@]}"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          }
+
           {
             echo "build_godotutils=$build_godotutils"
             echo "build_visualize=$build_visualize"
             echo "build_packetgen=$build_packetgen"
             echo "build_optionsgen=$build_optionsgen"
             echo "build_template=$build_template"
+            echo "has_cs_changes=$has_cs_changes"
           } >> "$GITHUB_OUTPUT"
 
+          write_output_array "format_godotutils_includes" "${format_godotutils[@]}"
+          write_output_array "format_visualize_includes" "${format_visualize[@]}"
+          write_output_array "format_packetgen_includes" "${format_packetgen[@]}"
+          write_output_array "format_optionsgen_includes" "${format_optionsgen[@]}"
+          write_output_array "format_template_includes" "${format_template[@]}"
+          write_output_array "format_fallback_includes" "${format_fallback[@]}"
+
       - name: Restore
+        if: steps.changes.outputs.has_cs_changes == 'true'
         run: dotnet restore Template.sln
 
+      - name: Skip .NET validation when no C# changes
+        if: steps.changes.outputs.has_cs_changes != 'true'
+        run: echo "No C# changes detected. Skipping .NET format/build/test validation."
+
       - name: Format checks (targeted)
+        if: steps.changes.outputs.has_cs_changes == 'true'
         shell: bash
         run: |
           set -euo pipefail
 
-          if [[ "${{ steps.changes.outputs.build_godotutils }}" == "true" ]]; then
-            dotnet format Template.GodotUtils/GodotUtils.csproj --verify-no-changes
+          if [[ "${{ steps.changes.outputs.has_cs_changes }}" != "true" ]]; then
+            echo "No C# changes detected. Skipping format checks."
+            exit 0
           fi
 
-          if [[ "${{ steps.changes.outputs.build_visualize }}" == "true" ]]; then
-            dotnet format Template.Visualize/Visualize.csproj --verify-no-changes
-          fi
+          run_format_check() {
+            local target="$1"
+            local include_blob="$2"
 
-          if [[ "${{ steps.changes.outputs.build_packetgen }}" == "true" ]]; then
-            dotnet format Template.PacketGen/PacketGen.sln --verify-no-changes
-          fi
+            if [[ -z "$include_blob" ]]; then
+              return 0
+            fi
 
-          if [[ "${{ steps.changes.outputs.build_optionsgen }}" == "true" ]]; then
-            dotnet format Template.OptionsGen/OptionsGen/OptionsGen.csproj --verify-no-changes
-          fi
+            local -a includes=()
+            while IFS= read -r line; do
+              [[ -z "$line" ]] && continue
+              includes+=("$line")
+            done <<< "$include_blob"
 
-          if [[ "${{ steps.changes.outputs.build_template }}" == "true" ]]; then
-            dotnet format Template/Template.csproj --verify-no-changes
-          fi
+            if [[ "${#includes[@]}" -eq 0 ]]; then
+              return 0
+            fi
+
+            dotnet format "$target" --verify-no-changes --include "${includes[@]}"
+          }
+
+          run_format_check Template.GodotUtils/GodotUtils.csproj "${{ steps.changes.outputs.format_godotutils_includes }}"
+          run_format_check Template.Visualize/Visualize.csproj "${{ steps.changes.outputs.format_visualize_includes }}"
+          run_format_check Template.PacketGen/PacketGen.sln "${{ steps.changes.outputs.format_packetgen_includes }}"
+          run_format_check Template.OptionsGen/OptionsGen/OptionsGen.csproj "${{ steps.changes.outputs.format_optionsgen_includes }}"
+          run_format_check Template/Template.csproj "${{ steps.changes.outputs.format_template_includes }}"
+          run_format_check Template.sln "${{ steps.changes.outputs.format_fallback_includes }}"
 
       - name: Targeted builds
+        if: steps.changes.outputs.has_cs_changes == 'true'
         shell: bash
         run: |
           set -euo pipefail
 
           if [[ "${{ steps.changes.outputs.build_godotutils }}" == "true" ]]; then
-            dotnet build Template.GodotUtils/GodotUtils.csproj --no-restore -p:BuildExtras=true
+            dotnet build Template.GodotUtils/GodotUtils.csproj --no-restore -p:BuildExtras=true -warnaserror
           fi
 
           if [[ "${{ steps.changes.outputs.build_visualize }}" == "true" ]]; then
-            dotnet build Template.Visualize/Visualize.csproj --no-restore -p:BuildExtras=true
+            dotnet build Template.Visualize/Visualize.csproj --no-restore -p:BuildExtras=true -warnaserror
           fi
 
           if [[ "${{ steps.changes.outputs.build_packetgen }}" == "true" ]]; then
-            dotnet build Template.PacketGen/PacketGen/PacketGen.csproj -c Release --no-restore
+            dotnet build Template.PacketGen/PacketGen/PacketGen.csproj -c Release --no-restore -warnaserror
           fi
 
           if [[ "${{ steps.changes.outputs.build_optionsgen }}" == "true" ]]; then
-            dotnet build Template.OptionsGen/OptionsGen/OptionsGen.csproj -c Release --no-restore
+            dotnet build Template.OptionsGen/OptionsGen/OptionsGen.csproj -c Release --no-restore -warnaserror
           fi
 
           if [[ "${{ steps.changes.outputs.build_template }}" == "true" ]]; then
-            dotnet build Template/Template.csproj --no-restore
+            dotnet build Template/Template.csproj --no-restore -warnaserror
           fi
 
       - name: Full solution build
-        run: dotnet build Template.sln --no-restore
+        if: steps.changes.outputs.has_cs_changes == 'true'
+        run: dotnet build Template.sln --no-restore -warnaserror
 
       - name: Tests
+        if: steps.changes.outputs.has_cs_changes == 'true'
         run: dotnet test Template.PacketGen/PacketGen.Tests/PacketGen.Tests.csproj --no-build

@@ -41,14 +41,22 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
         _optionsNav = new OptionsNav(this, GetNode<Label>("%Title"), _optionsManager);
 
         ClearLegacyTabRows();
-        RegisterTabOptions();
 
         if (!_optionsNav.TryGetTabButton(OptionsTabs.Input, out Button inputNavButton))
             throw new InvalidOperationException($"Input tab button '{OptionsTabs.Input}' was not found.");
 
         _optionsInput = new OptionsInput(this, inputNavButton, _optionsManager, _sceneManager, _focusOutlineManager);
         _optionsCustom = new OptionsCustom(_optionsNav, _optionsManager);
-        _optionsNav.RefreshOptionalTabs(OptionsTabs.Input);
+
+        // Register after custom bindings are subscribed so rows are built from events reliably.
+        RegisterTabOptions();
+
+        _optionsNav.RefreshOptionalTabs(
+            OptionsTabs.Input,
+            OptionsTabs.General,
+            OptionsTabs.Display,
+            OptionsTabs.Graphics,
+            OptionsTabs.Audio);
 
         VisibilityChanged += OnVisibilityChanged;
 
@@ -83,8 +91,9 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
             if (!_optionsNav.TryGetTabContainer(tabName, out VBoxContainer tabContainer))
                 continue;
 
-            foreach (Node child in tabContainer.GetChildren().Cast<Node>().ToArray())
+            for (int childIndex = tabContainer.GetChildCount() - 1; childIndex >= 0; childIndex--)
             {
+                Node child = tabContainer.GetChild(childIndex);
                 tabContainer.RemoveChild(child);
                 child.QueueFree();
             }

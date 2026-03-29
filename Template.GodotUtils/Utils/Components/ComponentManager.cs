@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 namespace GodotUtils;
@@ -52,34 +53,22 @@ public class ComponentManager
 
     public void Process(double delta)
     {
-        List<Component> processList = _sceneTree.Paused ? _processPaused.Items : _process.Items;
-
-        for (int i = processList.Count - 1; i >= 0; i--)
-            processList[i].Process(delta);
+        Dispatch(_process, _processPaused, component => component.Process(delta));
     }
 
     public void PhysicsProcess(double delta)
     {
-        List<Component> physicsProcessList = _sceneTree.Paused ? _physicsProcessPaused.Items : _physicsProcess.Items;
-
-        for (int i = physicsProcessList.Count - 1; i >= 0; i--)
-            physicsProcessList[i].PhysicsProcess(delta);
+        Dispatch(_physicsProcess, _physicsProcessPaused, component => component.PhysicsProcess(delta));
     }
 
     public void Input(InputEvent @event)
     {
-        List<Component> inputList = _sceneTree.Paused ? _inputPaused.Items : _input.Items;
-
-        for (int i = inputList.Count - 1; i >= 0; i--)
-            inputList[i].ProcessInput(@event);
+        Dispatch(_input, _inputPaused, component => component.ProcessInput(@event));
     }
 
     public void UnhandledInput(InputEvent @event)
     {
-        List<Component> unhandledInputList = _sceneTree.Paused ? _unhandledInputPaused.Items : _unhandledInput.Items;
-
-        for (int i = unhandledInputList.Count - 1; i >= 0; i--)
-            unhandledInputList[i].UnhandledInput(@event);
+        Dispatch(_unhandledInput, _unhandledInputPaused, component => component.UnhandledInput(@event));
     }
 
     /// <summary>
@@ -87,10 +76,7 @@ public class ComponentManager
     /// </summary>
     public void RegisterProcess(Component component)
     {
-        Register(component, _process, _processPaused);
-
-        if (_process.Count == 1)
-            _managerNode.SetProcess(true);
+        RegisterAndEnable(component, _process, _processPaused, _managerNode.SetProcess);
     }
 
     /// <summary>
@@ -98,10 +84,7 @@ public class ComponentManager
     /// </summary>
     public void UnregisterProcess(Component component)
     {
-        Unregister(component, _process, _processPaused);
-
-        if (_process.Count == 0)
-            _managerNode.SetProcess(false);
+        UnregisterAndDisable(component, _process, _processPaused, _managerNode.SetProcess);
     }
 
     /// <summary>
@@ -109,10 +92,7 @@ public class ComponentManager
     /// </summary>
     public void RegisterPhysicsProcess(Component component)
     {
-        Register(component, _physicsProcess, _physicsProcessPaused);
-
-        if (_physicsProcess.Count == 1)
-            _managerNode.SetPhysicsProcess(true);
+        RegisterAndEnable(component, _physicsProcess, _physicsProcessPaused, _managerNode.SetPhysicsProcess);
     }
 
     /// <summary>
@@ -120,10 +100,7 @@ public class ComponentManager
     /// </summary>
     public void UnregisterPhysicsProcess(Component component)
     {
-        Unregister(component, _physicsProcess, _physicsProcessPaused);
-
-        if (_physicsProcess.Count == 0)
-            _managerNode.SetPhysicsProcess(false);
+        UnregisterAndDisable(component, _physicsProcess, _physicsProcessPaused, _managerNode.SetPhysicsProcess);
     }
 
     /// <summary>
@@ -131,10 +108,7 @@ public class ComponentManager
     /// </summary>
     public void RegisterInput(Component component)
     {
-        Register(component, _input, _inputPaused);
-
-        if (_input.Count == 1)
-            _managerNode.SetProcessInput(true);
+        RegisterAndEnable(component, _input, _inputPaused, _managerNode.SetProcessInput);
     }
 
     /// <summary>
@@ -142,10 +116,7 @@ public class ComponentManager
     /// </summary>
     public void UnregisterInput(Component component)
     {
-        Unregister(component, _input, _inputPaused);
-
-        if (_input.Count == 0)
-            _managerNode.SetProcessInput(false);
+        UnregisterAndDisable(component, _input, _inputPaused, _managerNode.SetProcessInput);
     }
 
     /// <summary>
@@ -153,10 +124,7 @@ public class ComponentManager
     /// </summary>
     public void RegisterUnhandledInput(Component component)
     {
-        Register(component, _unhandledInput, _unhandledInputPaused);
-
-        if (_unhandledInput.Count == 1)
-            _managerNode.SetProcessUnhandledInput(true);
+        RegisterAndEnable(component, _unhandledInput, _unhandledInputPaused, _managerNode.SetProcessUnhandledInput);
     }
 
     /// <summary>
@@ -164,10 +132,7 @@ public class ComponentManager
     /// </summary>
     public void UnregisterUnhandledInput(Component component)
     {
-        Unregister(component, _unhandledInput, _unhandledInputPaused);
-
-        if (_unhandledInput.Count == 0)
-            _managerNode.SetProcessUnhandledInput(false);
+        UnregisterAndDisable(component, _unhandledInput, _unhandledInputPaused, _managerNode.SetProcessUnhandledInput);
     }
 
     internal void OnPausableChanged(Component component)
@@ -213,6 +178,30 @@ public class ComponentManager
             pausedGroup.Remove(component);
         else
             pausedGroup.Add(component);
+    }
+
+    private void Dispatch(ComponentGroup mainGroup, ComponentGroup pausedGroup, Action<Component> dispatch)
+    {
+        List<Component> items = _sceneTree.Paused ? pausedGroup.Items : mainGroup.Items;
+
+        for (int i = items.Count - 1; i >= 0; i--)
+            dispatch(items[i]);
+    }
+
+    private static void RegisterAndEnable(Component component, ComponentGroup mainGroup, ComponentGroup pausedGroup, Action<bool> setEnabled)
+    {
+        Register(component, mainGroup, pausedGroup);
+
+        if (mainGroup.Count == 1)
+            setEnabled(true);
+    }
+
+    private static void UnregisterAndDisable(Component component, ComponentGroup mainGroup, ComponentGroup pausedGroup, Action<bool> setEnabled)
+    {
+        Unregister(component, mainGroup, pausedGroup);
+
+        if (mainGroup.Count == 0)
+            setEnabled(false);
     }
 
     private sealed class ComponentGroup

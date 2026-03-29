@@ -2,11 +2,17 @@ using ENet;
 
 namespace __TEMPLATE__.Netcode.Server;
 
-public abstract partial class ENetServer
+internal sealed class IncomingPacket
 {
-    private readonly struct IncomingPacket
+    private readonly Packet _packet;
+    private readonly Peer _peer;
+
+    public IncomingPacket(Packet packet, Peer peer)
     {
-        public Packet Packet { get; init; }
-        public Peer Peer { get; init; }
+        _packet = packet;
+        _peer = peer;
     }
+
+    public Packet Packet => _packet;
+    public Peer Peer => _peer;
 }

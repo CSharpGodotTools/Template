@@ -145,11 +145,15 @@ public class OptionsNav : IDisposable
             EnsureCurrentTabSelection();
     }
 
-    public void RefreshOptionalTabs(string alwaysVisibleTabName)
+    public void RefreshOptionalTabs(params string[] alwaysVisibleTabNames)
     {
+        HashSet<string> pinnedTabs = new(
+            alwaysVisibleTabNames ?? [],
+            StringComparer.OrdinalIgnoreCase);
+
         foreach ((string tabName, Control tabControl) in _tabs)
         {
-            bool keepVisible = string.Equals(tabName, alwaysVisibleTabName, StringComparison.OrdinalIgnoreCase);
+            bool keepVisible = pinnedTabs.Contains(tabName);
             bool hasContent = tabControl.GetChildCount() > 0;
             SetTabEnabled(tabName, keepVisible || hasContent, ensureSelection: false);
         }

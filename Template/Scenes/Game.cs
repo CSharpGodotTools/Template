@@ -1,6 +1,6 @@
 namespace __TEMPLATE__;
 
-// Anything added here should be initialized in Autoloads and surfaced through Game.
+// Anything added here should be initialized in Autoloads and surfaced through Game
 public partial class Game
 {
     // For example:

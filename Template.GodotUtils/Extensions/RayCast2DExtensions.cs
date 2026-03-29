@@ -45,13 +45,11 @@ public static class RayCast2DExtensions
     /// </summary>
     public static void ExcludeRaycastParents(this RayCast2D raycast, Node parent)
     {
-        if (parent == null)
-            return;
-
-        if (parent is CollisionObject2D collision)
-            raycast.AddException(collision);
-
-        ExcludeRaycastParents(raycast, parent.GetParentOrNull<Node>());
+        RayCastParentTraversal.ForEachParent(parent, node =>
+        {
+            if (node is CollisionObject2D collision)
+                raycast.AddException(collision);
+        });
     }
 
     /// <summary>

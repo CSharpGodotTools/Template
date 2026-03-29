@@ -55,13 +55,16 @@ public abstract class GodotServer : ENetServer
         {
             // Expected when stopping the server.
         }
-        catch (InvalidOperationException exception)
+        catch (Exception exception) when (ExceptionGuard.IsNonFatal(exception))
         {
-            LoggerService.LogErr(exception, $"{LogTag}: server worker failed to start due to invalid state");
-        }
-        catch (Exception exception)
-        {
-            LoggerService.LogErr(exception, LogTag);
+            string message = exception switch
+            {
+                ObjectDisposedException => $"{LogTag}: server worker failed because resources were disposed",
+                InvalidOperationException => $"{LogTag}: server worker failed to start due to invalid state",
+                _ => LogTag,
+            };
+
+            LoggerService.LogErr(exception, message);
         }
     }
 

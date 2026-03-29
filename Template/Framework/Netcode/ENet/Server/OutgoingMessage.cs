@@ -1,51 +1,45 @@
 namespace __TEMPLATE__.Netcode.Server;
 
-public abstract partial class ENetServer
+internal sealed class OutgoingMessage
 {
-    /// <summary>
-    /// Describes unit of work queued for the server worker thread.
-    /// </summary>
-    protected readonly struct OutgoingMessage
+    private readonly byte[] _data;
+    private readonly bool _isBroadcast;
+    private readonly uint _targetPeerId;
+    private readonly uint _excludePeerId;
+    private readonly bool _hasExclusion;
+
+    private OutgoingMessage(
+        byte[] data,
+        bool isBroadcast,
+        uint targetPeerId,
+        uint excludePeerId,
+        bool hasExclusion)
     {
-        public byte[] Data { get; }
-        public bool IsBroadcast { get; }
-        public uint TargetPeerId { get; }
-        public uint ExcludePeerId { get; }
-        public bool HasExclusion { get; }
+        _data = data;
+        _isBroadcast = isBroadcast;
+        _targetPeerId = targetPeerId;
+        _excludePeerId = excludePeerId;
+        _hasExclusion = hasExclusion;
+    }
 
-        private OutgoingMessage(
-            byte[] data, bool isBroadcast,
-            uint targetPeerId, uint excludePeerId, bool hasExclusion)
-        {
-            Data = data;
-            IsBroadcast = isBroadcast;
-            TargetPeerId = targetPeerId;
-            ExcludePeerId = excludePeerId;
-            HasExclusion = hasExclusion;
-        }
+    public byte[] Data => _data;
+    public bool IsBroadcast => _isBroadcast;
+    public uint TargetPeerId => _targetPeerId;
+    public uint ExcludePeerId => _excludePeerId;
+    public bool HasExclusion => _hasExclusion;
 
-        /// <summary>
-        /// Creates a message targeting a single peer.
-        /// </summary>
-        public static OutgoingMessage Unicast(byte[] data, uint peerId)
-        {
-            return new OutgoingMessage(data, false, peerId, 0, false);
-        }
+    public static OutgoingMessage Unicast(byte[] data, uint peerId)
+    {
+        return new OutgoingMessage(data, false, peerId, 0, false);
+    }
 
-        /// <summary>
-        /// Creates a broadcast message to all connected peers.
-        /// </summary>
-        public static OutgoingMessage Broadcast(byte[] data)
-        {
-            return new OutgoingMessage(data, true, 0, 0, false);
-        }
+    public static OutgoingMessage Broadcast(byte[] data)
+    {
+        return new OutgoingMessage(data, true, 0, 0, false);
+    }
 
-        /// <summary>
-        /// Creates a broadcast message excluding one peer.
-        /// </summary>
-        public static OutgoingMessage BroadcastExcept(byte[] data, uint excludeId)
-        {
-            return new OutgoingMessage(data, true, 0, excludeId, true);
-        }
+    public static OutgoingMessage BroadcastExcept(byte[] data, uint excludeId)
+    {
+        return new OutgoingMessage(data, true, 0, excludeId, true);
     }
 }

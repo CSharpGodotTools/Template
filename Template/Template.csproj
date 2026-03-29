@@ -17,12 +17,6 @@
         <NoWarn>NU1605;CS0108;IDE0290</NoWarn>
     </PropertyGroup>
 
-    <!-- gdUnit4 analyzer currently crashes on GitHub Actions with net10 builds. -->
-    <PropertyGroup Condition="'$(CI)' == 'true'">
-        <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
-        <RunAnalyzersDuringCompilation>false</RunAnalyzersDuringCompilation>
-    </PropertyGroup>
-
     <ItemGroup>
         <!-- Package References -->
         <!-- Condition="!Exists('ENet-CSharp.dll')" is required for other platforms -->
@@ -30,14 +24,14 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <!-- https://github.com/Cat-Lips/GodotSharp.SourceGenerators -->
         <PackageReference Include="GodotSharp.SourceGenerators" Version="2.7.0-260208-1601.Release" />
-        <PackageReference Include="PacketGen" Version="1.3.20" />
+        <PackageReference Include="PacketGen" Version="1.3.21" />
         <PackageReference Include="Template.OptionsGen" Version="1.0.5" />
 
         <!-- gdUnit4 package dependencies -->
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
         <PackageReference Include="gdUnit4.api" Version="5.1.0-rc3" />
         <PackageReference Include="gdUnit4.test.adapter" Version="3.0.0" />
-        <PackageReference Include="gdUnit4.analyzers" Version="1.0.0">
+        <PackageReference Include="gdUnit4.analyzers" Version="1.0.0" >
             <PrivateAssets>none</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
