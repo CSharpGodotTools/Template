@@ -38,8 +38,8 @@ internal sealed class OptionsDisplaySettingsComponent
         _visualSettings.ApplyStartupSettings();
     }
 
-    public void SetLanguage(Language language) => _visualSettings.SetLanguage(language);
-    public void SetQualityPreset(QualityPreset qualityPreset) => _visualSettings.SetQualityPreset(qualityPreset);
+    public void SetLanguage(int language) => _visualSettings.SetLanguage(language);
+    public void SetQualityPreset(int qualityPreset) => _visualSettings.SetQualityPreset(qualityPreset);
     public void SetAntialiasing(int antialiasing) => _visualSettings.SetAntialiasing(antialiasing);
 
     public void ToggleFullscreen()
@@ -53,7 +53,7 @@ internal sealed class OptionsDisplaySettingsComponent
     public void SetWindowMode(WindowMode windowMode)
     {
         WindowMode clamped = CoerceWindowMode((int)windowMode);
-        _valueStore.SetInt(OptionsSaveKeys.WindowMode, (int)clamped);
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.WindowMode, (int)clamped);
         ApplyWindowMode();
 
         if (clamped == WindowMode.Windowed)
@@ -64,8 +64,8 @@ internal sealed class OptionsDisplaySettingsComponent
 
     public void SetWindowSize(int width, int height)
     {
-        _valueStore.SetInt(OptionsSaveKeys.WindowWidth, Math.Max(0, width));
-        _valueStore.SetInt(OptionsSaveKeys.WindowHeight, Math.Max(0, height));
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.WindowWidth, Math.Max(0, width));
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.WindowHeight, Math.Max(0, height));
 
         if (DisplayServer.WindowGetMode() == DisplayServer.WindowMode.Windowed)
             ApplyWindowSize();
@@ -74,14 +74,14 @@ internal sealed class OptionsDisplaySettingsComponent
     public void SetVSyncMode(VSyncMode vsyncMode)
     {
         VSyncMode clamped = CoerceVSyncMode((int)vsyncMode);
-        _valueStore.SetInt(OptionsSaveKeys.VSyncMode, (int)clamped);
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.VSyncMode, (int)clamped);
         ApplyVSyncMode();
         ApplyMaxFps();
     }
 
     public void SetMaxFps(int maxFps)
     {
-        _valueStore.SetInt(OptionsSaveKeys.MaxFps, Math.Max(0, maxFps));
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.MaxFps, Math.Max(0, maxFps));
         ApplyMaxFps();
     }
 
@@ -91,8 +91,8 @@ internal sealed class OptionsDisplaySettingsComponent
             return;
 
         Vector2I size = DisplayServer.WindowGetSize();
-        _valueStore.SetInt(OptionsSaveKeys.WindowWidth, Math.Max(0, size.X));
-        _valueStore.SetInt(OptionsSaveKeys.WindowHeight, Math.Max(0, size.Y));
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.WindowWidth, Math.Max(0, size.X));
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.WindowHeight, Math.Max(0, size.Y));
     }
 
     private void ApplyWindowMode()
@@ -140,36 +140,36 @@ internal sealed class OptionsDisplaySettingsComponent
 
     private WindowMode GetWindowMode()
     {
-        WindowMode windowMode = CoerceWindowMode(_valueStore.GetInt(OptionsSaveKeys.WindowMode, DefaultWindowMode));
-        _valueStore.SetInt(OptionsSaveKeys.WindowMode, (int)windowMode);
+        WindowMode windowMode = CoerceWindowMode(_valueStore.GetInt(FrameworkOptionsSaveKeys.WindowMode, DefaultWindowMode));
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.WindowMode, (int)windowMode);
         return windowMode;
     }
 
     private VSyncMode GetVSyncMode()
     {
-        VSyncMode mode = CoerceVSyncMode(_valueStore.GetInt(OptionsSaveKeys.VSyncMode, DefaultVSyncMode));
-        _valueStore.SetInt(OptionsSaveKeys.VSyncMode, (int)mode);
+        VSyncMode mode = CoerceVSyncMode(_valueStore.GetInt(FrameworkOptionsSaveKeys.VSyncMode, DefaultVSyncMode));
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.VSyncMode, (int)mode);
         return mode;
     }
 
     private int GetWindowWidth()
     {
-        int width = Math.Max(0, _valueStore.GetInt(OptionsSaveKeys.WindowWidth, DefaultWindowWidth));
-        _valueStore.SetInt(OptionsSaveKeys.WindowWidth, width);
+        int width = Math.Max(0, _valueStore.GetInt(FrameworkOptionsSaveKeys.WindowWidth, DefaultWindowWidth));
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.WindowWidth, width);
         return width;
     }
 
     private int GetWindowHeight()
     {
-        int height = Math.Max(0, _valueStore.GetInt(OptionsSaveKeys.WindowHeight, DefaultWindowHeight));
-        _valueStore.SetInt(OptionsSaveKeys.WindowHeight, height);
+        int height = Math.Max(0, _valueStore.GetInt(FrameworkOptionsSaveKeys.WindowHeight, DefaultWindowHeight));
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.WindowHeight, height);
         return height;
     }
 
     private int GetMaxFps()
     {
-        int fps = Math.Max(0, _valueStore.GetInt(OptionsSaveKeys.MaxFps, DefaultMaxFps));
-        _valueStore.SetInt(OptionsSaveKeys.MaxFps, fps);
+        int fps = Math.Max(0, _valueStore.GetInt(FrameworkOptionsSaveKeys.MaxFps, DefaultMaxFps));
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.MaxFps, fps);
         return fps;
     }
 

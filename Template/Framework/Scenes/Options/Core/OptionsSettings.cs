@@ -51,13 +51,13 @@ public sealed partial class OptionsSettings
     // These keys are persisted by the options manager but are not declared through OptionDefinitions.
     public int WindowWidth
     {
-        get => GetInt(OptionsSaveKeys.WindowWidth, 0);
-        set => SetInt(OptionsSaveKeys.WindowWidth, Math.Max(0, value));
+        get => GetInt(FrameworkOptionsSaveKeys.WindowWidth, 0);
+        set => SetInt(FrameworkOptionsSaveKeys.WindowWidth, Math.Max(0, value));
     }
 
     public int WindowHeight
     {
-        get => GetInt(OptionsSaveKeys.WindowHeight, 0);
-        set => SetInt(OptionsSaveKeys.WindowHeight, Math.Max(0, value));
+        get => GetInt(FrameworkOptionsSaveKeys.WindowHeight, 0);
+        set => SetInt(FrameworkOptionsSaveKeys.WindowHeight, Math.Max(0, value));
     }
 }

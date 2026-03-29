@@ -2,13 +2,14 @@ using System.Collections.Generic;
 
 namespace __TEMPLATE__.Ui;
 
-internal static class DefaultOptionsTabRegistrars
+internal static partial class DefaultOptionsTabRegistrars
 {
     public static IEnumerable<IOptionsTabRegistrar> Create()
     {
-        yield return new OptionsGeneralTab();
-        yield return new OptionsDisplayTab();
-        yield return new OptionsGraphicsTab();
-        yield return new OptionsAudioTab();
+        List<IOptionsTabRegistrar> registrars = [];
+        AddDefaultTabRegistrars(registrars);
+        return registrars;
     }
+
+    static partial void AddDefaultTabRegistrars(List<IOptionsTabRegistrar> registrars);
 }

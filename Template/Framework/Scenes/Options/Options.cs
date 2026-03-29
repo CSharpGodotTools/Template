@@ -42,8 +42,8 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
 
         ClearLegacyTabRows();
 
-        if (!_optionsNav.TryGetTabButton(OptionsTabs.Input, out Button inputNavButton))
-            throw new InvalidOperationException($"Input tab button '{OptionsTabs.Input}' was not found.");
+        if (!_optionsNav.TryGetTabButton(FrameworkOptionsTabs.Input, out Button inputNavButton))
+            throw new InvalidOperationException($"Input tab button '{FrameworkOptionsTabs.Input}' was not found.");
 
         _optionsInput = new OptionsInput(this, inputNavButton, _optionsManager, _sceneManager, _focusOutlineManager);
         _optionsCustom = new OptionsCustom(_optionsNav, _optionsManager);
@@ -52,11 +52,11 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
         RegisterTabOptions();
 
         _optionsNav.RefreshOptionalTabs(
-            OptionsTabs.Input,
-            OptionsTabs.General,
-            OptionsTabs.Display,
-            OptionsTabs.Graphics,
-            OptionsTabs.Audio);
+            FrameworkOptionsTabs.Input,
+            FrameworkOptionsTabs.General,
+            FrameworkOptionsTabs.Display,
+            FrameworkOptionsTabs.Graphics,
+            FrameworkOptionsTabs.Audio);
 
         VisibilityChanged += OnVisibilityChanged;
 
@@ -85,7 +85,7 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
     {
         foreach (string tabName in _optionsNav.GetTabNames())
         {
-            if (string.Equals(tabName, OptionsTabs.Input, StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(tabName, FrameworkOptionsTabs.Input, StringComparison.OrdinalIgnoreCase))
                 continue;
 
             if (!_optionsNav.TryGetTabContainer(tabName, out VBoxContainer tabContainer))

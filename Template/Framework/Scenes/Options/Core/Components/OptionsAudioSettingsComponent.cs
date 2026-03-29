@@ -20,7 +20,7 @@ internal sealed class OptionsAudioSettingsComponent
         if (_autoloads.AudioManager is not null)
             _autoloads.AudioManager.ApplyMusicVolumeFromSettings(clamped);
 
-        _valueStore.SetFloat(OptionsSaveKeys.MusicVolume, clamped);
+        _valueStore.SetFloat(FrameworkOptionsSaveKeys.MusicVolume, clamped);
     }
 
     public void SetSfxVolume(float volume)
@@ -30,6 +30,6 @@ internal sealed class OptionsAudioSettingsComponent
         if (_autoloads.AudioManager is not null)
             _autoloads.AudioManager.ApplySfxVolumeFromSettings(clamped);
 
-        _valueStore.SetFloat(OptionsSaveKeys.SfxVolume, clamped);
+        _valueStore.SetFloat(FrameworkOptionsSaveKeys.SfxVolume, clamped);
     }
 }

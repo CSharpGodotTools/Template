@@ -13,6 +13,8 @@ public class AudioManager : IDisposable, IAudioService
     private const float RandomPitchThreshold = 0.1f; // Minimum difference in pitch between repeated sounds.
     private const int MutedVolume = -80; // dB value representing mute.
     private const int MutedVolumeNormalized = -40; // Normalized muted volume for volume mapping.
+    private const float DefaultMusicVolume = 100f;
+    private const float DefaultSfxVolume = 100f;
 
     // Variables
     private readonly RandomNumberGenerator _randomNumberGenerator = new();
@@ -39,7 +41,7 @@ public class AudioManager : IDisposable, IAudioService
     /// </summary>
     public void PlayMusic(AudioStream song, bool instant = true, double fadeOut = 1.5, double fadeIn = 0.5)
     {
-        float musicVolume = _optionsManager.Settings.MusicVolume;
+        float musicVolume = _optionsManager.Settings.GetFloat(FrameworkOptionsSaveKeys.MusicVolume, DefaultMusicVolume);
 
         if (!instant && _musicPlayer.Playing)
         {
@@ -58,7 +60,7 @@ public class AudioManager : IDisposable, IAudioService
     /// </summary>
     public void PlaySFX(AudioStream sound, Vector2 position, float minPitch = MinDefaultRandomPitch, float maxPitch = MaxDefaultRandomPitch)
     {
-        float sfxVolume = _optionsManager.Settings.SFXVolume;
+        float sfxVolume = _optionsManager.Settings.GetFloat(FrameworkOptionsSaveKeys.SfxVolume, DefaultSfxVolume);
         AudioStreamPlayer2D sfxPlayer = _sfxPool.Acquire();
 
         sfxPlayer.GlobalPosition = position;
@@ -91,7 +93,7 @@ public class AudioManager : IDisposable, IAudioService
     /// </summary>
     public void SetMusicVolume(float volume)
     {
-        _optionsManager.Settings.MusicVolume = volume;
+        _optionsManager.Settings.SetFloat(FrameworkOptionsSaveKeys.MusicVolume, volume);
     }
 
     /// <summary>
@@ -99,7 +101,7 @@ public class AudioManager : IDisposable, IAudioService
     /// </summary>
     public void SetSFXVolume(float volume)
     {
-        _optionsManager.Settings.SFXVolume = volume;
+        _optionsManager.Settings.SetFloat(FrameworkOptionsSaveKeys.SfxVolume, volume);
     }
 
     internal void ApplyMusicVolumeFromSettings(float volume)

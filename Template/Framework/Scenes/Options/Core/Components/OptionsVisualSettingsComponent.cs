@@ -5,8 +5,14 @@ namespace __TEMPLATE__.Ui;
 
 internal sealed class OptionsVisualSettingsComponent
 {
-    private const int DefaultLanguage = (int)Language.English;
+    private const int DefaultLanguage = 0;
+    private const int MinLanguage = 0;
+    private const int MaxLanguage = 2;
+    private const int MinQualityPreset = 0;
+    private const int MaxQualityPreset = 2;
     private const int DefaultAntialiasing = 3;
+
+    private static readonly string[] SupportedLocales = ["en", "fr", "ja"];
 
     private readonly OptionsValueStoreComponent _valueStore;
 
@@ -21,29 +27,30 @@ internal sealed class OptionsVisualSettingsComponent
         ApplyAntialiasing();
     }
 
-    public void SetLanguage(Language language)
+    public void SetLanguage(int language)
     {
-        Language clamped = CoerceLanguage((int)language);
-        _valueStore.SetInt(OptionsSaveKeys.Language, (int)clamped);
+        int clamped = CoerceLanguage(language);
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.Language, clamped);
         ApplyLanguage();
     }
 
-    public void SetQualityPreset(QualityPreset qualityPreset)
+    public void SetQualityPreset(int qualityPreset)
     {
-        int clamped = Math.Clamp((int)qualityPreset, (int)QualityPreset.Low, (int)QualityPreset.High);
-        _valueStore.SetInt(OptionsSaveKeys.QualityPreset, clamped);
+        int clamped = Math.Clamp(qualityPreset, MinQualityPreset, MaxQualityPreset);
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.QualityPreset, clamped);
     }
 
     public void SetAntialiasing(int antialiasing)
     {
-        _valueStore.SetInt(OptionsSaveKeys.Antialiasing, Math.Clamp(antialiasing, 0, 3));
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.Antialiasing, Math.Clamp(antialiasing, 0, 3));
         ApplyAntialiasing();
     }
 
     private void ApplyLanguage()
     {
-        Language language = GetLanguage();
-        TranslationServer.SetLocale(language.ToString()[..2].ToLower());
+        int language = GetLanguage();
+        int localeIndex = Math.Clamp(language, 0, SupportedLocales.Length - 1);
+        TranslationServer.SetLocale(SupportedLocales[localeIndex]);
     }
 
     private void ApplyAntialiasing()
@@ -53,23 +60,22 @@ internal sealed class OptionsVisualSettingsComponent
         ProjectSettings.SetSetting("rendering/anti_aliasing/quality/msaa_3d", antialiasing);
     }
 
-    private Language GetLanguage()
+    private int GetLanguage()
     {
-        Language language = CoerceLanguage(_valueStore.GetInt(OptionsSaveKeys.Language, DefaultLanguage));
-        _valueStore.SetInt(OptionsSaveKeys.Language, (int)language);
+        int language = CoerceLanguage(_valueStore.GetInt(FrameworkOptionsSaveKeys.Language, DefaultLanguage));
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.Language, language);
         return language;
     }
 
     private int GetAntialiasing()
     {
-        int antialiasing = Math.Clamp(_valueStore.GetInt(OptionsSaveKeys.Antialiasing, DefaultAntialiasing), 0, 3);
-        _valueStore.SetInt(OptionsSaveKeys.Antialiasing, antialiasing);
+        int antialiasing = Math.Clamp(_valueStore.GetInt(FrameworkOptionsSaveKeys.Antialiasing, DefaultAntialiasing), 0, 3);
+        _valueStore.SetInt(FrameworkOptionsSaveKeys.Antialiasing, antialiasing);
         return antialiasing;
     }
 
-    private static Language CoerceLanguage(int raw)
+    private static int CoerceLanguage(int raw)
     {
-        int clamped = Math.Clamp(raw, (int)Language.English, (int)Language.Japanese);
-        return (Language)clamped;
+        return Math.Clamp(raw, MinLanguage, MaxLanguage);
     }
 }

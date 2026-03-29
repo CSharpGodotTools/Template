@@ -31,25 +31,25 @@ internal sealed class OptionsSettingDispatcherComponent
     {
         switch (key)
         {
-            case OptionsSaveKeys.Language:
-                _displaySettings.SetLanguage((Language)value);
+            case FrameworkOptionsSaveKeys.Language:
+                _displaySettings.SetLanguage(value);
                 return;
-            case OptionsSaveKeys.QualityPreset:
-                _displaySettings.SetQualityPreset((QualityPreset)value);
+            case FrameworkOptionsSaveKeys.QualityPreset:
+                _displaySettings.SetQualityPreset(value);
                 return;
-            case OptionsSaveKeys.Antialiasing:
+            case FrameworkOptionsSaveKeys.Antialiasing:
                 _displaySettings.SetAntialiasing(value);
                 return;
-            case OptionsSaveKeys.WindowMode:
+            case FrameworkOptionsSaveKeys.WindowMode:
                 _displaySettings.SetWindowMode((WindowMode)value);
                 return;
-            case OptionsSaveKeys.WindowWidth:
-                _displaySettings.SetWindowSize(value, ReadOptionInt(OptionsSaveKeys.WindowHeight, DefaultWindowHeight));
+            case FrameworkOptionsSaveKeys.WindowWidth:
+                _displaySettings.SetWindowSize(value, ReadOptionInt(FrameworkOptionsSaveKeys.WindowHeight, DefaultWindowHeight));
                 return;
-            case OptionsSaveKeys.WindowHeight:
-                _displaySettings.SetWindowSize(ReadOptionInt(OptionsSaveKeys.WindowWidth, DefaultWindowWidth), value);
+            case FrameworkOptionsSaveKeys.WindowHeight:
+                _displaySettings.SetWindowSize(ReadOptionInt(FrameworkOptionsSaveKeys.WindowWidth, DefaultWindowWidth), value);
                 return;
-            case OptionsSaveKeys.VSyncMode:
+            case FrameworkOptionsSaveKeys.VSyncMode:
                 _displaySettings.SetVSyncMode((VSyncMode)value);
                 return;
             default:
@@ -62,13 +62,13 @@ internal sealed class OptionsSettingDispatcherComponent
     {
         switch (key)
         {
-            case OptionsSaveKeys.MusicVolume:
+            case FrameworkOptionsSaveKeys.MusicVolume:
                 _audioSettings.SetMusicVolume(value);
                 return;
-            case OptionsSaveKeys.SfxVolume:
+            case FrameworkOptionsSaveKeys.SfxVolume:
                 _audioSettings.SetSfxVolume(value);
                 return;
-            case OptionsSaveKeys.MaxFps:
+            case FrameworkOptionsSaveKeys.MaxFps:
                 _displaySettings.SetMaxFps((int)value);
                 return;
             default:
