@@ -51,7 +51,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     public override void _Ready()
     {
         if (!_isConfigured)
-            throw new InvalidOperationException($"{nameof(NetControlPanelLow<TGameClient, TGameServer>)} was not configured before _Ready.");
+            throw new InvalidOperationException($"{nameof(NetControlPanelLow<,>)} was not configured before _Ready.");
 
         _port = DefaultPort;
         _ip = DefaultLocalIp;

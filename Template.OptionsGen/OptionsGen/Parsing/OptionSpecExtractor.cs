@@ -5,21 +5,14 @@ using System.Linq;
 
 namespace Template.OptionsGen;
 
-internal sealed class OptionSpecExtractor : IOptionSpecExtractor
+internal sealed class OptionSpecExtractor(
+    IOptionFactoryMetadataResolver metadataResolver,
+    IInvocationArgumentResolver argumentResolver,
+    IDefaultLiteralResolver defaultLiteralResolver) : IOptionSpecExtractor
 {
-    private readonly IOptionFactoryMetadataResolver _metadataResolver;
-    private readonly IInvocationArgumentResolver _argumentResolver;
-    private readonly IDefaultLiteralResolver _defaultLiteralResolver;
-
-    public OptionSpecExtractor(
-        IOptionFactoryMetadataResolver metadataResolver,
-        IInvocationArgumentResolver argumentResolver,
-        IDefaultLiteralResolver defaultLiteralResolver)
-    {
-        _metadataResolver = metadataResolver ?? throw new ArgumentNullException(nameof(metadataResolver));
-        _argumentResolver = argumentResolver ?? throw new ArgumentNullException(nameof(argumentResolver));
-        _defaultLiteralResolver = defaultLiteralResolver ?? throw new ArgumentNullException(nameof(defaultLiteralResolver));
-    }
+    private readonly IOptionFactoryMetadataResolver _metadataResolver = metadataResolver ?? throw new ArgumentNullException(nameof(metadataResolver));
+    private readonly IInvocationArgumentResolver _argumentResolver = argumentResolver ?? throw new ArgumentNullException(nameof(argumentResolver));
+    private readonly IDefaultLiteralResolver _defaultLiteralResolver = defaultLiteralResolver ?? throw new ArgumentNullException(nameof(defaultLiteralResolver));
 
     public IOptionFactoryMetadataResolver MetadataResolver => _metadataResolver;
     public IInvocationArgumentResolver ArgumentResolver => _argumentResolver;

@@ -13,7 +13,7 @@ internal sealed class OptionsSettingsStore
     private const string PathOptions = "user://options.json";
     private readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
 
-    public ResourceOptions Load()
+    public static ResourceOptions Load()
     {
         if (FileAccess.FileExists(PathOptions))
         {

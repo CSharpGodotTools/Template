@@ -11,7 +11,7 @@ internal sealed class OptionsValueStoreComponent
     public OptionsValueStoreComponent(OptionsSettingsStore settingsStore)
     {
         _settingsStore = settingsStore;
-        _options = _settingsStore.Load();
+        _options = OptionsSettingsStore.Load();
         _options.Normalize();
         _customRegistry = new OptionsCustomRegistry(_options);
     }

@@ -69,7 +69,7 @@ internal sealed class VisualDictionaryControlComponent
 
     private void InitializeRows()
     {
-        List<(object Key, object Value)> entries = new(_adapter.Entries);
+        List<(object Key, object Value)> entries = [.. _adapter.Entries];
         _displayOrderTracker.Seed(entries);
 
         foreach ((object key, object value) in entries)

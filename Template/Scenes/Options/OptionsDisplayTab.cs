@@ -60,7 +60,7 @@ public sealed class OptionsDisplayTab : IOptionsTabRegistrar
                 tab: TabName,
                 targetLabel: WindowSizeLabel,
                 name: "WindowSizeCustomButton",
-                createControl: anchorControl => CreateWindowSizeCustomControl(anchorControl, optionsService),
+                createControl: _ => CreateWindowSizeCustomControl(optionsService),
                 onDetaching: (control, _) => DetachRightControl(control)));
 
         optionsService.AddOption(
@@ -94,7 +94,7 @@ public sealed class OptionsDisplayTab : IOptionsTabRegistrar
                 onDetaching: (control, _) => DetachRightControl(control)));
     }
 
-    private Control CreateWindowSizeCustomControl(Control _anchorControl, IOptionsService optionsService)
+    private Button CreateWindowSizeCustomControl(IOptionsService optionsService)
     {
         Button button = new()
         {
@@ -107,7 +107,7 @@ public sealed class OptionsDisplayTab : IOptionsTabRegistrar
         return button;
     }
 
-    private Control CreateMaxFpsFeedbackControl(Control anchorControl, IOptionsService optionsService)
+    private LineEdit CreateMaxFpsFeedbackControl(Control anchorControl, IOptionsService optionsService)
     {
         LineEdit feedback = new()
         {
@@ -141,7 +141,7 @@ public sealed class OptionsDisplayTab : IOptionsTabRegistrar
         _rightControlDisposables.Remove(control);
     }
 
-    private static void ApplyWindowSize(IOptionsService optionsService, IReadOnlyList<Vector2I> windowSizes, int index)
+    private static void ApplyWindowSize(IOptionsService optionsService, List<Vector2I> windowSizes, int index)
     {
         if ((uint)index >= (uint)windowSizes.Count)
             return;
@@ -151,7 +151,7 @@ public sealed class OptionsDisplayTab : IOptionsTabRegistrar
         optionsService.Settings.WindowHeight = size.Y;
     }
 
-    private static int GetCurrentWindowSizeIndex(IOptionsService optionsService, IReadOnlyList<Vector2I> windowSizes)
+    private static int GetCurrentWindowSizeIndex(IOptionsService optionsService, List<Vector2I> windowSizes)
     {
         Vector2I configuredSize = new(
             optionsService.Settings.WindowWidth,

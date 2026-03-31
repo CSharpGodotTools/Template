@@ -4,27 +4,18 @@ using System.Collections.Generic;
 
 namespace GodotUtils.Debugging;
 
-internal sealed class VisualDictionaryAdapter : IVisualDictionaryAdapter
+internal sealed class VisualDictionaryAdapter(
+    Func<IEnumerable<(object Key, object Value)>> entriesFactory,
+    Func<object, bool> containsKey,
+    Func<object, object?> get,
+    Action<object, object?> set,
+    Action<object> remove) : IVisualDictionaryAdapter
 {
-    private readonly Func<IEnumerable<(object Key, object Value)>> _entriesFactory;
-    private readonly Func<object, bool> _containsKey;
-    private readonly Func<object, object?> _get;
-    private readonly Action<object, object?> _set;
-    private readonly Action<object> _remove;
-
-    public VisualDictionaryAdapter(
-        Func<IEnumerable<(object Key, object Value)>> entriesFactory,
-        Func<object, bool> containsKey,
-        Func<object, object?> get,
-        Action<object, object?> set,
-        Action<object> remove)
-    {
-        _entriesFactory = entriesFactory;
-        _containsKey = containsKey;
-        _get = get;
-        _set = set;
-        _remove = remove;
-    }
+    private readonly Func<IEnumerable<(object Key, object Value)>> _entriesFactory = entriesFactory;
+    private readonly Func<object, bool> _containsKey = containsKey;
+    private readonly Func<object, object?> _get = get;
+    private readonly Action<object, object?> _set = set;
+    private readonly Action<object> _remove = remove;
 
     public IEnumerable<(object Key, object Value)> Entries => _entriesFactory();
 

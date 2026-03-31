@@ -7,7 +7,7 @@ namespace Template.OptionsGen;
 
 internal sealed class OptionSpecDeduplicator : IOptionSpecDeduplicator
 {
-    private static readonly DiagnosticDescriptor ConflictingKeyTypeDescriptor = new(
+    private static readonly DiagnosticDescriptor _conflictingKeyTypeDescriptor = new(
         id: "OG001",
         title: "Conflicting option key type",
         messageFormat: "Option save key '{0}' is registered with conflicting types '{1}' and '{2}'.",
@@ -31,7 +31,7 @@ internal sealed class OptionSpecDeduplicator : IOptionSpecDeduplicator
                 if (existing.ValueKind != raw.ValueKind)
                 {
                     context.ReportDiagnostic(Diagnostic.Create(
-                        ConflictingKeyTypeDescriptor,
+                        _conflictingKeyTypeDescriptor,
                         Location.None,
                         raw.SaveKey,
                         OptionValueKindNaming.GetTypeKeyword(existing.ValueKind),

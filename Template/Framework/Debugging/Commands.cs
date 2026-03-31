@@ -9,18 +9,18 @@ public class Commands
 {
     public static void RegisterAll(GameConsole console, ILoggerService logger, IApplicationLifetime applicationLifetime)
     {
-        console.RegisterCommand("help", args => CommandHelp(args, console, logger));
-        console.RegisterCommand("quit", args => CommandQuit(args, applicationLifetime)).WithAliases("exit");
+        console.RegisterCommand("help", _ => CommandHelp(console, logger));
+        console.RegisterCommand("quit", _ => CommandQuit(applicationLifetime)).WithAliases("exit");
         console.RegisterCommand("debug", args => CommandDebug(args, logger));
     }
 
-    private static void CommandHelp(string[] args, GameConsole console, ILoggerService logger)
+    private static void CommandHelp(GameConsole console, ILoggerService logger)
     {
         IEnumerable<string> cmds = console.GetCommands().Select(x => x.Name);
         logger.Log(cmds.ToFormattedString()!);
     }
 
-    private async static void CommandQuit(string[] args, IApplicationLifetime applicationLifetime)
+    private static async void CommandQuit(IApplicationLifetime applicationLifetime)
     {
         await applicationLifetime.ExitGameAsync();
     }

@@ -80,7 +80,7 @@ internal abstract class EventLogAggregator
     /// <summary>
     /// Emits log entries in chronological order based on tick timestamps.
     /// </summary>
-    protected static void EmitLogEntries(Action<string> log, List<LogEntry> entries)
+    protected static void EmitLogEntries(List<LogEntry> entries)
     {
         entries.Sort(static (left, right) => left.Tick.CompareTo(right.Tick));
 

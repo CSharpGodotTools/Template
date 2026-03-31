@@ -12,10 +12,10 @@ internal sealed class LocalPlayer
     // Ideally we should expose an option to the developer to delete the entire netcode
     // example folders but since the netcode examples are not fully complete I do not want
     // to expose them just yet as 'templates' in the setup plugin.
-    private static StringName MoveLeft = "move_left";
-    private static StringName MoveRight = "move_right";
-    private static StringName MoveUp = "move_up";
-    private static StringName MoveDown = "move_down";
+    private static readonly StringName _moveLeft = "move_left";
+    private static readonly StringName _moveRight = "move_right";
+    private static readonly StringName _moveUp = "move_up";
+    private static readonly StringName _moveDown = "move_down";
 
     private readonly World _world;
     private GameClient? _client;
@@ -91,7 +91,7 @@ internal sealed class LocalPlayer
 
     private static void UpdateMovement(ColorRect node, float deltaSeconds)
     {
-        Vector2 inputDirection = Input.GetVector(MoveLeft, MoveRight, MoveUp, MoveDown);
+        Vector2 inputDirection = Input.GetVector(_moveLeft, _moveRight, _moveUp, _moveDown);
 
         if (inputDirection != Vector2.Zero)
         {

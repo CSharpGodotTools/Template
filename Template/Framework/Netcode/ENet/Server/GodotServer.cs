@@ -138,7 +138,7 @@ public abstract class GodotServer : ENetServer
     }
 
     // Throttling state keyed by packet opcode.
-    private readonly Dictionary<ushort, long> _lastThrottleTicks = new();
+    private readonly Dictionary<ushort, long> _lastThrottleTicks = [];
 
     /// <summary>
     /// Returns <c>true</c> and updates the last-send timestamp when the throttle interval has elapsed.

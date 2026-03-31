@@ -41,7 +41,7 @@ internal sealed class LineEditBinding(HBoxContainer row, LineEdit lineEdit, Line
         lineEditOption.SetValue(value);
         lineEdit.Text = value;
 
-        LineEdit.TextChangedEventHandler onTextChanged = text => lineEditOption.SetValue(text ?? string.Empty);
+        void onTextChanged(string text) => lineEditOption.SetValue(text ?? string.Empty);
         lineEdit.TextChanged += onTextChanged;
 
         return new LineEditBinding(row, lineEdit, onTextChanged);

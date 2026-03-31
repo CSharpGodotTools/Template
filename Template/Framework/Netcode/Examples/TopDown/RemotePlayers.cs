@@ -54,9 +54,9 @@ internal sealed class RemotePlayers
             if (!_trackedIds.Contains(positionEntry.Key))
                 continue;
 
-            if (!_players.TryGetValue(positionEntry.Key, out ColorRect? playerNode))
+            if (!_players.ContainsKey(positionEntry.Key))
             {
-                playerNode = World.CreatePlayerRect(new Color(1f, 0.55f, 0.2f));
+                ColorRect playerNode = World.CreatePlayerRect(new Color(1f, 0.55f, 0.2f));
                 playerNode.Name = $"Player_{positionEntry.Key}";
                 playerNode.Position = positionEntry.Value;
                 _players[positionEntry.Key] = playerNode;
@@ -85,4 +85,3 @@ internal sealed class RemotePlayers
         }
     }
 }
-

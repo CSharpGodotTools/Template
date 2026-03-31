@@ -76,9 +76,12 @@ internal static class VisualMemberElementBuilder
             label.HorizontalAlignment = HorizontalAlignment.Right;
             label.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
 
-            HBoxContainer contentRow = new() { Alignment = BoxContainer.AlignmentMode.End };
-            contentRow.Name = $"{member.Name}_content";
-            contentRow.SizeFlagsHorizontal = Control.SizeFlags.ExpandFill;
+            HBoxContainer contentRow = new()
+            {
+                Alignment = BoxContainer.AlignmentMode.End,
+                Name = $"{member.Name}_content",
+                SizeFlagsHorizontal = Control.SizeFlags.ExpandFill
+            };
             contentRow.AddThemeConstantOverride("separation", MemberRowSeparation);
 
             Control classSpacer = new()

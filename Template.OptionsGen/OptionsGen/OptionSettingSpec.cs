@@ -8,16 +8,9 @@ internal enum OptionValueKind
     Bool,
 }
 
-internal sealed class OptionSettingSpec
+internal sealed class OptionSettingSpec(string saveKey, OptionValueKind valueKind, string defaultLiteral)
 {
-    public OptionSettingSpec(string saveKey, OptionValueKind valueKind, string defaultLiteral)
-    {
-        SaveKey = saveKey;
-        ValueKind = valueKind;
-        DefaultLiteral = defaultLiteral;
-    }
-
-    public string SaveKey { get; }
-    public OptionValueKind ValueKind { get; }
-    public string DefaultLiteral { get; }
+    public string SaveKey { get; } = saveKey;
+    public OptionValueKind ValueKind { get; } = valueKind;
+    public string DefaultLiteral { get; } = defaultLiteral;
 }

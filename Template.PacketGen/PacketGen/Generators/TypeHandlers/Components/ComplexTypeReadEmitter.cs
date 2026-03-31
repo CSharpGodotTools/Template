@@ -4,14 +4,9 @@ using System.Collections.Immutable;
 
 namespace PacketGen.Generators.TypeHandlers;
 
-internal sealed class ComplexTypeReadEmitter
+internal sealed class ComplexTypeReadEmitter(TypeHandlerRegistry registry)
 {
-    private readonly TypeHandlerRegistry _registry;
-
-    public ComplexTypeReadEmitter(TypeHandlerRegistry registry)
-    {
-        _registry = registry;
-    }
+    private readonly TypeHandlerRegistry _registry = registry;
 
     public void Emit(ReadContext ctx, INamedTypeSymbol namedType, string indent, int depth, string nameSeed)
     {

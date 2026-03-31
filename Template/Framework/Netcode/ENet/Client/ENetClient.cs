@@ -8,7 +8,7 @@ namespace __TEMPLATE__.Netcode.Client;
 public abstract class ENetClient : ENetLow
 {
     private const string LogTag = "Client";
-    private static readonly ClientLogAggregator SharedLogAggregator = new();
+    private static readonly ClientLogAggregator _sharedLogAggregator = new();
     private static int _activeClientWorkers;
 
     private readonly ClientQueueManager _queues;
@@ -36,7 +36,7 @@ public abstract class ENetClient : ENetLow
         _commands = commandProcessor ?? new ClientCommandProcessor(_queues, () => CTS.IsCancellationRequested, message => Log(message), DisconnectPeer);
         _incoming = incomingProcessor ?? new ClientIncomingProcessor(_queues, _mainThreadPackets, () => Options, message => Log(message));
         _outgoing = outgoingProcessor ?? new ClientOutgoingProcessor(_queues, () => _peer, NextStreamId, GetMaxFragmentsPerPacket, data => CreateReliablePacket(data), exception => LogOutgoingSendFailure(exception, LogTag));
-        _logAggregator = logAggregator ?? SharedLogAggregator;
+        _logAggregator = logAggregator ?? _sharedLogAggregator;
     }
 
     protected ConcurrentQueue<Cmd<GodotOpcode>> MainThreadCommands => _mainThreadCommands;

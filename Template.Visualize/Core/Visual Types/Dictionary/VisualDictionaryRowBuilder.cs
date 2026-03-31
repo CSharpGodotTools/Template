@@ -4,39 +4,26 @@ using System;
 
 namespace GodotUtils.Debugging;
 
-internal sealed class VisualDictionaryRowBuilder
+internal sealed class VisualDictionaryRowBuilder(
+    VisualDictionaryTypeInfo typeInfo,
+    VisualControlContext context,
+    IVisualDictionaryKeyResolver keyResolver,
+    IVisualDictionaryDisplayOrderTracker displayOrderTracker,
+    Func<Type, VisualControlContext, VisualControlInfo> createControlForType,
+    Action<Node, Action> cleanupOnTreeExited,
+    Func<IVisualDictionaryAdapter> getAdapter,
+    Func<object> getDictionaryObject,
+    Func<bool> getIsEditable)
 {
-    private readonly VisualDictionaryTypeInfo _typeInfo;
-    private readonly VisualControlContext _context;
-    private readonly IVisualDictionaryKeyResolver _keyResolver;
-    private readonly IVisualDictionaryDisplayOrderTracker _displayOrderTracker;
-    private readonly Func<Type, VisualControlContext, VisualControlInfo> _createControlForType;
-    private readonly Action<Node, Action> _cleanupOnTreeExited;
-    private readonly Func<IVisualDictionaryAdapter> _getAdapter;
-    private readonly Func<object> _getDictionaryObject;
-    private readonly Func<bool> _getIsEditable;
-
-    public VisualDictionaryRowBuilder(
-        VisualDictionaryTypeInfo typeInfo,
-        VisualControlContext context,
-        IVisualDictionaryKeyResolver keyResolver,
-        IVisualDictionaryDisplayOrderTracker displayOrderTracker,
-        Func<Type, VisualControlContext, VisualControlInfo> createControlForType,
-        Action<Node, Action> cleanupOnTreeExited,
-        Func<IVisualDictionaryAdapter> getAdapter,
-        Func<object> getDictionaryObject,
-        Func<bool> getIsEditable)
-    {
-        _typeInfo = typeInfo;
-        _context = context;
-        _keyResolver = keyResolver;
-        _displayOrderTracker = displayOrderTracker;
-        _createControlForType = createControlForType;
-        _cleanupOnTreeExited = cleanupOnTreeExited;
-        _getAdapter = getAdapter;
-        _getDictionaryObject = getDictionaryObject;
-        _getIsEditable = getIsEditable;
-    }
+    private readonly VisualDictionaryTypeInfo _typeInfo = typeInfo;
+    private readonly VisualControlContext _context = context;
+    private readonly IVisualDictionaryKeyResolver _keyResolver = keyResolver;
+    private readonly IVisualDictionaryDisplayOrderTracker _displayOrderTracker = displayOrderTracker;
+    private readonly Func<Type, VisualControlContext, VisualControlInfo> _createControlForType = createControlForType;
+    private readonly Action<Node, Action> _cleanupOnTreeExited = cleanupOnTreeExited;
+    private readonly Func<IVisualDictionaryAdapter> _getAdapter = getAdapter;
+    private readonly Func<object> _getDictionaryObject = getDictionaryObject;
+    private readonly Func<bool> _getIsEditable = getIsEditable;
 
     public void AddEntry(VBoxContainer dictionaryVBox, object key, object value)
     {

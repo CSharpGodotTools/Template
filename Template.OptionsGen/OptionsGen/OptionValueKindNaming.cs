@@ -4,52 +4,37 @@ internal static class OptionValueKindNaming
 {
     public static string GetTypeKeyword(OptionValueKind kind)
     {
-        switch (kind)
+        return kind switch
         {
-            case OptionValueKind.Int:
-                return "int";
-            case OptionValueKind.Float:
-                return "float";
-            case OptionValueKind.String:
-                return "string";
-            case OptionValueKind.Bool:
-                return "bool";
-            default:
-                return "object";
-        }
+            OptionValueKind.Int => "int",
+            OptionValueKind.Float => "float",
+            OptionValueKind.String => "string",
+            OptionValueKind.Bool => "bool",
+            _ => "object",
+        };
     }
 
     public static string GetGetterName(OptionValueKind kind)
     {
-        switch (kind)
+        return kind switch
         {
-            case OptionValueKind.Int:
-                return "GetInt";
-            case OptionValueKind.Float:
-                return "GetFloat";
-            case OptionValueKind.String:
-                return "GetString";
-            case OptionValueKind.Bool:
-                return "GetBool";
-            default:
-                return "GetString";
-        }
+            OptionValueKind.Int => "GetInt",
+            OptionValueKind.Float => "GetFloat",
+            OptionValueKind.String => "GetString",
+            OptionValueKind.Bool => "GetBool",
+            _ => "GetString",
+        };
     }
 
     public static string GetSetterName(OptionValueKind kind)
     {
-        switch (kind)
+        return kind switch
         {
-            case OptionValueKind.Int:
-                return "SetInt";
-            case OptionValueKind.Float:
-                return "SetFloat";
-            case OptionValueKind.String:
-                return "SetString";
-            case OptionValueKind.Bool:
-                return "SetBool";
-            default:
-                return "SetString";
-        }
+            OptionValueKind.Int => "SetInt",
+            OptionValueKind.Float => "SetFloat",
+            OptionValueKind.String => "SetString",
+            OptionValueKind.Bool => "SetBool",
+            _ => "SetString",
+        };
     }
 }

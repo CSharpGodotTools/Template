@@ -71,10 +71,10 @@ internal static class VisualUI
 
         VBoxContainer vboxLogs = new()
         {
-            Name = LogsName
+            Name = LogsName,
+            MouseFilter = MouseFilterEnum.Ignore,
+            SizeFlagsHorizontal = SizeFlags.ShrinkBegin
         };
-        vboxLogs.MouseFilter = MouseFilterEnum.Ignore;
-        vboxLogs.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
 
         VisualizeAutoload.Instance?.RegisterLogContainer(node, vboxLogs);
 
@@ -97,9 +97,9 @@ internal static class VisualUI
         HBoxContainer membersColumns = new()
         {
             Name = MembersColumnsName,
-            MouseFilter = MouseFilterEnum.Ignore
+            MouseFilter = MouseFilterEnum.Ignore,
+            Alignment = BoxContainer.AlignmentMode.Begin
         };
-        membersColumns.Alignment = BoxContainer.AlignmentMode.Begin;
         membersColumns.AddThemeConstantOverride("separation", MembersColumnsSeparation);
         membersColumns.AddChild(mutableMembersVbox);
         membersColumns.AddChild(readonlyMembersVbox);

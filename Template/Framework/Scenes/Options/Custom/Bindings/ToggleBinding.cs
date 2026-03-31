@@ -40,7 +40,7 @@ internal sealed class ToggleBinding(HBoxContainer row, CheckBox checkbox, CheckB
         toggleOption.SetValue(value);
         checkbox.ButtonPressed = value;
 
-        CheckBox.ToggledEventHandler onToggled = pressed => toggleOption.SetValue(pressed);
+        void onToggled(bool pressed) => toggleOption.SetValue(pressed);
         checkbox.Toggled += onToggled;
 
         return new ToggleBinding(row, checkbox, onToggled);

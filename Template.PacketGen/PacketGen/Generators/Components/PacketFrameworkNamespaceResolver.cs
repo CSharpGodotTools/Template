@@ -88,14 +88,13 @@ internal sealed class PacketFrameworkNamespaceResolver
         if (classDeclaration.SyntaxTree.GetRoot() is not CompilationUnitSyntax compilationUnit)
             return null;
 
-        List<string> candidateUsings = compilationUnit.Usings
+        List<string> candidateUsings = [.. compilationUnit.Usings
             .Where(usingDirective =>
                 usingDirective.Alias is null
                 && usingDirective.StaticKeyword.RawKind != (int)Microsoft.CodeAnalysis.CSharp.SyntaxKind.StaticKeyword
                 && usingDirective.Name is not null)
             .Select(usingDirective => usingDirective.Name!.ToString())
-            .Where(namespaceName => !namespaceName.StartsWith("System"))
-            .ToList();
+            .Where(namespaceName => !namespaceName.StartsWith("System"))];
 
         if (candidateUsings.Count == 1)
             return candidateUsings[0];

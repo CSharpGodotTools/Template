@@ -17,7 +17,7 @@ internal sealed class OptionPersistence(ResourceOptions options)
     /// <summary>
     /// Builds a persistence key, using the explicit key when provided.
     /// </summary>
-    public string GetSaveKey(string tab, string label, string? explicitKey = null)
+    public static string GetSaveKey(string tab, string label, string? explicitKey = null)
     {
         string key = string.IsNullOrWhiteSpace(explicitKey) ? $"{tab}_{label}" : explicitKey;
         return NormalizeKey(key);
@@ -26,7 +26,7 @@ internal sealed class OptionPersistence(ResourceOptions options)
     /// <summary>
     /// Legacy key shape used before tab-qualified persistence keys.
     /// </summary>
-    public string GetLegacySaveKey(string label)
+    public static string GetLegacySaveKey(string label)
     {
         return NormalizeKey(label);
     }
@@ -97,7 +97,7 @@ internal sealed class OptionPersistence(ResourceOptions options)
     }
 
     private static bool TryRead<T>(
-        IReadOnlyDictionary<string, JsonElement> values,
+        Dictionary<string, JsonElement> values,
         string key,
         T defaultValue,
         Func<JsonElement, T, (bool Success, T Value)> tryParse,

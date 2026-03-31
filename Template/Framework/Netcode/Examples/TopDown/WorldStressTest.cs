@@ -535,8 +535,7 @@ public partial class World
                     bool serviced = false;
                     while (!serviced)
                     {
-                        Event netEvent;
-                        if (host.CheckEvents(out netEvent) > 0)
+                        if (host.CheckEvents(out Event netEvent) > 0)
                         {
                             // Queued event — process without consuming the Service budget.
                         }

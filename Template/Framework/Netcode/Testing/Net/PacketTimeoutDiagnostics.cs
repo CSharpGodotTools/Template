@@ -9,7 +9,7 @@ public static class PacketTimeoutDiagnostics
 {
     public static string Build<TPacket>(
         TPacket expected,
-        ENetTestHarness<TPacket> harness,
+        ENetTestHarness<TPacket> _,
         PacketWaitDiagnostics waitDiagnostics,
         TimeSpan timeout)
         where TPacket : ClientPacket

@@ -24,7 +24,7 @@ internal partial class VisualizeExampleSprite : Sprite2D
     };
 
     [Visualize]
-    private ExampleClass _classValue = new()
+    private readonly ExampleClass _classValue = new()
     {
         Name = "Inner Class",
         Speed = 4.5f,

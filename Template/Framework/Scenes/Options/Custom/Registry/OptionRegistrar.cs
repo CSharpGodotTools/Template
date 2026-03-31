@@ -11,8 +11,8 @@ internal static class OptionRegistrar
     internal static RegisteredSliderOption CreateSlider(
         int id, SliderOptionDefinition option, OptionPersistence persistence)
     {
-        string key = persistence.GetSaveKey(option.Tab, option.Label, option.SaveKey);
-        string legacyKey = persistence.GetLegacySaveKey(option.Label);
+        string key = OptionPersistence.GetSaveKey(option.Tab, option.Label, option.SaveKey);
+        string legacyKey = OptionPersistence.GetLegacySaveKey(option.Label);
         float min = (float)option.MinValue;
         float max = (float)option.MaxValue;
         float def = Mathf.Clamp(option.DefaultValue, min, max);
@@ -30,8 +30,8 @@ internal static class OptionRegistrar
     internal static RegisteredDropdownOption CreateDropdown(
         int id, DropdownOptionDefinition option, OptionPersistence persistence)
     {
-        string key = persistence.GetSaveKey(option.Tab, option.Label, option.SaveKey);
-        string legacyKey = persistence.GetLegacySaveKey(option.Label);
+        string key = OptionPersistence.GetSaveKey(option.Tab, option.Label, option.SaveKey);
+        string legacyKey = OptionPersistence.GetLegacySaveKey(option.Label);
         int maxIndex = option.Items.Count - 1;
         int def = Mathf.Clamp(option.DefaultValue, 0, maxIndex);
 
@@ -47,8 +47,8 @@ internal static class OptionRegistrar
     internal static RegisteredLineEditOption CreateLineEdit(
         int id, LineEditOptionDefinition option, OptionPersistence persistence)
     {
-        string key = persistence.GetSaveKey(option.Tab, option.Label, option.SaveKey);
-        string legacyKey = persistence.GetLegacySaveKey(option.Label);
+        string key = OptionPersistence.GetSaveKey(option.Tab, option.Label, option.SaveKey);
+        string legacyKey = OptionPersistence.GetLegacySaveKey(option.Label);
         string def = option.DefaultValue ?? string.Empty;
 
         string initial = persistence.GetLineEditValue(key, def, legacyKey);
@@ -63,8 +63,8 @@ internal static class OptionRegistrar
     internal static RegisteredToggleOption CreateToggle(
         int id, ToggleOptionDefinition option, OptionPersistence persistence)
     {
-        string key = persistence.GetSaveKey(option.Tab, option.Label, option.SaveKey);
-        string legacyKey = persistence.GetLegacySaveKey(option.Label);
+        string key = OptionPersistence.GetSaveKey(option.Tab, option.Label, option.SaveKey);
+        string legacyKey = OptionPersistence.GetLegacySaveKey(option.Label);
 
         bool initial = persistence.GetToggleValue(key, option.DefaultValue, legacyKey);
         persistence.SetToggleValue(key, initial);

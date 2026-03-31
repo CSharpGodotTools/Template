@@ -6,14 +6,9 @@ using System.Globalization;
 
 namespace Template.OptionsGen;
 
-internal sealed class DefaultLiteralResolver : IDefaultLiteralResolver
+internal sealed class DefaultLiteralResolver(IInvocationArgumentResolver argumentResolver) : IDefaultLiteralResolver
 {
-    private readonly IInvocationArgumentResolver _argumentResolver;
-
-    public DefaultLiteralResolver(IInvocationArgumentResolver argumentResolver)
-    {
-        _argumentResolver = argumentResolver ?? throw new ArgumentNullException(nameof(argumentResolver));
-    }
+    private readonly IInvocationArgumentResolver _argumentResolver = argumentResolver ?? throw new ArgumentNullException(nameof(argumentResolver));
 
     public IInvocationArgumentResolver ArgumentResolver => _argumentResolver;
 
@@ -76,18 +71,13 @@ internal sealed class DefaultLiteralResolver : IDefaultLiteralResolver
 
     private static string GetFallbackDefaultLiteral(OptionValueKind valueKind)
     {
-        switch (valueKind)
+        return valueKind switch
         {
-            case OptionValueKind.Int:
-                return "0";
-            case OptionValueKind.Float:
-                return "0f";
-            case OptionValueKind.String:
-                return "string.Empty";
-            case OptionValueKind.Bool:
-                return "false";
-            default:
-                return "default";
-        }
+            OptionValueKind.Int => "0",
+            OptionValueKind.Float => "0f",
+            OptionValueKind.String => "string.Empty",
+            OptionValueKind.Bool => "false",
+            _ => "default",
+        };
     }
 }

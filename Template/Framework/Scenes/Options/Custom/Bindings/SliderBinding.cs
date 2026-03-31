@@ -44,7 +44,7 @@ internal sealed class SliderBinding(HBoxContainer row, HSlider slider, Godot.Ran
         sliderOption.SetValue(clamped);
         slider.Value = clamped;
 
-        Godot.Range.ValueChangedEventHandler onValueChanged = v => sliderOption.SetValue((float)v);
+        void onValueChanged(double v) => sliderOption.SetValue((float)v);
         slider.ValueChanged += onValueChanged;
 
         return new SliderBinding(row, slider, onValueChanged);

@@ -4,15 +4,10 @@ using System.Collections.Generic;
 
 namespace GodotUtils.Debugging;
 
-internal sealed class VisualDictionaryDisplayOrderTracker : IVisualDictionaryDisplayOrderTracker
+internal sealed class VisualDictionaryDisplayOrderTracker(bool useStableOrder) : IVisualDictionaryDisplayOrderTracker
 {
-    private readonly bool _useStableOrder;
+    private readonly bool _useStableOrder = useStableOrder;
     private readonly List<object> _keys = [];
-
-    public VisualDictionaryDisplayOrderTracker(bool useStableOrder)
-    {
-        _useStableOrder = useStableOrder;
-    }
 
     public bool UseStableOrder => _useStableOrder;
 

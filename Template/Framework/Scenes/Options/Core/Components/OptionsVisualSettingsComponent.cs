@@ -12,7 +12,7 @@ internal sealed class OptionsVisualSettingsComponent
     private const int MaxQualityPreset = 2;
     private const int DefaultAntialiasing = 3;
 
-    private static readonly string[] SupportedLocales = ["en", "fr", "ja"];
+    private static readonly string[] _supportedLocales = ["en", "fr", "ja"];
 
     private readonly OptionsValueStoreComponent _valueStore;
 
@@ -49,8 +49,8 @@ internal sealed class OptionsVisualSettingsComponent
     private void ApplyLanguage()
     {
         int language = GetLanguage();
-        int localeIndex = Math.Clamp(language, 0, SupportedLocales.Length - 1);
-        TranslationServer.SetLocale(SupportedLocales[localeIndex]);
+        int localeIndex = Math.Clamp(language, 0, _supportedLocales.Length - 1);
+        TranslationServer.SetLocale(_supportedLocales[localeIndex]);
     }
 
     private void ApplyAntialiasing()

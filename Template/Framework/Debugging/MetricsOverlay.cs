@@ -19,12 +19,12 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     private const int MonitorValueDecimals = 2;
 
     // Theme Colors
-    private static readonly Color BackgroundColor = new(0.11f, 0.11f, 0.13f, 0.92f);
-    private static readonly Color HeaderColor = new(0.16f, 0.16f, 0.18f, 1.0f);
-    private static readonly Color TextColor = new(0.9f, 0.9f, 0.9f, 1.0f);
-    private static readonly Color AccentColor = new(0.26f, 0.59f, 0.98f, 1.0f);
-    private static readonly Color GraphLineColor = new(0.26f, 0.59f, 0.98f, 0.8f);
-    private static readonly Color GraphFillColor = new(0.26f, 0.59f, 0.98f, 0.3f);
+    private static readonly Color _backgroundColor = new(0.11f, 0.11f, 0.13f, 0.92f);
+    private static readonly Color _headerColor = new(0.16f, 0.16f, 0.18f, 1.0f);
+    private static readonly Color _textColor = new(0.9f, 0.9f, 0.9f, 1.0f);
+    private static readonly Color _accentColor = new(0.26f, 0.59f, 0.98f, 1.0f);
+    private static readonly Color _graphLineColor = new(0.26f, 0.59f, 0.98f, 0.8f);
+    private static readonly Color _graphFillColor = new(0.26f, 0.59f, 0.98f, 0.3f);
 
     // Variables
     private readonly Dictionary<int, (string DisplayName, Func<object> Provider)> _monitors = [];
@@ -133,7 +133,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 
         StyleBox panelStyle = new StyleBoxFlat
         {
-            BgColor = BackgroundColor,
+            BgColor = _backgroundColor,
             CornerRadiusTopLeft = 8,
             CornerRadiusTopRight = 8,
             CornerRadiusBottomLeft = 8,
@@ -186,7 +186,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         _mainContainer.AddChild(_variablesContainer);
     }
 
-    private Button CreateSectionHeader(string text)
+    private static Button CreateSectionHeader(string text)
     {
         Button button = new()
         {
@@ -197,7 +197,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 
         StyleBox normalStyle = new StyleBoxFlat
         {
-            BgColor = HeaderColor,
+            BgColor = _headerColor,
             ContentMarginLeft = 5,
             ContentMarginTop = 3,
             ContentMarginRight = 5,
@@ -205,12 +205,12 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         };
         button.AddThemeStyleboxOverride("normal", normalStyle);
         button.AddThemeStyleboxOverride("hover", normalStyle);
-        button.AddThemeColorOverride("font_color", AccentColor);
+        button.AddThemeColorOverride("font_color", _accentColor);
 
         return button;
     }
 
-    private void ToggleSection(ref bool expanded, Control container)
+    private static void ToggleSection(ref bool expanded, Control container)
     {
         expanded = !expanded;
         container.Visible = expanded;
@@ -304,7 +304,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     [GeneratedRegex(@"-?\d+\.\d+")]
     private static partial Regex DecimalNumberRegex();
 
-    private void ClearLabels(Node container, bool skipGraph)
+    private static void ClearLabels(Node container, bool skipGraph)
     {
         foreach (Node child in container.GetChildren())
         {
@@ -316,7 +316,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         }
     }
 
-    private Label CreateLabel(string text)
+    private static Label CreateLabel(string text)
     {
         Label label = new()
         {
@@ -325,7 +325,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
             SizeFlagsHorizontal = Control.SizeFlags.Fill,
             CustomMinimumSize = new Vector2(PanelWidth - (Margin * 2), 0)
         };
-        label.AddThemeColorOverride("font_color", TextColor);
+        label.AddThemeColorOverride("font_color", _textColor);
         return label;
     }
 
@@ -395,12 +395,12 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
                 fillPoints[i + 1] = points[i];
             }
             fillPoints[bufferLength + 1] = new Vector2(graphSize.X, graphSize.Y);
-            DrawColoredPolygon(fillPoints, GraphFillColor);
+            DrawColoredPolygon(fillPoints, _graphFillColor);
 
             // Draw line
             for (int i = 0; i < bufferLength - 1; i++)
             {
-                DrawLine(points[i], points[i + 1], GraphLineColor, 2f);
+                DrawLine(points[i], points[i + 1], _graphLineColor, 2f);
             }
         }
     }

@@ -4,30 +4,20 @@ using System;
 
 namespace GodotUtils.Debugging;
 
-internal sealed class VisualDictionaryControlProvider
+internal sealed class VisualDictionaryControlProvider(
+    IVisualDictionaryAdapterFactory adapterFactory,
+    IVisualDictionaryKeyResolver keyResolver,
+    IVisualDictionaryDisplayOrderTrackerFactory displayOrderTrackerFactory,
+    Func<Type, VisualControlContext, VisualControlInfo> createControlForType,
+    Func<Type, object> createDefaultValue,
+    Action<Node, Action> cleanupOnTreeExited)
 {
-    private readonly IVisualDictionaryAdapterFactory _adapterFactory;
-    private readonly IVisualDictionaryKeyResolver _keyResolver;
-    private readonly IVisualDictionaryDisplayOrderTrackerFactory _displayOrderTrackerFactory;
-    private readonly Func<Type, VisualControlContext, VisualControlInfo> _createControlForType;
-    private readonly Func<Type, object> _createDefaultValue;
-    private readonly Action<Node, Action> _cleanupOnTreeExited;
-
-    public VisualDictionaryControlProvider(
-        IVisualDictionaryAdapterFactory adapterFactory,
-        IVisualDictionaryKeyResolver keyResolver,
-        IVisualDictionaryDisplayOrderTrackerFactory displayOrderTrackerFactory,
-        Func<Type, VisualControlContext, VisualControlInfo> createControlForType,
-        Func<Type, object> createDefaultValue,
-        Action<Node, Action> cleanupOnTreeExited)
-    {
-        _adapterFactory = adapterFactory;
-        _keyResolver = keyResolver;
-        _displayOrderTrackerFactory = displayOrderTrackerFactory;
-        _createControlForType = createControlForType;
-        _createDefaultValue = createDefaultValue;
-        _cleanupOnTreeExited = cleanupOnTreeExited;
-    }
+    private readonly IVisualDictionaryAdapterFactory _adapterFactory = adapterFactory;
+    private readonly IVisualDictionaryKeyResolver _keyResolver = keyResolver;
+    private readonly IVisualDictionaryDisplayOrderTrackerFactory _displayOrderTrackerFactory = displayOrderTrackerFactory;
+    private readonly Func<Type, VisualControlContext, VisualControlInfo> _createControlForType = createControlForType;
+    private readonly Func<Type, object> _createDefaultValue = createDefaultValue;
+    private readonly Action<Node, Action> _cleanupOnTreeExited = cleanupOnTreeExited;
 
     public VisualControlInfo CreateControl(Type dictionaryType, VisualControlContext context)
     {

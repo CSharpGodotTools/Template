@@ -3,19 +3,13 @@ using System.Linq;
 
 namespace PacketGen.Generators;
 
-internal sealed class PacketSourceComposer
+internal sealed class PacketSourceComposer(PacketConstructorBuilder constructorBuilder, PacketDeepObjectHelperBuilder deepObjectHelperBuilder)
 {
     private const int HashSeedValue = 17;
     private const int HashMultiplierSecondary = 31;
 
-    private readonly PacketConstructorBuilder _constructorBuilder;
-    private readonly PacketDeepObjectHelperBuilder _deepObjectHelperBuilder;
-
-    public PacketSourceComposer(PacketConstructorBuilder constructorBuilder, PacketDeepObjectHelperBuilder deepObjectHelperBuilder)
-    {
-        _constructorBuilder = constructorBuilder;
-        _deepObjectHelperBuilder = deepObjectHelperBuilder;
-    }
+    private readonly PacketConstructorBuilder _constructorBuilder = constructorBuilder;
+    private readonly PacketDeepObjectHelperBuilder _deepObjectHelperBuilder = deepObjectHelperBuilder;
 
     public string Compose(PacketGenerationModel model, PacketGenerationArtifacts artifacts)
     {

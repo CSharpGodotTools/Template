@@ -7,9 +7,12 @@ using System.Text;
 
 namespace Template.OptionsGen;
 
-internal sealed class OptionsSettingsSourceEmitter : IOptionsSettingsSourceEmitter
+internal sealed class OptionsSettingsSourceEmitter(
+    IOptionSpecDeduplicator specDeduplicator,
+    IOptionsSettingsTypeLocator typeLocator,
+    IOptionsSettingsSourceBuilder sourceBuilder) : IOptionsSettingsSourceEmitter
 {
-    private static readonly DiagnosticDescriptor MissingOptionsSettingsDescriptor = new(
+    private static readonly DiagnosticDescriptor _missingOptionsSettingsDescriptor = new(
         id: "OG002",
         title: "OptionsSettings not found",
         messageFormat: "Could not find an OptionsSettings type. Strongly typed option properties were not generated.",
@@ -17,19 +20,9 @@ internal sealed class OptionsSettingsSourceEmitter : IOptionsSettingsSourceEmitt
         DiagnosticSeverity.Info,
         isEnabledByDefault: true);
 
-    private readonly IOptionSpecDeduplicator _specDeduplicator;
-    private readonly IOptionsSettingsTypeLocator _typeLocator;
-    private readonly IOptionsSettingsSourceBuilder _sourceBuilder;
-
-    public OptionsSettingsSourceEmitter(
-        IOptionSpecDeduplicator specDeduplicator,
-        IOptionsSettingsTypeLocator typeLocator,
-        IOptionsSettingsSourceBuilder sourceBuilder)
-    {
-        _specDeduplicator = specDeduplicator ?? throw new ArgumentNullException(nameof(specDeduplicator));
-        _typeLocator = typeLocator ?? throw new ArgumentNullException(nameof(typeLocator));
-        _sourceBuilder = sourceBuilder ?? throw new ArgumentNullException(nameof(sourceBuilder));
-    }
+    private readonly IOptionSpecDeduplicator _specDeduplicator = specDeduplicator ?? throw new ArgumentNullException(nameof(specDeduplicator));
+    private readonly IOptionsSettingsTypeLocator _typeLocator = typeLocator ?? throw new ArgumentNullException(nameof(typeLocator));
+    private readonly IOptionsSettingsSourceBuilder _sourceBuilder = sourceBuilder ?? throw new ArgumentNullException(nameof(sourceBuilder));
 
     public IOptionSpecDeduplicator SpecDeduplicator => _specDeduplicator;
     public IOptionsSettingsTypeLocator TypeLocator => _typeLocator;
@@ -49,7 +42,7 @@ internal sealed class OptionsSettingsSourceEmitter : IOptionsSettingsSourceEmitt
 
         if (optionsSettings is null)
         {
-            context.ReportDiagnostic(Diagnostic.Create(MissingOptionsSettingsDescriptor, Location.None));
+            context.ReportDiagnostic(Diagnostic.Create(_missingOptionsSettingsDescriptor, Location.None));
             return;
         }
 
@@ -57,7 +50,7 @@ internal sealed class OptionsSettingsSourceEmitter : IOptionsSettingsSourceEmitt
         if (dedupedSpecs.Count == 0)
             return;
 
-        List<OptionSettingSpec> orderedSpecs = new(dedupedSpecs);
+        List<OptionSettingSpec> orderedSpecs = [.. dedupedSpecs];
         orderedSpecs.Sort(static (left, right) => string.Compare(left.SaveKey, right.SaveKey, StringComparison.Ordinal));
 
         string generatedSource = _sourceBuilder.BuildSource(optionsSettings, orderedSpecs);

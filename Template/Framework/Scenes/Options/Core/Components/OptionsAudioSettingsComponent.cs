@@ -17,8 +17,7 @@ internal sealed class OptionsAudioSettingsComponent
     {
         float clamped = Math.Clamp(volume, 0f, 100f);
 
-        if (_autoloads.AudioManager is not null)
-            _autoloads.AudioManager.ApplyMusicVolumeFromSettings(clamped);
+        _autoloads.AudioManager?.ApplyMusicVolumeFromSettings(clamped);
 
         _valueStore.SetFloat(FrameworkOptionsSaveKeys.MusicVolume, clamped);
     }
@@ -27,8 +26,7 @@ internal sealed class OptionsAudioSettingsComponent
     {
         float clamped = Math.Clamp(volume, 0f, 100f);
 
-        if (_autoloads.AudioManager is not null)
-            _autoloads.AudioManager.ApplySfxVolumeFromSettings(clamped);
+        _autoloads.AudioManager?.ApplySfxVolumeFromSettings(clamped);
 
         _valueStore.SetFloat(FrameworkOptionsSaveKeys.SfxVolume, clamped);
     }

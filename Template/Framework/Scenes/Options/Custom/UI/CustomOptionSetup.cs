@@ -26,7 +26,7 @@ internal static class CustomOptionSetup
         foreach (CustomOptionDescriptor option in options)
             AddOrReplace(custom, option);
 
-        List<RegisteredRightControl> rightControls = custom.OptionsManager.GetRightControls().ToList();
+        List<RegisteredRightControl> rightControls = [.. custom.OptionsManager.GetRightControls()];
         rightControls.Sort(static (left, right) => left.Id.CompareTo(right.Id));
 
         foreach (RegisteredRightControl rightControl in rightControls)

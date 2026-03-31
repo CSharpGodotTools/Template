@@ -40,7 +40,7 @@ internal sealed class VisualTitleBarAnchorPopupBuilder : IVisualTitleBarAnchorPo
         AddAnchorButton(grid, popup, anchorButtons, "B", new Vector2(0.5f, 1.0f));
         AddAnchorButton(grid, popup, anchorButtons, "BR", new Vector2(1.0f, 1.0f));
 
-        Action refreshSelection = () =>
+        void refreshSelection()
         {
             foreach ((Button button, Vector2 anchor) in anchorButtons)
             {
@@ -56,7 +56,7 @@ internal sealed class VisualTitleBarAnchorPopupBuilder : IVisualTitleBarAnchorPo
                 button.AddThemeColorOverride("font_pressed_color", textColor);
                 button.AddThemeColorOverride("font_focus_color", textColor);
             }
-        };
+        }
 
         refreshSelection();
         return new VisualTitleBarAnchorPopup(popup, refreshSelection);

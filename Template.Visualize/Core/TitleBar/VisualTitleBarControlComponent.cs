@@ -6,23 +6,16 @@ using static Godot.Control;
 
 namespace GodotUtils.Debugging;
 
-internal sealed class VisualTitleBarControlComponent
+internal sealed class VisualTitleBarControlComponent(
+    IVisualTitleBarAnchorPopupBuilder anchorPopupBuilder,
+    IVisualTitleBarColumnVisibilityController columnVisibilityController,
+    IVisualTitleBarValueSyncService valueSyncService)
 {
     private const int PopupOffsetY = 4;
 
-    private readonly IVisualTitleBarAnchorPopupBuilder _anchorPopupBuilder;
-    private readonly IVisualTitleBarColumnVisibilityController _columnVisibilityController;
-    private readonly IVisualTitleBarValueSyncService _valueSyncService;
-
-    public VisualTitleBarControlComponent(
-        IVisualTitleBarAnchorPopupBuilder anchorPopupBuilder,
-        IVisualTitleBarColumnVisibilityController columnVisibilityController,
-        IVisualTitleBarValueSyncService valueSyncService)
-    {
-        _anchorPopupBuilder = anchorPopupBuilder;
-        _columnVisibilityController = columnVisibilityController;
-        _valueSyncService = valueSyncService;
-    }
+    private readonly IVisualTitleBarAnchorPopupBuilder _anchorPopupBuilder = anchorPopupBuilder;
+    private readonly IVisualTitleBarColumnVisibilityController _columnVisibilityController = columnVisibilityController;
+    private readonly IVisualTitleBarValueSyncService _valueSyncService = valueSyncService;
 
     public VBoxContainer Build(VisualTitleBarBuildRequest request)
     {

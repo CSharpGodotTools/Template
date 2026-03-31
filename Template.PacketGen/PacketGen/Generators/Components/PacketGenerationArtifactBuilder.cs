@@ -7,14 +7,9 @@ using System.Linq;
 
 namespace PacketGen.Generators;
 
-internal sealed class PacketGenerationArtifactBuilder
+internal sealed class PacketGenerationArtifactBuilder(PacketTypeHandlerRegistryFactory registryFactory)
 {
-    private readonly PacketTypeHandlerRegistryFactory _registryFactory;
-
-    public PacketGenerationArtifactBuilder(PacketTypeHandlerRegistryFactory registryFactory)
-    {
-        _registryFactory = registryFactory;
-    }
+    private readonly PacketTypeHandlerRegistryFactory _registryFactory = registryFactory;
 
     public PacketGenerationArtifacts Build(Compilation compilation, PacketGenerationModel model, string? packetFrameworkNamespace)
     {
@@ -71,31 +66,20 @@ internal sealed class PacketGenerationArtifactBuilder
     }
 }
 
-internal sealed class PacketGenerationArtifacts
+internal sealed class PacketGenerationArtifacts(
+    HashSet<string> namespaces,
+    List<string> writeLines,
+    List<string> readLines,
+    List<EqualityLine> equalsLines,
+    List<HashLine> hashLines,
+    bool needsDeepEquals,
+    bool needsDeepHash)
 {
-    public PacketGenerationArtifacts(
-        HashSet<string> namespaces,
-        List<string> writeLines,
-        List<string> readLines,
-        List<EqualityLine> equalsLines,
-        List<HashLine> hashLines,
-        bool needsDeepEquals,
-        bool needsDeepHash)
-    {
-        Namespaces = namespaces;
-        WriteLines = writeLines;
-        ReadLines = readLines;
-        EqualsLines = equalsLines;
-        HashLines = hashLines;
-        NeedsDeepEquals = needsDeepEquals;
-        NeedsDeepHash = needsDeepHash;
-    }
-
-    public HashSet<string> Namespaces { get; }
-    public List<string> WriteLines { get; }
-    public List<string> ReadLines { get; }
-    public List<EqualityLine> EqualsLines { get; }
-    public List<HashLine> HashLines { get; }
-    public bool NeedsDeepEquals { get; }
-    public bool NeedsDeepHash { get; }
+    public HashSet<string> Namespaces { get; } = namespaces;
+    public List<string> WriteLines { get; } = writeLines;
+    public List<string> ReadLines { get; } = readLines;
+    public List<EqualityLine> EqualsLines { get; } = equalsLines;
+    public List<HashLine> HashLines { get; } = hashLines;
+    public bool NeedsDeepEquals { get; } = needsDeepEquals;
+    public bool NeedsDeepHash { get; } = needsDeepHash;
 }

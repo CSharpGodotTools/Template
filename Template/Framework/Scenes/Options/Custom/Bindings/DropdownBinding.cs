@@ -40,7 +40,7 @@ internal sealed class DropdownBinding(HBoxContainer row, OptionButton dropdown, 
         dropdownOption.SetValue(clamped);
         dropdown.Select(clamped);
 
-        OptionButton.ItemSelectedEventHandler onItemSelected = i => dropdownOption.SetValue((int)i);
+        void onItemSelected(long i) => dropdownOption.SetValue((int)i);
         dropdown.ItemSelected += onItemSelected;
 
         return new DropdownBinding(row, dropdown, onItemSelected);

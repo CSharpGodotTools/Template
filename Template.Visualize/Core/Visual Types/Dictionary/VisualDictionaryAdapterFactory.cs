@@ -6,14 +6,9 @@ using System.Reflection;
 
 namespace GodotUtils.Debugging;
 
-internal sealed class VisualDictionaryAdapterFactory : IVisualDictionaryAdapterFactory
+internal sealed class VisualDictionaryAdapterFactory(IVisualDictionaryValueConverter valueConverter) : IVisualDictionaryAdapterFactory
 {
-    private readonly IVisualDictionaryValueConverter _valueConverter;
-
-    public VisualDictionaryAdapterFactory(IVisualDictionaryValueConverter valueConverter)
-    {
-        _valueConverter = valueConverter;
-    }
+    private readonly IVisualDictionaryValueConverter _valueConverter = valueConverter;
 
     public IVisualDictionaryAdapter Create(object dictionaryObject, Type dictionaryType)
     {
@@ -58,7 +53,7 @@ internal sealed class VisualDictionaryAdapterFactory : IVisualDictionaryAdapterF
             key => removeMethod.Invoke(dictionaryObject, [_valueConverter.ConvertToExpectedType(key, removeKeyParamType)]));
     }
 
-    private static IVisualDictionaryAdapter CreateEmptyAdapter()
+    private static VisualDictionaryAdapter CreateEmptyAdapter()
     {
         return new VisualDictionaryAdapter(() => [], _ => false, _ => null, (_, _) => { }, _ => { });
     }

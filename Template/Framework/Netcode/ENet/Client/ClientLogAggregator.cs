@@ -118,7 +118,7 @@ internal sealed class ClientLogAggregator : EventLogAggregator
             logEntries.Add(new LogEntry { Tick = lastTimeoutTicks, LogAction = () => log(FormatTimeoutMessage(timeouts, lastTimeoutPeerId, reportSeconds)) });
         }
 
-        EmitLogEntries(log, logEntries);
+        EmitLogEntries(logEntries);
     }
 
     private void MarkEvent(ref long eventTypeLastTicks)
