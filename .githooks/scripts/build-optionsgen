@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=.githooks/scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
+
+REPO_ROOT="${1:-$(git rev-parse --show-toplevel)}"
+LIBS="${2:-$REPO_ROOT/Template/Framework/Libraries}"
+
+proj="$REPO_ROOT/Template.OptionsGen/OptionsGen/OptionsGen.csproj"
+template_csproj="$REPO_ROOT/Template/Template.csproj"
+out_dir="$REPO_ROOT/Template.OptionsGen/OptionsGen/bin/Release"
+
+echo "[pre-commit] Building Template.OptionsGen..."
+
+current_version="$(grep -o '<Version>[^<]*</Version>' "$proj" | head -1 | sed 's/<[^>]*>//g')"
+
+if [ -z "$current_version" ]; then
+    echo "[pre-commit] ERROR: Could not find Template.OptionsGen version in $proj"
+    exit 1
+fi
+
+IFS='.' read -r major minor patch <<< "$current_version"
+
+if [ -z "${major:-}" ] || [ -z "${minor:-}" ] || [ -z "${patch:-}" ] || ! [[ "$patch" =~ ^[0-9]+$ ]]; then
+    echo "[pre-commit] ERROR: Unexpected Template.OptionsGen version format: $current_version"
+    exit 1
+fi
+
+next_version="$major.$minor.$((patch+1))"
+
+sed -i "s|<Version>$current_version</Version>|<Version>$next_version</Version>|" "$proj"
+git add "$proj"
+
+# Keep Template.csproj Template.OptionsGen reference in sync with the new version
+sed -i "s|<PackageReference Include=\"Template.OptionsGen\" Version=\"[^\"]*\"|<PackageReference Include=\"Template.OptionsGen\" Version=\"$next_version\"|" "$template_csproj"
+git add "$template_csproj"
+
+echo "[pre-commit] Template.OptionsGen version $current_version -> $next_version"
+
+# Stage deletion of any old tracked nupkgs and remove from filesystem before building
+git -C "$REPO_ROOT" rm --cached -f --ignore-unmatch "Template/Framework/Libraries/Template.OptionsGen.*.nupkg" 2>/dev/null || true
+find "$LIBS" -maxdepth 1 -name "Template.OptionsGen.*.nupkg" -delete || true
+
+dotnet_cmd build "$proj" -c Release --no-restore
+
+new_pkg="$out_dir/Template.OptionsGen.$next_version.nupkg"
+
+if [ ! -f "$new_pkg" ]; then
+    echo "[pre-commit] ERROR: Template.OptionsGen nupkg not found at $new_pkg"
+    exit 1
+fi
+
+cp "$new_pkg" "$LIBS/"
+git add "$LIBS/Template.OptionsGen.$next_version.nupkg"

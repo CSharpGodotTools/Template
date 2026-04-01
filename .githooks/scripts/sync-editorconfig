@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="${1:-$(git rev-parse --show-toplevel)}"
+
+if [ ! -f "$REPO_ROOT/.editorconfig" ]; then
+    echo "[pre-commit] ERROR: Missing root .editorconfig at $REPO_ROOT/.editorconfig"
+    exit 1
+fi
+
+echo "[pre-commit] Syncing .editorconfig to subprojects..."
+
+for dir in Template Template.GodotUtils Template.PacketGen Template.OptionsGen Template.Visualize
+do
+    dest="$REPO_ROOT/$dir/.editorconfig"
+    cp "$REPO_ROOT/.editorconfig" "$dest"
+    git add "$dest"
+done

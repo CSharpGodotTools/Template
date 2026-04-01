@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=.githooks/scripts/lib/common.sh
+source "$SCRIPT_DIR/lib/common.sh"
+
+REPO_ROOT="${1:-$(git rev-parse --show-toplevel)}"
+LIBS="${2:-$REPO_ROOT/Template/Framework/Libraries}"
+proj="$REPO_ROOT/Template.GodotUtils/GodotUtils.csproj"
+
+echo "[pre-commit] Building GodotUtils..."
+
+dotnet_cmd build "$proj" --no-restore -p:BuildExtras=true
+
+git add \
+    "$LIBS/GodotUtils.dll" \
+    "$LIBS/GodotUtils.xml" 2>/dev/null || true
