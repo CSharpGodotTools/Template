@@ -11,7 +11,7 @@
         </member>
         <member name="M:GodotUtils.Debugging.ParameterConverter.ConvertParameterInfoToObjectArray(System.Reflection.ParameterInfo[],System.Object[])">
             <summary>
-            Converts edited parameter values to an invocation-ready argument array.
+            Converts edited parameter values to an invocation-ready argument array. 
             </summary>
             <param name="paramInfos">Method parameter metadata.</param>
             <param name="providedValues">Values collected from parameter controls.</param>
@@ -2679,100 +2679,6 @@
             Removes all visualization nodes associated with an anchor node and unregisters it globally.
             </summary>
             <param name="anchorNode">Anchor node whose visualization entries should be removed.</param>
-        </member>
-        <member name="T:Godot.OnImportEditorPlugin.MethodName">
-            <summary>
-            Cached StringNames for the methods contained in this class, for fast lookup.
-            </summary>
-        </member>
-        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetSaveExtension">
-            <summary>
-            Cached name for the '_GetSaveExtension' method.
-            </summary>
-        </member>
-        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetResourceType">
-            <summary>
-            Cached name for the '_GetResourceType' method.
-            </summary>
-        </member>
-        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetImporterName">
-            <summary>
-            Cached name for the '_GetImporterName' method.
-            </summary>
-        </member>
-        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetVisibleName">
-            <summary>
-            Cached name for the '_GetVisibleName' method.
-            </summary>
-        </member>
-        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetRecognizedExtensions">
-            <summary>
-            Cached name for the '_GetRecognizedExtensions' method.
-            </summary>
-        </member>
-        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetPriority">
-            <summary>
-            Cached name for the '_GetPriority' method.
-            </summary>
-        </member>
-        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetImportOrder">
-            <summary>
-            Cached name for the '_GetImportOrder' method.
-            </summary>
-        </member>
-        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetPresetCount">
-            <summary>
-            Cached name for the '_GetPresetCount' method.
-            </summary>
-        </member>
-        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetPresetName">
-            <summary>
-            Cached name for the '_GetPresetName' method.
-            </summary>
-        </member>
-        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetOptionVisibility">
-            <summary>
-            Cached name for the '_GetOptionVisibility' method.
-            </summary>
-        </member>
-        <member name="F:Godot.OnImportEditorPlugin.MethodName._GetImportOptions">
-            <summary>
-            Cached name for the '_GetImportOptions' method.
-            </summary>
-        </member>
-        <member name="F:Godot.OnImportEditorPlugin.MethodName._Import">
-            <summary>
-            Cached name for the '_Import' method.
-            </summary>
-        </member>
-        <member name="M:Godot.OnImportEditorPlugin.GetGodotMethodList">
-            <summary>
-            Get the method information for all the methods declared in this class.
-            This method is used by Godot to register the available methods in the editor.
-            Do not call this method.
-            </summary>
-        </member>
-        <member name="M:Godot.OnImportEditorPlugin.InvokeGodotClassMethod(Godot.NativeInterop.godot_string_name@,Godot.NativeInterop.NativeVariantPtrArgs,Godot.NativeInterop.godot_variant@)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Godot.OnImportEditorPlugin.HasGodotClassMethod(Godot.NativeInterop.godot_string_name@)">
-            <inheritdoc/>
-        </member>
-        <member name="T:Godot.OnImportEditorPlugin.PropertyName">
-            <summary>
-            Cached StringNames for the properties and fields contained in this class, for fast lookup.
-            </summary>
-        </member>
-        <member name="M:Godot.OnImportEditorPlugin.SaveGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Godot.OnImportEditorPlugin.RestoreGodotObjectData(Godot.Bridge.GodotSerializationInfo)">
-            <inheritdoc/>
-        </member>
-        <member name="T:Godot.OnImportEditorPlugin.SignalName">
-            <summary>
-            Cached StringNames for the signals contained in this class, for fast lookup.
-            </summary>
         </member>
     </members>
 </doc>

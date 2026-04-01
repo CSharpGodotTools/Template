@@ -10,7 +10,7 @@ namespace GodotUtils.Debugging;
 internal static class ParameterConverter
 {
     /// <summary>
-    /// Converts edited parameter values to an invocation-ready argument array.
+    /// Converts edited parameter values to an invocation-ready argument array. 
     /// </summary>
     /// <param name="paramInfos">Method parameter metadata.</param>
     /// <param name="providedValues">Values collected from parameter controls.</param>

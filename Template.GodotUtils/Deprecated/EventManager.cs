@@ -68,7 +68,7 @@ public class EventManager<TEvent> where TEvent : notnull
     /// <param name="id">Identifier used to match listener entries for removal.</param>
     public void RemoveListeners(TEvent eventType, string id = "")
     {
-        // Removing from an unknown event type is treated as a usage error.
+        // Removing from an unknown event type is treated as a usage error. 
         if (!_eventListeners.TryGetValue(eventType, out List<Listener>? listeners))
             throw new InvalidOperationException($"Tried to remove listener of event type '{eventType}' from an event type that has not even been defined yet");
 
