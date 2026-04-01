@@ -14,6 +14,13 @@ internal static class OptionRowFactory
     /// Creates an HBoxContainer with a label and control, wires focus
     /// neighbours, and appends the row to <paramref name="tabContainer"/>.
     /// </summary>
+    /// <typeparam name="TControl">Control type used for the row's primary editor.</typeparam>
+    /// <param name="tabContainer">Destination tab container.</param>
+    /// <param name="navButton">Navigation button used for left focus neighbor.</param>
+    /// <param name="name">Row node name.</param>
+    /// <param name="labelText">Label text shown on the left side.</param>
+    /// <param name="control">Primary control added to the row.</param>
+    /// <returns>Created row container.</returns>
     internal static HBoxContainer Create<TControl>(
         VBoxContainer tabContainer,
         Button navButton,
@@ -47,8 +54,15 @@ internal static class OptionRowFactory
         return row;
     }
 
+    /// <summary>
+    /// Attempts to retrieve the right-side controls container from a row.
+    /// </summary>
+    /// <param name="row">Row container to inspect.</param>
+    /// <param name="controlsContainer">Resolved controls container when found.</param>
+    /// <returns><see langword="true"/> when controls container exists.</returns>
     internal static bool TryGetControlsContainer(HBoxContainer row, out HBoxContainer controlsContainer)
     {
+        // Resolve controls container only when row has the expected second child.
         if (row.GetChildCount() >= 2 && row.GetChild(1) is HBoxContainer controls)
         {
             controlsContainer = controls;
@@ -59,8 +73,15 @@ internal static class OptionRowFactory
         return false;
     }
 
+    /// <summary>
+    /// Attempts to retrieve the first control inside a row's controls container.
+    /// </summary>
+    /// <param name="row">Row container to inspect.</param>
+    /// <param name="control">Resolved primary control when found.</param>
+    /// <returns><see langword="true"/> when a primary control exists.</returns>
     internal static bool TryGetPrimaryControl(HBoxContainer row, out Control control)
     {
+        // Resolve primary control only when a controls container and first control exist.
         if (TryGetControlsContainer(row, out HBoxContainer controlsContainer)
             && controlsContainer.GetChildCount() > 0
             && controlsContainer.GetChild(0) is Control primary)

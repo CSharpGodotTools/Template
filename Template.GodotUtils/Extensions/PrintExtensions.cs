@@ -15,6 +15,9 @@ public static class PrintExtensions
     /// <summary>
     /// Prints a collection using a formatted string.
     /// </summary>
+    /// <typeparam name="T">Element type of the collection.</typeparam>
+    /// <param name="value">Collection to print.</param>
+    /// <param name="newLine">Whether items should be formatted on separate lines.</param>
     public static void PrintFormatted<T>(this IEnumerable<T> value, bool newLine = true)
     {
         GD.Print(value.ToFormattedString(newLine));
@@ -23,6 +26,7 @@ public static class PrintExtensions
     /// <summary>
     /// Prints an object as formatted JSON.
     /// </summary>
+    /// <param name="v">Object to serialize and print.</param>
     public static void PrintFormatted(this object v)
     {
         GD.Print(v.ToFormattedString());
@@ -31,13 +35,19 @@ public static class PrintExtensions
     /// <summary>
     /// Converts a collection to a formatted string.
     /// </summary>
+    /// <typeparam name="T">Element type of the collection.</typeparam>
+    /// <param name="value">Collection to format.</param>
+    /// <param name="newLine">Whether items should be formatted on separate lines.</param>
+    /// <returns>Formatted collection string, or <see langword="null"/> when input is null.</returns>
     public static string? ToFormattedString<T>(this IEnumerable<T> value, bool newLine = true)
     {
+        // Null collections produce null output.
         if (value == null)
         {
             return null;
         }
 
+        // Choose multiline or single-line format based on caller preference.
         if (newLine)
         {
             return "[\n    " + string.Join(",\n    ", value) + "\n]";
@@ -51,6 +61,8 @@ public static class PrintExtensions
     /// <summary>
     /// Converts an object to formatted JSON.
     /// </summary>
+    /// <param name="v">Object to serialize.</param>
+    /// <returns>JSON string formatted with indentation.</returns>
     public static string ToFormattedString(this object v)
     {
         string json = JsonConvert.SerializeObject(v, Formatting.Indented, new JsonSerializerSettings
@@ -90,12 +102,14 @@ public static class PrintExtensions
 
             foreach (Type ignoredProp in ignoredProps)
             {
+                // Ignore members declared on Godot engine types.
                 if (member.DeclaringType != null &&
                     (member.DeclaringType == ignoredProp || member.DeclaringType.IsSubclassOf(ignoredProp)))
                 {
                     prop.Ignored = true;
                 }
 
+                // Ignore properties whose type is a Godot engine type.
                 if (prop.PropertyType != null && (prop.PropertyType == ignoredProp || prop.PropertyType.IsSubclassOf(ignoredProp)))
                 {
                     prop.Ignored = true;

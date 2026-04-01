@@ -28,6 +28,8 @@ public class CylinderArea3D : ShapeArea3D<CylinderShape3D>
     /// <summary>
     /// Creates a cylinder area with the provided radius and height.
     /// </summary>
+    /// <param name="radius">Cylinder radius.</param>
+    /// <param name="height">Cylinder height.</param>
     internal CylinderArea3D(float radius, float height) : base(new CylinderShape3D { Radius = radius, Height = height })
     {
     }

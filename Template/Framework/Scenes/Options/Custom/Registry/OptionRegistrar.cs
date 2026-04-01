@@ -8,6 +8,13 @@ namespace __TEMPLATE__.Ui;
 /// </summary>
 internal static class OptionRegistrar
 {
+    /// <summary>
+    /// Creates a registered slider option backed by persistence wrappers.
+    /// </summary>
+    /// <param name="id">Stable option id.</param>
+    /// <param name="option">Slider option definition.</param>
+    /// <param name="persistence">Persistence service.</param>
+    /// <returns>Registered slider option.</returns>
     internal static RegisteredSliderOption CreateSlider(
         int id, SliderOptionDefinition option, OptionPersistence persistence)
     {
@@ -27,6 +34,13 @@ internal static class OptionRegistrar
             v => { float c = Mathf.Clamp(v, min, max); persistence.SetSliderValue(key, c); option.SetValue(c); });
     }
 
+    /// <summary>
+    /// Creates a registered dropdown option backed by persistence wrappers.
+    /// </summary>
+    /// <param name="id">Stable option id.</param>
+    /// <param name="option">Dropdown option definition.</param>
+    /// <param name="persistence">Persistence service.</param>
+    /// <returns>Registered dropdown option.</returns>
     internal static RegisteredDropdownOption CreateDropdown(
         int id, DropdownOptionDefinition option, OptionPersistence persistence)
     {
@@ -44,6 +58,13 @@ internal static class OptionRegistrar
             v => { int c = Mathf.Clamp(v, 0, maxIndex); persistence.SetDropdownValue(key, c); option.SetValue(c); });
     }
 
+    /// <summary>
+    /// Creates a registered line-edit option backed by persistence wrappers.
+    /// </summary>
+    /// <param name="id">Stable option id.</param>
+    /// <param name="option">Line-edit option definition.</param>
+    /// <param name="persistence">Persistence service.</param>
+    /// <returns>Registered line-edit option.</returns>
     internal static RegisteredLineEditOption CreateLineEdit(
         int id, LineEditOptionDefinition option, OptionPersistence persistence)
     {
@@ -60,6 +81,13 @@ internal static class OptionRegistrar
             v => { string s = v ?? string.Empty; persistence.SetLineEditValue(key, s); option.SetValue(s); });
     }
 
+    /// <summary>
+    /// Creates a registered toggle option backed by persistence wrappers.
+    /// </summary>
+    /// <param name="id">Stable option id.</param>
+    /// <param name="option">Toggle option definition.</param>
+    /// <param name="persistence">Persistence service.</param>
+    /// <returns>Registered toggle option.</returns>
     internal static RegisteredToggleOption CreateToggle(
         int id, ToggleOptionDefinition option, OptionPersistence persistence)
     {

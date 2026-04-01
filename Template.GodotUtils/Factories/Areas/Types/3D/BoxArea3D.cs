@@ -19,5 +19,6 @@ public class BoxArea3D : ShapeArea3D<BoxShape3D>
     /// <summary>
     /// Creates a box area with the provided size.
     /// </summary>
+    /// <param name="size">Box dimensions.</param>
     internal BoxArea3D(Vector3 size) : base(new BoxShape3D { Size = size }) { }
 }

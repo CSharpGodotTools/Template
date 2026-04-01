@@ -1,11 +1,20 @@
 ﻿namespace PacketGen.Tests;
 
+/// <summary>
+/// Source snippets used to build test compilations.
+/// </summary>
 internal static class MainProjectSource
 {
+    /// <summary>
+    /// Gets a minimal NetExclude attribute definition.
+    /// </summary>
     public static string NetExcludeAttribute => """
         public sealed class NetExcludeAttribute : System.Attribute {}
         """;
 
+    /// <summary>
+    /// Gets a PacketRegistry attribute definition.
+    /// </summary>
     public static string PacketRegistryAttribute => $$"""
         [System.AttributeUsage(System.AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
         public sealed class {{PacketGenConstants.PacketRegistryAttributeTypeName}} : System.Attribute
@@ -24,6 +33,9 @@ internal static class MainProjectSource
         }
         """;
 
+    /// <summary>
+    /// Gets packet stub classes used by tests.
+    /// </summary>
     public static string PacketStubs => $$"""
         using System;
         using System.Collections.Generic;
@@ -58,6 +70,11 @@ internal static class MainProjectSource
                 _values = new Queue<object?>(values);
             }
 
+            /// <summary>
+            /// Reads and casts the next queued value.
+            /// </summary>
+            /// <typeparam name="T">Expected value type.</typeparam>
+            /// <returns>Next queued value cast to <typeparamref name="T"/>.</returns>
             private T ReadValue<T>() => (T)_values.Dequeue()!;
 
             public byte ReadByte() => ReadValue<byte>();

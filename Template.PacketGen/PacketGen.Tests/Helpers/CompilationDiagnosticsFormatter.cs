@@ -4,8 +4,18 @@ using System.Text;
 
 namespace PacketGen.Tests;
 
+/// <summary>
+/// Formats compilation diagnostics and generated source into a readable debug report.
+/// </summary>
 internal static class CompilationDiagnosticsFormatter
 {
+    /// <summary>
+    /// Formats diagnostics, references, and generated source for failure snapshots.
+    /// </summary>
+    /// <param name="diagnostics">Diagnostics to format.</param>
+    /// <param name="references">Metadata references used for compilation.</param>
+    /// <param name="generatedSource">Generated source text.</param>
+    /// <returns>Formatted diagnostics report.</returns>
     public static string Format(
         ImmutableArray<Diagnostic> diagnostics,
         IEnumerable<PortableExecutableReference> references,

@@ -10,10 +10,18 @@ internal static partial class VisualControlTypes
 {
     private const double DefaultStepValue = 0.005;
 
+    /// <summary>
+    /// Builds a numeric spin-box control for the requested numeric member type.
+    /// </summary>
+    /// <param name="type">Target numeric CLR type used for conversion.</param>
+    /// <param name="memberInfo">Optional member metadata used to read export range hints.</param>
+    /// <param name="context">Initial value and value-changed callback context.</param>
+    /// <returns>Configured numeric visual-control info.</returns>
     private static VisualControlInfo VisualNumeric(Type type, MemberInfo? memberInfo, VisualControlContext context)
     {
         SpinBox control;
 
+        // Apply explicit range settings when the member exports numeric bounds.
         if (memberInfo != null && TryGetExportAttributeRange(memberInfo, out ExportAttributeRange? range))
         {
             control = new SpinBox()
@@ -46,27 +54,35 @@ internal static partial class VisualControlTypes
     /// <summary>
     /// Checks if the member has [Export(PropertyHint.Range, "0, 1, 0.1")] and gets the min, max, and step values.
     /// </summary>
+    /// <param name="memberInfo">Member metadata to inspect for an export range hint.</param>
+    /// <param name="exportAttributeRange">Parsed range values when a valid range hint is present.</param>
+    /// <returns><see langword="true"/> when a valid numeric export range is found; otherwise <see langword="false"/>.</returns>
     private static bool TryGetExportAttributeRange(MemberInfo memberInfo, out ExportAttributeRange? exportAttributeRange)
     {
         ExportAttribute? exportAttribute = memberInfo.GetCustomAttribute<ExportAttribute>();
         exportAttributeRange = null;
 
+        // Only range hints are valid for numeric min/max/step extraction.
         if (exportAttribute == null || exportAttribute.Hint != PropertyHint.Range)
             return false;
 
         string[] args = [.. exportAttribute.HintString.Split(',').Select(x => x.Trim())];
 
+        // Range hints need at least min and max entries.
         if (args.Length < 2)
             return false;
 
+        // Abort when the minimum value is not a valid number.
         if (!double.TryParse(args[0], out double minValue))
             return false;
 
+        // Abort when the maximum value is not a valid number.
         if (!double.TryParse(args[1], out double maxValue))
             return false;
 
         double stepValue = DefaultStepValue;
 
+        // Use the optional third argument as step when parsing succeeds.
         if (args.Length >= 3 && double.TryParse(args[2].Trim(), out double parsedStepValue))
         {
             stepValue = parsedStepValue;
@@ -89,6 +105,7 @@ internal sealed class NumericControl(SpinBox spinBox) : IVisualControl
 {
     public void SetValue(object value)
     {
+        // Ignore null updates because SpinBox requires a concrete numeric value.
         if (value != null)
         {
             try

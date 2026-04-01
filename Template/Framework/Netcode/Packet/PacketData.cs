@@ -2,6 +2,9 @@ using System;
 
 namespace __TEMPLATE__.Netcode.Client;
 
+/// <summary>
+/// Envelope used by worker threads to hand decoded packet context to the Godot thread.
+/// </summary>
 public class PacketData
 {
     /// <summary>

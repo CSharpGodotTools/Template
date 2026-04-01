@@ -3,8 +3,17 @@ using System.Reflection;
 
 namespace PacketGen.Tests;
 
+/// <summary>
+/// Builds and inspects generated test assemblies for PacketGen.
+/// </summary>
 internal sealed class GeneratedAssemblyHarness
 {
+    /// <summary>
+    /// Initializes a harness instance with generator results, compiled assembly, and generated file storage.
+    /// </summary>
+    /// <param name="result">Generator test run result.</param>
+    /// <param name="assembly">Compiled generated assembly.</param>
+    /// <param name="fileStore">Store containing generated artifacts.</param>
     private GeneratedAssemblyHarness(GeneratorTestRunResult result, Assembly assembly, IGeneratedFileStore fileStore)
     {
         Result = result;
@@ -12,10 +21,28 @@ internal sealed class GeneratedAssemblyHarness
         FileStore = fileStore;
     }
 
+    /// <summary>
+    /// Gets the generator run result.
+    /// </summary>
     public GeneratorTestRunResult Result { get; }
+
+    /// <summary>
+    /// Gets the compiled generated assembly.
+    /// </summary>
     public Assembly Assembly { get; }
+
+    /// <summary>
+    /// Gets the file store used for generated artifacts.
+    /// </summary>
     public IGeneratedFileStore FileStore { get; }
 
+    /// <summary>
+    /// Builds and compiles generated output for a test source.
+    /// </summary>
+    /// <typeparam name="TGenerator">Generator type under test.</typeparam>
+    /// <param name="testSource">Input source code.</param>
+    /// <param name="generatedFile">Expected generated file name.</param>
+    /// <returns>Generated assembly harness.</returns>
     public static GeneratedAssemblyHarness Build<TGenerator>(string testSource, string generatedFile)
         where TGenerator : IIncrementalGenerator, new()
     {
@@ -35,6 +62,11 @@ internal sealed class GeneratedAssemblyHarness
         return new GeneratedAssemblyHarness(result, assembly, fileStore);
     }
 
+    /// <summary>
+    /// Returns the requested type or fails the test when missing.
+    /// </summary>
+    /// <param name="fullName">Fully qualified type name.</param>
+    /// <returns>Resolved type.</returns>
     public Type GetTypeOrFail(string fullName)
     {
         Type? type = Assembly.GetType(fullName);
@@ -42,6 +74,11 @@ internal sealed class GeneratedAssemblyHarness
         return type!;
     }
 
+    /// <summary>
+    /// Creates an instance of the provided type or fails the test.
+    /// </summary>
+    /// <param name="type">Type to instantiate.</param>
+    /// <returns>Created instance.</returns>
     public static object CreateInstance(Type type)
     {
         object? instance = Activator.CreateInstance(type);
@@ -49,12 +86,21 @@ internal sealed class GeneratedAssemblyHarness
         return instance!;
     }
 
+    /// <summary>
+    /// Creates a packet writer instance from the generated assembly.
+    /// </summary>
+    /// <returns>Packet writer instance.</returns>
     public object CreateWriter()
     {
         Type writerType = GetTypeOrFail(PacketGenTestConstants.PacketWriterFullName);
         return CreateInstance(writerType);
     }
 
+    /// <summary>
+    /// Reads the Values property from a packet writer instance.
+    /// </summary>
+    /// <param name="writer">Writer instance to inspect.</param>
+    /// <returns>Captured writer values.</returns>
     public static IReadOnlyList<object?> GetWriterValues(object writer)
     {
         var prop = writer.GetType().GetProperty("Values", BindingFlags.Public | BindingFlags.Instance);
@@ -66,6 +112,11 @@ internal sealed class GeneratedAssemblyHarness
         return (IReadOnlyList<object?>)value!;
     }
 
+    /// <summary>
+    /// Creates a packet reader instance using the provided values.
+    /// </summary>
+    /// <param name="values">Values to seed the reader.</param>
+    /// <returns>Packet reader instance.</returns>
     public object CreateReader(IEnumerable<object?> values)
     {
         Type readerType = GetTypeOrFail(PacketGenTestConstants.PacketReaderFullName);
@@ -74,5 +125,4 @@ internal sealed class GeneratedAssemblyHarness
         return reader!;
     }
 }
-
 

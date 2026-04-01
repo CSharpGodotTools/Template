@@ -15,10 +15,12 @@ public abstract class ToggleOptionDefinition : OptionDefinition
     /// <summary>
     /// Reads the current boolean value from your game settings source.
     /// </summary>
+    /// <returns>Current toggle state.</returns>
     public abstract bool GetValue();
 
     /// <summary>
     /// Writes the boolean value back to your game settings source.
     /// </summary>
+    /// <param name="value">Toggle state to persist.</param>
     public abstract void SetValue(bool value);
 }

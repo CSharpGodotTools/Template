@@ -15,6 +15,8 @@ public sealed class NodeTweenProp : BaseTween<NodeTweenProp>
     /// <summary>
     /// Creates a tween for the specified node property.
     /// </summary>
+    /// <param name="node">Node to animate.</param>
+    /// <param name="property">Property path to animate.</param>
     internal NodeTweenProp(Node node, string property) : base(node)
     {
         _property = property;
@@ -23,6 +25,9 @@ public sealed class NodeTweenProp : BaseTween<NodeTweenProp>
     /// <summary>
     /// Tweens the property to the target value over the given duration.
     /// </summary>
+    /// <param name="finalValue">Target value.</param>
+    /// <param name="duration">Tween duration in seconds.</param>
+    /// <returns>Current tween builder for chaining.</returns>
     public NodeTweenProp PropertyTo(Variant finalValue, double duration)
     {
         _tweener = _tween

@@ -30,10 +30,12 @@ public abstract class SliderOptionDefinition : OptionDefinition
     /// <summary>
     /// Reads the current value from your game settings source.
     /// </summary>
+    /// <returns>Current slider value.</returns>
     public abstract float GetValue();
 
     /// <summary>
     /// Writes the value back to your game settings source.
     /// </summary>
+    /// <param name="value">Slider value to persist.</param>
     public abstract void SetValue(float value);
 }

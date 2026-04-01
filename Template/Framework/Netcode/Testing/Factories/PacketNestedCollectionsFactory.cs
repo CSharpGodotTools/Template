@@ -1,9 +1,17 @@
 namespace Template.Setup.Testing;
 
+/// <summary>
+/// Produces packet fixtures with nested collection payloads for serializer tests.
+/// </summary>
 public static class PacketNestedCollectionsFactory
 {
+    /// <summary>
+    /// Creates a broad sample covering all nested collection members.
+    /// </summary>
+    /// <returns>Packet populated with representative nested collection values.</returns>
     public static CPacketNestedCollections CreateSample()
     {
+        // Cover each supported nesting shape so round-trip tests hit every path.
         CPacketNestedCollections packet = new()
         {
             BoolValues = [true, false, true],
@@ -66,8 +74,13 @@ public static class PacketNestedCollectionsFactory
         return packet;
     }
 
+    /// <summary>
+    /// Creates a deeper, irregular sample to stress recursive collection handling.
+    /// </summary>
+    /// <returns>Packet populated with deep and non-uniform nested collections.</returns>
     public static CPacketNestedCollections CreateDeepSample()
     {
+        // Use uneven depths and lengths to catch index and shape assumptions.
         CPacketNestedCollections packet = new()
         {
             BoolValues = [false, true],

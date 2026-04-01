@@ -10,6 +10,9 @@ public static class GpuParticleFactory2D
     /// <summary>
     /// Instantiates a one-shot GPU particle and frees it when finished.
     /// </summary>
+    /// <param name="parent">Parent node that receives the particle instance.</param>
+    /// <param name="particleScene">Packed scene containing a <see cref="GpuParticles2D"/> root.</param>
+    /// <returns>Configured one-shot particle instance.</returns>
     public static GpuParticles2D OneShot(Node parent, PackedScene particleScene)
     {
         GpuParticles2D particles = particleScene.Instantiate<GpuParticles2D>();
@@ -34,6 +37,9 @@ public static class GpuParticleFactory2D
     /// <summary>
     /// Instantiates a looping GPU particle without auto-free.
     /// </summary>
+    /// <param name="parent">Parent node that receives the particle instance.</param>
+    /// <param name="particleScene">Packed scene containing a <see cref="GpuParticles2D"/> root.</param>
+    /// <returns>Configured looping particle instance.</returns>
     public static GpuParticles2D Looping(Node parent, PackedScene particleScene)
     {
         GpuParticles2D particles = particleScene.Instantiate<GpuParticles2D>();

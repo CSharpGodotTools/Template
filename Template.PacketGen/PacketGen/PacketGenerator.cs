@@ -7,12 +7,16 @@ using System.Text;
 
 namespace PacketGen;
 
+/// <summary>
+/// Incremental source generator for packet serializers and packet registry metadata.
+/// </summary>
 [Generator(LanguageNames.CSharp)]
 public sealed class PacketGenerator : IIncrementalGenerator
 {
     /// <summary>
     /// Registers incremental generation pipelines for per-packet source and the registry class.
     /// </summary>
+    /// <param name="context">Generator initialization context.</param>
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         IncrementalValuesProvider<INamedTypeSymbol> packetSymbols = GetPacketSymbols(context);
@@ -38,6 +42,8 @@ public sealed class PacketGenerator : IIncrementalGenerator
     /// <summary>
     /// Builds a provider that yields all <see cref="ClientPacket"/> and <see cref="ServerPacket"/> subclasses in the compilation.
     /// </summary>
+    /// <param name="context">Generator initialization context.</param>
+    /// <returns>Incremental provider for discovered packet symbols.</returns>
     private static IncrementalValuesProvider<INamedTypeSymbol> GetPacketSymbols(IncrementalGeneratorInitializationContext context)
     {
         return context.SyntaxProvider.CreateSyntaxProvider(
@@ -54,6 +60,9 @@ public sealed class PacketGenerator : IIncrementalGenerator
     /// <summary>
     /// Registers per-packet source generation: emits a <c>.g.cs</c> partial class for each packet symbol.
     /// </summary>
+    /// <param name="context">Generator initialization context.</param>
+    /// <param name="packetSymbols">Provider of discovered packet symbols.</param>
+    /// <param name="compilation">Current compilation provider.</param>
     private static void GenerateSourceForPacketScripts(IncrementalGeneratorInitializationContext context, IncrementalValuesProvider<INamedTypeSymbol> packetSymbols, IncrementalValueProvider<Compilation> compilation)
     {
         context.RegisterSourceOutput(
@@ -68,6 +77,7 @@ public sealed class PacketGenerator : IIncrementalGenerator
                 string? source =
                     PacketGenerators.GetSource(compilationValue, symbol);
 
+                // Emit source only when generator returned non-null content.
                 if (source is not null)
                 {
                     spc.AddSource(BuildHintName(symbol), source);
@@ -78,6 +88,8 @@ public sealed class PacketGenerator : IIncrementalGenerator
     /// <summary>
     /// Generates the PacketRegistry.g.cs script.
     /// </summary>
+    /// <param name="context">Generator initialization context.</param>
+    /// <param name="registryInput">Combined registry symbol and packet collections.</param>
     private static void GeneratePacketRegistryClass(IncrementalGeneratorInitializationContext context, IncrementalValuesProvider<((INamedTypeSymbol Left, ImmutableArray<INamedTypeSymbol> Right) Left, ImmutableArray<INamedTypeSymbol> Right)> registryInput)
     {
         context.RegisterSourceOutput(registryInput,
@@ -102,6 +114,8 @@ public sealed class PacketGenerator : IIncrementalGenerator
     /// <summary>
     /// Finds all [PacketRegistry] attributes in the assembly.
     /// </summary>
+    /// <param name="context">Generator initialization context.</param>
+    /// <returns>Provider of classes marked with <c>PacketRegistryAttribute</c>.</returns>
     private static IncrementalValuesProvider<INamedTypeSymbol> FindPacketRegistryAttributes(IncrementalGeneratorInitializationContext context)
     {
         return context.SyntaxProvider.CreateSyntaxProvider(
@@ -111,6 +125,7 @@ public sealed class PacketGenerator : IIncrementalGenerator
             {
                 ClassDeclarationSyntax syntax = (ClassDeclarationSyntax)ctx.Node;
 
+                // Ignore classes without a semantic type symbol.
                 if (ctx.SemanticModel.GetDeclaredSymbol(syntax) is not INamedTypeSymbol symbol)
                 {
                     return null;
@@ -118,6 +133,7 @@ public sealed class PacketGenerator : IIncrementalGenerator
 
                 foreach (AttributeData attribute in symbol.GetAttributes())
                 {
+                    // Keep only classes marked with PacketRegistryAttribute.
                     if (attribute.AttributeClass?.Name == PacketGenConstants.PacketRegistryAttributeTypeName)
                     {
                         return symbol;
@@ -133,6 +149,9 @@ public sealed class PacketGenerator : IIncrementalGenerator
     /// <summary>
     /// Returns <c>true</c> if <paramref name="symbol"/> inherits from a class named <paramref name="baseTypeName"/>.
     /// </summary>
+    /// <param name="symbol">Candidate symbol.</param>
+    /// <param name="baseTypeName">Base type name to match.</param>
+    /// <returns>True when symbol inherits from the named base type.</returns>
     private static bool IsPacketType(INamedTypeSymbol symbol)
     {
         return InheritsFrom(symbol, PacketGenConstants.ClientPacketTypeName)
@@ -142,11 +161,15 @@ public sealed class PacketGenerator : IIncrementalGenerator
     /// <summary>
     /// Walks the base-type chain checking for a class with the given name.
     /// </summary>
+    /// <param name="symbol">Candidate symbol.</param>
+    /// <param name="baseTypeName">Base type name to match.</param>
+    /// <returns>True when the base chain contains the named type.</returns>
     private static bool InheritsFrom(INamedTypeSymbol symbol, string baseTypeName)
     {
         INamedTypeSymbol? current = symbol.BaseType;
         while (current is not null)
         {
+            // Match by base-type name while walking inheritance chain.
             if (current.Name == baseTypeName)
             {
                 return true;
@@ -161,6 +184,8 @@ public sealed class PacketGenerator : IIncrementalGenerator
     /// <summary>
     /// Converts a fully-qualified type name to a safe file hint name by replacing non-alphanumeric characters with underscores.
     /// </summary>
+    /// <param name="symbol">Type symbol for the generated source file.</param>
+    /// <returns>Safe Roslyn hint name ending in <c>.g.cs</c>.</returns>
     private static string BuildHintName(INamedTypeSymbol symbol)
     {
         string fullName = symbol.ToDisplayString(SymbolDisplayFormat.CSharpErrorMessageFormat);
@@ -168,6 +193,7 @@ public sealed class PacketGenerator : IIncrementalGenerator
 
         foreach (char c in fullName)
         {
+            // Preserve alphanumeric characters for deterministic hint names.
             if (char.IsLetterOrDigit(c))
             {
                 hintBuilder.Append(c);
@@ -186,18 +212,24 @@ public sealed class PacketGenerator : IIncrementalGenerator
     /// Gets the type that defines the packet size from the [PacketRegistry] attribute.
     /// For example if it's [PacketRegistry(typeof(ushort))] then "ushort" would be returned.
     /// </summary>
+    /// <param name="registrySymbol">Packet-registry class symbol.</param>
+    /// <returns>Packet-size type name, defaulting to <c>byte</c>.</returns>
     private static string GetPacketSizeTypeName(INamedTypeSymbol registrySymbol)
     {
         foreach (AttributeData attribute in registrySymbol.GetAttributes())
         {
+            // Ignore attributes other than PacketRegistryAttribute.
             if (attribute.AttributeClass?.Name != PacketGenConstants.PacketRegistryAttributeTypeName)
             {
                 continue;
             }
 
+            // Expect a single constructor argument containing the opcode backing type.
             if (attribute.ConstructorArguments.Length == 1)
             {
                 TypedConstant arg = attribute.ConstructorArguments[0];
+
+                // Return minimally-qualified type name when argument is a type symbol.
                 if (arg.Kind == TypedConstantKind.Type && arg.Value is ITypeSymbol typeSymbol)
                 {
                     return typeSymbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);

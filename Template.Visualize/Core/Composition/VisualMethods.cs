@@ -8,7 +8,7 @@ using static Godot.Control;
 namespace GodotUtils.Debugging;
 
 /// <summary>
-/// Methods that can be executed manually by pressing a button in-game. Parameters are supported.
+/// Builds runtime UI for invoking visualize-marked methods, including parameter editors and popup execution.
 /// </summary>
 internal static class VisualMethods
 {
@@ -29,8 +29,11 @@ internal static class VisualMethods
     private static readonly Color _methodButtonBorderColor = new(0, 0, 0, ButtonBorderAlpha);
 
     /// <summary>
-    /// Creates the UI needed for the method parameters
+    /// Creates editable controls for each method parameter and stores edited values in <paramref name="providedValues"/>.
     /// </summary>
+    /// <param name="method">Method whose parameters should be editable.</param>
+    /// <param name="providedValues">Array that receives current parameter values from controls.</param>
+    /// <returns>Container with one editor row per method parameter.</returns>
     public static VBoxContainer CreateMethodParameterControls(MethodInfo method, object[] providedValues)
     {
         VBoxContainer paramsVBox = new();
@@ -43,17 +46,21 @@ internal static class VisualMethods
             ParameterInfo paramInfo = paramInfos[i];
             Type paramType = paramInfo.ParameterType;
 
+            // Seed each parameter slot so invocation always has a full argument list.
             providedValues[i] = CreateDefaultValue(paramType);
 
             int capturedIndex = i;
 
+            // Build a typed editor and capture updates into providedValues.
             VisualControlInfo control = VisualControlTypes.CreateControlForType(paramType, null, new VisualControlContext(providedValues[i], v =>
             {
                 providedValues[capturedIndex] = v;
             }));
 
+            // Add a row only when a visual control exists for the parameter type.
             if (control.VisualControl != null)
             {
+                // Each row combines a display label with the generated editor.
                 HBoxContainer paramRow = new() { Alignment = BoxContainer.AlignmentMode.End };
                 paramRow.AddThemeConstantOverride("separation", ParamRowSeparation);
                 paramRow.AddChild(new Label { Text = VisualText.ToDisplayName(paramInfo.Name!) });
@@ -65,6 +72,12 @@ internal static class VisualMethods
         return paramsVBox;
     }
 
+    /// <summary>
+    /// Adds one invoke button per method to the provided container.
+    /// </summary>
+    /// <param name="vbox">Container that receives method buttons.</param>
+    /// <param name="methods">Methods to expose as invokable actions.</param>
+    /// <param name="target">Invocation target for instance methods.</param>
     public static void AddMethodInfoElements(Control vbox, IEnumerable<MethodInfo> methods, object target)
     {
         foreach (MethodInfo method in methods)
@@ -76,6 +89,15 @@ internal static class VisualMethods
         }
     }
 
+    /// <summary>
+    /// Creates a button that invokes a method directly or through a parameter popup.
+    /// </summary>
+    /// <param name="method">Method to invoke.</param>
+    /// <param name="target">Invocation target for instance methods.</param>
+    /// <param name="paramInfos">Method parameter metadata.</param>
+    /// <param name="providedValues">Current parameter values to convert for invocation.</param>
+    /// <param name="minButtonWidth">Optional minimum width for the created button.</param>
+    /// <returns>Configured method invocation button.</returns>
     public static Button CreateMethodButton(MethodInfo method, object target, ParameterInfo[] paramInfos, object[] providedValues, float minButtonWidth = 0)
     {
         bool hasParams = paramInfos.Length > 0;
@@ -88,6 +110,7 @@ internal static class VisualMethods
             Flat = true
         };
 
+        // Apply optional width constraint for aligned method-button layouts.
         if (minButtonWidth > 0)
         {
             button.CustomMinimumSize = new Vector2(minButtonWidth, 0);
@@ -120,6 +143,7 @@ internal static class VisualMethods
         PopupPanel? popup = null;
         Button? runButton = null;
 
+        // Methods with parameters are executed from a popup after editing values.
         if (hasParams)
         {
             VBoxContainer paramsControls = CreateMethodParameterControls(method, providedValues);
@@ -171,6 +195,7 @@ internal static class VisualMethods
 
         void OnPressed()
         {
+            // Parameterless methods execute immediately.
             if (!hasParams)
             {
                 object[] parameters = ParameterConverter.ConvertParameterInfoToObjectArray(paramInfos, providedValues);
@@ -179,6 +204,7 @@ internal static class VisualMethods
                 return;
             }
 
+            // Guard against popup creation failures in parameterized mode.
             if (popup == null)
             {
                 return;
@@ -197,6 +223,7 @@ internal static class VisualMethods
 
         void OnRunPressed()
         {
+            // Run button exists only for parameterized popup flows.
             if (runButton == null)
             {
                 return;
@@ -210,46 +237,52 @@ internal static class VisualMethods
         void OnExitedTree()
         {
             button.Pressed -= OnPressed;
-            if (runButton != null)
-            {
-                runButton.Pressed -= OnRunPressed;
-            }
+            runButton?.Pressed -= OnRunPressed;
+
+            // Unsubscribe popup lifecycle handlers when popup exists.
             if (popup != null)
             {
                 popup.AboutToPopup -= OnPopupAboutToPopup;
                 popup.PopupHide -= OnPopupHide;
             }
+            
             button.TreeExited -= OnExitedTree;
         }
 
         button.Pressed += OnPressed;
-        if (runButton != null)
-        {
-            runButton.Pressed += OnRunPressed;
-        }
+        runButton?.Pressed += OnRunPressed;
+
+        // Subscribe popup lifecycle handlers only when popup was created.
         if (popup != null)
         {
             popup.AboutToPopup += OnPopupAboutToPopup;
             popup.PopupHide += OnPopupHide;
         }
+        
         button.TreeExited += OnExitedTree;
 
         return button;
     }
 
+    /// <summary>
+    /// Creates a default parameter value for UI initialization based on a parameter type.
+    /// </summary>
+    /// <param name="type">Parameter type.</param>
+    /// <returns>Default value instance suitable for editing in parameter controls.</returns>
     public static object CreateDefaultValue(Type type)
     {
-        // Examples of Value Types: https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/value-types#kinds-of-value-types-and-type-constraints
+        // Value types use their zero-initialized default instance.
         if (type.IsValueType)
         {
             return Activator.CreateInstance(type)!;
         }
-        // Examples of Reference Types: https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types
+        // Strings use empty text rather than null for a friendlier UI default.
         else if (type == typeof(string))
         {
             return string.Empty;
         }
 
+        // Concrete reference types with default constructors can be instantiated.
         if (!type.IsAbstract && type.GetConstructor(Type.EmptyTypes) != null)
         {
             return Activator.CreateInstance(type)!;

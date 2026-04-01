@@ -7,13 +7,24 @@ namespace PacketGen.Generators.TypeHandlers;
 /// <summary>
 /// Handles serialization of Dictionary&lt;TKey, TValue&gt; collections.
 /// </summary>
+/// <param name="registry">Type-handler registry used for nested key/value dispatch.</param>
 internal sealed class DictionaryTypeHandler(TypeHandlerRegistry registry) : ITypeHandler
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// Returns whether the type is a generic <c>Dictionary&lt;TKey, TValue&gt;</c>.
+    /// </summary>
+    /// <param name="type">Type symbol to check.</param>
+    /// <returns>True when type is <c>Dictionary&lt;TKey, TValue&gt;</c>.</returns>
     public bool CanHandle(ITypeSymbol type) =>
         type is INamedTypeSymbol named && named.IsGenericType && TypeSymbolHelper.IsDictionary(named);
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Emits write statements for dictionary values.
+    /// </summary>
+    /// <param name="ctx">Write generation context.</param>
+    /// <param name="valueExpression">Dictionary expression to serialize.</param>
+    /// <param name="indent">Indentation prefix for generated lines.</param>
+    /// <param name="depth">Current recursion depth.</param>
     public void EmitWrite(WriteContext ctx, string valueExpression, string indent, int depth)
     {
         // Unique loop variable name per nesting depth prevents shadowing in nested collections
@@ -26,6 +37,7 @@ internal sealed class DictionaryTypeHandler(TypeHandlerRegistry registry) : ITyp
 
         ctx.Shared.Namespaces.Add("System.Collections.Generic");
 
+        // Wrap only top-level dictionary writes with a region marker.
         if (depth == 0)
             ctx.Shared.OutputLines.Add($"{indent}#region {valueExpression}");
 
@@ -46,11 +58,18 @@ internal sealed class DictionaryTypeHandler(TypeHandlerRegistry registry) : ITyp
 
         ctx.Shared.OutputLines.Add($"{indent}}}");
 
+        // Close the region only for top-level dictionary writes.
         if (depth == 0)
             ctx.Shared.OutputLines.Add($"{indent}#endregion");
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Emits read statements for dictionary values.
+    /// </summary>
+    /// <param name="ctx">Read generation context.</param>
+    /// <param name="indent">Indentation prefix for generated lines.</param>
+    /// <param name="depth">Current recursion depth.</param>
+    /// <param name="rootName">Optional root variable name for nested contexts.</param>
     public void EmitRead(ReadContext ctx, string indent, int depth, string? rootName)
     {
         ctx.Shared.Namespaces.Add("System.Collections.Generic");
@@ -70,6 +89,7 @@ internal sealed class DictionaryTypeHandler(TypeHandlerRegistry registry) : ITyp
         string keyVar = TypeHandlerNameHelper.BuildName(nameSeed, "Key", depth);
         string valueVar = TypeHandlerNameHelper.BuildName(nameSeed, "Value", depth);
 
+        // Wrap only top-level dictionary reads with a region marker.
         if (depth == 0)
             ctx.Shared.OutputLines.Add($"{indent}#region {ctx.TargetExpression}");
 
@@ -95,6 +115,7 @@ internal sealed class DictionaryTypeHandler(TypeHandlerRegistry registry) : ITyp
         ctx.Shared.OutputLines.Add($"{indent}    {ctx.TargetExpression}.Add({keyVar}, {valueVar});");
         ctx.Shared.OutputLines.Add($"{indent}}}");
 
+        // Close the region only for top-level dictionary reads.
         if (depth == 0)
             ctx.Shared.OutputLines.Add($"{indent}#endregion");
     }

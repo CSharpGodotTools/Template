@@ -8,7 +8,7 @@ using static Godot.Control;
 namespace GodotUtils.Debugging;
 
 /// <summary>
-/// The main core class for the visualizer UI
+/// Composes the runtime visualization panel for a tracked anchor node.
 /// </summary>
 internal static class VisualUI
 {
@@ -22,18 +22,23 @@ internal static class VisualUI
     private const int MembersColumnsSeparation = 6;
 
     /// <summary>
-    /// Creates the visual panel for a specified visual node.
+    /// Builds the full visualization panel and returns update actions for readonly controls.
     /// </summary>
+    /// <param name="visualData">Anchor/object/member metadata for panel creation.</param>
+    /// <returns>Panel root control and readonly update actions.</returns>
     public static (Control, IReadOnlyList<Action>) CreateVisualPanel(VisualData visualData)
     {
         Node node = visualData.AnchorNode;
         object visualizedObject = visualData.VisualizedObject;
+
+        // Reuse property/field names for readonly mirror controls.
         string[] readonlyMembers =
         [
             .. visualData.Properties.Select(property => property.Name),
             .. visualData.Fields.Select(field => field.Name)
         ];
 
+        // Root panel setup and camera-relative scaling.
         PanelContainer panelContainer = VisualUiElementFactory.CreatePanelContainer(node.Name);
         panelContainer.MouseFilter = MouseFilterEnum.Ignore;
         panelContainer.Name = MainPanelName;
@@ -41,6 +46,7 @@ internal static class VisualUI
         Vector2 currentCameraZoom = GetCurrentCameraZoom(node);
         panelContainer.Scale = new Vector2(1f / currentCameraZoom.X, 1f / currentCameraZoom.Y) * VisualUiLayout.PanelScaleFactor;
 
+        // Create mutable and readonly member columns.
         VBoxContainer mutableMembersVbox = VisualUiElementFactory.CreateColoredVBox(VisualUiResources.MutableMembersColor);
         mutableMembersVbox.MouseFilter = MouseFilterEnum.Ignore;
         mutableMembersVbox.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
@@ -51,11 +57,11 @@ internal static class VisualUI
         readonlyMembersVbox.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
         readonlyMembersVbox.Name = ReadonlyMembersName;
 
-        // Readonly Members
+        // Populate readonly controls and collect live update callbacks.
         ReadonlyMemberBinder readonlyBinder = new();
         readonlyBinder.AddReadonlyControls(readonlyMembers, visualizedObject, readonlyMembersVbox, node.Name);
 
-        // Mutable Members
+        // Populate editable member controls from properties and fields.
         VisualMemberElementBuilder.AddMutableControls(mutableMembersVbox, visualData.Properties, visualizedObject, node.Name);
         VisualMemberElementBuilder.AddMutableControls(mutableMembersVbox, visualData.Fields, visualizedObject, node.Name);
 
@@ -66,7 +72,7 @@ internal static class VisualUI
             SizeFlagsHorizontal = SizeFlags.ShrinkBegin
         };
 
-        // Methods
+        // Add method invocation controls.
         VisualMethods.AddMethodInfoElements(methodsVbox, visualData.Methods, visualizedObject);
 
         VBoxContainer vboxLogs = new()
@@ -76,6 +82,7 @@ internal static class VisualUI
             SizeFlagsHorizontal = SizeFlags.ShrinkBegin
         };
 
+        // Register transient log container for this node.
         VisualizeAutoload.Instance?.RegisterLogContainer(node, vboxLogs);
 
         ScrollContainer scrollContainer = new()
@@ -85,6 +92,7 @@ internal static class VisualUI
             CustomMinimumSize = new Vector2(0, VisualUiLayout.MinScrollViewDistance)
         };
 
+        // Build final stacked layout: title bar, members scroll, then logs.
         VBoxContainer mainLayout = new()
         {
             MouseFilter = MouseFilterEnum.Ignore
@@ -121,9 +129,16 @@ internal static class VisualUI
         return (panelContainer, readonlyBinder.UpdateActions);
     }
 
+    /// <summary>
+    /// Gets current camera zoom for panel scaling, falling back to identity zoom.
+    /// </summary>
+    /// <param name="node">Node used to resolve viewport and active 2D camera.</param>
+    /// <returns>Camera zoom or <see cref="Vector2.One"/> when unavailable.</returns>
     private static Vector2 GetCurrentCameraZoom(Node node)
     {
         Viewport viewport = node.GetViewport();
+
+        // Viewport can be unavailable during early lifecycle or teardown.
         if (viewport == null)
             return Vector2.One;
 

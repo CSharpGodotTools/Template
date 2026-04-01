@@ -7,6 +7,9 @@ using Monitor = Godot.Performance.Monitor;
 
 namespace __TEMPLATE__.Debugging;
 
+/// <summary>
+/// Debug overlay that displays runtime metrics and custom monitored values.
+/// </summary>
 public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 {
     // Config
@@ -45,6 +48,9 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     private bool _metricsExpanded = true;
     private bool _variablesExpanded = true;
 
+    /// <summary>
+    /// Initializes default metric providers and builds the overlay UI.
+    /// </summary>
     public MetricsOverlay()
     {
         Dictionary<string, (bool Enabled, Func<string> ValueProvider)> metrics = new()
@@ -70,6 +76,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 
         foreach (KeyValuePair<string, (bool Enabled, Func<string> ValueProvider)> metric in metrics)
         {
+            // Seed overlay with metrics marked as enabled by default.
             if (metric.Value.Enabled)
             {
                 _currentMetrics.Add(metric.Key, metric.Value.ValueProvider);
@@ -88,11 +95,13 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 
     public override void _Process(double delta)
     {
+        // Toggle overlay visibility on debug shortcut press.
         if (Input.IsActionJustPressed(InputActions.DebugOverlay))
         {
             Visible = !Visible;
         }
 
+        // Refresh values only when the overlay is visible.
         if (Visible)
         {
             UpdateMetrics();
@@ -100,6 +109,12 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     }
 
     // API
+    /// <summary>
+    /// Registers a custom monitor callback and returns a disposable handle.
+    /// </summary>
+    /// <param name="key">Display label for the monitored value.</param>
+    /// <param name="function">Callback that returns current monitor value.</param>
+    /// <returns>Disposable handle that unregisters the monitor when disposed.</returns>
     public IDisposable StartMonitoring(string key, Func<object> function)
     {
         ArgumentNullException.ThrowIfNull(function);
@@ -114,8 +129,13 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         return new MonitorHandle(this, monitorId);
     }
 
+    /// <summary>
+    /// Removes a custom monitor by id.
+    /// </summary>
+    /// <param name="monitorId">Registered monitor id.</param>
     private void StopMonitoring(int monitorId)
     {
+        // Ignore unknown monitor ids.
         if (!_monitors.Remove(monitorId))
             return;
 
@@ -123,6 +143,9 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     }
 
     // Private Methods
+    /// <summary>
+    /// Builds root overlay controls and both sections.
+    /// </summary>
     private void BuildUi()
     {
         _panel = new PanelContainer
@@ -154,12 +177,18 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         CallDeferred(MethodName.PositionPanel);
     }
 
+    /// <summary>
+    /// Positions panel near the top-right corner of the viewport.
+    /// </summary>
     private void PositionPanel()
     {
         Vector2 viewportSize = GetViewport().GetVisibleRect().Size;
         _panel.Position = new Vector2(viewportSize.X - PanelWidth - Margin, Margin);
     }
 
+    /// <summary>
+    /// Builds the built-in metrics section and FPS graph.
+    /// </summary>
     private void BuildMetricsSection()
     {
         _metricsHeader = CreateSectionHeader("METRICS");
@@ -175,6 +204,9 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         UpdateMetricsSection();
     }
 
+    /// <summary>
+    /// Builds the custom variables section.
+    /// </summary>
     private void BuildVariablesSection()
     {
         _variablesHeader = CreateSectionHeader("VARIABLES");
@@ -186,6 +218,11 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         _mainContainer.AddChild(_variablesContainer);
     }
 
+    /// <summary>
+    /// Creates a styled section header button.
+    /// </summary>
+    /// <param name="text">Header label text.</param>
+    /// <returns>Configured header button.</returns>
     private static Button CreateSectionHeader(string text)
     {
         Button button = new()
@@ -210,12 +247,20 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         return button;
     }
 
+    /// <summary>
+    /// Toggles expanded state and visibility of a section container.
+    /// </summary>
+    /// <param name="expanded">Reference to expanded-state flag.</param>
+    /// <param name="container">Section container to show or hide.</param>
     private static void ToggleSection(ref bool expanded, Control container)
     {
         expanded = !expanded;
         container.Visible = expanded;
     }
 
+    /// <summary>
+    /// Refreshes FPS sample data and updates visible sections.
+    /// </summary>
     private void UpdateMetrics()
     {
         _cachedFps = (float)Retrieve(Monitor.TimeFps);
@@ -225,12 +270,16 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         _fpsGraph.UpdateData(_fpsBuffer, _fpsIndex);
         UpdateMetricsSection();
 
+        // Refresh custom variables section only when monitors are registered.
         if (_monitors.Count > 0)
         {
             UpdateVariablesSection();
         }
     }
 
+    /// <summary>
+    /// Rebuilds labels for built-in metric values.
+    /// </summary>
     private void UpdateMetricsSection()
     {
         ClearLabels(_metricsContainer, skipGraph: true);
@@ -242,6 +291,9 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         }
     }
 
+    /// <summary>
+    /// Rebuilds labels for custom monitored values.
+    /// </summary>
     private void UpdateVariablesSection()
     {
         bool hasVariables = _monitors.Count > 0;
@@ -250,6 +302,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 
         ClearLabels(_variablesContainer, skipGraph: false);
 
+        // Skip rebuild work when there are no custom variables to show.
         if (!hasVariables)
         {
             return;
@@ -262,8 +315,14 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         }
     }
 
+    /// <summary>
+    /// Formats monitor values into display text.
+    /// </summary>
+    /// <param name="value">Value returned by monitor callback.</param>
+    /// <returns>Formatted display text.</returns>
     private static string FormatMonitorValue(object? value)
     {
+        // Render explicit null values as the string literal "null".
         if (value is null)
             return "null";
 
@@ -283,15 +342,26 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         };
     }
 
+    /// <summary>
+    /// Formats numeric values with fixed decimal precision.
+    /// </summary>
+    /// <param name="value">Numeric value to format.</param>
+    /// <returns>Invariant-culture formatted number.</returns>
     private static string FormatDecimal(double value)
     {
         return value.ToString($"F{MonitorValueDecimals}", CultureInfo.InvariantCulture);
     }
 
+    /// <summary>
+    /// Rounds decimal numbers found inside mixed text.
+    /// </summary>
+    /// <param name="text">Input text that may contain decimal numbers.</param>
+    /// <returns>Text with normalized decimal precision.</returns>
     private static string RoundDecimalsInText(string text)
     {
         return DecimalNumberRegex().Replace(text, match =>
         {
+            // Normalize detected decimals while preserving non-numeric fragments.
             if (double.TryParse(match.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out double number))
             {
                 return FormatDecimal(number);
@@ -301,13 +371,23 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         });
     }
 
+    /// <summary>
+    /// Matches decimal numbers for text normalization.
+    /// </summary>
+    /// <returns>Compiled regex that matches signed decimal numbers.</returns>
     [GeneratedRegex(@"-?\d+\.\d+")]
     private static partial Regex DecimalNumberRegex();
 
+    /// <summary>
+    /// Removes label children from container, optionally preserving FPS graph.
+    /// </summary>
+    /// <param name="container">Container to clear.</param>
+    /// <param name="skipGraph">Whether to preserve <see cref="FpsGraph"/> children.</param>
     private static void ClearLabels(Node container, bool skipGraph)
     {
         foreach (Node child in container.GetChildren())
         {
+            // Keep the FPS graph control when clearing only label nodes.
             if (skipGraph && child is FpsGraph)
                 continue;
 
@@ -316,6 +396,11 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         }
     }
 
+    /// <summary>
+    /// Creates a styled metric label control.
+    /// </summary>
+    /// <param name="text">Label text.</param>
+    /// <returns>Configured label.</returns>
     private static Label CreateLabel(string text)
     {
         Label label = new()
@@ -329,18 +414,33 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         return label;
     }
 
+    /// <summary>
+    /// Reads a Godot performance monitor value.
+    /// </summary>
+    /// <param name="monitor">Monitor enum to query.</param>
+    /// <returns>Monitor value as double.</returns>
     private static double Retrieve(Monitor monitor) => Performance.GetMonitor(monitor);
 
+    /// <summary>
+    /// Disposable monitor registration handle.
+    /// </summary>
+    /// <param name="owner">Metrics overlay that owns the monitor registration.</param>
+    /// <param name="monitorId">Identifier of the registered monitor to release on dispose.</param>
     private sealed class MonitorHandle(MetricsOverlay owner, int monitorId) : IDisposable
     {
         private MetricsOverlay? _owner = owner;
         private readonly int _monitorId = monitorId;
 
+        /// <summary>
+        /// Unregisters the associated monitor from its owner.
+        /// </summary>
         public void Dispose()
         {
+            // Ignore repeated dispose calls after monitor was already released.
             if (_owner == null)
                 return;
 
+            // Unregister monitor only while owner node still exists.
             if (GodotObject.IsInstanceValid(_owner))
                 _owner.StopMonitoring(_monitorId);
 
@@ -349,6 +449,9 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     }
 
     // Nested Class: FPS Graph
+    /// <summary>
+    /// Simple line/area graph used to render recent FPS samples.
+    /// </summary>
     private partial class FpsGraph : Control
     {
         private float[] _data = [];
@@ -361,6 +464,11 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
             _maxRefreshRate = refreshRate > 0 ? refreshRate : 60f;
         }
 
+        /// <summary>
+        /// Updates graph sample buffer and schedules redraw.
+        /// </summary>
+        /// <param name="data">Circular sample buffer.</param>
+        /// <param name="index">Current insertion index.</param>
         public void UpdateData(float[] data, int index)
         {
             _data = data;
@@ -370,6 +478,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 
         public override void _Draw()
         {
+            // Skip drawing when no samples are available yet.
             if (_data.Length == 0)
                 return;
 

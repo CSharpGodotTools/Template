@@ -12,10 +12,13 @@ internal static class SerializationKeys
     /// by splitting on non-alphanumerics and capitalising each word.
     /// All-uppercase tokens are lowered first so "FOV" becomes "Fov".
     /// </summary>
+    /// <param name="label">Raw label or key text.</param>
+    /// <returns>Normalized PascalCase key.</returns>
     public static string ToPascalCase(string label)
     {
         string source = label ?? string.Empty;
 
+        // Empty or whitespace labels normalize to an empty persistence key.
         if (string.IsNullOrWhiteSpace(source))
             return string.Empty;
 
@@ -29,6 +32,7 @@ internal static class SerializationKeys
 
         foreach (char c in source)
         {
+            // Treat non-alphanumeric characters as word separators.
             if (!char.IsLetterOrDigit(c))
             {
                 capitaliseNext = true;
@@ -42,10 +46,16 @@ internal static class SerializationKeys
         return result.ToString();
     }
 
+    /// <summary>
+    /// Determines whether text contains non-alphanumeric separator characters.
+    /// </summary>
+    /// <param name="text">Input text to inspect.</param>
+    /// <returns><see langword="true"/> when any separator exists.</returns>
     private static bool ContainsSeparator(string text)
     {
         foreach (char c in text)
         {
+            // A non-alphanumeric character indicates separator-based tokenization.
             if (!char.IsLetterOrDigit(c))
                 return true;
         }
@@ -57,12 +67,15 @@ internal static class SerializationKeys
     /// Handles a single-word label with no separators.
     /// All-uppercase strings are lowered then title-cased.
     /// </summary>
+    /// <param name="word">Single token to normalize.</param>
+    /// <returns>Normalized PascalCase token.</returns>
     private static string NormaliseSingleWord(string word)
     {
         bool allUpper = true;
 
         foreach (char c in word)
         {
+            // Detect mixed-case words so existing casing is preserved.
             if (char.IsLetter(c) && !char.IsUpper(c))
             {
                 allUpper = false;
@@ -70,6 +83,7 @@ internal static class SerializationKeys
             }
         }
 
+        // Acronyms are lowered first so PascalCase output remains readable.
         if (allUpper)
         {
             string lowered = word.ToLowerInvariant();

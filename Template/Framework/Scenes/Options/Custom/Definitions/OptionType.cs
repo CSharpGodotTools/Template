@@ -5,12 +5,8 @@ namespace __TEMPLATE__.Ui;
 /// </summary>
 internal enum CustomOptionType
 {
-    /// <summary>Slider option.</summary>
     Slider,
-    /// <summary>Dropdown option.</summary>
     Dropdown,
-    /// <summary>Line edit option.</summary>
     LineEdit,
-    /// <summary>Toggle/checkbox option.</summary>
     Toggle
 }

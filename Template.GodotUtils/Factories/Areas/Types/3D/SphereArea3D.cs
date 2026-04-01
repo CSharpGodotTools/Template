@@ -19,6 +19,7 @@ public class SphereArea3D : ShapeArea3D<SphereShape3D>
     /// <summary>
     /// Creates a sphere area with the provided radius.
     /// </summary>
+    /// <param name="radius">Sphere radius.</param>
     internal SphereArea3D(float radius) : base(new SphereShape3D { Radius = radius })
     {
     }

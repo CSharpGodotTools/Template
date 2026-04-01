@@ -3,6 +3,9 @@ using VSyncMode = Godot.DisplayServer.VSyncMode;
 
 namespace __TEMPLATE__.Ui;
 
+/// <summary>
+/// Routes option writes to the correct runtime subsystem and value store.
+/// </summary>
 internal sealed class OptionsSettingDispatcherComponent
 {
     private const int DefaultWindowWidth = 0;
@@ -12,6 +15,12 @@ internal sealed class OptionsSettingDispatcherComponent
     private readonly OptionsDisplaySettingsComponent _displaySettings;
     private readonly OptionsAudioSettingsComponent _audioSettings;
 
+    /// <summary>
+    /// Initializes a new dispatcher with settings component dependencies.
+    /// </summary>
+    /// <param name="valueStore">Persistent options value store.</param>
+    /// <param name="displaySettings">Display settings component.</param>
+    /// <param name="audioSettings">Audio settings component.</param>
     public OptionsSettingDispatcherComponent(
         OptionsValueStoreComponent valueStore,
         OptionsDisplaySettingsComponent displaySettings,
@@ -22,11 +31,43 @@ internal sealed class OptionsSettingDispatcherComponent
         _audioSettings = audioSettings;
     }
 
+    /// <summary>
+    /// Reads an integer option value.
+    /// </summary>
+    /// <param name="key">Option key.</param>
+    /// <param name="defaultValue">Fallback value when key is absent.</param>
+    /// <returns>Resolved integer option value.</returns>
     public int ReadOptionInt(string key, int defaultValue) => _valueStore.GetInt(key, defaultValue);
+
+    /// <summary>
+    /// Reads a float option value.
+    /// </summary>
+    /// <param name="key">Option key.</param>
+    /// <param name="defaultValue">Fallback value when key is absent.</param>
+    /// <returns>Resolved float option value.</returns>
     public float ReadOptionFloat(string key, float defaultValue) => _valueStore.GetFloat(key, defaultValue);
+
+    /// <summary>
+    /// Reads a string option value.
+    /// </summary>
+    /// <param name="key">Option key.</param>
+    /// <param name="defaultValue">Fallback value when key is absent.</param>
+    /// <returns>Resolved string option value.</returns>
     public string ReadOptionString(string key, string defaultValue) => _valueStore.GetString(key, defaultValue);
+
+    /// <summary>
+    /// Reads a boolean option value.
+    /// </summary>
+    /// <param name="key">Option key.</param>
+    /// <param name="defaultValue">Fallback value when key is absent.</param>
+    /// <returns>Resolved boolean option value.</returns>
     public bool ReadOptionBool(string key, bool defaultValue) => _valueStore.GetBool(key, defaultValue);
 
+    /// <summary>
+    /// Applies an integer option value to the appropriate subsystem.
+    /// </summary>
+    /// <param name="key">Option key.</param>
+    /// <param name="value">Value to apply.</param>
     public void SetIntSetting(string key, int value)
     {
         switch (key)
@@ -58,6 +99,11 @@ internal sealed class OptionsSettingDispatcherComponent
         }
     }
 
+    /// <summary>
+    /// Applies a float option value to the appropriate subsystem.
+    /// </summary>
+    /// <param name="key">Option key.</param>
+    /// <param name="value">Value to apply.</param>
     public void SetFloatSetting(string key, float value)
     {
         switch (key)
@@ -77,6 +123,17 @@ internal sealed class OptionsSettingDispatcherComponent
         }
     }
 
+    /// <summary>
+    /// Stores a string option value.
+    /// </summary>
+    /// <param name="key">Option key.</param>
+    /// <param name="value">Value to store.</param>
     public void SetStringSetting(string key, string value) => _valueStore.SetString(key, value);
+
+    /// <summary>
+    /// Stores a boolean option value.
+    /// </summary>
+    /// <param name="key">Option key.</param>
+    /// <param name="value">Value to store.</param>
     public void SetBoolSetting(string key, bool value) => _valueStore.SetBool(key, value);
 }

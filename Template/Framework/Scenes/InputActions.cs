@@ -1,6 +1,9 @@
 namespace Godot;
 
 [InputMap]
+/// <summary>
+/// Central input action name definitions used throughout the project.
+/// </summary>
 public static partial class InputActions
 {
     // Source generator generates the inputs in different partial

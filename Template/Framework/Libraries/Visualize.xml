@@ -6,38 +6,599 @@
     <members>
         <member name="T:GodotUtils.Debugging.ParameterConverter">
             <summary>
-            Utility class for converting provided values to method parameters
+            Converts UI-provided values into a method-invocation parameter array.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ParameterConverter.ConvertParameterInfoToObjectArray(System.Reflection.ParameterInfo[],System.Object[])">
+            <summary>
+            Converts edited parameter values to an invocation-ready argument array.
+            </summary>
+            <param name="paramInfos">Method parameter metadata.</param>
+            <param name="providedValues">Values collected from parameter controls.</param>
+            <returns>Converted argument array in parameter order.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.ParameterConverter.ValidateInput(System.Reflection.ParameterInfo[],System.Object[])">
+            <summary>
+            Validates input arrays used for argument conversion.
+            </summary>
+            <param name="paramInfos">Method parameter metadata.</param>
+            <param name="providedValues">Values collected from controls.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.ParameterConverter.ConvertParameter(System.Reflection.ParameterInfo,System.Object)">
+            <summary>
+            Converts a single provided value to a parameter-compatible value.
+            </summary>
+            <param name="paramInfo">Target parameter metadata.</param>
+            <param name="providedValue">Provided value from controls.</param>
+            <returns>Converted value suitable for method invocation.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.ParameterConverter.GetDefaultValue(System.Type)">
+            <summary>
+            Returns a default value for a parameter type when no value was provided.
+            </summary>
+            <param name="type">Parameter type.</param>
+            <returns>Default value for the requested type.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.ReadonlyMemberAccessor">
+            <summary>
+            Wraps readonly member metadata and value retrieval for visualization binding.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ReadonlyMemberAccessor.#ctor(System.String,System.Reflection.MemberInfo,System.Type)">
+            <summary>
+            Wraps readonly member metadata and value retrieval for visualization binding.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.ReadonlyMemberAccessor.Name">
+            <summary>
+            Member display/name key.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.ReadonlyMemberAccessor.Member">
+            <summary>
+            Reflection metadata for the underlying field or property.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.ReadonlyMemberAccessor.MemberType">
+            <summary>
+            Declared type of the underlying member.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ReadonlyMemberAccessor.GetValue(System.Object)">
+            <summary>
+            Reads the member value from a target object.
+            </summary>
+            <param name="target">Target object owning the member.</param>
+            <returns>Current member value.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.ReadonlyMemberBinder">
+            <summary>
+            Builds readonly visualization controls and update actions for members listed by name.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.ReadonlyMemberBinder.UpdateActions">
+            <summary>
+            Per-frame actions that refresh readonly control values.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ReadonlyMemberBinder.AddReadonlyControls(System.String[],System.Object,Godot.Control,System.String)">
+            <summary>
+            Adds readonly visualization controls for the requested member names.
+            </summary>
+            <param name="visualizeMembers">Member names to bind.</param>
+            <param name="target">Target object that owns the members.</param>
+            <param name="readonlyMembers">Readonly members container.</param>
+            <param name="displayName">Display name used in diagnostics.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.ReadonlyMemberBinder.TryCreateMemberAccessor(System.Object,System.String,GodotUtils.Debugging.ReadonlyMemberAccessor@)">
+            <summary>
+            Attempts to create a reflection accessor for a named readable property or field.
+            </summary>
+            <param name="target">Target object providing member metadata.</param>
+            <param name="visualMember">Member name to resolve.</param>
+            <param name="accessor">Created accessor when resolution succeeds.</param>
+            <returns><see langword="true"/> when member resolution succeeds.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.ReadonlyMemberBinder.TryAddReadonlyControlAsync(GodotUtils.Debugging.ReadonlyMemberAccessor,Godot.Control,System.Object,System.String)">
+            <summary>
+            Polls for an initial member value before creating its readonly control.
+            </summary>
+            <param name="accessor">Accessor used to read member values.</param>
+            <param name="readonlyMembers">Readonly members container.</param>
+            <param name="target">Target object owning the member.</param>
+            <param name="displayName">Display name used for status logging.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.ReadonlyMemberBinder.AddReadonlyControl(GodotUtils.Debugging.ReadonlyMemberAccessor,Godot.Control,System.Object,System.Object)">
+            <summary>
+            Creates and adds a readonly control for a resolved member accessor.
+            </summary>
+            <param name="accessor">Accessor describing the readonly member.</param>
+            <param name="readonlyMembers">Readonly members container.</param>
+            <param name="target">Target object owning the member.</param>
+            <param name="initialValue">Initial member value.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.ReadonlyMemberBinder.SetNestedLabelsVisible(Godot.Control,System.Boolean)">
+            <summary>
+            Recursively toggles label visibility for nested readonly controls.
+            </summary>
+            <param name="root">Root control to traverse.</param>
+            <param name="visible">Desired label visibility.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.Visual2DNodeRegistrar">
+            <summary>
+            Registers visualization panels for 2D/canvas anchors inside dedicated canvas layers.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visual2DNodeRegistrar.Register(GodotUtils.Debugging.Visual2DRegistrationContext)">
+            <summary>
+            Creates and registers 2D visualization nodes for an anchor.
+            </summary>
+            <param name="context">2D registration context.</param>
+            <returns>Tracked visual node info for update and cleanup.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visual2DNodeRegistrar.CalculateVerticalOffset2D(Godot.Control,System.Collections.Generic.ICollection{GodotUtils.Debugging.VisualNodeInfo})">
+            <summary>
+            Computes vertical offset to reduce overlap with existing 2D visualization panels.
+            </summary>
+            <param name="visualPanel">Panel being placed.</param>
+            <param name="existingTrackers">Existing visual trackers.</param>
+            <returns>Accumulated overlap offset.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visual2DNodeRegistrar.ControlsOverlapping(Godot.Control,Godot.Control)">
+            <summary>
+            Checks whether two controls' rectangles intersect.
+            </summary>
+            <param name="control1">First control.</param>
+            <param name="control2">Second control.</param>
+            <returns><see langword="true"/> when rectangles overlap.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visual2DNodeRegistrar.GetAnchorOffset(Godot.Vector2)">
+            <summary>
+            Converts current anchor settings and panel size into a global anchor offset.
+            </summary>
+            <param name="panelSize">Panel size used for offset calculation.</param>
+            <returns>Computed anchor offset.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visual2DNodeRegistrar.GetPanelSize(Godot.Control)">
+            <summary>
+            Resolves panel size from minimum size metadata with fallback to current control size.
+            </summary>
+            <param name="visualPanel">Panel whose size should be measured.</param>
+            <returns>Resolved panel size.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.Visual2DRegistrationContext">
+            <summary>
+            Input data required to register a visualization panel for a 2D/canvas anchor node.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visual2DRegistrationContext.#ctor(Godot.Node,Godot.Node,Godot.Control,System.Collections.Generic.IReadOnlyList{System.Action},System.Collections.Generic.ICollection{GodotUtils.Debugging.VisualNodeInfo})">
+            <summary>
+            Input data required to register a visualization panel for a 2D/canvas anchor node.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.Visual2DRegistrationContext.AnchorNode">
+            <summary>
+            Anchor node whose lifecycle controls visualization cleanup.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.Visual2DRegistrationContext.PositionalNode">
+            <summary>
+            Node providing global 2D position updates for panel placement.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.Visual2DRegistrationContext.VisualPanel">
+            <summary>
+            Visual panel shown in a canvas layer.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.Visual2DRegistrationContext.Actions">
+            <summary>
+            Per-frame update actions associated with this visualization.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.Visual2DRegistrationContext.ExistingTrackers">
+            <summary>
+            Existing trackers used to compute overlap offsets.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.Visual3DNodeRegistrar">
+            <summary>
+            Registers visualization panels for 3D anchors by rendering UI into billboarded sprites.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visual3DNodeRegistrar.Register(GodotUtils.Debugging.Visual3DRegistrationContext)">
+            <summary>
+            Creates and registers 3D visualization nodes for an anchor.
+            </summary>
+            <param name="context">3D registration context.</param>
+            <returns>Tracked visual node info for update and cleanup.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visual3DNodeRegistrar.CalculateVerticalOffset3D(System.Collections.Generic.ICollection{GodotUtils.Debugging.VisualNodeInfo})">
+            <summary>
+            Computes vertical stacking offset for new 3D panels based on existing sprite trackers.
+            </summary>
+            <param name="existingTrackers">Existing visual trackers.</param>
+            <returns>Vertical offset vector for the new panel.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visual3DNodeRegistrar.CenterPanelInSubViewport(Godot.Control,Godot.Vector2)">
+            <summary>
+            Positions a panel inside the sub-viewport according to current anchor settings.
+            </summary>
+            <param name="visualPanel">Panel to position.</param>
+            <param name="panelSize">Panel size used for anchor offset calculations.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visual3DNodeRegistrar.GetPanelSize(Godot.Control)">
+            <summary>
+            Resolves panel size from minimum size metadata with fallback to current control size.
+            </summary>
+            <param name="visualPanel">Panel whose size should be measured.</param>
+            <returns>Resolved panel size.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.Visual3DRegistrationContext">
+            <summary>
+            Input data required to register a visualization panel for a 3D anchor node.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visual3DRegistrationContext.#ctor(Godot.Node,Godot.Node3D,Godot.Control,System.Collections.Generic.IReadOnlyList{System.Action},System.Collections.Generic.ICollection{GodotUtils.Debugging.VisualNodeInfo})">
+            <summary>
+            Input data required to register a visualization panel for a 3D anchor node.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.Visual3DRegistrationContext.AnchorNode">
+            <summary>
+            Anchor node whose lifecycle controls visualization cleanup.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.Visual3DRegistrationContext.AnchorNode3D">
+            <summary>
+            3D positional anchor used for world-space placement.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.Visual3DRegistrationContext.VisualPanel">
+            <summary>
+            Visual panel rendered into a sub-viewport texture.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.Visual3DRegistrationContext.Actions">
+            <summary>
+            Per-frame update actions associated with this visualization.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.Visual3DRegistrationContext.ExistingTrackers">
+            <summary>
+            Existing trackers used to compute stacking offsets.
             </summary>
         </member>
         <member name="T:GodotUtils.Debugging.VisualData">
             <summary>
-            Represents a node to be visualized
+            Aggregates anchor/object/member metadata required to build visualization UI.
             </summary>
         </member>
         <member name="M:GodotUtils.Debugging.VisualData.#ctor(Godot.Node,System.Object,System.Collections.Generic.IReadOnlyList{System.Reflection.PropertyInfo},System.Collections.Generic.IReadOnlyList{System.Reflection.FieldInfo},System.Collections.Generic.IReadOnlyList{System.Reflection.MethodInfo})">
             <summary>
-            Represents a node to be visualized
+            Aggregates anchor/object/member metadata required to build visualization UI.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualData.AnchorNode">
+            <summary>
+            Scene node used as the anchor for positioning visual UI.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualData.VisualizedObject">
+            <summary>
+            Object instance whose members and methods are visualized.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualData.Properties">
+            <summary>
+            Annotated properties exposed in the visualization panel.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualData.Fields">
+            <summary>
+            Annotated fields exposed in the visualization panel.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualData.Methods">
+            <summary>
+            Annotated methods exposed as invokable actions in the visualization panel.
             </summary>
         </member>
         <member name="T:GodotUtils.Debugging.VisualHandler">
             <summary>
-            A set of utility methods for handling the VisualizeAttribute
+            Reflection helpers for reading and writing members exposed through <see cref="T:GodotUtils.Debugging.VisualizeAttribute"/>.
             </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualHandler.SetMemberValue(System.Reflection.MemberInfo,System.Object,System.Object)">
+            <summary>
+            Writes a value to a field or property member, including conversion to the member type.
+            </summary>
+            <param name="member">Target field or property metadata.</param>
+            <param name="target">Instance that owns non-static members.</param>
+            <param name="value">Value to assign.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualHandler.SetPropertyValue(System.Reflection.PropertyInfo,System.Object,System.Object)">
+            <summary>
+            Writes a value to a property when writable.
+            </summary>
+            <param name="property">Property metadata.</param>
+            <param name="target">Instance that owns non-static properties.</param>
+            <param name="value">Value to assign.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualHandler.SetFieldValue(System.Reflection.FieldInfo,System.Object,System.Object)">
+            <summary>
+            Writes a value to a field, handling static and instance targets.
+            </summary>
+            <param name="field">Field metadata.</param>
+            <param name="target">Instance that owns non-static fields.</param>
+            <param name="value">Value to assign.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualHandler.GetMemberValue``1(System.Reflection.MemberInfo,System.Object)">
+            <summary>
+            Reads a member value and attempts to cast or adapt it to the requested generic type.
+            </summary>
+            <typeparam name="T">Requested return type.</typeparam>
+            <param name="member">Field or property metadata.</param>
+            <param name="node">Instance used for non-static member access.</param>
+            <returns>Converted value when available; otherwise default value for <typeparamref name="T"/>.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualHandler.GetMemberValue(System.Reflection.MemberInfo,System.Object)">
+            <summary>
+            Reads a value from a field or property, including support for static members.
+            </summary>
+            <param name="member">Field or property metadata.</param>
+            <param name="obj">Instance used for non-static members.</param>
+            <returns>Member value.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when member is neither field nor property.</exception>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualHandler.ConvertValue(System.Object,System.Type)">
+            <summary>
+            Converts a value to a target type when needed for member assignment.
+            </summary>
+            <param name="value">Source value.</param>
+            <param name="targetType">Type expected by target member.</param>
+            <returns>Converted value or original value when already compatible.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualHandler.GetMemberType(System.Reflection.MemberInfo)">
+            <summary>
+            Returns the declared type of a field or property member.
+            </summary>
+            <param name="member">Field or property metadata.</param>
+            <returns>Declared member type.</returns>
+            <exception cref="T:System.ArgumentException">Thrown when member is neither field nor property.</exception>
         </member>
         <member name="T:GodotUtils.Debugging.VisualizeAttributeHandler">
             <summary>
-            Handles the VisualizeAttribute
+            Discovers fields, properties, and methods annotated with <see cref="T:GodotUtils.Debugging.VisualizeAttribute"/>.
             </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeAttributeHandler.RetrieveData(System.Object,Godot.Node)">
+            <summary>
+            Retrieves visualization metadata for an object when at least one annotated member exists.
+            </summary>
+            <param name="visualizedObject">Object inspected for visualization attributes.</param>
+            <param name="anchorNode">Anchor node used for positioning visual UI.</param>
+            <returns>Visual metadata when annotated members exist; otherwise <see langword="null"/>.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeAttributeHandler.GetVisualMembers``1(System.Func{System.Reflection.BindingFlags,``0[]})">
+            <summary>
+            Collects members of a given kind that are annotated with <see cref="T:GodotUtils.Debugging.VisualizeAttribute"/>.
+            </summary>
+            <typeparam name="T">Member type to collect.</typeparam>
+            <param name="getMembers">Delegate that retrieves members for supplied binding flags.</param>
+            <returns>Annotated member list.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualMemberElementBuilder">
+            <summary>
+            Builds UI rows for mutable visualized members.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualMemberElementBuilder.AddMutableControls(Godot.Control,System.Collections.Generic.IEnumerable{System.Reflection.MemberInfo},System.Object,System.String)">
+            <summary>
+            Adds mutable controls for each member to the target container.
+            </summary>
+            <param name="vbox">Container that receives generated controls.</param>
+            <param name="members">Members to visualize.</param>
+            <param name="target">Instance owning member values.</param>
+            <param name="displayName">Display name used in diagnostics.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualMemberElementBuilder.CreateMemberInfoElement(System.Reflection.MemberInfo,System.Object,System.String)">
+            <summary>
+            Creates the mutable UI element for a single member.
+            </summary>
+            <param name="member">Member metadata.</param>
+            <param name="target">Instance owning member value.</param>
+            <param name="displayName">Display name used for warnings.</param>
+            <returns>Generated control element, or <see langword="null"/> when value/control cannot be created.</returns>
         </member>
         <member name="T:GodotUtils.Debugging.VisualMethods">
             <summary>
-            Methods that can be executed manually by pressing a button in-game. Parameters are supported.
+            Builds runtime UI for invoking visualize-marked methods, including parameter editors and popup execution.
             </summary>
         </member>
         <member name="M:GodotUtils.Debugging.VisualMethods.CreateMethodParameterControls(System.Reflection.MethodInfo,System.Object[])">
             <summary>
-            Creates the UI needed for the method parameters
+            Creates editable controls for each method parameter and stores edited values in <paramref name="providedValues"/>.
             </summary>
+            <param name="method">Method whose parameters should be editable.</param>
+            <param name="providedValues">Array that receives current parameter values from controls.</param>
+            <returns>Container with one editor row per method parameter.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualMethods.AddMethodInfoElements(Godot.Control,System.Collections.Generic.IEnumerable{System.Reflection.MethodInfo},System.Object)">
+            <summary>
+            Adds one invoke button per method to the provided container.
+            </summary>
+            <param name="vbox">Container that receives method buttons.</param>
+            <param name="methods">Methods to expose as invokable actions.</param>
+            <param name="target">Invocation target for instance methods.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualMethods.CreateMethodButton(System.Reflection.MethodInfo,System.Object,System.Reflection.ParameterInfo[],System.Object[],System.Single)">
+            <summary>
+            Creates a button that invokes a method directly or through a parameter popup.
+            </summary>
+            <param name="method">Method to invoke.</param>
+            <param name="target">Invocation target for instance methods.</param>
+            <param name="paramInfos">Method parameter metadata.</param>
+            <param name="providedValues">Current parameter values to convert for invocation.</param>
+            <param name="minButtonWidth">Optional minimum width for the created button.</param>
+            <returns>Configured method invocation button.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualMethods.CreateDefaultValue(System.Type)">
+            <summary>
+            Creates a default parameter value for UI initialization based on a parameter type.
+            </summary>
+            <param name="type">Parameter type.</param>
+            <returns>Default value instance suitable for editing in parameter controls.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualNodeLocator">
+            <summary>
+            Resolves positional nodes and coordinates used to anchor visualization panels.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualNodeLocator.GetClosestParentOfType(Godot.Node,System.Type[])">
+            <summary>
+            Returns the closest node in the parent chain that matches any requested type.
+            </summary>
+            <param name="node">Starting node.</param>
+            <param name="typesToCheck">Candidate types considered a match.</param>
+            <returns>Closest matching node or <see langword="null"/> when no match exists.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualNodeLocator.TryGetGlobalPosition2D(Godot.Node,Godot.Vector2@)">
+            <summary>
+            Attempts to resolve a global 2D position from supported node types.
+            </summary>
+            <param name="node">Node to inspect.</param>
+            <param name="position">Resolved global position when supported.</param>
+            <returns><see langword="true"/> when position could be resolved from node type.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualNodeLocator.IsNodeOfType(Godot.Node,System.Type[])">
+            <summary>
+            Determines whether a node is assignable to any of the requested types.
+            </summary>
+            <param name="node">Node instance to test.</param>
+            <param name="typesToCheck">Types considered a match.</param>
+            <returns><see langword="true"/> when node matches at least one type.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.IVisualControl">
+            <summary>
+            Contract for controls that can display values and toggle editability.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualControl.SetValue(System.Object)">
+            <summary>
+            Updates the rendered control value.
+            </summary>
+            <param name="value">New value to display.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.IVisualControl.Control">
+            <summary>
+            Root control node rendered in the UI.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualControl.SetEditable(System.Boolean)">
+            <summary>
+            Enables or disables user editing.
+            </summary>
+            <param name="editable">True to allow edits.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.MultiSpinBoxControl`1">
+            <summary>
+            Visual-control adapter for composite numeric types backed by multiple spin boxes.
+            </summary>
+            <typeparam name="T">Composite value type (for example vectors/quaternions).</typeparam>
+            <param name="container">Root container hosting spin boxes.</param>
+            <param name="spinBoxes">Spin boxes that edit individual components.</param>
+            <param name="getComponents">Function that extracts component values from <typeparamref name="T"/>.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.MultiSpinBoxControl`1.#ctor(Godot.Control,Godot.SpinBox[],System.Func{`0,System.Double[]})">
+            <summary>
+            Visual-control adapter for composite numeric types backed by multiple spin boxes.
+            </summary>
+            <typeparam name="T">Composite value type (for example vectors/quaternions).</typeparam>
+            <param name="container">Root container hosting spin boxes.</param>
+            <param name="spinBoxes">Spin boxes that edit individual components.</param>
+            <param name="getComponents">Function that extracts component values from <typeparamref name="T"/>.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.MultiSpinBoxControl`1.SetValue(System.Object)">
+            <summary>
+            Updates spin-box values from the supplied composite value.
+            </summary>
+            <param name="value">Composite value to display.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.MultiSpinBoxControl`1.Control">
+            <summary>
+            Root container for this composite control.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.MultiSpinBoxControl`1.SetEditable(System.Boolean)">
+            <summary>
+            Enables or disables all component spin boxes.
+            </summary>
+            <param name="editable">True to allow edits.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.TextControl">
+            <summary>
+            Visual-control adapter for <see cref="T:Godot.LineEdit"/> values.
+            </summary>
+            <param name="lineEdit">Underlying line-edit control.</param>
+            <param name="stringify">Value-to-text formatter.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.TextControl.#ctor(Godot.LineEdit,System.Func{System.Object,System.String})">
+            <summary>
+            Visual-control adapter for <see cref="T:Godot.LineEdit"/> values.
+            </summary>
+            <param name="lineEdit">Underlying line-edit control.</param>
+            <param name="stringify">Value-to-text formatter.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.TextControl.SetValue(System.Object)">
+            <summary>
+            Updates the line-edit text from the supplied value.
+            </summary>
+            <param name="value">Value to display.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.TextControl.Control">
+            <summary>
+            Root line-edit control.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.TextControl.SetEditable(System.Boolean)">
+            <summary>
+            Enables or disables text editing.
+            </summary>
+            <param name="editable">True to allow edits.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.VBoxContainerControl">
+            <summary>
+            Composite visual-control adapter for container-based controls with nested inputs.
+            </summary>
+            <param name="vboxContainer">Root VBox container.</param>
+            <param name="setValueAction">Optional refresh callback when value is set.</param>
+            <param name="setEditableAction">Optional callback before recursive editable updates.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VBoxContainerControl.#ctor(Godot.VBoxContainer,System.Action{System.Object},System.Action{System.Boolean})">
+            <summary>
+            Composite visual-control adapter for container-based controls with nested inputs.
+            </summary>
+            <param name="vboxContainer">Root VBox container.</param>
+            <param name="setValueAction">Optional refresh callback when value is set.</param>
+            <param name="setEditableAction">Optional callback before recursive editable updates.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VBoxContainerControl.SetValue(System.Object)">
+            <summary>
+            Invokes custom value refresh logic for composite controls.
+            </summary>
+            <param name="value">Value payload used by the composite control.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.VBoxContainerControl.Control">
+            <summary>
+            Root composite control.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VBoxContainerControl.SetEditable(System.Boolean)">
+            <summary>
+            Toggles editability for this control and all nested editable descendants.
+            </summary>
+            <param name="editable">True to allow edits.</param>
         </member>
         <member name="M:GodotUtils.Debugging.VBoxContainerControl.ApplyEditableRecursive(Godot.Control,System.Boolean)">
             <summary>
@@ -46,27 +607,397 @@
         </member>
         <member name="T:GodotUtils.Debugging.VisualControlContext">
             <summary>
-            Represents the context for a visual control
+            Carries initial value and change callback for visual control creation.
             </summary>
+            <param name="initialValue">Initial value shown by the control.</param>
+            <param name="valueChanged">Callback invoked when the control value changes.</param>
         </member>
         <member name="M:GodotUtils.Debugging.VisualControlContext.#ctor(System.Object,System.Action{System.Object})">
             <summary>
-            Represents the context for a visual control
+            Carries initial value and change callback for visual control creation.
+            </summary>
+            <param name="initialValue">Initial value shown by the control.</param>
+            <param name="valueChanged">Callback invoked when the control value changes.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualControlContext.InitialValue">
+            <summary>
+            Initial value shown by the control.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualControlContext.ValueChanged">
+            <summary>
+            Callback invoked when the control emits a new value.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualControlInfo">
+            <summary>
+            Wraps an optional visual control result from control-factory helpers.
+            </summary>
+            <param name="visualControl">Created visual control, or null when unsupported.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlInfo.#ctor(GodotUtils.Debugging.IVisualControl)">
+            <summary>
+            Wraps an optional visual control result from control-factory helpers.
+            </summary>
+            <param name="visualControl">Created visual control, or null when unsupported.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualControlInfo.VisualControl">
+            <summary>
+            Created visual control instance.
             </summary>
         </member>
         <member name="T:GodotUtils.Debugging.VisualControlTypes">
             <summary>
-            More utility methods
+            Maps reflected .NET/Godot types to concrete visualize UI control implementations.
+            </summary>
+            <summary>
+            Shared utility helpers used by visual control factory implementations.
+            </summary>
+            <summary>
+            Array-control builders for Godot and CLR array containers.
+            </summary>
+            <summary>
+            Boolean visual-control builders.
+            </summary>
+            <summary>
+            Class/struct control builders for reflected members and visualize-marked methods.
+            </summary>
+            <summary>
+            Color visual-control builders.
+            </summary>
+            <summary>
+            Enum visual-control builders.
+            </summary>
+            <summary>
+            List/array-like visual-control builders for generic list types.
+            </summary>
+            <summary>
+            NodePath visual-control builders.
+            </summary>
+            <summary>
+            Object stringification visual-control builders.
+            </summary>
+            <summary>
+            Quaternion visual-control builders.
+            </summary>
+            <summary>
+            String visual-control builders.
+            </summary>
+            <summary>
+            StringName visual-control builders.
+            </summary>
+            <summary>
+            Vector2 visual-control builders.
+            </summary>
+            <summary>
+            Vector2I visual-control builders.
+            </summary>
+            <summary>
+            Vector3 visual-control builders.
+            </summary>
+            <summary>
+            Vector3I visual-control builders.
+            </summary>
+            <summary>
+            Vector4 visual-control builders.
+            </summary>
+            <summary>
+            Vector4I visual-control builders.
             </summary>
         </member>
         <member name="M:GodotUtils.Debugging.VisualControlTypes.CreateControlForType(System.Type,System.Reflection.MemberInfo,GodotUtils.Debugging.VisualControlContext)">
             <summary>
-            Creates a control for the given member type and context
+            Creates a visual control for the provided member type and initial context.
             </summary>
+            <param name="type">Member or parameter type to render.</param>
+            <param name="memberInfo">Optional member metadata used by some control providers.</param>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Control info containing created control or null when unsupported.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.CreateDictionaryControl(System.Type,GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates dictionary visual controls through the dictionary-provider pipeline.
+            </summary>
+            <param name="dictionaryType">Dictionary runtime type.</param>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Dictionary visual control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.CleanupOnTreeExited(Godot.Node,System.Action)">
+            <summary>
+            Registers cleanup logic that runs once when a node exits the scene tree.
+            </summary>
+            <param name="node">Node whose exit triggers cleanup.</param>
+            <param name="cleanup">Cleanup callback to execute.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.RemoveAt(System.Array,System.Int32)">
+            <summary>
+            Returns a new array with the element at <paramref name="index"/> removed.
+            </summary>
+            <param name="source">Source array.</param>
+            <param name="index">Zero-based index to remove.</param>
+            <returns>New array without the removed element.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.Append(System.Array,System.Object)">
+            <summary>
+            Returns a new array with <paramref name="value"/> appended.
+            </summary>
+            <param name="source">Source array.</param>
+            <param name="value">Value to append.</param>
+            <returns>New array including appended value.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.CreateSpinBox(System.Type)">
+            <summary>
+            Creates a configured spin box for a numeric type.
+            </summary>
+            <param name="type">Numeric type represented by the spin box.</param>
+            <returns>Configured spin box.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.CreateTextControl(GodotUtils.Debugging.VisualControlContext,System.Func{System.String,System.Object},System.Func{System.Object,System.String})">
+            <summary>
+            Creates a text-based control adapter using custom parse/stringify functions.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <param name="parse">Converts edited text to value.</param>
+            <param name="stringify">Converts value to display text.</param>
+            <returns>Created text-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.CreateVectorControl``1(GodotUtils.Debugging.VisualControlContext,System.String[],System.Type,System.Func{``0,System.Double[]},System.Func{``0,System.Int32,System.Double,``0})">
+            <summary>
+            Creates a multi-spin-box control for vector-like composite values.
+            </summary>
+            <typeparam name="T">Composite value type.</typeparam>
+            <param name="context">Initial value and change callback context.</param>
+            <param name="labels">Component labels.</param>
+            <param name="componentType">Numeric type used by component spin boxes.</param>
+            <param name="getComponents">Function that reads component values.</param>
+            <param name="setComponent">Function that writes one component value.</param>
+            <returns>Created composite control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.CreateIndexedCollectionControl(System.Type,System.Func{System.Int32},System.Func{System.Int32,System.Object},System.Action{System.Int32,System.Object},System.Action{System.Object},System.Action{System.Int32},System.Func{System.Object},System.Action{System.Object},GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a reusable editable UI for indexed collections (arrays/lists/dictionaries values).
+            </summary>
+            <param name="elementType">Collection element type.</param>
+            <param name="getCount">Returns current item count.</param>
+            <param name="getValue">Reads item by index.</param>
+            <param name="setValue">Writes item by index.</param>
+            <param name="addValue">Adds a new item.</param>
+            <param name="removeValue">Removes item by index.</param>
+            <param name="getCollectionValue">Returns current collection value.</param>
+            <param name="setCollectionValue">Optional collection replacement callback.</param>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Container-based visual control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualGodotArray(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a control for non-generic <see cref="T:Godot.Collections.Array"/> values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created array-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualArray(System.Type,GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a control for CLR array values.
+            </summary>
+            <param name="type">Concrete CLR array type.</param>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created array-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.FindSingleParameterMethod(System.Type,System.String)">
+            <summary>
+            Finds the first method with the given name that has exactly one parameter.
+            </summary>
+            <param name="type">Type to inspect.</param>
+            <param name="methodName">Method name to match.</param>
+            <returns>Matching method info, or null when not found.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.ConvertArrayValueToExpectedType(System.Object,System.Type)">
+            <summary>
+            Converts a value to the type expected by Godot array APIs when needed.
+            </summary>
+            <param name="value">Incoming value.</param>
+            <param name="expectedType">Expected destination type.</param>
+            <returns>Converted value when needed.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.ConvertToVariantValue(System.Object)">
+            <summary>
+            Converts known runtime values to <see cref="T:Godot.Variant"/> payloads.
+            </summary>
+            <param name="value">Value to convert.</param>
+            <returns>Variant payload.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualBool(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a checkbox control for boolean values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created boolean-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualClass(System.Type,GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a composite class control for reflected properties, fields, and methods.
+            </summary>
+            <param name="type">Class or struct type to render.</param>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created class-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.CollectPropertyMembers(System.Type,System.Reflection.BindingFlags)">
+            <summary>
+            Collects candidate property members and editability metadata.
+            </summary>
+            <param name="type">Type to inspect.</param>
+            <param name="flags">Binding flags for reflection lookup.</param>
+            <returns>Property member descriptors.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.CollectFieldMembers(System.Type,System.Reflection.BindingFlags)">
+            <summary>
+            Collects candidate field members and editability metadata.
+            </summary>
+            <param name="type">Type to inspect.</param>
+            <param name="flags">Binding flags for reflection lookup.</param>
+            <returns>Field member descriptors.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.AddMembers(Godot.Control,GodotUtils.Debugging.VisualControlContext,System.Collections.Generic.IEnumerable{GodotUtils.Debugging.VisualControlTypes.MemberDescriptor})">
+            <summary>
+            Adds reflected members as editable/non-editable controls to the target container.
+            </summary>
+            <param name="vbox">Container that receives member rows.</param>
+            <param name="context">Initial value and change callback context.</param>
+            <param name="members">Member descriptors to render.</param>
+            <returns>Bindings used for subsequent value/editability synchronization.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.AddMethods(System.Reflection.BindingFlags,Godot.Control,System.Type,GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Adds visualize-marked methods as invoke buttons.
+            </summary>
+            <param name="flags">Binding flags used for method discovery.</param>
+            <param name="vbox">Container that receives method buttons.</param>
+            <param name="type">Type to inspect.</param>
+            <param name="context">Initial value and change callback context.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.FilterByVisualizeAttribute``1(``0[]@)">
+            <summary>
+            Filters member arrays to only visualize-marked members when at least one exists.
+            </summary>
+            <typeparam name="T">Member info type.</typeparam>
+            <param name="members">Members to filter.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.CreateHBoxForMember(System.String,Godot.Control)">
+            <summary>
+            Creates a standard label-plus-control row for member rendering.
+            </summary>
+            <param name="memberName">Member name used as row label.</param>
+            <param name="control">Member value control.</param>
+            <returns>Configured row container.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualColor(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a color picker control for <see cref="T:Godot.Color"/> values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created color-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualEnum(System.Type,GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates an option-button control for enum values.
+            </summary>
+            <param name="type">Enum type to visualize.</param>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created enum-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualList(System.Type,GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a control for generic list-like collections.
+            </summary>
+            <param name="type">Concrete list type.</param>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created list-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualNodePath(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a text control for <see cref="T:Godot.NodePath"/> values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created node-path control info.</returns>
         </member>
         <member name="M:GodotUtils.Debugging.VisualControlTypes.TryGetExportAttributeRange(System.Reflection.MemberInfo,GodotUtils.Debugging.VisualControlTypes.ExportAttributeRange@)">
             <summary>
             Checks if the member has [Export(PropertyHint.Range, "0, 1, 0.1")] and gets the min, max, and step values.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualObject(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a text control that uses <see cref="M:System.Object.ToString"/> for display.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created text-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualQuaternion(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a control for <see cref="T:Godot.Quaternion"/> values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created vector-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualString(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a text control for string values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created string-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualStringName(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a text control for <see cref="T:Godot.StringName"/> values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created string-name control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualVector2(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a control for <see cref="T:Godot.Vector2"/> values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created vector-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualVector2I(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a control for <see cref="T:Godot.Vector2I"/> values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created vector-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualVector3(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a control for <see cref="T:Godot.Vector3"/> values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created vector-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualVector3I(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a control for <see cref="T:Godot.Vector3I"/> values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created vector-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualVector4(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a control for <see cref="T:Godot.Vector4"/> values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created vector-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualVector4I(GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a control for <see cref="T:Godot.Vector4I"/> values.
+            </summary>
+            <param name="context">Initial value and change callback context.</param>
+            <returns>Created vector-control info.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualAnchorSettings">
+            <summary>
+            Stores global anchor settings used to place visualization panels.
             </summary>
         </member>
         <member name="P:GodotUtils.Debugging.VisualAnchorSettings.NormalizedAnchor">
@@ -74,14 +1005,1122 @@
             Normalized anchor where (0,0)=top-left and (1,1)=bottom-right.
             </summary>
         </member>
+        <member name="T:GodotUtils.Debugging.VisualText">
+            <summary>
+            String helpers for converting code identifiers to UI-friendly display text.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualText.ToDisplayName(System.String)">
+            <summary>
+            Converts an identifier to spaced title text using PascalCase normalization.
+            </summary>
+            <param name="identifier">Source identifier.</param>
+            <returns>Display-friendly text.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualText.ToSpacedName(System.String)">
+            <summary>
+            Inserts spaces before capitals without forcing PascalCase first.
+            </summary>
+            <param name="value">Source text.</param>
+            <returns>Spaced display text.</returns>
+        </member>
         <member name="T:GodotUtils.Debugging.VisualUI">
             <summary>
-            The main core class for the visualizer UI
+            Composes the runtime visualization panel for a tracked anchor node.
             </summary>
         </member>
         <member name="M:GodotUtils.Debugging.VisualUI.CreateVisualPanel(GodotUtils.Debugging.VisualData)">
             <summary>
-            Creates the visual panel for a specified visual node.
+            Builds the full visualization panel and returns update actions for readonly controls.
+            </summary>
+            <param name="visualData">Anchor/object/member metadata for panel creation.</param>
+            <returns>Panel root control and readonly update actions.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUI.GetCurrentCameraZoom(Godot.Node)">
+            <summary>
+            Gets current camera zoom for panel scaling, falling back to identity zoom.
+            </summary>
+            <param name="node">Node used to resolve viewport and active 2D camera.</param>
+            <returns>Camera zoom or <see cref="P:Godot.Vector2.One"/> when unavailable.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualUiElementFactory">
+            <summary>
+            Factory helpers for common visualization UI controls and containers.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUiElementFactory.CreatePanelContainer(System.String)">
+            <summary>
+            Creates the root panel container for a visualization panel.
+            </summary>
+            <param name="name">Panel node name.</param>
+            <returns>Configured panel container.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUiElementFactory.CreateColoredVBox(Godot.Color)">
+            <summary>
+            Creates a vertically stacked container tinted with the supplied color.
+            </summary>
+            <param name="color">Tint color applied to the VBox container.</param>
+            <returns>Configured VBox container.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUiElementFactory.CreateCanvasLayer(System.String,System.UInt64)">
+            <summary>
+            Creates a canvas layer used to host 2D visualization panels.
+            </summary>
+            <param name="name">Anchor node name.</param>
+            <param name="instanceId">Anchor node instance ID.</param>
+            <returns>Configured canvas layer.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUiElementFactory.CreateVisibilityButton(System.String,Godot.Color)">
+            <summary>
+            Creates a flat toggle button used for title-bar visibility controls.
+            </summary>
+            <param name="text">Button label text.</param>
+            <param name="color">Button tint color.</param>
+            <returns>Configured toggle button.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualUiElementFactory.SetButtonsToReleaseFocusOnPress(Godot.VBoxContainer)">
+            <summary>
+            Wires buttons to release focus shortly after press.
+            </summary>
+            <param name="vboxParent">Container whose direct button children are wired.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualUiLayout">
+            <summary>
+            Layout and timing constants shared across visualization UI components.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualUiLayout.LogScaleFactor">
+            <summary>
+            Scale multiplier used for log labels.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualUiLayout.PanelScaleFactor">
+            <summary>
+            Scale multiplier for the main visualization panel.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualUiLayout.MinScrollViewDistance">
+            <summary>
+            Minimum vertical size for the members scroll area.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualUiLayout.TitleFontSize">
+            <summary>
+            Font size for title rows.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualUiLayout.MemberFontSize">
+            <summary>
+            Font size for member labels/values.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualUiLayout.MemberLabelMinWidth">
+            <summary>
+            Minimum width reserved for member labels.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualUiLayout.FontOutlineSize">
+            <summary>
+            Outline thickness used for panel text.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualUiLayout.MinButtonSize">
+            <summary>
+            Minimum square size for title-bar buttons.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualUiLayout.ReleaseFocusOnPressDelay">
+            <summary>
+            Delay before button focus is released after press.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualUiLayout.MaxSecondsToWaitForInitialValues">
+            <summary>
+            Max seconds to wait for initial readonly member values.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualUiResources">
+            <summary>
+            Shared color resources used by visualization UI sections.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualUiResources.MutableMembersColor">
+            <summary>
+            Tint used for mutable-member columns.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.VisualUiResources.ReadonlyMembersColor">
+            <summary>
+            Tint used for readonly-member columns.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.IVisualTitleBarAnchorPopupBuilder">
+            <summary>
+            Builds anchor-selection popup components used by the visual title bar.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualTitleBarAnchorPopupBuilder.Build">
+            <summary>
+            Creates a configured anchor popup instance.
+            </summary>
+            <returns>Anchor popup component ready to be attached to title-bar controls.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.IVisualTitleBarColumnVisibilityController">
+            <summary>
+            Controls column visibility state for title-bar member and method sections.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualTitleBarColumnVisibilityController.Update(Godot.Control,Godot.Control,Godot.Control,Godot.Label,Godot.Button,Godot.Button,Godot.Button)">
+            <summary>
+            Updates visible state for member/method columns and related title-bar controls.
+            </summary>
+            <param name="mutableMembersVbox">Mutable members container.</param>
+            <param name="readonlyMembersVbox">Readonly members container.</param>
+            <param name="methodsVbox">Methods container.</param>
+            <param name="title">Title label that may be updated based on visibility state.</param>
+            <param name="mutableButton">Toggle button for mutable members.</param>
+            <param name="readonlyButton">Toggle button for readonly members.</param>
+            <param name="methodsButton">Toggle button for methods section.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.IVisualTitleBarValueSyncService">
+            <summary>
+            Synchronizes editable values with readonly snapshots in visual title-bar panels.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualTitleBarValueSyncService.SyncMutableFromReadonly(Godot.Control,Godot.Control)">
+            <summary>
+            Copies readonly column values into corresponding mutable controls.
+            </summary>
+            <param name="mutableMembersVbox">Container with mutable member rows.</param>
+            <param name="readonlyMembersVbox">Container with readonly member rows.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualTitleBarAnchorPopup">
+            <summary>
+            Bundles anchor popup UI and the action that refreshes its selected-state visuals.
+            </summary>
+            <param name="Popup">Popup panel containing anchor selection buttons.</param>
+            <param name="RefreshSelection">Action that refreshes selected button styling.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarAnchorPopup.#ctor(Godot.PopupPanel,System.Action)">
+            <summary>
+            Bundles anchor popup UI and the action that refreshes its selected-state visuals.
+            </summary>
+            <param name="Popup">Popup panel containing anchor selection buttons.</param>
+            <param name="RefreshSelection">Action that refreshes selected button styling.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualTitleBarAnchorPopup.Popup">
+            <summary>Popup panel containing anchor selection buttons.</summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualTitleBarAnchorPopup.RefreshSelection">
+            <summary>Action that refreshes selected button styling.</summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualTitleBarAnchorPopupBuilder">
+            <summary>
+            Builds the anchor-selection popup used by visual title-bar controls.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarAnchorPopupBuilder.Build">
+            <summary>
+            Creates the popup panel with a 3x3 anchor grid and refresh callback.
+            </summary>
+            <returns>Anchor popup record containing panel and selection refresh action.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarAnchorPopupBuilder.AddAnchorButton(Godot.GridContainer,Godot.PopupPanel,System.Collections.Generic.List{System.ValueTuple{Godot.Button,Godot.Vector2}},System.String,Godot.Vector2)">
+            <summary>
+            Adds a single anchor-selection button to the popup grid.
+            </summary>
+            <param name="grid">Grid container that hosts anchor buttons.</param>
+            <param name="popup">Popup panel to hide after selection.</param>
+            <param name="anchorButtons">List used to track button/anchor associations.</param>
+            <param name="text">Button label text.</param>
+            <param name="anchor">Normalized anchor value represented by the button.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualTitleBarBuilder">
+            <summary>
+            Entry-point factory for constructing configured visual title-bar UI components.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarBuilder.Build(System.String,Godot.Control,Godot.Control,Godot.Control,GodotUtils.Debugging.VisualData,System.String[])">
+            <summary>
+            Builds a title-bar row with controls bound to provided visual data columns.
+            </summary>
+            <param name="name">Display title for the panel.</param>
+            <param name="mutableMembersVbox">Mutable members column root.</param>
+            <param name="readonlyMembersVbox">Readonly members column root.</param>
+            <param name="methodsVbox">Methods column root.</param>
+            <param name="visualData">Visualized member and method metadata.</param>
+            <param name="readonlyMembers">Readonly member name list.</param>
+            <returns>Configured title-bar container.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarBuilder.CreateComponent">
+            <summary>
+            Creates the concrete title-bar component with default service implementations.
+            </summary>
+            <returns>Configured title-bar control component.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualTitleBarBuildRequest">
+            <summary>
+            Immutable input data required to build a visual title-bar control row.
+            </summary>
+            <param name="Name">Display title text.</param>
+            <param name="MutableMembersVbox">Mutable members column root.</param>
+            <param name="ReadonlyMembersVbox">Readonly members column root.</param>
+            <param name="MethodsVbox">Methods column root.</param>
+            <param name="VisualData">Visualized member and method metadata.</param>
+            <param name="ReadonlyMembers">Readonly member names list.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarBuildRequest.#ctor(System.String,Godot.Control,Godot.Control,Godot.Control,GodotUtils.Debugging.VisualData,System.String[])">
+            <summary>
+            Immutable input data required to build a visual title-bar control row.
+            </summary>
+            <param name="Name">Display title text.</param>
+            <param name="MutableMembersVbox">Mutable members column root.</param>
+            <param name="ReadonlyMembersVbox">Readonly members column root.</param>
+            <param name="MethodsVbox">Methods column root.</param>
+            <param name="VisualData">Visualized member and method metadata.</param>
+            <param name="ReadonlyMembers">Readonly member names list.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualTitleBarBuildRequest.Name">
+            <summary>Display title text.</summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualTitleBarBuildRequest.MutableMembersVbox">
+            <summary>Mutable members column root.</summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualTitleBarBuildRequest.ReadonlyMembersVbox">
+            <summary>Readonly members column root.</summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualTitleBarBuildRequest.MethodsVbox">
+            <summary>Methods column root.</summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualTitleBarBuildRequest.VisualData">
+            <summary>Visualized member and method metadata.</summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualTitleBarBuildRequest.ReadonlyMembers">
+            <summary>Readonly member names list.</summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualTitleBarColumnVisibilityController">
+            <summary>
+            Applies title-bar toggle state to mutable, readonly, and methods columns.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarColumnVisibilityController.Update(Godot.Control,Godot.Control,Godot.Control,Godot.Label,Godot.Button,Godot.Button,Godot.Button)">
+            <summary>
+            Updates column visibility, colors, and alignment based on current toggle states.
+            </summary>
+            <param name="mutableMembersVbox">Mutable members column root.</param>
+            <param name="readonlyMembersVbox">Readonly members column root.</param>
+            <param name="methodsVbox">Methods column root.</param>
+            <param name="title">Title label control.</param>
+            <param name="mutableButton">Mutable column toggle.</param>
+            <param name="readonlyButton">Readonly column toggle.</param>
+            <param name="methodsButton">Methods column toggle.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarColumnVisibilityController.SetToggleVisualState(Godot.Button,System.Boolean)">
+            <summary>
+            Applies active/inactive tinting to a visibility toggle button.
+            </summary>
+            <param name="toggleButton">Button to style.</param>
+            <param name="isVisible">Whether the associated column is currently visible.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarColumnVisibilityController.SetReadonlyLabelsVisible(Godot.Control,System.Boolean)">
+            <summary>
+            Shows or hides leading readonly labels for each readonly row.
+            </summary>
+            <param name="readonlyMembersVbox">Readonly column root.</param>
+            <param name="visible">Desired label visibility.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarColumnVisibilityController.SetColumnContentVisible(Godot.Control,System.Boolean)">
+            <summary>
+            Sets visibility for all canvas-item children beneath a column root.
+            </summary>
+            <param name="columnRoot">Column root to traverse.</param>
+            <param name="visible">Desired content visibility.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarColumnVisibilityController.SetMutableLabelsOnlyMode(Godot.Control,System.Boolean)">
+            <summary>
+            Toggles mutable rows between full-control mode and labels-only mode.
+            </summary>
+            <param name="mutableMembersVbox">Mutable column root.</param>
+            <param name="labelsOnly">Whether only labels should remain visible.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarColumnVisibilityController.SyncLabelRowHeights(Godot.Control,Godot.Control,System.Boolean)">
+            <summary>
+            Optionally aligns mutable row heights to readonly rows when mutable values are hidden.
+            </summary>
+            <param name="mutableMembersVbox">Mutable column root.</param>
+            <param name="readonlyMembersVbox">Readonly column root.</param>
+            <param name="matchReadonly">Whether mutable rows should mirror readonly row heights.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarColumnVisibilityController.SetMutableLabelAlignmentMode(Godot.Control,System.Boolean)">
+            <summary>
+            Sets mutable row alignment so labels anchor correctly for visible/hidden value modes.
+            </summary>
+            <param name="mutableMembersVbox">Mutable column root.</param>
+            <param name="mutableVisible">Whether mutable values are currently visible.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualTitleBarControlComponent">
+            <summary>
+            Builds and wires title-bar controls for visual panels, including visibility toggles and anchor popup behavior.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarControlComponent.#ctor(GodotUtils.Debugging.IVisualTitleBarAnchorPopupBuilder,GodotUtils.Debugging.IVisualTitleBarColumnVisibilityController,GodotUtils.Debugging.IVisualTitleBarValueSyncService)">
+            <summary>
+            Builds and wires title-bar controls for visual panels, including visibility toggles and anchor popup behavior.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarControlComponent.Build(GodotUtils.Debugging.VisualTitleBarBuildRequest)">
+            <summary>
+            Creates the title-bar container and wires all visibility, sync, and anchor popup interactions.
+            </summary>
+            <param name="request">Build request containing visual data and column containers.</param>
+            <returns>Configured title-bar container.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarControlComponent.CreateTitleLabel(System.String)">
+            <summary>
+            Creates the title label used in the title-bar row.
+            </summary>
+            <param name="name">Display name shown in the title label.</param>
+            <returns>Configured title label control.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarControlComponent.CreateAnchorButton">
+            <summary>
+            Creates the anchor popup toggle button.
+            </summary>
+            <returns>Configured anchor button.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarControlComponent.CreateSyncButton">
+            <summary>
+            Creates the value-sync button shown when mutable and readonly columns are both present.
+            </summary>
+            <returns>Configured sync button.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarControlComponent.AddIfNotNull(Godot.HBoxContainer,Godot.Control[])">
+            <summary>
+            Adds non-null controls to a row in argument order.
+            </summary>
+            <param name="row">Row container that receives controls.</param>
+            <param name="controls">Controls to add when non-null.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarControlComponent.RegisterPressedHandler(Godot.Button,System.Action)">
+            <summary>
+            Subscribes a pressed handler and automatically detaches it when the button exits the tree.
+            </summary>
+            <param name="button">Button to wire.</param>
+            <param name="handler">Action to invoke on press.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarControlComponent.WireAnchorButton(Godot.Button,GodotUtils.Debugging.VisualTitleBarAnchorPopup)">
+            <summary>
+            Wires anchor button events to popup show/hide behavior and screen-clamped positioning.
+            </summary>
+            <param name="anchorButton">Anchor toggle button.</param>
+            <param name="anchorPopup">Popup component shown by the button.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualTitleBarValueSyncService">
+            <summary>
+            Synchronizes displayed values between readonly and mutable title-bar member controls.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarValueSyncService.SyncMutableFromReadonly(Godot.Control,Godot.Control)">
+            <summary>
+            Copies readonly member values into mutable controls row-by-row.
+            </summary>
+            <param name="mutableMembersVbox">Container with mutable member controls.</param>
+            <param name="readonlyMembersVbox">Container with readonly member controls.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarValueSyncService.ResolveValueControl(Godot.Node,System.Boolean)">
+            <summary>
+            Resolves the editable/readable value control for a row layout.
+            </summary>
+            <param name="rowNode">Row node that contains value controls.</param>
+            <param name="isMutable">Whether to resolve the mutable-side control index.</param>
+            <returns>Resolved control, or <see langword="null"/> when row shape is unsupported.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualTitleBarValueSyncService.CopyControlValues(Godot.Control,Godot.Control)">
+            <summary>
+            Copies values between compatible control types, recursing into child controls when needed.
+            </summary>
+            <param name="source">Readonly source control.</param>
+            <param name="target">Mutable target control.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.ClassControl">
+            <summary>
+            Composite visual control that forwards value/update operations to bound class members.
+            </summary>
+            <param name="container">Root container hosting member controls.</param>
+            <param name="bindings">Member-to-control bindings.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.ClassControl.#ctor(Godot.Control,System.Collections.Generic.List{GodotUtils.Debugging.MemberControlBinding})">
+            <summary>
+            Composite visual control that forwards value/update operations to bound class members.
+            </summary>
+            <param name="container">Root container hosting member controls.</param>
+            <param name="bindings">Member-to-control bindings.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.ClassControl.SetValue(System.Object)">
+            <summary>
+            Pushes member values from <paramref name="value"/> to each bound child control.
+            </summary>
+            <param name="value">Object instance containing bound member values.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.ClassControl.Control">
+            <summary>
+            Root container for this composite control.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ClassControl.SetEditable(System.Boolean)">
+            <summary>
+            Applies editable state to bound child controls while respecting per-member editability.
+            </summary>
+            <param name="editable">True to allow edits where supported.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.IVisualDictionaryAdapter">
+            <summary>
+            Abstraction over dictionary-like storage for visualization controls.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.IVisualDictionaryAdapter.Entries">
+            <summary>
+            Gets current dictionary entries.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryAdapter.ContainsKey(System.Object)">
+            <summary>
+            Checks whether a key exists in the dictionary.
+            </summary>
+            <param name="key">Key to check.</param>
+            <returns><see langword="true"/> when the key exists.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryAdapter.Get(System.Object)">
+            <summary>
+            Gets the value for the provided key.
+            </summary>
+            <param name="key">Key to read.</param>
+            <returns>Value for the key, or null when missing.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryAdapter.Set(System.Object,System.Object)">
+            <summary>
+            Sets the value for the provided key.
+            </summary>
+            <param name="key">Key to update.</param>
+            <param name="value">Value to set.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryAdapter.Remove(System.Object)">
+            <summary>
+            Removes the entry for the provided key.
+            </summary>
+            <param name="key">Key to remove.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.IVisualDictionaryAdapterFactory">
+            <summary>
+            Factory for creating dictionary adapters.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryAdapterFactory.Create(System.Object,System.Type)">
+            <summary>
+            Creates an adapter for the provided dictionary instance and type.
+            </summary>
+            <param name="dictionaryObject">Dictionary instance.</param>
+            <param name="dictionaryType">Dictionary runtime type.</param>
+            <returns>Adapter for the dictionary.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.IVisualDictionaryDisplayOrderTracker">
+            <summary>
+            Tracks stable ordering for visualized dictionary entries.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.IVisualDictionaryDisplayOrderTracker.UseStableOrder">
+            <summary>
+            Gets whether stable ordering is enabled.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.IVisualDictionaryDisplayOrderTracker.Keys">
+            <summary>
+            Gets the current ordered list of keys.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryDisplayOrderTracker.Seed(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Object,System.Object}})">
+            <summary>
+            Seeds the tracker with initial entries.
+            </summary>
+            <param name="entries">Entries to seed.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryDisplayOrderTracker.TrackAddedKey(System.Object)">
+            <summary>
+            Registers a newly added key.
+            </summary>
+            <param name="key">Key to track.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryDisplayOrderTracker.TrackRemovedKey(System.Object)">
+            <summary>
+            Registers a removed key.
+            </summary>
+            <param name="key">Key to remove.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryDisplayOrderTracker.TrackRenamedKey(System.Object,System.Object)">
+            <summary>
+            Updates tracking when a key is renamed.
+            </summary>
+            <param name="previousKey">Original key.</param>
+            <param name="nextKey">New key.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryDisplayOrderTracker.Reconcile(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Object,System.Object}})">
+            <summary>
+            Reconciles tracked ordering with the latest entries.
+            </summary>
+            <param name="entries">Current dictionary entries.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.IVisualDictionaryDisplayOrderTrackerFactory">
+            <summary>
+            Factory for building display-order trackers.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryDisplayOrderTrackerFactory.Create(System.Boolean)">
+            <summary>
+            Creates a display-order tracker instance.
+            </summary>
+            <param name="useStableOrder">Whether to preserve stable ordering.</param>
+            <returns>Tracker instance.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.IVisualDictionaryKeyResolver">
+            <summary>
+            Resolves duplicate dictionary keys for visualization edits.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryKeyResolver.TryResolveRenamedKey(System.Object,System.Object,System.Type,System.Func{System.Object,System.Boolean},System.Object@)">
+            <summary>
+            Attempts to resolve a key rename when the target key is already used.
+            </summary>
+            <param name="currentKey">Current key value.</param>
+            <param name="duplicateKey">Incoming key that collides.</param>
+            <param name="keyType">Expected key type.</param>
+            <param name="containsKey">Key existence predicate.</param>
+            <param name="resolvedKey">Resolved key when successful.</param>
+            <returns><see langword="true"/> when a replacement key is found.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryKeyResolver.TryResolveAddedKey(System.Object,System.Type,System.Func{System.Object,System.Boolean},System.Object@)">
+            <summary>
+            Attempts to resolve a new key when a duplicate is detected.
+            </summary>
+            <param name="duplicateKey">Incoming key that collides.</param>
+            <param name="keyType">Expected key type.</param>
+            <param name="containsKey">Key existence predicate.</param>
+            <param name="resolvedKey">Resolved key when successful.</param>
+            <returns><see langword="true"/> when a replacement key is found.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.IVisualDictionaryValueConverter">
+            <summary>
+            Converts dictionary values to the expected runtime type.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.IVisualDictionaryValueConverter.ConvertToExpectedType(System.Object,System.Type)">
+            <summary>
+            Converts a value to the expected runtime type when needed.
+            </summary>
+            <param name="value">Incoming value.</param>
+            <param name="expectedType">Expected runtime type.</param>
+            <returns>Converted value.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualDictionaryAdapter">
+            <summary>
+            Adapter around dictionary-like operations for visualization.
+            </summary>
+            <param name="entriesFactory">Factory for enumerating entries.</param>
+            <param name="containsKey">Predicate to test key existence.</param>
+            <param name="get">Accessor for retrieving a value by key.</param>
+            <param name="set">Mutator for setting a value by key.</param>
+            <param name="remove">Remover for deleting a key.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryAdapter.#ctor(System.Func{System.Collections.Generic.IEnumerable{System.ValueTuple{System.Object,System.Object}}},System.Func{System.Object,System.Boolean},System.Func{System.Object,System.Object},System.Action{System.Object,System.Object},System.Action{System.Object})">
+            <summary>
+            Adapter around dictionary-like operations for visualization.
+            </summary>
+            <param name="entriesFactory">Factory for enumerating entries.</param>
+            <param name="containsKey">Predicate to test key existence.</param>
+            <param name="get">Accessor for retrieving a value by key.</param>
+            <param name="set">Mutator for setting a value by key.</param>
+            <param name="remove">Remover for deleting a key.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualDictionaryAdapter.Entries">
+            <summary>
+            Gets current dictionary entries.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryAdapter.ContainsKey(System.Object)">
+            <summary>
+            Checks whether a key exists.
+            </summary>
+            <param name="key">Key to test.</param>
+            <returns><see langword="true"/> when the key exists.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryAdapter.Get(System.Object)">
+            <summary>
+            Gets the value for the provided key.
+            </summary>
+            <param name="key">Key to read.</param>
+            <returns>Value for the key, or null when missing.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryAdapter.Set(System.Object,System.Object)">
+            <summary>
+            Sets the value for the provided key.
+            </summary>
+            <param name="key">Key to update.</param>
+            <param name="value">Value to set.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryAdapter.Remove(System.Object)">
+            <summary>
+            Removes the entry for the provided key.
+            </summary>
+            <param name="key">Key to remove.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualDictionaryAdapterFactory">
+            <summary>
+            Builds adapters for dictionary-like runtime types.
+            </summary>
+            <param name="valueConverter">Converter for adapting values to expected types.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryAdapterFactory.#ctor(GodotUtils.Debugging.IVisualDictionaryValueConverter)">
+            <summary>
+            Builds adapters for dictionary-like runtime types.
+            </summary>
+            <param name="valueConverter">Converter for adapting values to expected types.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryAdapterFactory.Create(System.Object,System.Type)">
+            <summary>
+            Creates an adapter for the provided dictionary instance and type.
+            </summary>
+            <param name="dictionaryObject">Dictionary instance.</param>
+            <param name="dictionaryType">Dictionary runtime type.</param>
+            <returns>Adapter for the dictionary.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryAdapterFactory.CreateEmptyAdapter">
+            <summary>
+            Creates a no-op adapter for unsupported dictionary shapes.
+            </summary>
+            <returns>Empty dictionary adapter.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryAdapterFactory.FindSingleParameterMethod(System.Type,System.String)">
+            <summary>
+            Finds a method with the given name and a single parameter.
+            </summary>
+            <param name="type">Type to inspect.</param>
+            <param name="methodName">Method name to match.</param>
+            <returns>Matching method info, or null when not found.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryAdapterFactory.EnumerateDictionaryEntries(System.Collections.IDictionary)">
+            <summary>
+            Enumerates entries from an <see cref="T:System.Collections.IDictionary"/> instance.
+            </summary>
+            <param name="dictionary">Dictionary to enumerate.</param>
+            <returns>Enumerable of key/value entries.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryAdapterFactory.EnumerateObjectDictionaryEntries(System.Object)">
+            <summary>
+            Enumerates entries from a dictionary-like object using reflection.
+            </summary>
+            <param name="dictionaryObject">Dictionary-like object.</param>
+            <returns>Enumerable of key/value entries.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualDictionaryControlComponent">
+            <summary>
+            Builds and manages dictionary controls for the visualize UI.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryControlComponent.#ctor(GodotUtils.Debugging.VisualDictionaryTypeInfo,System.Object,GodotUtils.Debugging.IVisualDictionaryAdapter,GodotUtils.Debugging.VisualControlContext,GodotUtils.Debugging.IVisualDictionaryAdapterFactory,GodotUtils.Debugging.IVisualDictionaryKeyResolver,GodotUtils.Debugging.IVisualDictionaryDisplayOrderTracker,System.Func{System.Type,GodotUtils.Debugging.VisualControlContext,GodotUtils.Debugging.VisualControlInfo},System.Action{Godot.Node,System.Action})">
+            <summary>
+            Initializes a dictionary control component.
+            </summary>
+            <param name="typeInfo">Dictionary type metadata.</param>
+            <param name="dictionaryObject">Dictionary instance.</param>
+            <param name="adapter">Adapter for dictionary access.</param>
+            <param name="context">Context for value change notifications.</param>
+            <param name="adapterFactory">Adapter factory for refreshes.</param>
+            <param name="keyResolver">Resolver for duplicate keys.</param>
+            <param name="displayOrderTracker">Display order tracker.</param>
+            <param name="createControlForType">Factory for child controls.</param>
+            <param name="cleanupOnTreeExited">Cleanup hook for control teardown.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryControlComponent.Build">
+            <summary>
+            Builds the dictionary control and wires events.
+            </summary>
+            <returns>Control info for the dictionary UI.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryControlComponent.InitializeRows">
+            <summary>
+            Creates initial rows from the current dictionary entries.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryControlComponent.OnAddPressed">
+            <summary>
+            Handles the add button press to insert a new entry.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryControlComponent.OnExternalValueChanged(System.Object)">
+            <summary>
+            Handles external value changes for the dictionary.
+            </summary>
+            <param name="value">New dictionary value.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryControlComponent.SetEditable(System.Boolean)">
+            <summary>
+            Updates editability and refreshes rows.
+            </summary>
+            <param name="editable">Whether the control is editable.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryControlComponent.RefreshEntries">
+            <summary>
+            Rebuilds the entry rows to match the current dictionary state.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualDictionaryDisplayOrderTracker">
+            <summary>
+            Tracks stable ordering for dictionary entries in visualization.
+            </summary>
+            <param name="useStableOrder">Whether to keep a stable entry order.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryDisplayOrderTracker.#ctor(System.Boolean)">
+            <summary>
+            Tracks stable ordering for dictionary entries in visualization.
+            </summary>
+            <param name="useStableOrder">Whether to keep a stable entry order.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualDictionaryDisplayOrderTracker.UseStableOrder">
+            <summary>
+            Gets whether stable ordering is enabled.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualDictionaryDisplayOrderTracker.Keys">
+            <summary>
+            Gets the current ordered list of keys.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryDisplayOrderTracker.Seed(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Object,System.Object}})">
+            <summary>
+            Seeds the tracker with initial entries.
+            </summary>
+            <param name="entries">Entries to seed.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryDisplayOrderTracker.TrackAddedKey(System.Object)">
+            <summary>
+            Registers a newly added key.
+            </summary>
+            <param name="key">Key to track.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryDisplayOrderTracker.TrackRemovedKey(System.Object)">
+            <summary>
+            Registers a removed key.
+            </summary>
+            <param name="key">Key to remove.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryDisplayOrderTracker.TrackRenamedKey(System.Object,System.Object)">
+            <summary>
+            Updates tracking when a key is renamed.
+            </summary>
+            <param name="previousKey">Original key.</param>
+            <param name="nextKey">New key.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryDisplayOrderTracker.Reconcile(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Object,System.Object}})">
+            <summary>
+            Reconciles tracked ordering with the latest entries.
+            </summary>
+            <param name="entries">Current dictionary entries.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualDictionaryDisplayOrderTrackerFactory">
+            <summary>
+            Creates display-order trackers for dictionary visualization.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryDisplayOrderTrackerFactory.Create(System.Boolean)">
+            <summary>
+            Creates a display-order tracker instance.
+            </summary>
+            <param name="useStableOrder">Whether to preserve stable ordering.</param>
+            <returns>Tracker instance.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualDictionaryKeyResolver">
+            <summary>
+            Resolves duplicate keys by probing for valid alternatives.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryKeyResolver.TryResolveRenamedKey(System.Object,System.Object,System.Type,System.Func{System.Object,System.Boolean},System.Object@)">
+            <summary>
+            Attempts to resolve a renamed key collision.
+            </summary>
+            <param name="currentKey">Current key value.</param>
+            <param name="duplicateKey">Incoming key that collides.</param>
+            <param name="keyType">Expected key type.</param>
+            <param name="containsKey">Key existence predicate.</param>
+            <param name="resolvedKey">Resolved key when successful.</param>
+            <returns><see langword="true"/> when a replacement key is found.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryKeyResolver.TryResolveAddedKey(System.Object,System.Type,System.Func{System.Object,System.Boolean},System.Object@)">
+            <summary>
+            Attempts to resolve a newly added key collision.
+            </summary>
+            <param name="duplicateKey">Incoming key that collides.</param>
+            <param name="keyType">Expected key type.</param>
+            <param name="containsKey">Key existence predicate.</param>
+            <param name="resolvedKey">Resolved key when successful.</param>
+            <returns><see langword="true"/> when a replacement key is found.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryKeyResolver.TryConvertToInt64(System.Object,System.Int64@)">
+            <summary>
+            Attempts to convert a value to <see cref="T:System.Int64"/>.
+            </summary>
+            <param name="value">Value to convert.</param>
+            <param name="convertedValue">Converted numeric value.</param>
+            <returns><see langword="true"/> when conversion succeeds.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryKeyResolver.TryConvertFromInt64(System.Int64,System.Type,System.Object@)">
+            <summary>
+            Attempts to convert a <see cref="T:System.Int64"/> to the target type.
+            </summary>
+            <param name="value">Value to convert.</param>
+            <param name="targetType">Target type to convert to.</param>
+            <param name="convertedValue">Converted value.</param>
+            <returns><see langword="true"/> when conversion succeeds.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualDictionaryRowBuilder">
+            <summary>
+            Builds visual rows for dictionary entries.
+            </summary>
+            <param name="typeInfo">Dictionary type metadata.</param>
+            <param name="context">Control context for value changes.</param>
+            <param name="keyResolver">Resolver for duplicate keys.</param>
+            <param name="displayOrderTracker">Tracker for stable display ordering.</param>
+            <param name="createControlForType">Factory for child controls.</param>
+            <param name="cleanupOnTreeExited">Cleanup hook for control teardown.</param>
+            <param name="getAdapter">Adapter accessor.</param>
+            <param name="getDictionaryObject">Dictionary object accessor.</param>
+            <param name="getIsEditable">Editable state accessor.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryRowBuilder.#ctor(GodotUtils.Debugging.VisualDictionaryTypeInfo,GodotUtils.Debugging.VisualControlContext,GodotUtils.Debugging.IVisualDictionaryKeyResolver,GodotUtils.Debugging.IVisualDictionaryDisplayOrderTracker,System.Func{System.Type,GodotUtils.Debugging.VisualControlContext,GodotUtils.Debugging.VisualControlInfo},System.Action{Godot.Node,System.Action},System.Func{GodotUtils.Debugging.IVisualDictionaryAdapter},System.Func{System.Object},System.Func{System.Boolean})">
+            <summary>
+            Builds visual rows for dictionary entries.
+            </summary>
+            <param name="typeInfo">Dictionary type metadata.</param>
+            <param name="context">Control context for value changes.</param>
+            <param name="keyResolver">Resolver for duplicate keys.</param>
+            <param name="displayOrderTracker">Tracker for stable display ordering.</param>
+            <param name="createControlForType">Factory for child controls.</param>
+            <param name="cleanupOnTreeExited">Cleanup hook for control teardown.</param>
+            <param name="getAdapter">Adapter accessor.</param>
+            <param name="getDictionaryObject">Dictionary object accessor.</param>
+            <param name="getIsEditable">Editable state accessor.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryRowBuilder.AddEntry(Godot.VBoxContainer,System.Object,System.Object)">
+            <summary>
+            Adds a visual row for a dictionary entry.
+            </summary>
+            <param name="dictionaryVBox">Container to append the row to.</param>
+            <param name="key">Entry key.</param>
+            <param name="value">Entry value.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualDictionaryTypeInfo">
+            <summary>
+            Describes dictionary types and defaults for visualization.
+            </summary>
+            <param name="DictionaryType">Concrete dictionary runtime type.</param>
+            <param name="KeyType">Key type.</param>
+            <param name="ValueType">Value type.</param>
+            <param name="UseStableDisplayOrder">Whether to preserve entry order.</param>
+            <param name="DefaultKey">Default key value.</param>
+            <param name="DefaultValue">Default value.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryTypeInfo.#ctor(System.Type,System.Type,System.Type,System.Boolean,System.Object,System.Object)">
+            <summary>
+            Describes dictionary types and defaults for visualization.
+            </summary>
+            <param name="DictionaryType">Concrete dictionary runtime type.</param>
+            <param name="KeyType">Key type.</param>
+            <param name="ValueType">Value type.</param>
+            <param name="UseStableDisplayOrder">Whether to preserve entry order.</param>
+            <param name="DefaultKey">Default key value.</param>
+            <param name="DefaultValue">Default value.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualDictionaryTypeInfo.DictionaryType">
+            <summary>Concrete dictionary runtime type.</summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualDictionaryTypeInfo.KeyType">
+            <summary>Key type.</summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualDictionaryTypeInfo.ValueType">
+            <summary>Value type.</summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualDictionaryTypeInfo.UseStableDisplayOrder">
+            <summary>Whether to preserve entry order.</summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualDictionaryTypeInfo.DefaultKey">
+            <summary>Default key value.</summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualDictionaryTypeInfo.DefaultValue">
+            <summary>Default value.</summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualDictionaryValueConverter">
+            <summary>
+            Converts dictionary values to compatible runtime types.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryValueConverter.ConvertToExpectedType(System.Object,System.Type)">
+            <summary>
+            Converts a value to the expected runtime type when needed.
+            </summary>
+            <param name="value">Incoming value.</param>
+            <param name="expectedType">Expected runtime type.</param>
+            <returns>Converted value.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.MemberControlBinding">
+            <summary>
+            Binds a reflected member to its visual control and editability state.
+            </summary>
+            <param name="member">Field or property metadata.</param>
+            <param name="control">Control used to display/edit the member.</param>
+            <param name="isEditable">Whether edits should be allowed for this member.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.MemberControlBinding.#ctor(System.Reflection.MemberInfo,GodotUtils.Debugging.IVisualControl,System.Boolean)">
+            <summary>
+            Binds a reflected member to its visual control and editability state.
+            </summary>
+            <param name="member">Field or property metadata.</param>
+            <param name="control">Control used to display/edit the member.</param>
+            <param name="isEditable">Whether edits should be allowed for this member.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.MemberControlBinding.Member">
+            <summary>
+            Reflected member metadata.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.MemberControlBinding.Control">
+            <summary>
+            Bound visual control.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.MemberControlBinding.IsEditable">
+            <summary>
+            Indicates whether member edits are allowed.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.BoolControl">
+            <summary>
+            Wraps a checkbox as a visual-control implementation.
+            </summary>
+            <param name="checkBox">Checkbox instance to manage.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.BoolControl.#ctor(Godot.CheckBox)">
+            <summary>
+            Wraps a checkbox as a visual-control implementation.
+            </summary>
+            <param name="checkBox">Checkbox instance to manage.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.BoolControl.SetValue(System.Object)">
+            <summary>
+            Updates the checkbox state from the provided value.
+            </summary>
+            <param name="value">Incoming value.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.BoolControl.Control">
+            <summary>
+            Gets the underlying checkbox control.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.BoolControl.SetEditable(System.Boolean)">
+            <summary>
+            Toggles editability for the checkbox.
+            </summary>
+            <param name="editable">Whether the checkbox is editable.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.ColorPickerButtonControl">
+            <summary>
+            Visual-control wrapper for <see cref="T:Godot.ColorPickerButton"/>.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ColorPickerButtonControl.#ctor(Godot.ColorPickerButton)">
+            <summary>
+            Initializes the control wrapper and hooks tree events.
+            </summary>
+            <param name="colorPickerButton">Color picker button to wrap.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.ColorPickerButtonControl.SetValue(System.Object)">
+            <summary>
+            Updates the picker color from the provided value.
+            </summary>
+            <param name="value">Incoming value.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.ColorPickerButtonControl.Control">
+            <summary>
+            Gets the underlying color picker control.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ColorPickerButtonControl.SetEditable(System.Boolean)">
+            <summary>
+            Toggles editability for the color picker.
+            </summary>
+            <param name="editable">Whether the control is editable.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualDictionaryControlProvider">
+            <summary>
+            Builds dictionary controls using adapter-based access for typed and untyped dictionary variants.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryControlProvider.#ctor(GodotUtils.Debugging.IVisualDictionaryAdapterFactory,GodotUtils.Debugging.IVisualDictionaryKeyResolver,GodotUtils.Debugging.IVisualDictionaryDisplayOrderTrackerFactory,System.Func{System.Type,GodotUtils.Debugging.VisualControlContext,GodotUtils.Debugging.VisualControlInfo},System.Func{System.Type,System.Object},System.Action{Godot.Node,System.Action})">
+            <summary>
+            Builds dictionary controls using adapter-based access for typed and untyped dictionary variants.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryControlProvider.CreateControl(System.Type,GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Creates a dictionary control for the provided runtime dictionary type.
+            </summary>
+            <param name="dictionaryType">Dictionary runtime type.</param>
+            <param name="context">Initial dictionary value and change callback context.</param>
+            <returns>Created visual-control info.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryControlProvider.BuildTypeInfo(System.Type)">
+            <summary>
+            Resolves key/value type metadata and defaults for dictionary rendering.
+            </summary>
+            <param name="dictionaryType">Dictionary runtime type.</param>
+            <returns>Dictionary type-info payload used by control component.</returns>
+        </member>
+        <member name="T:GodotUtils.Debugging.OptionButtonEnumControl">
+            <summary>
+            Visual-control wrapper around an <see cref="T:Godot.OptionButton"/> for enums.
+            </summary>
+            <param name="optionButton">Option button to manage.</param>
+            <param name="select">Selection callback.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.OptionButtonEnumControl.#ctor(Godot.OptionButton,System.Action{System.Object})">
+            <summary>
+            Visual-control wrapper around an <see cref="T:Godot.OptionButton"/> for enums.
+            </summary>
+            <param name="optionButton">Option button to manage.</param>
+            <param name="select">Selection callback.</param>
+        </member>
+        <member name="P:GodotUtils.Debugging.OptionButtonEnumControl.Control">
+            <summary>
+            Gets the underlying option button control.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.OptionButtonEnumControl.SetValue(System.Object)">
+            <summary>
+            Updates the selection from the provided value.
+            </summary>
+            <param name="value">Incoming value.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.OptionButtonEnumControl.SetEditable(System.Boolean)">
+            <summary>
+            Toggles editability for the option button.
+            </summary>
+            <param name="editable">Whether the control is editable.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.Autoload">
+            <summary>
+            Debug-only autoload that drives the visualize runtime update loop during editor/game execution.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.Autoload._visualizeAutoload">
+            <summary>
+            Owns registration and cleanup of visualize services for the lifetime of this autoload.
             </summary>
         </member>
         <member name="T:GodotUtils.Debugging.Autoload.MethodName">
@@ -131,6 +2170,26 @@
         <member name="T:GodotUtils.Debugging.Autoload.SignalName">
             <summary>
             Cached StringNames for the signals contained in this class, for fast lookup.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.ExampleScene">
+            <summary>
+            Minimal debug scene used to exercise visualization features against live nodes.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.ExampleScene._cameraSpeed">
+            <summary>
+            Camera pan speed used for keyboard navigation in the example scene.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.ExampleScene._spriteExampleScene">
+            <summary>
+            Optional packed scene used by the commented sprite visualization sample.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.Debugging.ExampleScene._camera">
+            <summary>
+            Scene camera moved by input in physics updates.
             </summary>
         </member>
         <member name="T:GodotUtils.Debugging.ExampleScene.MethodName">
@@ -215,7 +2274,186 @@
         </member>
         <member name="T:GodotUtils.Debugging.Visualize">
             <summary>
-            This logger shows all messages in game making it easier to debug
+            Debug visualization entry point for registering nodes and writing in-world log labels.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visualize.Register(Godot.Node)">
+            <summary>
+            Registers a node as both visualization source and anchor.
+            </summary>
+            <param name="node">Node to register.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visualize.Register(System.Object,Godot.Node)">
+            <summary>
+            Registers a visualization source object with an anchor node.
+            </summary>
+            <param name="visualizedObject">Object inspected for <see cref="T:GodotUtils.Debugging.VisualizeAttribute"/> members.</param>
+            <param name="node">Anchor node for positioning generated visuals.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visualize.Update">
+            <summary>
+            Updates all tracked visualization nodes for the current frame.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visualize.Log(System.Object,Godot.Node,System.Double)">
+            <summary>
+            Writes a transient log message near the provided node.
+            </summary>
+            <param name="message">Message payload to display.</param>
+            <param name="node">Node whose log container receives the message.</param>
+            <param name="fadeTime">Fade duration in seconds before the label is freed.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visualize.GetOrCreateVBoxContainer(Godot.Node)">
+            <summary>
+            Resolves an existing log container for a node or creates a fallback container when valid.
+            </summary>
+            <param name="node">Node requesting log output.</param>
+            <returns>Log container for the node, or <see langword="null"/> when logging is unsupported.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.Visualize.AddLabel(Godot.VBoxContainer,System.Object,System.Double)">
+            <summary>
+            Creates a log label, inserts it at the top of the container, and schedules fade-out cleanup.
+            </summary>
+            <param name="vbox">Container receiving the label.</param>
+            <param name="message">Message payload to display.</param>
+            <param name="fadeTime">Fade duration in seconds.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeAttribute">
+            <summary>
+            Marks members that should be exposed in the runtime visualization panel.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeAutoload">
+            <summary>
+            Holds runtime visualization state shared across debug UI components.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualizeAutoload.Instance">
+            <summary>
+            Active autoload instance used by static visualization helpers.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeAutoload.#ctor">
+            <summary>
+            Creates the debug visualization autoload singleton.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">Thrown when another instance is already active.</exception>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeAutoload.TryGetLogContainer(Godot.Node,Godot.VBoxContainer@)">
+            <summary>
+            Attempts to resolve the attributed log container for a node.
+            </summary>
+            <param name="node">Node used as the lookup key.</param>
+            <param name="vbox">Resolved log container when found.</param>
+            <returns><see langword="true"/> when a container exists for the node.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeAutoload.RegisterLogContainer(Godot.Node,Godot.VBoxContainer)">
+            <summary>
+            Registers or replaces the attributed log container associated with a node.
+            </summary>
+            <param name="node">Node used as the lookup key.</param>
+            <param name="vbox">Container that receives attributed log labels.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeAutoload.GetOrCreateNonAttributeLogContainer(Godot.Node,System.Func{Godot.VBoxContainer})">
+            <summary>
+            Returns an existing non-attributed log container or creates one using the provided factory.
+            </summary>
+            <param name="node">Node used as the lookup key.</param>
+            <param name="factory">Factory invoked when the node has no existing container.</param>
+            <returns>Existing or newly created non-attributed log container.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeAutoload.UnregisterNode(Godot.Node)">
+            <summary>
+            Removes all tracked log containers associated with a node.
+            </summary>
+            <param name="node">Node to unregister.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeAutoload.Dispose">
+            <summary>
+            Clears tracked state and resets the singleton instance.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeExampleSprite">
+            <summary>
+            Debug sprite containing sample fields and methods used to demonstrate the Visualize runtime.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.PrintPrimitives(System.Boolean,System.Int32,System.Single,System.Double,System.String)">
+            <summary>
+            Logs primitive argument values to validate method-parameter visualization and invocation.
+            </summary>
+            <param name="enabled">Example boolean flag.</param>
+            <param name="health">Example integer argument.</param>
+            <param name="rotation">Example float argument.</param>
+            <param name="zoom">Example double argument.</param>
+            <param name="displayName">Example string argument.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.PrintVectors(Godot.Vector2,Godot.Vector2I,Godot.Vector3,Godot.Vector3I,Godot.Vector4,Godot.Vector4I,Godot.Quaternion)">
+            <summary>
+            Logs representative vector and quaternion arguments for visualization testing.
+            </summary>
+            <param name="vector2">Sample <see cref="T:Godot.Vector2"/> value.</param>
+            <param name="vector2I">Sample <see cref="T:Godot.Vector2I"/> value.</param>
+            <param name="vector3">Sample <see cref="T:Godot.Vector3"/> value.</param>
+            <param name="vector3I">Sample <see cref="T:Godot.Vector3I"/> value.</param>
+            <param name="vector4">Sample <see cref="T:Godot.Vector4"/> value.</param>
+            <param name="vector4I">Sample <see cref="T:Godot.Vector4I"/> value.</param>
+            <param name="quaternion">Sample <see cref="T:Godot.Quaternion"/> value.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.PrintDictionary(System.Collections.Generic.Dictionary{System.Int32,Godot.Vector4})">
+            <summary>
+            Logs dictionary contents in a multi-line format to verify collection visualization output.
+            </summary>
+            <param name="dictionary">Dictionary argument to render in the log output.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.PrintEnum(GodotUtils.Debugging.VisualizeExampleSprite.SomeEnum)">
+            <summary>
+            Logs an enum argument to validate enum parameter handling.
+            </summary>
+            <param name="someEnum">Enum value supplied from the visualize UI.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.PrintCollections(System.Int32[],System.Collections.Generic.List{System.String},System.Collections.Generic.Dictionary{System.Int32,Godot.Vector4},Godot.Collections.Array{System.Int32},Godot.Collections.Dictionary{System.Int32,System.Boolean})">
+            <summary>
+            Logs item counts for common managed and Godot collection argument types.
+            </summary>
+            <param name="array">Managed array sample.</param>
+            <param name="list">Managed list sample.</param>
+            <param name="dictionary">Managed dictionary sample.</param>
+            <param name="godotArray">Godot typed array sample.</param>
+            <param name="godotDictionary">Godot typed dictionary sample.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.PrintObjectGraph(GodotUtils.Debugging.VisualizeExampleSprite.ExampleStruct,GodotUtils.Debugging.VisualizeExampleSprite.ExampleClass,GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource)">
+            <summary>
+            Logs values from nested object graphs to validate structured argument inspection.
+            </summary>
+            <param name="structValue">Sample struct payload.</param>
+            <param name="classValue">Sample class payload.</param>
+            <param name="resourceValue">Sample resource payload.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualizeExampleSprite.BumpStaticCounter(System.Int32)">
+            <summary>
+            Increments the static counter to test static member visualization updates.
+            </summary>
+            <param name="value">Amount to add to <see cref="P:GodotUtils.Debugging.VisualizeExampleSprite.StaticCounter"/>.</param>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.SomeEnum">
+            <summary>
+            Example enum used by visualize method parameter tests.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.ExampleStruct">
+            <summary>
+            Example struct used for nested object-graph visualization.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.ExampleClass">
+            <summary>
+            Example class used for nested object-graph visualization.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource">
+            <summary>
+            Example resource used for nested object-graph visualization.
             </summary>
         </member>
         <member name="T:GodotUtils.Debugging.VisualizeExampleSprite.ExampleResource.MethodName">
@@ -388,6 +2626,59 @@
             <summary>
             Cached StringNames for the signals contained in this class, for fast lookup.
             </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualNodeInfo">
+            <summary>
+            Stores visualization state and callbacks for a tracked scene node.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualNodeInfo.#ctor(System.Collections.Generic.IReadOnlyList{System.Action},Godot.Node,Godot.Node,System.Action)">
+            <summary>
+            Stores visualization state and callbacks for a tracked scene node.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualNodeInfo.Actions">
+            <summary>
+            Per-frame actions that refresh displayed values.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualNodeInfo.AnchorNode">
+            <summary>
+            Original node whose data is being visualized.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualNodeInfo.VisualRoot">
+            <summary>
+            Root node of the generated visualization UI/3D content.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.Debugging.VisualNodeInfo.UpdatePosition">
+            <summary>
+            Callback that repositions the visualization to follow its anchor.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.Debugging.VisualNodeManager">
+            <summary>
+            Tracks runtime visualization nodes and keeps them synchronized with their anchor nodes.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualNodeManager.Register(Godot.Node,System.Object)">
+            <summary>
+            Registers a scene node for visualization and creates the corresponding visual representation.
+            </summary>
+            <param name="node">Anchor node to visualize.</param>
+            <param name="visualizedObject">Object inspected for visualize attributes.</param>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualNodeManager.Update">
+            <summary>
+            Updates position and displayed values for all tracked visualization nodes.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.VisualNodeManager.RemoveVisualNodesForAnchor(Godot.Node)">
+            <summary>
+            Removes all visualization nodes associated with an anchor node and unregisters it globally.
+            </summary>
+            <param name="anchorNode">Anchor node whose visualization entries should be removed.</param>
         </member>
         <member name="T:Godot.OnImportEditorPlugin.MethodName">
             <summary>

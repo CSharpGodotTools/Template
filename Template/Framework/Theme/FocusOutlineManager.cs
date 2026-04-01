@@ -3,6 +3,10 @@ using GodotUtils;
 
 namespace __TEMPLATE__.Ui;
 
+/// <summary>
+/// Tracks keyboard/gamepad focus and renders a pulsing outline around the focused control.
+/// </summary>
+/// <param name="owner">Owning node used to resolve viewport and outline controls.</param>
 public partial class FocusOutlineManager(Node owner) : Component(owner)
 {
     // Config
@@ -34,10 +38,12 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
 
     protected override void ProcessInput(InputEvent @event)
     {
+        // Mouse movement switches focus visuals to mouse-navigation behavior.
         if (@event is InputEventMouse)
         {
             _lastNavigation = NavigationMethod.Mouse;
         }
+        // Keyboard or gamepad input enables keyboard-focus outline behavior.
         else if (@event is InputEventKey || @event is InputEventJoypadButton)
         {
             _lastNavigation = NavigationMethod.KeyboardOrGamepad;
@@ -46,6 +52,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
 
     protected override void Process(double delta)
     {
+        // Stop processing when focused control is missing or already freed.
         if (_currentFocus == null || !GodotObject.IsInstanceValid(_currentFocus))
         {
             SetProcess(false);
@@ -75,6 +82,10 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
     }
 
     // API
+    /// <summary>
+    /// Moves focus to a control and forces the outline to become visible.
+    /// </summary>
+    /// <param name="focus">Control that should receive focus.</param>
     public void Focus(Control focus)
     {
         _currentFocus = focus;
@@ -83,6 +94,9 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         SetProcess(true);
     }
 
+    /// <summary>
+    /// Hides the outline and clears tracked focus state.
+    /// </summary>
     public void ClearFocus()
     {
         _outline.Hide();
@@ -91,10 +105,15 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
     }
 
     // Subscribers
+    /// <summary>
+    /// Reacts to viewport focus changes and toggles the outline based on navigation method.
+    /// </summary>
+    /// <param name="newFocus">Control that became focused, if any.</param>
     private void OnGuiFocusChanged(Control newFocus)
     {
         _currentFocus = newFocus;
 
+        // Show outline only for non-mouse navigation with a valid focused control.
         if (_currentFocus != null && _lastNavigation == NavigationMethod.KeyboardOrGamepad)
         {
             _outline.Show();
@@ -108,6 +127,9 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
     }
 
     // Enums
+    /// <summary>
+    /// Last input source used to navigate focus.
+    /// </summary>
     private enum NavigationMethod
     {
         KeyboardOrGamepad,

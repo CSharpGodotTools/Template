@@ -4,6 +4,9 @@ using System.IO;
 
 namespace GodotUtils;
 
+/// <summary>
+/// Directory traversal and cleanup helpers for Godot project paths.
+/// </summary>
 public static class DirectoryUtils
 {
     /// <summary>
@@ -14,6 +17,9 @@ public static class DirectoryUtils
     /// Traverse("res://", entry => GD.Print(entry.FullPath));
     /// </code>
     /// </summary>
+    /// <param name="directory">Root directory path.</param>
+    /// <param name="visitor">Callback invoked for each entry.</param>
+    /// <returns>Final traversal decision.</returns>
     public static TraverseDecision Traverse(string directory, Func<TraverseEntry, TraverseDecision> visitor)
     {
         directory = NormalizePath(ProjectSettings.GlobalizePath(directory));
@@ -25,6 +31,7 @@ public static class DirectoryUtils
 
         while ((nextFileName = dir.GetNext()) != string.Empty)
         {
+            // Skip hidden entries to mirror Godot editor visibility defaults.
             if (nextFileName.StartsWith('.'))
                 continue;
 
@@ -33,16 +40,19 @@ public static class DirectoryUtils
 
             TraverseDecision result = visitor(new TraverseEntry(fullPath, isDir));
 
+            // Stop traversal as soon as callback requests termination.
             if (result == TraverseDecision.Stop)
             {
                 dir.ListDirEnd();
                 return TraverseDecision.Stop;
             }
 
+            // Recurse into subdirectories unless callback requested a child skip.
             if (isDir && result != TraverseDecision.SkipChildren)
             {
                 TraverseDecision childResult = Traverse(fullPath, visitor);
 
+                // Propagate stop decisions from recursive calls.
                 if (childResult == TraverseDecision.Stop)
                 {
                     dir.ListDirEnd();
@@ -55,11 +65,27 @@ public static class DirectoryUtils
         return TraverseDecision.Continue;
     }
 
+    /// <summary>
+    /// Single directory entry visited during traversal.
+    /// </summary>
+    /// <param name="fullPath">Full path to the entry.</param>
+    /// <param name="isDirectory">Whether the entry is a directory.</param>
     public readonly struct TraverseEntry(string fullPath, bool isDirectory)
     {
+        /// <summary>
+        /// Full normalized path.
+        /// </summary>
         public string FullPath { get; } = fullPath;
+
+        /// <summary>
+        /// Indicates whether the entry is a directory.
+        /// </summary>
         public bool IsDirectory { get; } = isDirectory;
 
+        /// <summary>
+        /// File or directory name component.
+        /// </summary>
+        /// <value>Terminal file-system name extracted from <see cref="FullPath"/>.</value>
         public string FileName => Path.GetFileName(FullPath);
     }
 
@@ -71,6 +97,8 @@ public static class DirectoryUtils
     /// string fullPathToPlayer = FindFile("res://", "Player.tscn")
     /// </code>
     /// </summary>
+    /// <param name="directory">Root directory to search.</param>
+    /// <param name="fileName">Exact file name to locate.</param>
     /// <returns>Returns the full path to the file or null if the file is not found</returns>
     public static string? FindFile(string directory, string fileName)
     {
@@ -78,6 +106,7 @@ public static class DirectoryUtils
 
         Traverse(directory, entry =>
         {
+            // Stop at first name match and capture the resolved path.
             if (Path.GetFileName(entry.FullPath) == fileName)
             {
                 foundPath = entry.FullPath;
@@ -93,6 +122,8 @@ public static class DirectoryUtils
     /// <summary>
     /// Normalizes path separators to the current OS.
     /// </summary>
+    /// <param name="path">Path to normalize.</param>
+    /// <returns>Normalized path string.</returns>
     public static string NormalizePath(string path)
     {
         return path
@@ -103,10 +134,12 @@ public static class DirectoryUtils
     /// <summary>
     /// Recursively deletes all empty folders in this folder
     /// </summary>
+    /// <param name="path">Root directory to clean.</param>
     public static void DeleteEmptyDirectories(string path)
     {
         path = NormalizePath(ProjectSettings.GlobalizePath(path));
 
+        // Recurse only when the root path currently exists.
         if (Directory.Exists(path))
         {
             foreach (string directory in Directory.GetDirectories(path))
@@ -120,10 +153,12 @@ public static class DirectoryUtils
     /// <summary>
     /// Checks if the folder is empty and deletes it if it is
     /// </summary>
+    /// <param name="path">Directory path to evaluate.</param>
     private static void DeleteEmptyDirectory(string path)
     {
         path = NormalizePath(ProjectSettings.GlobalizePath(path));
 
+        // Delete only leaf directories that have no files and no subdirectories.
         if (IsDirectoryEmpty(path))
         {
             Directory.Delete(path, recursive: false);
@@ -133,6 +168,7 @@ public static class DirectoryUtils
     /// <summary>
     /// Checks if the directory is empty
     /// </summary>
+    /// <param name="path">Directory path to evaluate.</param>
     /// <returns>Returns true if the directory is empty</returns>
     private static bool IsDirectoryEmpty(string path)
     {

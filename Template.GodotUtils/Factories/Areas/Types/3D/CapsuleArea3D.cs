@@ -28,6 +28,8 @@ public class CapsuleArea3D : ShapeArea3D<CapsuleShape3D>
     /// <summary>
     /// Creates a capsule area with the provided radius and height.
     /// </summary>
+    /// <param name="radius">Capsule radius.</param>
+    /// <param name="height">Capsule cylinder height.</param>
     internal CapsuleArea3D(float radius, float height) : base(new CapsuleShape3D { Radius = radius, Height = height })
     {
     }

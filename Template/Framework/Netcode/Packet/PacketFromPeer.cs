@@ -4,6 +4,7 @@ namespace __TEMPLATE__.Netcode;
 /// Wraps a client packet together with the peer ID of the sender.
 /// Passed to server packet handlers so they receive all context in a single parameter.
 /// </summary>
+/// <typeparam name="TPacket">Client packet type carried by this wrapper.</typeparam>
 public readonly struct PacketFromPeer<TPacket>
     where TPacket : ClientPacket
 {

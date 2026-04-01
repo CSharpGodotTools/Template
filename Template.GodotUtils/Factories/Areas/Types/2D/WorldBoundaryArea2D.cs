@@ -19,6 +19,7 @@ public class WorldBoundaryArea2D : ShapeArea2D<WorldBoundaryShape2D>
     /// <summary>
     /// Creates a world boundary area with the provided normal.
     /// </summary>
+    /// <param name="normal">Boundary normal direction.</param>
     internal WorldBoundaryArea2D(Vector2 normal) : base(new WorldBoundaryShape2D { Normal = normal })
     {
     }

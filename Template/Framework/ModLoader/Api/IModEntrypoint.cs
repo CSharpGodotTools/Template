@@ -1,7 +1,7 @@
 namespace __TEMPLATE__.Mods;
 
 /// <summary>
-/// Contract implemented by managed C# mods.
+/// Contract implemented by managed C# mods loaded by the framework.
 /// </summary>
 public interface IModEntrypoint
 {

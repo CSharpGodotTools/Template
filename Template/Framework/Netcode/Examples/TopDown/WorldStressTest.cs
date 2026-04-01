@@ -12,6 +12,9 @@ namespace __TEMPLATE__.Netcode.Examples.Topdown;
 
 public partial class World
 {
+    /// <summary>
+    /// UI-driven stress-test harness that spins up bot clients and tracks runtime metrics.
+    /// </summary>
     private sealed class WorldStressTest
     {
         private const int DefaultTargetClients = 250;
@@ -80,13 +83,21 @@ public partial class World
             _stopButton.Pressed += OnStopPressed;
         }
 
+        /// <summary>
+        /// Handles target-client count edits from the UI.
+        /// </summary>
+        /// <param name="newText">User-entered target client count text.</param>
         private void OnTargetClientsChanged(string newText)
         {
             _targetClients = ReadInt(_targetClientsInput.Text, DefaultTargetClients, minValue: 1);
         }
 
+        /// <summary>
+        /// Starts stress test orchestration and ensures server/client prerequisites are met.
+        /// </summary>
         public void Start()
         {
+            // Ignore repeated starts while the stress test is already active.
             if (_started)
                 return;
 
@@ -98,6 +109,8 @@ public partial class World
             ApplySettingsFromUi();
             ApplyRunningServerSettings();
             _world.SetProcess(true);
+
+            // Recreate server when runtime settings no longer match stress settings.
             if (ShouldRestartServer())
             {
                 RequestServerRestart();
@@ -109,24 +122,33 @@ public partial class World
             _paused = !IsServerRunning();
             EnsureLocalClientRunning();
 
+            // Spawn immediately so the loop starts with at least one active bot.
             if (!_paused)
                 SpawnBot();
 
             UpdateStatsUi();
         }
 
+        /// <summary>
+        /// Advances stress test lifecycle each frame.
+        /// </summary>
+        /// <param name="deltaSeconds">Frame delta in seconds.</param>
         public void Tick(float deltaSeconds)
         {
+            // Keep labels current even when the stress test is stopped.
             if (!_started)
             {
+                // Refresh peer count when the server keeps running outside this harness.
                 if (IsServerRunning())
                     UpdateStatsUi();
 
                 return;
             }
 
+            // Wait for server shutdown before starting a clean restart.
             if (_serverRestartPending)
             {
+                // Resume once the old server is fully down.
                 if (!IsServerRunning())
                 {
                     EnsureLocalClientRunning();
@@ -140,8 +162,10 @@ public partial class World
                 return;
             }
 
+            // Pause spawning while server is unavailable.
             if (!IsServerRunning())
             {
+                // Stop all bots once when transitioning into paused mode.
                 if (!_paused)
                 {
                     StopBots();
@@ -151,6 +175,7 @@ public partial class World
                 return;
             }
 
+            // Restart spawn flow once server comes back from a paused state.
             if (_paused)
             {
                 _paused = false;
@@ -170,6 +195,9 @@ public partial class World
             UpdateStatsUi();
         }
 
+        /// <summary>
+        /// Stops stress test, disconnects bots, and resets world/state UI.
+        /// </summary>
         public void Stop()
         {
             StopBots();
@@ -188,6 +216,9 @@ public partial class World
             UpdateStatsUi();
         }
 
+        /// <summary>
+        /// Disposes stress-test resources and UI/event bindings.
+        /// </summary>
         public void Dispose()
         {
             Stop();
@@ -196,11 +227,16 @@ public partial class World
             _stopButton.Pressed -= OnStopPressed;
         }
 
+        /// <summary>
+        /// Spawns one bot connection via shared host infrastructure.
+        /// </summary>
         private void SpawnBot()
         {
+            // Respect requested client cap.
             if (_totalBots >= _targetClients)
                 return;
 
+            // Allocate another shared host when the current one is unavailable or full.
             if (_currentBotHost == null || _currentBotHost.IsAtCapacity)
             {
                 _currentBotHost = new SharedBotHost(
@@ -213,18 +249,27 @@ public partial class World
             _totalBots++;
         }
 
+        /// <summary>
+        /// Starts server if not running and net coordinator is available.
+        /// </summary>
         private void EnsureServerRunning()
         {
+            // Start the managed server lazily when net is ready but not running.
             if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Server != null && !net.Server.IsRunning)
             {
                 StartServerWithSettings();
             }
         }
 
+        /// <summary>
+        /// Syncs stress-test port with currently running server, when present.
+        /// </summary>
         private void ApplyRunningServerSettings()
         {
+            // Mirror the running server port into the stress test controls.
             if (IsServerRunning())
             {
+                // Read from net only when coordinator is currently available.
                 if (TryGetNet(out Net<GameClient, GameServer>? net))
                 {
                     _port = net.ServerPort;
@@ -232,16 +277,25 @@ public partial class World
             }
         }
 
+        /// <summary>
+        /// Starts local client when server is running but client is not.
+        /// </summary>
         private void EnsureLocalClientRunning()
         {
+            // Keep one local client connected so world state can be observed.
             if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Client != null && !net.Client.IsRunning)
             {
                 net.StartClient("127.0.0.1", _port);
             }
         }
 
+        /// <summary>
+        /// Returns whether the managed server instance is currently running.
+        /// </summary>
+        /// <returns><see langword="true"/> when server is active.</returns>
         private bool IsServerRunning()
         {
+            // Check server state only when coordinator and server are available.
             if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Server != null)
             {
                 return net.Server.IsRunning;
@@ -250,8 +304,12 @@ public partial class World
             return false;
         }
 
+        /// <summary>
+        /// Starts server using current stress-test settings and tracks ownership metadata.
+        /// </summary>
         private void StartServerWithSettings()
         {
+            // Guard startup until net coordinator is resolved.
             if (TryGetNet(out Net<GameClient, GameServer>? net))
             {
                 // +1 reserves a peer slot for the local game client.
@@ -262,25 +320,37 @@ public partial class World
             }
         }
 
+        /// <summary>
+        /// Determines whether running server settings differ from current stress-test settings.
+        /// </summary>
+        /// <returns><see langword="true"/> when restart is needed.</returns>
         private bool ShouldRestartServer()
         {
+            // No restart needed when server is not active.
             if (!TryGetNet(out Net<GameClient, GameServer>? net) || net.Server == null || !net.Server.IsRunning)
                 return false;
 
+            // Do not restart servers this stress test did not start.
             if (!_serverStartedByStressTest)
                 return false;
 
+            // Restart when selected port changed.
             if (_lastServerPort != _port)
                 return true;
 
+            // Restart when target capacity changed.
             if (_lastServerCapacity != _targetClients)
                 return true;
 
             return false;
         }
 
+        /// <summary>
+        /// Requests a managed server restart sequence controlled by stress-test logic.
+        /// </summary>
         private void RequestServerRestart()
         {
+            // Stop current managed server and switch into restart-pending state.
             if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Server != null && _serverStartedByStressTest)
             {
                 _serverRestartPending = true;
@@ -290,6 +360,9 @@ public partial class World
             }
         }
 
+        /// <summary>
+        /// Stops and clears all shared bot hosts.
+        /// </summary>
         private void StopBots()
         {
             foreach (SharedBotHost host in _botHosts)
@@ -302,18 +375,27 @@ public partial class World
             _totalBots = 0;
         }
 
+        /// <summary>
+        /// Handles start button press.
+        /// </summary>
         private void OnStartPressed()
         {
             _world.GetViewport().GuiReleaseFocus();
             Start();
         }
 
+        /// <summary>
+        /// Handles stop button press.
+        /// </summary>
         private void OnStopPressed()
         {
             _world.GetViewport().GuiReleaseFocus();
             Stop();
         }
 
+        /// <summary>
+        /// Initializes stress-test UI inputs with default values.
+        /// </summary>
         private void SetUiDefaults()
         {
             _targetClientsInput.Text = DefaultTargetClients.ToString(CultureInfo.InvariantCulture);
@@ -324,6 +406,9 @@ public partial class World
             _portInput.Text = DefaultPort.ToString(CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Reads and applies stress-test settings from UI controls.
+        /// </summary>
         private void ApplySettingsFromUi()
         {
             _targetClients = ReadInt(_targetClientsInput.Text, DefaultTargetClients, minValue: 1);
@@ -334,30 +419,57 @@ public partial class World
             _port = ReadUShort(_portInput.Text, DefaultPort);
         }
 
+        /// <summary>
+        /// Parses a bounded integer with fallback.
+        /// </summary>
+        /// <param name="text">Raw text input.</param>
+        /// <param name="fallback">Fallback value when parse fails.</param>
+        /// <param name="minValue">Minimum accepted value.</param>
+        /// <returns>Parsed and clamped integer value.</returns>
         private static int ReadInt(string text, int fallback, int minValue)
         {
+            // Accept user value when parse succeeds; otherwise use fallback.
             if (int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int value))
                 return value < minValue ? minValue : value;
 
             return fallback;
         }
 
+        /// <summary>
+        /// Parses an unsigned short with fallback.
+        /// </summary>
+        /// <param name="text">Raw text input.</param>
+        /// <param name="fallback">Fallback value when parse fails.</param>
+        /// <returns>Parsed value or fallback.</returns>
         private static ushort ReadUShort(string text, ushort fallback)
         {
+            // Accept valid unsigned-port text and fall back when invalid.
             if (ushort.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out ushort value))
                 return value;
 
             return fallback;
         }
 
+        /// <summary>
+        /// Parses a bounded float with fallback.
+        /// </summary>
+        /// <param name="text">Raw text input.</param>
+        /// <param name="fallback">Fallback value when parse fails.</param>
+        /// <param name="minValue">Minimum accepted value.</param>
+        /// <returns>Parsed and clamped float value.</returns>
         private static float ReadFloat(string text, float fallback, float minValue)
         {
+            // Accept user value when parse succeeds; otherwise use fallback.
             if (float.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out float value))
                 return value < minValue ? minValue : value;
 
             return fallback;
         }
 
+        /// <summary>
+        /// Creates low-noise ENet options for stress-test server/client traffic.
+        /// </summary>
+        /// <returns>Silent ENet options preset.</returns>
         private static ENetOptions CreateSilentOptions()
         {
             return new ENetOptions
@@ -369,9 +481,16 @@ public partial class World
             };
         }
 
+        /// <summary>
+        /// Attempts to resolve active net coordinator from the world panel.
+        /// </summary>
+        /// <param name="net">Resolved net coordinator when available.</param>
+        /// <returns><see langword="true"/> when coordinator is available.</returns>
         private bool TryGetNet([NotNullWhen(true)] out Net<GameClient, GameServer>? net)
         {
             net = null;
+
+            // Resolve net coordinator only when the control panel has been initialized.
             if (_world._netControlPanel != null)
             {
                 net = _world._netControlPanel.Net;
@@ -380,13 +499,20 @@ public partial class World
             return net != null;
         }
 
+        /// <summary>
+        /// Refreshes status and counters displayed in the stress-test panel.
+        /// </summary>
         private void UpdateStatsUi()
         {
             string status;
+
+            // Show top-level stress state in priority order.
             if (!_started)
                 status = "Idle";
+            // Show restarting while waiting for the server restart sequence.
             else if (_serverRestartPending)
                 status = "Restarting";
+            // Show paused while waiting for server availability.
             else if (_paused)
                 status = "Paused";
             else
@@ -400,18 +526,42 @@ public partial class World
             _elapsedLabel.Text = $"{minutes:D2}:{seconds:D2}";
 
             int peerCount = 0;
+
+            // Read connected-peer count only when the server is present.
             if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Server != null)
                 peerCount = net.Server.ConnectedPeerCount;
             _peersLabel.Text = peerCount.ToString(CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Worker-thread state for a connected stress-test bot peer.
+        /// </summary>
         private sealed class BotPeerState
         {
+            /// <summary>
+            /// Gets peer transport handle.
+            /// </summary>
             public Peer Peer { get; }
+
+            /// <summary>
+            /// Gets or sets whether initial spawn position was sent.
+            /// </summary>
             public bool SentSpawn { get; set; }
+
+            /// <summary>
+            /// Gets or sets current orbit angle in radians.
+            /// </summary>
             public float Angle { get; set; }
+
+            /// <summary>
+            /// Gets or sets send interval accumulator in seconds.
+            /// </summary>
             public float SendAccumulator { get; set; }
 
+            /// <summary>
+            /// Creates bot-peer state for a connected ENet peer.
+            /// </summary>
+            /// <param name="peer">Connected peer handle.</param>
             public BotPeerState(Peer peer)
             {
                 Peer = peer;
@@ -444,6 +594,15 @@ public partial class World
             public int BotCount => Interlocked.CompareExchange(ref _botCount, 0, 0);
             public bool IsAtCapacity => BotCount >= MaxBotsPerHost;
 
+            /// <summary>
+            /// Creates a shared bot host worker.
+            /// </summary>
+            /// <param name="ip">Server IP.</param>
+            /// <param name="port">Server port.</param>
+            /// <param name="center">Orbit center.</param>
+            /// <param name="circleRadius">Orbit radius.</param>
+            /// <param name="angularSpeed">Orbit angular speed.</param>
+            /// <param name="sendIntervalSeconds">Position send interval.</param>
             public SharedBotHost(string ip, ushort port, Vector2 center, float circleRadius,
                 float angularSpeed, float sendIntervalSeconds)
             {
@@ -474,6 +633,9 @@ public partial class World
                 _cts.Cancel();
             }
 
+            /// <summary>
+            /// Runs shared bot host loop: connect bots, process events, and send movement updates.
+            /// </summary>
             private void WorkerLoop()
             {
                 // Pre-serialize join packet once — same for every bot, never changes.
@@ -511,6 +673,7 @@ public partial class World
                     // Tick every connected bot peer (dictionary not modified here).
                     foreach (BotPeerState state in states.Values)
                     {
+                        // Send first position packet immediately after the bot connects.
                         if (!state.SentSpawn)
                         {
                             positionPacket.Position = ComputeOrbitPosition(state.Angle);
@@ -522,6 +685,7 @@ public partial class World
                         state.Angle += _angularSpeed * delta;
                         state.SendAccumulator += delta;
 
+                        // Skip send until the configured interval has elapsed.
                         if (state.SendAccumulator < _sendIntervalSeconds)
                             continue;
 
@@ -535,10 +699,13 @@ public partial class World
                     bool serviced = false;
                     while (!serviced)
                     {
+                        // Consume queued ENet events first without blocking.
                         if (host.CheckEvents(out Event netEvent) > 0)
                         {
                             // Queued event — process without consuming the Service budget.
                         }
+
+                        // Fall back to timed service polling when queue is empty.
                         else if (host.Service(15, out netEvent) > 0)
                         {
                             serviced = true;
@@ -576,11 +743,21 @@ public partial class World
                 host.Flush();
             }
 
+            /// <summary>
+            /// Computes orbit position for a bot at the specified angle.
+            /// </summary>
+            /// <param name="angle">Orbit angle in radians.</param>
+            /// <returns>Orbit position in world coordinates.</returns>
             private Vector2 ComputeOrbitPosition(float angle)
             {
                 return _center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * _circleRadius;
             }
 
+            /// <summary>
+            /// Sends raw payload bytes through a peer as a reliable ENet packet.
+            /// </summary>
+            /// <param name="peer">Target peer.</param>
+            /// <param name="data">Serialized payload bytes.</param>
             private static void SendBytes(Peer peer, byte[] data)
             {
                 Packet packet = default;

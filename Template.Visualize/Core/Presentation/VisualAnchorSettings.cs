@@ -3,6 +3,9 @@ using Godot;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Stores global anchor settings used to place visualization panels.
+/// </summary>
 internal static class VisualAnchorSettings
 {
     /// <summary>

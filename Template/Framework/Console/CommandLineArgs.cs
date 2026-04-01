@@ -8,8 +8,12 @@ namespace __TEMPLATE__.Ui.Console;
 /// </summary>
 public class CommandLineArgs
 {
+    /// <summary>
+    /// Applies supported command-line window layout presets when running outside the editor.
+    /// </summary>
     public static void Initialize()
     {
+        // Skip command-line window placement while running inside the editor.
         if (Engine.IsEmbeddedInEditor())
             return;
 
@@ -21,6 +25,7 @@ public class CommandLineArgs
         // Loop through arguments to find the position argument
         foreach (string arg in args)
         {
+            // Skip unknown arguments that do not map to a window layout preset.
             if (!windowSettings.TryGetValue(arg, out WindowSettings? settings))
                 continue;
 
@@ -33,6 +38,10 @@ public class CommandLineArgs
         }
     }
 
+    /// <summary>
+    /// Builds the supported command-line window layout presets.
+    /// </summary>
+    /// <returns>Map of argument name to window size and position settings.</returns>
     private static Dictionary<string, WindowSettings> GetWindowSettingsMap()
     {
         // Define the vertical space for the window bar

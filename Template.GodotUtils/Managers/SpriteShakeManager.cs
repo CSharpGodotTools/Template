@@ -16,6 +16,7 @@ public class SpriteShakeManager
     /// <summary>
     /// Creates a manager for the provided sprite nodes.
     /// </summary>
+    /// <param name="sprites">Sprites that receive shake offsets.</param>
     public SpriteShakeManager(List<Node2D> sprites)
     {
         ArgumentNullException.ThrowIfNull(sprites);
@@ -24,14 +25,17 @@ public class SpriteShakeManager
         {
             ArgumentNullException.ThrowIfNull(node);
 
+            // Collect Sprite2D nodes for shake updates.
             if (node is Sprite2D sprite)
             {
                 _sprites.Add(sprite);
             }
+            // Collect AnimatedSprite2D nodes for shake updates.
             else if (node is AnimatedSprite2D animatedSprite)
             {
                 _animatedSprites.Add(animatedSprite);
             }
+            // Reject unsupported node types to keep shake updates type-safe.
             else
             {
                 throw new ArgumentException($"Node '{node.Name}' is not a {nameof(Sprite2D)} or {nameof(AnimatedSprite2D)}");
@@ -45,6 +49,7 @@ public class SpriteShakeManager
     /// <summary>
     /// Applies a vertical shake offset with the provided intensity.
     /// </summary>
+    /// <param name="intensity">Maximum absolute vertical offset to apply.</param>
     public void Shake(float intensity)
     {
         float randomOffset = _rng.RandfRange(-intensity, intensity);
@@ -60,6 +65,10 @@ public class SpriteShakeManager
         SetVerticalOffset(0);
     }
 
+    /// <summary>
+    /// Applies the same vertical offset to all tracked sprites while preserving horizontal offset.
+    /// </summary>
+    /// <param name="offsetY">Vertical offset to apply.</param>
     private void SetVerticalOffset(float offsetY)
     {
         foreach (Sprite2D sprite in _sprites)

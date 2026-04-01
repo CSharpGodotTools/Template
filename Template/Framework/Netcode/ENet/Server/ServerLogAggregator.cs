@@ -27,6 +27,7 @@ internal sealed class ServerLogAggregator : EventLogAggregator
     /// <summary>
     /// Records a connect lifecycle event.
     /// </summary>
+    /// <param name="peerId">Peer identifier associated with the connect event.</param>
     public override void RecordConnect(uint peerId)
     {
         _connectedCount++;
@@ -37,6 +38,7 @@ internal sealed class ServerLogAggregator : EventLogAggregator
     /// <summary>
     /// Records a disconnect lifecycle event.
     /// </summary>
+    /// <param name="peerId">Peer identifier associated with the disconnect event.</param>
     public override void RecordDisconnect(uint peerId)
     {
         _disconnectedCount++;
@@ -47,6 +49,7 @@ internal sealed class ServerLogAggregator : EventLogAggregator
     /// <summary>
     /// Records a timeout lifecycle event.
     /// </summary>
+    /// <param name="peerId">Peer identifier associated with the timeout event.</param>
     public override void RecordTimeout(uint peerId)
     {
         _timeoutCount++;
@@ -57,13 +60,17 @@ internal sealed class ServerLogAggregator : EventLogAggregator
     /// <summary>
     /// Emits a coalesced lifecycle log report when burst thresholds are reached.
     /// </summary>
+    /// <param name="log">Log callback used to emit coalesced messages.</param>
+    /// <param name="force">Whether to force a flush regardless of timing thresholds.</param>
     public override void Flush(Action<string> log, bool force = false)
     {
+        // Exit early when no lifecycle events were captured.
         if (_connectedCount == 0 && _disconnectedCount == 0 && _timeoutCount == 0)
         {
             return;
         }
 
+        // Wait for quiet-gap/max-window thresholds unless a forced flush was requested.
         if (!ShouldFlush(_windowStartTicks, _lastEventTicks, out double windowSeconds) && !force)
         {
             return;
@@ -94,16 +101,19 @@ internal sealed class ServerLogAggregator : EventLogAggregator
         double reportSeconds = Math.Max(windowSeconds, 0.01);
         List<LogEntry> logEntries = new(3);
 
+        // Emit connect summary when one or more connect events were captured.
         if (connects > 0)
         {
             logEntries.Add(new LogEntry { Tick = lastConnectTicks, LogAction = () => log(FormatConnectMessage(connects, lastConnectPeerId, reportSeconds)) });
         }
 
+        // Emit disconnect summary when one or more disconnect events were captured.
         if (disconnects > 0)
         {
             logEntries.Add(new LogEntry { Tick = lastDisconnectTicks, LogAction = () => log(FormatDisconnectMessage(disconnects, lastDisconnectPeerId, reportSeconds)) });
         }
 
+        // Emit timeout summary when one or more timeout events were captured.
         if (timeouts > 0)
         {
             logEntries.Add(new LogEntry { Tick = lastTimeoutTicks, LogAction = () => log(FormatTimeoutMessage(timeouts, lastTimeoutPeerId, reportSeconds)) });
@@ -112,10 +122,15 @@ internal sealed class ServerLogAggregator : EventLogAggregator
         EmitLogEntries(logEntries);
     }
 
+    /// <summary>
+    /// Marks event-window timing for a lifecycle event type.
+    /// </summary>
+    /// <param name="eventTypeLastTicks">Reference to the event-type specific tick field.</param>
     private void MarkEvent(ref long eventTypeLastTicks)
     {
         long nowTicks = Stopwatch.GetTimestamp();
 
+        // Capture first event timestamp as window start, then track latest event tick.
         if (_windowStartTicks == 0)
         {
             _windowStartTicks = nowTicks;
@@ -125,8 +140,16 @@ internal sealed class ServerLogAggregator : EventLogAggregator
         eventTypeLastTicks = nowTicks;
     }
 
+    /// <summary>
+    /// Formats connect lifecycle messages for single or burst events.
+    /// </summary>
+    /// <param name="count">Connect event count.</param>
+    /// <param name="peerId">Last peer id seen for this event type.</param>
+    /// <param name="seconds">Burst window duration in seconds.</param>
+    /// <returns>Formatted connect message.</returns>
     private static string FormatConnectMessage(int count, uint peerId, double seconds)
     {
+        // Use detailed singular wording for a single connect event.
         if (count == 1)
         {
             return $"Client with id {peerId} connected";
@@ -135,8 +158,16 @@ internal sealed class ServerLogAggregator : EventLogAggregator
         return $"{FormatCount("client", count)} connected{FormatLastSuffix(count, seconds)}";
     }
 
+    /// <summary>
+    /// Formats disconnect lifecycle messages for single or burst events.
+    /// </summary>
+    /// <param name="count">Disconnect event count.</param>
+    /// <param name="peerId">Last peer id seen for this event type.</param>
+    /// <param name="seconds">Burst window duration in seconds.</param>
+    /// <returns>Formatted disconnect message.</returns>
     private static string FormatDisconnectMessage(int count, uint peerId, double seconds)
     {
+        // Use detailed singular wording for a single disconnect event.
         if (count == 1)
         {
             return $"Client with id {peerId} disconnected";
@@ -145,8 +176,16 @@ internal sealed class ServerLogAggregator : EventLogAggregator
         return $"{FormatCount("client", count)} disconnected{FormatLastSuffix(count, seconds)}";
     }
 
+    /// <summary>
+    /// Formats timeout lifecycle messages for single or burst events.
+    /// </summary>
+    /// <param name="count">Timeout event count.</param>
+    /// <param name="peerId">Last peer id seen for this event type.</param>
+    /// <param name="seconds">Burst window duration in seconds.</param>
+    /// <returns>Formatted timeout message.</returns>
     private static string FormatTimeoutMessage(int count, uint peerId, double seconds)
     {
+        // Use detailed singular wording for a single timeout event.
         if (count == 1)
         {
             return $"Client with id {peerId} timed out";

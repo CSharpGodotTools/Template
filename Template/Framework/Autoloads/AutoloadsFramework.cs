@@ -14,45 +14,121 @@ using GodotUtils.Debugging;
 
 namespace __TEMPLATE__;
 
-// Autoload
-// Access runtime services via Game.*.
-// Alternatively access through GetNode<Autoloads>("/root/Autoloads")
+/// <summary>
+/// Base autoload node that wires the runtime framework lifecycle and shared services.
+/// </summary>
 public abstract partial class AutoloadsFramework : Node
 {
     // Exports
     [Export] private MenuScenes _scenes = null!;
 
-    // Events
+    /// <summary>
+    /// Raised before the application quits so subscribers can perform asynchronous cleanup.
+    /// </summary>
     public event Func<Task>? PreQuit;
 
-    // Autoloads
-    // Access runtime services via Game.
+    /// <summary>
+    /// Gets the manager responsible for attaching and resolving game components.
+    /// </summary>
     public GameComponentManager ComponentManager { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the in-game developer console instance.
+    /// </summary>
     public GameConsole GameConsole { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the audio manager used for playback and mixer control.
+    /// </summary>
     public AudioManager AudioManager { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the options manager used to load, persist, and update settings.
+    /// </summary>
     public OptionsManager OptionsManager { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the scoped service provider used by framework systems.
+    /// </summary>
     public Services Services { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the metrics overlay used for runtime instrumentation.
+    /// </summary>
     public IMetricsOverlay Metrics { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the scene manager used to switch and coordinate scenes.
+    /// </summary>
     public SceneManager SceneManager { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the profiler used to capture and publish timing data.
+    /// </summary>
     public Profiler Profiler { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the manager that renders focus outlines for UI controls.
+    /// </summary>
     public FocusOutlineManager FocusOutline { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the logger used for structured game and console messages.
+    /// </summary>
     public Logger Logger { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the application lifetime service used to coordinate shutdown.
+    /// </summary>
     public IApplicationLifetime ApplicationLifetime { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the tracker for long-running background tasks.
+    /// </summary>
     public IBackgroundTaskTracker BackgroundTasks { get; private set; } = null!;
+
+    /// <summary>
+    /// Gets the immutable runtime service bundle exposed through <see cref="Game"/>.
+    /// </summary>
     public GameServices RuntimeServices { get; private set; } = null!;
 
 #if DEBUG
     private VisualizeAutoload _visualizeAutoload = null!;
 #endif
 
+    /// <summary>
+    /// Called after framework service wiring during <see cref="_EnterTree"/>.
+    /// </summary>
     protected abstract void EnterTree();
+
+    /// <summary>
+    /// Called after command registration and startup initialization in <see cref="_Ready"/>.
+    /// </summary>
     protected abstract void Ready();
+
+    /// <summary>
+    /// Called each frame after framework updates have run.
+    /// </summary>
     protected abstract void Process(double delta);
+
+    /// <summary>
+    /// Called on each physics frame.
+    /// </summary>
     protected abstract void PhysicsProcess(double delta);
+
+    /// <summary>
+    /// Called for Godot notifications after framework handling has completed.
+    /// </summary>
+    /// <param name="what">Godot notification code being processed.</param>
     protected abstract void Notification(int what);
+
+    /// <summary>
+    /// Called after framework teardown during <see cref="_ExitTree"/>.
+    /// </summary>
     protected abstract void ExitTree();
 
     // Godot Overrides
+    /// <inheritdoc />
     public sealed override void _EnterTree()
     {
         ComponentManager = GetNode<GameComponentManager>("ComponentManager");
@@ -95,6 +171,7 @@ public abstract partial class AutoloadsFramework : Node
         EnterTree();
     }
 
+    /// <inheritdoc />
     public sealed override void _Ready()
     {
         Commands.RegisterAll(GameConsole, Logger, ApplicationLifetime);
@@ -107,6 +184,7 @@ public abstract partial class AutoloadsFramework : Node
         Ready();
     }
 
+    /// <inheritdoc />
     public sealed override void _Process(double delta)
     {
         OptionsManager.Update();
@@ -120,13 +198,16 @@ public abstract partial class AutoloadsFramework : Node
         Process(delta);
     }
 
+    /// <inheritdoc />
     public sealed override void _PhysicsProcess(double delta)
     {
         PhysicsProcess(delta);
     }
 
+    /// <inheritdoc />
     public sealed override void _Notification(int what)
     {
+        // Route window-close notifications to graceful shutdown flow.
         if (what == NotificationWMCloseRequest)
         {
             BackgroundTasks.Run(_ => ExitGame(), "Autoloads.ExitGame");
@@ -135,6 +216,7 @@ public abstract partial class AutoloadsFramework : Node
         Notification(what);
     }
 
+    /// <inheritdoc />
     public sealed override void _ExitTree()
     {
         AudioManager.Dispose();
@@ -154,13 +236,20 @@ public abstract partial class AutoloadsFramework : Node
         ExitTree();
     }
 
-    // Special Proxy Method for Usage of Deferred
+    /// <summary>
+    /// Deferred-call proxy used by Godot to switch scenes from a queued invocation.
+    /// </summary>
+    /// <param name="rawName">Raw scene name identifier.</param>
+    /// <param name="transTypeVariant">Transition payload passed through as a variant.</param>
     public void DeferredSwitchSceneProxy(string rawName, Variant transTypeVariant)
     {
         SceneManager.DeferredSwitchScene(rawName, transTypeVariant);
     }
 
-    // ExitGame
+    /// <summary>
+    /// Executes orderly shutdown by invoking <see cref="PreQuit"/> subscribers, then quits the tree.
+    /// </summary>
+    /// <returns>A task that completes after all <see cref="PreQuit"/> subscribers have finished and quit is requested.</returns>
     public async Task ExitGame()
     {
         GetTree().AutoAcceptQuit = false;

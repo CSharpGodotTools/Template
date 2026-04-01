@@ -7,14 +7,26 @@ using System.Text;
 
 namespace Template.OptionsGen;
 
+/// <summary>
+/// Builds the generated partial <c>OptionsSettings</c> source by translating parsed option specs
+/// into strongly typed properties.
+/// </summary>
 internal sealed class OptionsSettingsSourceBuilder : IOptionsSettingsSourceBuilder
 {
+    /// <summary>
+    /// Creates the full generated source file for option properties, including namespace declaration,
+    /// class shell, and getter/setter forwarding calls for each specification.
+    /// </summary>
+    /// <param name="optionsSettings">Resolved runtime options settings type symbol.</param>
+    /// <param name="specs">Normalized option specifications to emit.</param>
+    /// <returns>Complete generated C# source text.</returns>
     public string BuildSource(INamedTypeSymbol optionsSettings, IReadOnlyList<OptionSettingSpec> specs)
     {
         string namespaceName = optionsSettings.ContainingNamespace.IsGlobalNamespace
             ? string.Empty
             : optionsSettings.ContainingNamespace.ToDisplayString();
 
+        // Precompute stable, collision-free property identifiers for each save key.
         Dictionary<string, string> propertyNamesBySaveKey = BuildUniquePropertyNames(specs);
         StringBuilder builder = new();
 
@@ -22,6 +34,7 @@ internal sealed class OptionsSettingsSourceBuilder : IOptionsSettingsSourceBuild
         builder.AppendLine("#nullable enable");
         builder.AppendLine();
 
+        // Emit namespace declaration only when the target type is not in global namespace.
         if (!string.IsNullOrWhiteSpace(namespaceName))
         {
             builder.Append("namespace ").Append(namespaceName).AppendLine(";");
@@ -63,8 +76,15 @@ internal sealed class OptionsSettingsSourceBuilder : IOptionsSettingsSourceBuild
         return builder.ToString();
     }
 
+    /// <summary>
+    /// Produces a unique property name for each save key by normalizing keys to identifiers and
+    /// appending numeric suffixes when collisions occur.
+    /// </summary>
+    /// <param name="specs">Option specifications that require generated property names.</param>
+    /// <returns>Mapping from original save key to unique generated property name.</returns>
     private static Dictionary<string, string> BuildUniquePropertyNames(IReadOnlyList<OptionSettingSpec> specs)
     {
+        // Ordinal comparison keeps naming deterministic regardless of current culture.
         Dictionary<string, string> namesBySaveKey = new(StringComparer.Ordinal);
         HashSet<string> usedNames = new(StringComparer.Ordinal);
 
@@ -74,6 +94,7 @@ internal sealed class OptionsSettingsSourceBuilder : IOptionsSettingsSourceBuild
             string name = baseName;
             int suffix = 2;
 
+            // Preserve the first normalized name and only suffix when another key maps to it.
             while (!usedNames.Add(name))
             {
                 name = baseName + suffix.ToString(CultureInfo.InvariantCulture);
@@ -83,9 +104,16 @@ internal sealed class OptionsSettingsSourceBuilder : IOptionsSettingsSourceBuild
             namesBySaveKey[spec.SaveKey] = name;
         }
 
+        // The returned map drives all property-name lookups during source emission.
         return namesBySaveKey;
     }
 
+    /// <summary>
+    /// Converts an option save key to a valid C# identifier by removing separators, applying
+    /// Pascal-style casing, and handling digit-leading/keyword edge cases.
+    /// </summary>
+    /// <param name="saveKey">Raw save key from option metadata.</param>
+    /// <returns>Valid C# identifier suitable for a generated property name.</returns>
     private static string ToIdentifier(string saveKey)
     {
         StringBuilder builder = new();
@@ -93,28 +121,37 @@ internal sealed class OptionsSettingsSourceBuilder : IOptionsSettingsSourceBuild
 
         foreach (char character in saveKey)
         {
+            // Non-alphanumeric characters act as word boundaries and are omitted from the identifier.
             if (!char.IsLetterOrDigit(character))
             {
                 uppercaseNext = true;
                 continue;
             }
 
+            // Detect the first kept character to initialize identifier casing.
             if (builder.Length == 0)
             {
+                // Ensure generated property names begin with an uppercase character.
                 builder.Append(char.ToUpperInvariant(character));
                 uppercaseNext = false;
                 continue;
             }
 
+            // Capitalize the first character after a separator to produce Pascal-style names.
             builder.Append(uppercaseNext ? char.ToUpperInvariant(character) : character);
             uppercaseNext = false;
         }
 
+        // Fall back to a default identifier when no valid characters were collected.
+        // Use a safe fallback when the key contains no alphanumeric characters.
+        // If a key has no alphanumeric content, use a safe fallback identifier.
         string identifier = builder.Length == 0 ? "Setting" : builder.ToString();
 
+        // Identifiers cannot start with a digit, so prefix when needed.
         if (char.IsDigit(identifier[0]))
             identifier = "Setting" + identifier;
 
+        // Escape C# keywords so generated code remains valid without altering source key intent.
         if (SyntaxFacts.GetKeywordKind(identifier) != SyntaxKind.None)
             identifier = "@" + identifier;
 

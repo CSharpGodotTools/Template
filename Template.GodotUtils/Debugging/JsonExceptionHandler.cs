@@ -15,28 +15,27 @@ public static class JsonExceptionHandler
     private const int ContextLinesAfter = 8;
 
     /// <summary>
-    /// Prints a formatted JSON parsing error with context.
+    /// Prints a formatted JSON parsing error with nearby source context when line data is available.
     /// </summary>
+    /// <param name="ex">JSON exception describing the parse failure.</param>
+    /// <param name="jsonText">Original JSON source text.</param>
+    /// <param name="path">Path of the JSON resource being parsed.</param>
     public static void Handle(JsonException ex, string jsonText, string path)
     {
-        // Extract relevant information from the exception
         long? lineNumber = ex.LineNumber;
 
+        // Prefer context-rich output when the parser reports a source line number.
         if (lineNumber.HasValue)
         {
-            // Split the JSON into lines
             string[] lines = jsonText.Split('\n');
 
-            // Get the problematic line
             int lineIndex = (int)lineNumber.Value;
             lineIndex = Math.Clamp(lineIndex, 0, Math.Max(0, lines.Length - 1));
             string problematicLine = lines[lineIndex];
 
-            // Determine the range of lines to display
             int startLine = Math.Max(0, lineIndex - ContextLinesBefore);
             int endLine = Math.Min(lines.Length, lineIndex + ContextLinesAfter);
 
-            // Create the error message
             StringBuilder errorMessage = new();
 
             errorMessage.AppendLine($"ERROR: Failed to parse {Path.GetFileName(path)}");
@@ -44,16 +43,13 @@ public static class JsonExceptionHandler
             errorMessage.AppendLine($"{ex.Message}");
             errorMessage.AppendLine();
 
-            // Add the lines before the problematic line
             for (int i = startLine; i < lineIndex; i++)
             {
                 errorMessage.AppendLine(lines[i]);
             }
 
-            // Add the problematic line with the caret indicating the error position
             errorMessage.AppendLine($"{problematicLine} <--- Syntax error could be on this line or the next line");
 
-            // Add the lines after the problematic line
             for (int i = lineIndex + 1; i < endLine; i++)
             {
                 errorMessage.AppendLine(lines[i]);

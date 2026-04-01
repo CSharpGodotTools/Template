@@ -7,6 +7,11 @@ namespace PacketGen.Generators.PacketGeneration;
 /// Immutable model describing a single packet class, built by <see cref="PacketAnalysis"/>
 /// and consumed by <see cref="PacketGenerationOrchestrator"/> to emit source code.
 /// </summary>
+/// <param name="packetSymbol">Roslyn symbol for the packet class.</param>
+/// <param name="properties">Serializable packet properties included in generation.</param>
+/// <param name="hasWriteReadMethods">Whether user code already defines Write/Read methods.</param>
+/// <param name="namespaceName">Packet class namespace.</param>
+/// <param name="className">Packet class simple name.</param>
 internal sealed class PacketGenerationModel(
     INamedTypeSymbol packetSymbol,
     ImmutableArray<IPropertySymbol> properties,

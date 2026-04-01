@@ -78,6 +78,10 @@ internal sealed class GeneratorEqualityTests
         }
     }
 
+    /// <summary>
+    /// Builds source for a packet with first-level structural collection properties.
+    /// </summary>
+    /// <returns>Packet source code string.</returns>
     private static string BuildCollectionSource()
     {
         return $$"""
@@ -100,6 +104,10 @@ internal sealed class GeneratorEqualityTests
         """;
     }
 
+    /// <summary>
+    /// Builds source for a packet with deeply nested list, array, and dictionary collections.
+    /// </summary>
+    /// <returns>Packet source code string.</returns>
     private static string BuildNestedCollectionSource()
     {
         return $$"""
@@ -120,6 +128,10 @@ internal sealed class GeneratorEqualityTests
         """;
     }
 
+    /// <summary>
+    /// Assigns baseline values for top-level structural equality assertions.
+    /// </summary>
+    /// <param name="packet">Packet instance to initialize.</param>
     private static void AssignEqualityValues(object packet)
     {
         PacketReflectionHelper.SetProperty(packet, "Id", 42);
@@ -136,6 +148,10 @@ internal sealed class GeneratorEqualityTests
         PacketReflectionHelper.SetProperty(packet, "IntStringDict", new Dictionary<int, string> { { 1, "x" }, { 2, "y" } });
     }
 
+    /// <summary>
+    /// Assigns baseline values for nested structural equality assertions.
+    /// </summary>
+    /// <param name="packet">Packet instance to initialize.</param>
     private static void AssignNestedValues(object packet)
     {
         PacketReflectionHelper.SetProperty(packet, "IntListOfArrays", new List<int[]>

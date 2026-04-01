@@ -52,17 +52,32 @@ public static class FpsOptions
         return ClampMouseSensitivity(storedValue);
     }
 
+    /// <summary>
+    /// Reads and clamps the stored difficulty index.
+    /// </summary>
+    /// <param name="optionsService">Options service containing persisted difficulty.</param>
+    /// <returns>Validated difficulty index.</returns>
     private static int GetDifficultyIndex(IOptionsService optionsService)
     {
         int storedValue = optionsService.Settings.Difficulty;
         return ClampDifficultyIndex(storedValue);
     }
 
+    /// <summary>
+    /// Clamps a difficulty index to the supported enum range.
+    /// </summary>
+    /// <param name="value">Difficulty index to clamp.</param>
+    /// <returns>Clamped difficulty index.</returns>
     private static int ClampDifficultyIndex(int value)
     {
         return Math.Clamp(value, MinDifficultyIndex, MaxDifficultyIndex);
     }
 
+    /// <summary>
+    /// Clamps mouse sensitivity to configured minimum and maximum values.
+    /// </summary>
+    /// <param name="value">Sensitivity value to clamp.</param>
+    /// <returns>Clamped sensitivity value.</returns>
     private static float ClampMouseSensitivity(float value)
     {
         return Math.Clamp(value, MinSensitivity, MaxSensitivity);

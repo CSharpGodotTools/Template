@@ -20,6 +20,7 @@ public static class CodeHighlighterFactory
     /// <summary>
     /// Builds a default highlighter with keyword and token colors.
     /// </summary>
+    /// <returns>Configured <see cref="CodeHighlighter"/> instance.</returns>
     public static CodeHighlighter Create()
     {
         CodeHighlighter editor = new()
@@ -37,6 +38,7 @@ public static class CodeHighlighterFactory
 
         string[] keywords = _keywords;
 
+        // Apply a consistent keyword color map for basic C# token highlighting.
         foreach (string keyword in keywords)
         {
             editor.KeywordColors.Add(keyword, new Color(LightLilac));

@@ -11,12 +11,17 @@ namespace GodotUtils.Debugging;
 public static class ParamValidator
 {
     /// <summary>
-    /// Throws when <paramref name="obj"/> is null and disables the node.
+    /// Validates an object argument and disables the node before throwing when the value is null.
     /// </summary>
+    /// <param name="node">Node to disable when validation fails.</param>
+    /// <param name="obj">Argument value to validate.</param>
+    /// <param name="paramName">Name of the validated argument.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="obj"/> is null.</exception>
     public static void ThrowIfNull(Node node, object obj, [CallerArgumentExpression(nameof(obj))] string paramName = "")
     {
         ArgumentNullException.ThrowIfNull(node, nameof(node));
 
+        // Disable processing before throwing so invalid nodes stop running immediately.
         if (obj == null)
         {
             Script script = node.GetScript().As<Script>();

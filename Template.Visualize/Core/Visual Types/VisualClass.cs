@@ -7,6 +7,9 @@ using System.Reflection;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Class/struct control builders for reflected members and visualize-marked methods.
+/// </summary>
 internal static partial class VisualControlTypes
 {
     private const int ClassControlColumns = 1;
@@ -16,10 +19,17 @@ internal static partial class VisualControlTypes
     private const string EventRemovePrefix = "remove_";
     private const string ToStringMethodName = "ToString";
 
+    /// <summary>
+    /// Creates a composite class control for reflected properties, fields, and methods.
+    /// </summary>
+    /// <param name="type">Class or struct type to render.</param>
+    /// <param name="context">Initial value and change callback context.</param>
+    /// <returns>Created class-control info.</returns>
     private static VisualControlInfo VisualClass(Type type, VisualControlContext context)
     {
         GridContainer container = new() { Columns = ClassControlColumns, SizeFlagsHorizontal = Control.SizeFlags.ShrinkBegin };
 
+        // Return an empty control when there is no object instance to inspect.
         if (context.InitialValue == null)
         {
             return new VisualControlInfo(new ClassControl(container, []));
@@ -35,6 +45,12 @@ internal static partial class VisualControlTypes
         return new VisualControlInfo(new ClassControl(container, memberBindings));
     }
 
+    /// <summary>
+    /// Collects candidate property members and editability metadata.
+    /// </summary>
+    /// <param name="type">Type to inspect.</param>
+    /// <param name="flags">Binding flags for reflection lookup.</param>
+    /// <returns>Property member descriptors.</returns>
     private static IEnumerable<MemberDescriptor> CollectPropertyMembers(Type type, BindingFlags flags)
     {
         PropertyInfo[] properties = [.. type.GetProperties(flags).Where(p => !(typeof(Delegate).IsAssignableFrom(p.PropertyType)))];
@@ -46,6 +62,12 @@ internal static partial class VisualControlTypes
         }
     }
 
+    /// <summary>
+    /// Collects candidate field members and editability metadata.
+    /// </summary>
+    /// <param name="type">Type to inspect.</param>
+    /// <param name="flags">Binding flags for reflection lookup.</param>
+    /// <returns>Field member descriptors.</returns>
     private static IEnumerable<MemberDescriptor> CollectFieldMembers(Type type, BindingFlags flags)
     {
         string[] propNames = [.. type.GetProperties(flags).Select(p => p.Name)];
@@ -68,6 +90,13 @@ internal static partial class VisualControlTypes
         }
     }
 
+    /// <summary>
+    /// Adds reflected members as editable/non-editable controls to the target container.
+    /// </summary>
+    /// <param name="vbox">Container that receives member rows.</param>
+    /// <param name="context">Initial value and change callback context.</param>
+    /// <param name="members">Member descriptors to render.</param>
+    /// <returns>Bindings used for subsequent value/editability synchronization.</returns>
     private static List<MemberControlBinding> AddMembers(Control vbox, VisualControlContext context, IEnumerable<MemberDescriptor> members)
     {
         List<MemberControlBinding> bindings = [];
@@ -78,6 +107,7 @@ internal static partial class VisualControlTypes
 
             VisualControlInfo control = CreateControlForType(member.MemberType, member.Member, new VisualControlContext(initialValue, v =>
             {
+                // Ignore writes for members that are intentionally readonly.
                 if (!member.IsEditable)
                 {
                     return;
@@ -87,6 +117,7 @@ internal static partial class VisualControlTypes
                 context.ValueChanged(context.InitialValue!);
             }));
 
+            // Skip rows for member types that have no supported visual editor.
             if (control.VisualControl == null)
             {
                 continue;
@@ -104,6 +135,13 @@ internal static partial class VisualControlTypes
         return bindings;
     }
 
+    /// <summary>
+    /// Adds visualize-marked methods as invoke buttons.
+    /// </summary>
+    /// <param name="flags">Binding flags used for method discovery.</param>
+    /// <param name="vbox">Container that receives method buttons.</param>
+    /// <param name="type">Type to inspect.</param>
+    /// <param name="context">Initial value and change callback context.</param>
     private static void AddMethods(BindingFlags flags, Control vbox, Type type, VisualControlContext context)
     {
         // Cannot include private methods or else we will see Godot's built-in methods
@@ -130,6 +168,11 @@ internal static partial class VisualControlTypes
         }
     }
 
+    /// <summary>
+    /// Filters member arrays to only visualize-marked members when at least one exists.
+    /// </summary>
+    /// <typeparam name="T">Member info type.</typeparam>
+    /// <param name="members">Members to filter.</param>
     private static void FilterByVisualizeAttribute<T>(ref T[] members) where T : MemberInfo
     {
         // Lets say we are visualizing [Visualize] [Export] public TurretRecoilConfig Recoil { get; set; }
@@ -140,6 +183,7 @@ internal static partial class VisualControlTypes
 
         foreach (T member in members)
         {
+            // Keep only members explicitly marked for visualization.
             if (member.GetCustomAttribute<VisualizeAttribute>() != null)
             {
                 visualizedMembers.Add(member);
@@ -153,6 +197,12 @@ internal static partial class VisualControlTypes
         }
     }
 
+    /// <summary>
+    /// Creates a standard label-plus-control row for member rendering.
+    /// </summary>
+    /// <param name="memberName">Member name used as row label.</param>
+    /// <param name="control">Member value control.</param>
+    /// <returns>Configured row container.</returns>
     private static HBoxContainer CreateHBoxForMember(string memberName, Control control)
     {
         Label label = new()

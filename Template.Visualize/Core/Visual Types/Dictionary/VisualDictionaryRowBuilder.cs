@@ -4,6 +4,18 @@ using System;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Builds visual rows for dictionary entries.
+/// </summary>
+/// <param name="typeInfo">Dictionary type metadata.</param>
+/// <param name="context">Control context for value changes.</param>
+/// <param name="keyResolver">Resolver for duplicate keys.</param>
+/// <param name="displayOrderTracker">Tracker for stable display ordering.</param>
+/// <param name="createControlForType">Factory for child controls.</param>
+/// <param name="cleanupOnTreeExited">Cleanup hook for control teardown.</param>
+/// <param name="getAdapter">Adapter accessor.</param>
+/// <param name="getDictionaryObject">Dictionary object accessor.</param>
+/// <param name="getIsEditable">Editable state accessor.</param>
 internal sealed class VisualDictionaryRowBuilder(
     VisualDictionaryTypeInfo typeInfo,
     VisualControlContext context,
@@ -25,6 +37,12 @@ internal sealed class VisualDictionaryRowBuilder(
     private readonly Func<object> _getDictionaryObject = getDictionaryObject;
     private readonly Func<bool> _getIsEditable = getIsEditable;
 
+    /// <summary>
+    /// Adds a visual row for a dictionary entry.
+    /// </summary>
+    /// <param name="dictionaryVBox">Container to append the row to.</param>
+    /// <param name="key">Entry key.</param>
+    /// <param name="value">Entry value.</param>
     public void AddEntry(VBoxContainer dictionaryVBox, object key, object value)
     {
         object currentKey = key;
@@ -38,12 +56,14 @@ internal sealed class VisualDictionaryRowBuilder(
 
         VisualControlInfo keyControl = _createControlForType(_typeInfo.KeyType, new VisualControlContext(currentKey, v =>
         {
+            // Reject null key changes.
             if (v == null)
             {
                 keyControlInfo?.VisualControl?.SetValue(currentKey);
                 return;
             }
 
+            // Ignore no-op key updates.
             if (Equals(v, currentKey))
             {
                 return;
@@ -52,6 +72,7 @@ internal sealed class VisualDictionaryRowBuilder(
             IVisualDictionaryAdapter adapter = _getAdapter();
             object resolvedKey = v;
 
+            // Resolve duplicate keys or revert when no alternative exists.
             if (adapter.ContainsKey(resolvedKey)
                 && !_keyResolver.TryResolveRenamedKey(currentKey, resolvedKey, _typeInfo.KeyType, adapter.ContainsKey, out resolvedKey))
             {
@@ -61,6 +82,7 @@ internal sealed class VisualDictionaryRowBuilder(
 
             bool keyWasAutoAdjusted = !Equals(resolvedKey, v);
 
+            // Ensure the resolved key is compatible with the expected type.
             if (!_typeInfo.KeyType.IsAssignableFrom(resolvedKey.GetType()))
             {
                 keyControlInfo?.VisualControl?.SetValue(currentKey);
@@ -75,6 +97,7 @@ internal sealed class VisualDictionaryRowBuilder(
             currentKey = resolvedKey;
             _context.ValueChanged(_getDictionaryObject());
 
+            // Sync UI when the resolver adjusted the key.
             if (keyWasAutoAdjusted)
             {
                 keyControlInfo?.VisualControl?.SetValue(currentKey);
@@ -85,6 +108,7 @@ internal sealed class VisualDictionaryRowBuilder(
 
         keyControlInfo = keyControl;
 
+        // Abort when the key or value control is unsupported.
         if (keyControl.VisualControl == null || valueControl.VisualControl == null)
         {
             return;
@@ -101,6 +125,7 @@ internal sealed class VisualDictionaryRowBuilder(
 
         void OnRemovePressed()
         {
+            // Guard against removal when locked.
             if (!_getIsEditable())
             {
                 return;

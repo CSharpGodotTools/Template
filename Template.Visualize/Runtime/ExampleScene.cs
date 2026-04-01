@@ -3,11 +3,24 @@ using Godot;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Minimal debug scene used to exercise visualization features against live nodes.
+/// </summary>
 internal partial class ExampleScene : Node
 {
+    /// <summary>
+    /// Camera pan speed used for keyboard navigation in the example scene.
+    /// </summary>
     [Export] private int _cameraSpeed = 5;
+
+    /// <summary>
+    /// Optional packed scene used by the commented sprite visualization sample.
+    /// </summary>
     [Export] private PackedScene _spriteExampleScene = null!;
 
+    /// <summary>
+    /// Scene camera moved by input in physics updates.
+    /// </summary>
     private Camera2D _camera = null!;
 
     public override void _Ready()

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace __TEMPLATE__.Ui;
 
+/// <summary>
+/// Builds the mod list UI and manages mod-loader scene actions.
+/// </summary>
 public partial class ModLoader : Node, ISceneDependencyReceiver
 {
     // Nodes
@@ -24,6 +27,10 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
     private GameServices _runtimeServices = null!;
     private bool _isConfigured;
 
+    /// <summary>
+    /// Injects runtime services needed by this scene.
+    /// </summary>
+    /// <param name="services">Resolved scene services.</param>
     public void Configure(GameServices services)
     {
         _runtimeServices = services;
@@ -42,6 +49,7 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
     // Godot Overrides
     public override void _Ready()
     {
+        // Scene composition must inject dependencies before this node becomes ready.
         if (!_isConfigured)
             throw new InvalidOperationException($"{nameof(ModLoader)} was not configured before _Ready.");
 
@@ -69,6 +77,8 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
                 Text = modInfo.Name
             };
 
+
+            // Capture handlers so each dynamic button can clean itself up.
             void OnPressed()
             {
                 DisplayModInfo(modInfo);
@@ -85,6 +95,7 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
 
             uiMods.AddChild(btn);
 
+            // Select and display the first mod by default.
             if (first)
             {
                 first = false;
@@ -96,6 +107,7 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
 
     public override void _PhysicsProcess(double delta)
     {
+        // Return to main menu when the cancel action is pressed.
         if (Input.IsActionJustPressed(InputActions.UICancel))
         {
             _sceneManager.SwitchToMainMenu();
@@ -103,6 +115,10 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
     }
 
     // Private Methods
+    /// <summary>
+    /// Updates mod metadata labels with values from selected mod.
+    /// </summary>
+    /// <param name="modInfo">Selected mod metadata.</param>
     private void DisplayModInfo(ModInfo modInfo)
     {
         _uiName.Text = modInfo.Name;
@@ -121,15 +137,24 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
         _uiAuthors.Text = modInfo.Author;
     }
 
+    /// <summary>
+    /// Handles restart button press and starts restart flow.
+    /// </summary>
     private void OnRestartGamePressed()
     {
         _ = RestartGameAsync();
     }
 
+    /// <summary>
+    /// Starts a new game process instance and exits current process.
+    /// </summary>
+    /// <returns>A task that completes when exit has been requested.</returns>
     private async Task RestartGameAsync()
     {
         try
         {
+
+            // Launch replacement instance first so restart feels instantaneous.
             //OS.CreateProcess(OS.GetExecutablePath(), null);
             OS.CreateInstance(null);
             await _applicationLifetime.ExitGameAsync();
@@ -143,6 +168,9 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
         }
     }
 
+    /// <summary>
+    /// Opens the project Mods directory in the OS file explorer.
+    /// </summary>
     private static void OnOpenModsFolderPressed()
     {
         Process.Start(new ProcessStartInfo(@$"{ProjectSettings.GlobalizePath("res://Mods")}") { UseShellExecute = true });

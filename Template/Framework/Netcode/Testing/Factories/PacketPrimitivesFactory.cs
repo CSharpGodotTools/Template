@@ -1,7 +1,14 @@
 namespace Template.Setup.Testing;
 
+/// <summary>
+/// Produces primitive-value packet fixtures for packet round-trip tests.
+/// </summary>
 public static class PacketPrimitivesFactory
 {
+    /// <summary>
+    /// Creates a baseline primitive packet with typical values.
+    /// </summary>
+    /// <returns>Packet containing a standard primitive value set.</returns>
     public static CPacketPrimitives CreateSample()
     {
         return new CPacketPrimitives
@@ -23,6 +30,10 @@ public static class PacketPrimitivesFactory
         };
     }
 
+    /// <summary>
+    /// Creates a second primitive packet with distinct values for deep comparisons.
+    /// </summary>
+    /// <returns>Packet containing an alternate primitive value set.</returns>
     public static CPacketPrimitives CreateDeepSample()
     {
         return new CPacketPrimitives

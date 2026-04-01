@@ -2,8 +2,17 @@
 
 namespace PacketGen.Tests;
 
+/// <summary>
+/// Reflection helpers for inspecting generated packet types.
+/// </summary>
 internal static class PacketReflectionHelper
 {
+    /// <summary>
+    /// Asserts that a packet type overrides Write/Read methods.
+    /// </summary>
+    /// <param name="packetType">Packet type under test.</param>
+    /// <param name="writerType">Writer type.</param>
+    /// <param name="readerType">Reader type.</param>
     public static void AssertHasWriteReadMethods(Type packetType, Type writerType, Type readerType)
     {
         MethodInfo? write = FindMethod(packetType, "Write", writerType);
@@ -15,6 +24,11 @@ internal static class PacketReflectionHelper
         Assert.That(read!.GetBaseDefinition().DeclaringType, Is.Not.EqualTo(read.DeclaringType), $"Read is not an override on {packetType.FullName}.");
     }
 
+    /// <summary>
+    /// Creates a packet instance for the provided type.
+    /// </summary>
+    /// <param name="packetType">Packet type to instantiate.</param>
+    /// <returns>Created packet instance.</returns>
     public static object CreatePacketInstance(Type packetType)
     {
         object? instance = Activator.CreateInstance(packetType);
@@ -22,6 +36,12 @@ internal static class PacketReflectionHelper
         return instance!;
     }
 
+    /// <summary>
+    /// Sets a property value by name on the provided instance.
+    /// </summary>
+    /// <param name="instance">Target instance.</param>
+    /// <param name="propertyName">Property name.</param>
+    /// <param name="value">Value to assign.</param>
     public static void SetProperty(object instance, string propertyName, object? value)
     {
         PropertyInfo? prop = instance.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
@@ -29,6 +49,12 @@ internal static class PacketReflectionHelper
         prop!.SetValue(instance, value);
     }
 
+    /// <summary>
+    /// Gets a property value by name from the provided instance.
+    /// </summary>
+    /// <param name="instance">Target instance.</param>
+    /// <param name="propertyName">Property name.</param>
+    /// <returns>Property value.</returns>
     public static object? GetProperty(object instance, string propertyName)
     {
         PropertyInfo? prop = instance.GetType().GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
@@ -36,6 +62,11 @@ internal static class PacketReflectionHelper
         return prop!.GetValue(instance);
     }
 
+    /// <summary>
+    /// Invokes the Write method on a packet instance.
+    /// </summary>
+    /// <param name="packet">Packet instance.</param>
+    /// <param name="writer">Writer instance.</param>
     public static void InvokeWrite(object packet, object writer)
     {
         MethodInfo? write = FindMethod(packet.GetType(), "Write", writer.GetType());
@@ -43,6 +74,11 @@ internal static class PacketReflectionHelper
         write!.Invoke(packet, [writer]);
     }
 
+    /// <summary>
+    /// Invokes the Read method on a packet instance.
+    /// </summary>
+    /// <param name="packet">Packet instance.</param>
+    /// <param name="reader">Reader instance.</param>
     public static void InvokeRead(object packet, object reader)
     {
         MethodInfo? read = FindMethod(packet.GetType(), "Read", reader.GetType());
@@ -50,15 +86,24 @@ internal static class PacketReflectionHelper
         read!.Invoke(packet, [reader]);
     }
 
+    /// <summary>
+    /// Finds a method with the given name and parameter type.
+    /// </summary>
+    /// <param name="type">Type to search.</param>
+    /// <param name="name">Method name.</param>
+    /// <param name="parameterType">Expected parameter type.</param>
+    /// <returns>Matching method info, or null when not found.</returns>
     private static MethodInfo? FindMethod(Type type, string name, Type parameterType)
     {
         return type.GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .FirstOrDefault(m =>
             {
+                // Match by method name first.
                 if (m.Name != name)
                     return false;
 
                 ParameterInfo[] parameters = m.GetParameters();
+                // Match methods with a single parameter of the expected type.
                 return parameters.Length == 1 && parameters[0].ParameterType == parameterType;
             });
     }

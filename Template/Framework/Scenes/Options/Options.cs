@@ -4,6 +4,9 @@ using System.Linq;
 
 namespace __TEMPLATE__.Ui;
 
+/// <summary>
+/// Options scene root that wires tab navigation, input, and custom option UI.
+/// </summary>
 public partial class Options : PanelContainer, ISceneDependencyReceiver
 {
     // Constants
@@ -19,6 +22,10 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
     private SceneManager _sceneManager = null!;
     private FocusOutlineManager _focusOutlineManager = null!;
 
+    /// <summary>
+    /// Injects services required by the options scene.
+    /// </summary>
+    /// <param name="services">Resolved game service bundle.</param>
     public void Configure(GameServices services)
     {
         _optionsManager = services.OptionsManager;
@@ -35,6 +42,7 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
     // Godot Overrides
     public override void _Ready()
     {
+        // Fail fast when dependencies were not configured before initialization.
         if (!_isConfigured)
             throw new InvalidOperationException($"{nameof(Options)} was not configured before _Ready.");
 
@@ -42,6 +50,7 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
 
         ClearLegacyTabRows();
 
+        // Input tab button must exist for input-controller initialization.
         if (!_optionsNav.TryGetTabButton(FrameworkOptionsTabs.Input, out Button inputNavButton))
             throw new InvalidOperationException($"Input tab button '{FrameworkOptionsTabs.Input}' was not found.");
 
@@ -76,13 +85,18 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
     }
 
     // Subscribers
+    /// <summary>
+    /// Removes pre-authored non-input rows so dynamic registration can rebuild them.
+    /// </summary>
     private void ClearLegacyTabRows()
     {
         foreach (string tabName in _optionsNav.GetTabNames())
         {
+            // Keep input tab rows authored separately by input-specific UI.
             if (string.Equals(tabName, FrameworkOptionsTabs.Input, StringComparison.OrdinalIgnoreCase))
                 continue;
 
+            // Skip tabs that no longer resolve to a container.
             if (!_optionsNav.TryGetTabContainer(tabName, out VBoxContainer tabContainer))
                 continue;
 
@@ -95,12 +109,18 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
         }
     }
 
+    /// <summary>
+    /// Registers all default tab option definitions.
+    /// </summary>
     private void RegisterTabOptions()
     {
         foreach (IOptionsTabRegistrar registrar in DefaultOptionsTabRegistrars.Create())
             registrar.Register(_optionsManager);
     }
 
+    /// <summary>
+    /// Hooks animated popup behavior for option dropdown menus.
+    /// </summary>
     private void SetupPopupAnimations()
     {
         SceneTree tree = GetTree();
@@ -113,6 +133,7 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
             {
                 await popup.ToSignal(tree, SceneTree.SignalName.ProcessFrame);
 
+                // Skip animation when popup was closed or freed before the next frame.
                 if (!IsInstanceValid(popup) || !popup.Visible)
                 {
                     return;
@@ -123,6 +144,10 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
         }
     }
 
+    /// <summary>
+    /// Animates popup menu entrance from an offset Y position.
+    /// </summary>
+    /// <param name="popup">Popup menu to animate.</param>
     private static void AnimatePopupIn(Godot.PopupMenu popup)
     {
         Vector2I targetPosition = popup.Position;
@@ -134,20 +159,30 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
              .SetTrans(Tween.TransitionType.Quad);
     }
 
+    /// <summary>
+    /// Refocuses current tab button after scene changes while visible.
+    /// </summary>
     private void OnPostSceneChanged()
     {
+        // Skip focus updates while options panel is hidden.
         if (!Visible)
             return;
 
+        // Restore focus to the currently selected tab button when available.
         if (_optionsNav.TryGetTabButton(_optionsManager.GetCurrentTab(), out Button tabButton))
             _focusOutlineManager.Focus(tabButton);
     }
 
+    /// <summary>
+    /// Restores keyboard focus to current tab button when panel becomes visible.
+    /// </summary>
     private void OnVisibilityChanged()
     {
+        // Skip focus updates while options panel is hidden.
         if (!Visible)
             return;
 
+        // Focus currently selected tab button when available.
         if (_optionsNav.TryGetTabButton(_optionsManager.GetCurrentTab(), out Button tabButton))
             tabButton.GrabFocus();
     }

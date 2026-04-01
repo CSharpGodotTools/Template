@@ -23,17 +23,21 @@ internal static class PacketAnalysis
 
         foreach (ISymbol member in members)
         {
+            // Capture serializable packet properties for generation.
             if (member is IPropertySymbol property)
             {
                 ImmutableArray<AttributeData> attributes = property.GetAttributes();
 
+                // Skip properties explicitly marked to be excluded.
                 if (attributes.Any(attr => attr.AttributeClass?.Name == "NetExcludeAttribute"))
                     continue;
 
                 properties.Add(property);
             }
+            // Detect custom Write/Read implementations on packet types.
             else if (member is IMethodSymbol method)
             {
+                // Mark packets that already define manual serialization methods.
                 if (method.Name == "Write" || method.Name == "Read")
                     hasWriteReadMethods = true;
             }

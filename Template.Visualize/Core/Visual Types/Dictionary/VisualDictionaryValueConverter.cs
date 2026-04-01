@@ -4,15 +4,26 @@ using System;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Converts dictionary values to compatible runtime types.
+/// </summary>
 internal sealed class VisualDictionaryValueConverter : IVisualDictionaryValueConverter
 {
+    /// <summary>
+    /// Converts a value to the expected runtime type when needed.
+    /// </summary>
+    /// <param name="value">Incoming value.</param>
+    /// <param name="expectedType">Expected runtime type.</param>
+    /// <returns>Converted value.</returns>
     public object? ConvertToExpectedType(object? value, Type expectedType)
     {
+        // Convert to Variant when the destination type requires it.
         if (expectedType == typeof(Variant))
         {
             return ConvertVariant(value);
         }
 
+        // Preserve nulls and already compatible values.
         if (value == null || expectedType.IsInstanceOfType(value))
         {
             return value;
@@ -21,8 +32,14 @@ internal sealed class VisualDictionaryValueConverter : IVisualDictionaryValueCon
         return value;
     }
 
+    /// <summary>
+    /// Converts common CLR and Godot values into a <see cref="Variant"/> payload.
+    /// </summary>
+    /// <param name="value">Source value to convert.</param>
+    /// <returns>Equivalent variant value.</returns>
     private static Variant ConvertVariant(object? value)
     {
+        // Map known CLR/Godot types into Variant payloads.
         return value switch
         {
             null => Variant.From((string?)null),

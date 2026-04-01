@@ -4,6 +4,9 @@ using System;
 
 namespace __TEMPLATE__.Ui;
 
+/// <summary>
+/// Displays and controls the scrolling credits scene.
+/// </summary>
 public partial class Credits : Node, ISceneDependencyReceiver
 {
     // Constants
@@ -37,6 +40,10 @@ public partial class Credits : Node, ISceneDependencyReceiver
     private int _direction = 1;
     private bool _isConfigured;
 
+    /// <summary>
+    /// Injects runtime dependencies required by the credits scene.
+    /// </summary>
+    /// <param name="services">Resolved game service bundle.</param>
     public void Configure(GameServices services)
     {
         _scene = services.SceneManager;
@@ -58,9 +65,11 @@ public partial class Credits : Node, ISceneDependencyReceiver
 
     public override void _Process(double delta)
     {
+        // Allow cancel input to exit back to main menu immediately.
         if (Input.IsActionJustPressed(InputActions.UICancel))
             _scene.SwitchToMainMenu();
 
+        // Advance scrolling only while playback is not paused.
         if (!_paused)
         {
             Vector2 position = _credits.Position;
@@ -71,6 +80,7 @@ public partial class Credits : Node, ISceneDependencyReceiver
 
             position.Y -= _speed * _direction * (float)delta;
 
+            // Clamp reverse scrolling so credits do not move above start position.
             if (isReverseDirection && creditsAtStart)
             {
                 position.Y = _startingCreditsPosition.Y;
@@ -78,14 +88,19 @@ public partial class Credits : Node, ISceneDependencyReceiver
 
             _credits.Position = position;
 
+            // Return to main menu when credits reach the end.
             if (creditsAtFinish)
                 _scene.SwitchToMainMenu();
         }
     }
 
     // Private Methods
+    /// <summary>
+    /// Resolves required node references and validates dependency configuration.
+    /// </summary>
     private void SetupFields()
     {
+        // Fail fast when dependencies were not configured before initialization.
         if (!_isConfigured)
             throw new InvalidOperationException($"{nameof(Credits)} was not configured before _Ready.");
 
@@ -94,6 +109,10 @@ public partial class Credits : Node, ISceneDependencyReceiver
         _btnReverse = GetNode<Button>("%Reverse");
     }
 
+    /// <summary>
+    /// Loads and builds all credits lines from a text source file.
+    /// </summary>
+    /// <param name="filePath">Path to the credits text file.</param>
     private void BuildCredits(string filePath)
     {
         _credits = new VBoxContainer
@@ -116,6 +135,9 @@ public partial class Credits : Node, ISceneDependencyReceiver
         AddChild(_credits);
     }
 
+    /// <summary>
+    /// Positions the credits container at the bottom-center start location.
+    /// </summary>
     private void PositionCredits()
     {
         // Set starting position of the credits
@@ -134,16 +156,22 @@ public partial class Credits : Node, ISceneDependencyReceiver
         };*/
     }
 
+    /// <summary>
+    /// Parses one credits line and appends the corresponding control.
+    /// </summary>
+    /// <param name="line">Raw line from the credits source file.</param>
     private void ProcessLine(string line)
     {
         int size = TextSize;
 
+        // Promote first-level headers to larger typography.
         if (line.Contains(HeaderOneIdentifier))
         {
             size = HeaderOneSize;
             line = line.Replace(HeaderOneIdentifier, "");
         }
 
+        // Promote second-level headers to medium typography.
         if (line.Contains(HeaderTwoIdentifier))
         {
             size = HeaderTwoSize;
@@ -155,12 +183,14 @@ public partial class Credits : Node, ISceneDependencyReceiver
         foreach (string word in line.Split(' '))
             trLine += Tr(word) + " ";
 
+        // Render lines containing URLs with dedicated link controls.
         if (trLine.Contains(LinkIdentifier))
         {
             _credits.AddChild(GetHBoxTextWithLink(trLine));
         }
         else
         {
+            // Insert vertical spacing for blank lines.
             if (string.IsNullOrWhiteSpace(trLine))
             {
                 Control paddingBetweenLines = new()
@@ -181,10 +211,17 @@ public partial class Credits : Node, ISceneDependencyReceiver
         }
     }
 
+    /// <summary>
+    /// Builds a horizontal row where detected URL text is rendered as a link.
+    /// </summary>
+    /// <param name="text">Line text containing an inline URL.</param>
+    /// <returns>Container with label/link/label segments in original order.</returns>
     private static HBoxContainer GetHBoxTextWithLink(string text)
     {
         // Find the start of the URL
         int startIndex = text.IndexOf(LinkIdentifier, StringComparison.Ordinal);
+
+        // Fall back to plain label row when no URL marker is present.
         if (startIndex < 0)
         {
             HBoxContainer fallback = new();
@@ -195,6 +232,8 @@ public partial class Credits : Node, ISceneDependencyReceiver
 
         // Extract exact URL: it ends at next whitespace or end of line
         int endIndex = text.IndexOf(' ', startIndex);
+
+        // Extend URL to line end when no trailing whitespace exists.
         if (endIndex < 0)
             endIndex = text.Length;
 
@@ -215,20 +254,28 @@ public partial class Credits : Node, ISceneDependencyReceiver
 
         hbox.AddChild(LinkButtonFactory.Create(url));
 
+        // Append trailing non-link text when present.
         if (!string.IsNullOrWhiteSpace(rightText))
             hbox.AddChild(LabelFactory.Create(rightText));
 
         return hbox;
     }
 
+    /// <summary>
+    /// Toggles credits scrolling pause state.
+    /// </summary>
     private void OnPausePressed()
     {
         _paused = !_paused;
         _btnPause.Text = _paused ? ResumeText : PauseText;
     }
 
+    /// <summary>
+    /// Cycles through predefined scroll speed multipliers.
+    /// </summary>
     private void OnSpeedPressed()
     {
+        // Step through predefined speed multipliers before wrapping to baseline.
         if (_curSpeedSetting < NumSpeedSettings)
         {
             _curSpeedSetting++;
@@ -243,6 +290,9 @@ public partial class Credits : Node, ISceneDependencyReceiver
         }
     }
 
+    /// <summary>
+    /// Toggles credits scroll direction and updates button label.
+    /// </summary>
     private void OnReversePressed()
     {
         _direction = -_direction;

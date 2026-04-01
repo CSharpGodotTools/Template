@@ -162,13 +162,18 @@ public partial class {{registryClassName}}
     /// Reads one opcode from <paramref name="reader"/>, consuming exactly <see cref="OpcodeSize"/> bytes.
     /// Returns the value widened to ushort for lookup in <see cref="ClientPacketTypesWire"/> or <see cref="ServerPacketTypesWire"/>.
     /// </summary>
+    /// <param name="reader">Packet reader positioned at an opcode boundary.</param>
+    /// <returns>Decoded opcode value widened to <see cref="ushort"/>.</returns>
     public static ushort ReadOpcodeFromReader(PacketReader reader) => {{readOpcodeExpression}};
 
     /// <summary>Returns true when the leading <see cref="OpcodeSize"/> bytes of <paramref name="bytes"/> match <see cref="FragmentOpcode"/>.</summary>
+    /// <param name="bytes">Packet bytes to inspect.</param>
+    /// <returns><see langword="true"/> when the packet begins with the fragment opcode.</returns>
     public static bool IsFragmentHeader(byte[] bytes) =>
         {{isFragmentExpression}};
 
     /// <summary>Writes <see cref="FragmentOpcode"/> into <paramref name="destination"/> starting at byte offset 0.</summary>
+    /// <param name="destination">Destination span receiving opcode bytes.</param>
     public static void WriteFragmentOpcodeToSpan(Span<byte> destination)
     {
         {{writeFragmentStatements}}

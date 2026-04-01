@@ -10,6 +10,8 @@ namespace __TEMPLATE__.Netcode;
 /// Top-level network coordinator. Owns a single server and client pair, manages
 /// ENet initialisation/deinitialisation, and exposes lifecycle events for both.
 /// </summary>
+/// <typeparam name="TGameClient">Concrete Godot client facade type.</typeparam>
+/// <typeparam name="TGameServer">Concrete Godot server facade type.</typeparam>
 public class Net<TGameClient, TGameServer> : IDisposable
     where TGameClient : GodotClient, new()
     where TGameServer : GodotServer, new()
@@ -63,6 +65,9 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Creates a network coordinator that owns the active server and client instances.
     /// </summary>
+    /// <param name="loggerService">Logger service shared by server and client transports.</param>
+    /// <param name="applicationLifetime">Application lifetime hooks used for coordinated shutdown.</param>
+    /// <param name="backgroundTasks">Optional background task tracker for async network operations.</param>
     public Net(
         ILoggerService loggerService,
         IApplicationLifetime applicationLifetime,
@@ -86,16 +91,22 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Creates and starts a new server instance.
     /// </summary>
+    /// <param name="port">UDP port to bind.</param>
+    /// <param name="maxClients">Maximum concurrent clients.</param>
+    /// <param name="options">Optional ENet runtime options.</param>
     public void StartServer(ushort port, int maxClients = DefaultMaxClients, ENetOptions? options = null)
     {
+        // Guard against ENet peer-limit overflow before creating server resources.
         if (maxClients >= ENetMaximumPeers)
             throw new ArgumentException($"ENet only supports a maximum of {ENetMaximumPeers - 1} clients");
 
         options ??= _defaultOptions;
 
+        // Skip start request when ENet initialization failed.
         if (!CanUseENet())
             return;
 
+        // Ignore duplicate start requests while server is already running.
         if (Server.IsRunning)
         {
             Server.Log("Server is running already");
@@ -122,13 +133,17 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Creates and connects a new client instance.
     /// </summary>
+    /// <param name="ip">Server IP or host name.</param>
+    /// <param name="port">Server UDP port.</param>
     public void StartClient(string ip, ushort port)
     {
+        // Skip connect request when ENet initialization failed.
         if (!CanUseENet())
         {
             return;
         }
 
+        // Ignore duplicate start requests while client is already running.
         if (Client.IsRunning)
         {
             Client.Log("Client is running already");
@@ -147,6 +162,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// </summary>
     public void StopClient()
     {
+        // Treat repeated stop requests as a no-op with diagnostic logging.
         if (!Client.IsRunning)
         {
             Client.Log("Client was stopped already");
@@ -160,6 +176,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Attempts to initialize the ENet native library. Returns <c>false</c> if the DLL is missing.
     /// </summary>
+    /// <returns><see langword="true"/> when ENet initialization succeeds.</returns>
     private bool TryInitializeEnet()
     {
         try
@@ -177,8 +194,10 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Gracefully stops both server and client workers, then deinitializes ENet.
     /// </summary>
+    /// <returns>A task that completes when workers are stopped and logs are drained.</returns>
     private async Task StopThreads()
     {
+        // Ensure shutdown pipeline runs once even when called from multiple paths.
         if (Interlocked.CompareExchange(ref _shutdownStarted, 1, 0) != 0)
         {
             return;
@@ -186,6 +205,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
 
         try
         {
+            // Stop workers and deinitialize ENet only when ENet is active.
             if (_enetInitialized)
             {
                 await StopServerIfRunning();
@@ -207,8 +227,10 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Returns <c>true</c> when ENet is initialized; logs a warning and returns <c>false</c> otherwise.
     /// </summary>
+    /// <returns><see langword="true"/> when ENet can be used.</returns>
     private bool CanUseENet()
     {
+        // Fast path when ENet initialization has completed successfully.
         if (_enetInitialized)
         {
             return true;
@@ -221,6 +243,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Creates a copy of the default ENet logging options.
     /// </summary>
+    /// <returns>Cloned ENet options instance.</returns>
     private static ENetOptions CloneDefaultOptions()
     {
         return new ENetOptions
@@ -245,8 +268,10 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Stops the server and polls until the worker thread has fully exited.
     /// </summary>
+    /// <returns>A task that completes when the server worker has stopped.</returns>
     private async Task StopServerIfRunning()
     {
+        // Skip shutdown polling when server is already stopped.
         if (!Server.IsRunning)
         {
             return;
@@ -263,8 +288,10 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// <summary>
     /// Stops the client and polls until the worker thread has fully exited.
     /// </summary>
+    /// <returns>A task that completes when the client worker has stopped.</returns>
     private async Task StopClientIfRunning()
     {
+        // Skip shutdown polling when client is already stopped.
         if (!Client.IsRunning)
         {
             return;
@@ -277,7 +304,6 @@ public class Net<TGameClient, TGameServer> : IDisposable
             await Task.Delay(ShutdownPollIntervalMs);
         }
     }
-
 
     /// <summary>
     /// Request to shutdown the server and client.
@@ -292,6 +318,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     /// </summary>
     public void Dispose()
     {
+        // Prevent duplicate disposal from issuing repeated shutdown requests.
         if (Interlocked.Exchange(ref _disposed, 1) == 1)
         {
             return;
@@ -299,17 +326,23 @@ public class Net<TGameClient, TGameServer> : IDisposable
 
         _applicationLifetime.PreQuit -= StopThreads;
 
+        // Queue shutdown only when no shutdown pipeline is currently active.
         if (Interlocked.Read(ref _shutdownStarted) == 0)
         {
             QueueStopThreads("Net.Dispose.StopThreads");
         }
 
+        // Dispose task tracker only when this Net instance created it.
         if (_ownsBackgroundTaskTracker)
         {
             _backgroundTasks.Dispose();
         }
     }
 
+    /// <summary>
+    /// Queues coordinated network shutdown work on the background task tracker.
+    /// </summary>
+    /// <param name="operationName">Diagnostic operation name for tracking.</param>
     private void QueueStopThreads(string operationName)
     {
         _backgroundTasks.Track(StopThreads(), operationName);

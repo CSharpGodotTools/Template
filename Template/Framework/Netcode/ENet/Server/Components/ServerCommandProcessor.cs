@@ -3,6 +3,9 @@ using System;
 
 namespace __TEMPLATE__.Netcode.Server;
 
+/// <summary>
+/// Drains server control commands and executes stop/kick operations against connected peers.
+/// </summary>
 internal sealed class ServerCommandProcessor
 {
     private readonly ServerQueueManager _queues;
@@ -13,6 +16,16 @@ internal sealed class ServerCommandProcessor
     private readonly Action<uint, Peer, DisconnectOpcode> _disconnectPeer;
     private readonly Action<DisconnectOpcode> _disconnectAll;
 
+    /// <summary>
+    /// Creates a processor for server control commands.
+    /// </summary>
+    /// <param name="queues">Queue manager that holds pending server commands.</param>
+    /// <param name="peers">Peer store used for peer lookup during kick operations.</param>
+    /// <param name="isStopping">Callback indicating whether shutdown is already in progress.</param>
+    /// <param name="requestStop">Callback that requests server shutdown.</param>
+    /// <param name="log">Logger callback for operator diagnostics.</param>
+    /// <param name="disconnectPeer">Callback that disconnects a specific peer.</param>
+    /// <param name="disconnectAll">Callback that disconnects all peers.</param>
     public ServerCommandProcessor(
         ServerQueueManager queues,
         ServerPeerStore peers,
@@ -31,10 +44,14 @@ internal sealed class ServerCommandProcessor
         _disconnectAll = disconnectAll;
     }
 
+    /// <summary>
+    /// Processes all queued server control commands.
+    /// </summary>
     public void Process()
     {
         while (_queues.TryDequeueCommand(out Cmd<ENetServerOpcode>? command))
         {
+            // Skip null command entries that can appear during queue drain races.
             if (command == null)
                 continue;
 
@@ -55,8 +72,12 @@ internal sealed class ServerCommandProcessor
         }
     }
 
+    /// <summary>
+    /// Handles stop commands while preventing duplicate shutdown work.
+    /// </summary>
     private void HandleStop()
     {
+        // Ignore duplicate stop requests once shutdown is already underway.
         if (_isStopping())
         {
             _log("Server is in the middle of stopping");
@@ -67,11 +88,16 @@ internal sealed class ServerCommandProcessor
         _requestStop();
     }
 
+    /// <summary>
+    /// Handles kick commands by resolving the target peer and issuing disconnect.
+    /// </summary>
+    /// <param name="command">Kick command payload.</param>
     private void HandleKick(Cmd<ENetServerOpcode> command)
     {
         uint peerId = (uint)command.Data[0];
         DisconnectOpcode opcode = (DisconnectOpcode)command.Data[1];
 
+        // Reject kick requests for peers that are no longer tracked.
         if (!_peers.TryGetPeer(peerId, out Peer peer))
         {
             _log($"Tried to kick peer with id '{peerId}' but this peer does not exist");
@@ -81,6 +107,10 @@ internal sealed class ServerCommandProcessor
         _disconnectPeer(peerId, peer, opcode);
     }
 
+    /// <summary>
+    /// Handles kick-all commands.
+    /// </summary>
+    /// <param name="command">Kick-all command payload.</param>
     private void HandleKickAll(Cmd<ENetServerOpcode> command)
     {
         DisconnectOpcode opcode = (DisconnectOpcode)command.Data[0];

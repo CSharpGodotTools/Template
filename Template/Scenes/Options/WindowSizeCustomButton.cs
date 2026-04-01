@@ -30,22 +30,22 @@ internal sealed class WindowSizeCustomButtonController : IDisposable
 
     public void Dispose()
     {
+        // Unsubscribe only while source button instance is still valid.
         if (GodotObject.IsInstanceValid(_button))
             _button.Pressed -= _onPressed;
 
-        if (_widthInput is not null)
-            _widthInput.TextSubmitted -= _onTextSubmitted;
+        _widthInput?.TextSubmitted -= _onTextSubmitted;
+        _heightInput?.TextSubmitted -= _onTextSubmitted;
+        _applyButton?.Pressed -= _onApplyPressed;
 
-        if (_heightInput is not null)
-            _heightInput.TextSubmitted -= _onTextSubmitted;
-
-        if (_applyButton is not null)
-            _applyButton.Pressed -= _onApplyPressed;
-
+        // Free popup only when it exists and is still valid.
         if (_popup is not null && GodotObject.IsInstanceValid(_popup))
             _popup.QueueFree();
     }
 
+    /// <summary>
+    /// Opens the custom-size popup, synchronizing inputs with current window dimensions first.
+    /// </summary>
     private void OnPressed()
     {
         EnsurePopup();
@@ -53,8 +53,12 @@ internal sealed class WindowSizeCustomButtonController : IDisposable
         ShowPopup();
     }
 
+    /// <summary>
+    /// Creates popup UI nodes the first time the custom-size button is used.
+    /// </summary>
     private void EnsurePopup()
     {
+        // Reuse existing popup instance when it already exists.
         if (_popup is not null && GodotObject.IsInstanceValid(_popup))
             return;
 
@@ -112,8 +116,12 @@ internal sealed class WindowSizeCustomButtonController : IDisposable
         _button.GetTree().Root.AddChild(_popup);
     }
 
+    /// <summary>
+    /// Shows the popup anchored under the custom-size button.
+    /// </summary>
     private void ShowPopup()
     {
+        // Guard against calls before popup initialization.
         if (_popup is null)
             return;
 
@@ -122,8 +130,12 @@ internal sealed class WindowSizeCustomButtonController : IDisposable
         _popup.Popup(new Rect2I(buttonPos.X, y, 0, 0));
     }
 
+    /// <summary>
+    /// Refreshes width and height input fields from the current display window size.
+    /// </summary>
     private void SyncInputsFromWindow()
     {
+        // Guard against calls before input controls are initialized.
         if (_widthInput is null || _heightInput is null)
             return;
 
@@ -132,16 +144,25 @@ internal sealed class WindowSizeCustomButtonController : IDisposable
         _heightInput.Text = size.Y.ToString();
     }
 
+    /// <summary>
+    /// Handles Enter submission from either size input by applying entered values.
+    /// </summary>
+    /// <param name="_">Submitted text payload (unused).</param>
     private void OnTextSubmitted(string _)
     {
         OnApplyPressed();
     }
 
+    /// <summary>
+    /// Parses and applies custom window size inputs, then stores values in options settings.
+    /// </summary>
     private void OnApplyPressed()
     {
+        // Guard against apply before popup and inputs are initialized.
         if (_popup is null || _widthInput is null || _heightInput is null)
             return;
 
+        // Avoid changing editor-hosted window size while running embedded.
         if (Engine.IsEmbeddedInEditor())
         {
             _popup.Hide();
@@ -157,8 +178,16 @@ internal sealed class WindowSizeCustomButtonController : IDisposable
         _popup.Hide();
     }
 
+    /// <summary>
+    /// Parses one dimension input and clamps it to a valid display size range.
+    /// </summary>
+    /// <param name="text">Raw input text.</param>
+    /// <param name="fallback">Fallback value used when parsing fails.</param>
+    /// <param name="max">Maximum allowed size for the dimension.</param>
+    /// <returns>Clamped dimension value.</returns>
     private static int ParseDimension(string text, int fallback, int max)
     {
+        // Fall back to current value when text is not a valid integer.
         if (!int.TryParse(text, out int parsed))
             return Math.Clamp(fallback, 1, Math.Max(1, max));
 

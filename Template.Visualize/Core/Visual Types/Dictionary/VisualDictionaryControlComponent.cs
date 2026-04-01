@@ -6,6 +6,9 @@ using static Godot.Control;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Builds and manages dictionary controls for the visualize UI.
+/// </summary>
 internal sealed class VisualDictionaryControlComponent
 {
     private readonly VisualDictionaryTypeInfo _typeInfo;
@@ -22,6 +25,18 @@ internal sealed class VisualDictionaryControlComponent
     private IVisualDictionaryAdapter _adapter;
     private bool _isEditable = true;
 
+    /// <summary>
+    /// Initializes a dictionary control component.
+    /// </summary>
+    /// <param name="typeInfo">Dictionary type metadata.</param>
+    /// <param name="dictionaryObject">Dictionary instance.</param>
+    /// <param name="adapter">Adapter for dictionary access.</param>
+    /// <param name="context">Context for value change notifications.</param>
+    /// <param name="adapterFactory">Adapter factory for refreshes.</param>
+    /// <param name="keyResolver">Resolver for duplicate keys.</param>
+    /// <param name="displayOrderTracker">Display order tracker.</param>
+    /// <param name="createControlForType">Factory for child controls.</param>
+    /// <param name="cleanupOnTreeExited">Cleanup hook for control teardown.</param>
     public VisualDictionaryControlComponent(
         VisualDictionaryTypeInfo typeInfo,
         object dictionaryObject,
@@ -53,6 +68,10 @@ internal sealed class VisualDictionaryControlComponent
             () => _isEditable);
     }
 
+    /// <summary>
+    /// Builds the dictionary control and wires events.
+    /// </summary>
+    /// <returns>Control info for the dictionary UI.</returns>
     public VisualControlInfo Build()
     {
         InitializeRows();
@@ -67,6 +86,9 @@ internal sealed class VisualDictionaryControlComponent
             SetEditable));
     }
 
+    /// <summary>
+    /// Creates initial rows from the current dictionary entries.
+    /// </summary>
     private void InitializeRows()
     {
         List<(object Key, object Value)> entries = [.. _adapter.Entries];
@@ -78,8 +100,12 @@ internal sealed class VisualDictionaryControlComponent
         }
     }
 
+    /// <summary>
+    /// Handles the add button press to insert a new entry.
+    /// </summary>
     private void OnAddPressed()
     {
+        // Ignore add requests when editing is disabled.
         if (!_isEditable)
         {
             return;
@@ -87,6 +113,7 @@ internal sealed class VisualDictionaryControlComponent
 
         object keyToAdd = _typeInfo.DefaultKey;
 
+        // Resolve duplicates or bail when no suitable key exists.
         if (_adapter.ContainsKey(keyToAdd)
             && !_keyResolver.TryResolveAddedKey(keyToAdd, _typeInfo.KeyType, _adapter.ContainsKey, out keyToAdd))
         {
@@ -100,14 +127,23 @@ internal sealed class VisualDictionaryControlComponent
         _dictionaryVBox.MoveChild(_addButton, _dictionaryVBox.GetChildCount() - 1);
     }
 
+    /// <summary>
+    /// Handles external value changes for the dictionary.
+    /// </summary>
+    /// <param name="value">New dictionary value.</param>
     private void OnExternalValueChanged(object value)
     {
+        // Ensure a dictionary instance exists for the new value.
         _dictionaryObject = value ?? Activator.CreateInstance(_typeInfo.DictionaryType)!;
         _adapter = _adapterFactory.Create(_dictionaryObject, _typeInfo.DictionaryType);
         _displayOrderTracker.Reconcile(_adapter.Entries);
         RefreshEntries();
     }
 
+    /// <summary>
+    /// Updates editability and refreshes rows.
+    /// </summary>
+    /// <param name="editable">Whether the control is editable.</param>
     private void SetEditable(bool editable)
     {
         _isEditable = editable;
@@ -115,8 +151,12 @@ internal sealed class VisualDictionaryControlComponent
         RefreshEntries();
     }
 
+    /// <summary>
+    /// Rebuilds the entry rows to match the current dictionary state.
+    /// </summary>
     private void RefreshEntries()
     {
+        // Reconcile stable ordering before rebuilding the UI.
         if (_displayOrderTracker.UseStableOrder)
         {
             _displayOrderTracker.Reconcile(_adapter.Entries);
@@ -124,6 +164,7 @@ internal sealed class VisualDictionaryControlComponent
 
         foreach (Node child in _dictionaryVBox.GetChildren())
         {
+            // Preserve the add button row.
             if (child == _addButton)
             {
                 continue;
@@ -133,6 +174,7 @@ internal sealed class VisualDictionaryControlComponent
             child.QueueFree();
         }
 
+        // Rebuild rows either from adapter order or tracked key order.
         if (!_displayOrderTracker.UseStableOrder)
         {
             foreach ((object key, object value) in _adapter.Entries)
@@ -146,6 +188,7 @@ internal sealed class VisualDictionaryControlComponent
             {
                 object? value = _adapter.Get(key);
 
+                // Skip keys that no longer exist in the dictionary.
                 if (value == null)
                 {
                     continue;

@@ -78,6 +78,12 @@ internal sealed class PacketRegistryTests
         Assert.That(result.GeneratedSource, Does.Contain("Dictionary<byte, Type> ClientPacketTypes"));
     }
 
+    /// <summary>
+    /// Reads a generated registry dictionary field via reflection.
+    /// </summary>
+    /// <param name="registryType">Generated PacketRegistry type.</param>
+    /// <param name="fieldName">Static field name to retrieve.</param>
+    /// <returns>Dictionary field value.</returns>
     private static IDictionary ReadDictionaryField(Type registryType, string fieldName)
     {
         FieldInfo? field = registryType.GetField(fieldName, BindingFlags.Public | BindingFlags.Static);
@@ -89,11 +95,18 @@ internal sealed class PacketRegistryTests
         return (IDictionary)value!;
     }
 
+    /// <summary>
+    /// Asserts that a packet type entry exists and carries the expected opcode.
+    /// </summary>
+    /// <param name="packetInfoDictionary">Registry dictionary keyed by packet type.</param>
+    /// <param name="packetTypeName">Fully qualified packet type name.</param>
+    /// <param name="expectedOpcode">Expected opcode value.</param>
     private static void AssertOpcode(IDictionary packetInfoDictionary, string packetTypeName, int expectedOpcode)
     {
         foreach (DictionaryEntry entry in packetInfoDictionary)
         {
             Type packetType = (Type)entry.Key;
+            // Skip entries until the requested packet type is found.
             if (packetType.FullName != packetTypeName)
             {
                 continue;
@@ -109,6 +122,12 @@ internal sealed class PacketRegistryTests
         Assert.Fail($"Packet type '{packetTypeName}' was not found in PacketRegistry.");
     }
 
+    /// <summary>
+    /// Runs the packet generator and fails the test when the expected file is not produced.
+    /// </summary>
+    /// <param name="source">Input source used for generator execution.</param>
+    /// <param name="generatedFile">Expected generated file name.</param>
+    /// <returns>Successful generator run result.</returns>
     private static GeneratorTestRunResult RunAndRequireGeneratedSource(string source, string generatedFile)
     {
         GeneratorTestOptions options = new GeneratorTestBuilder<PacketGenerator>(source)

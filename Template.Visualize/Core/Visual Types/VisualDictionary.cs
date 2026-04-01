@@ -4,6 +4,15 @@ using System;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Builds dictionary controls using adapter-based access for typed and untyped dictionary variants.
+/// </summary>
+/// <param name="adapterFactory">Factory that creates dictionary adapters for runtime dictionary instances.</param>
+/// <param name="keyResolver">Resolver used to parse and validate key input from UI controls.</param>
+/// <param name="displayOrderTrackerFactory">Factory for stable dictionary entry display-order tracking.</param>
+/// <param name="createControlForType">Factory that builds value controls for runtime types.</param>
+/// <param name="createDefaultValue">Factory that creates default key/value instances for add-entry flows.</param>
+/// <param name="cleanupOnTreeExited">Callback used to register cleanup when controls leave the scene tree.</param>
 internal sealed class VisualDictionaryControlProvider(
     IVisualDictionaryAdapterFactory adapterFactory,
     IVisualDictionaryKeyResolver keyResolver,
@@ -19,6 +28,12 @@ internal sealed class VisualDictionaryControlProvider(
     private readonly Func<Type, object> _createDefaultValue = createDefaultValue;
     private readonly Action<Node, Action> _cleanupOnTreeExited = cleanupOnTreeExited;
 
+    /// <summary>
+    /// Creates a dictionary control for the provided runtime dictionary type.
+    /// </summary>
+    /// <param name="dictionaryType">Dictionary runtime type.</param>
+    /// <param name="context">Initial dictionary value and change callback context.</param>
+    /// <returns>Created visual-control info.</returns>
     public VisualControlInfo CreateControl(Type dictionaryType, VisualControlContext context)
     {
         object dictionaryObject = context.InitialValue ?? Activator.CreateInstance(dictionaryType)!;
@@ -40,6 +55,11 @@ internal sealed class VisualDictionaryControlProvider(
         return component.Build();
     }
 
+    /// <summary>
+    /// Resolves key/value type metadata and defaults for dictionary rendering.
+    /// </summary>
+    /// <param name="dictionaryType">Dictionary runtime type.</param>
+    /// <returns>Dictionary type-info payload used by control component.</returns>
     private VisualDictionaryTypeInfo BuildTypeInfo(Type dictionaryType)
     {
         Type[] genericArguments = dictionaryType.GetGenericArguments();

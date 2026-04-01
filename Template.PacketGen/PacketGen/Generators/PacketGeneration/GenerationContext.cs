@@ -6,6 +6,11 @@ namespace PacketGen.Generators.PacketGeneration;
 /// <summary>
 /// Shared state threaded through all <see cref="ITypeHandler"/> emit calls for a single property.
 /// </summary>
+/// <param name="compilation">Compilation used for symbol and type lookups.</param>
+/// <param name="property">Packet property currently being generated.</param>
+/// <param name="type">Resolved property type at the current generation depth.</param>
+/// <param name="outputLines">Destination list for emitted source lines.</param>
+/// <param name="namespaces">Namespace set required by emitted code.</param>
 internal sealed class GenerationContext(
     Compilation compilation,
     IPropertySymbol property,
@@ -26,6 +31,7 @@ internal sealed class GenerationContext(
 }
 
 /// <summary>Context passed to <see cref="ITypeHandler.EmitWrite"/>.</summary>
+/// <param name="shared">Shared generation state.</param>
 internal sealed class WriteContext(GenerationContext shared)
 {
     /// <summary>Shared generation state.</summary>
@@ -33,6 +39,8 @@ internal sealed class WriteContext(GenerationContext shared)
 }
 
 /// <summary>Context passed to <see cref="ITypeHandler.EmitRead"/>.</summary>
+/// <param name="shared">Shared generation state.</param>
+/// <param name="targetExpression">Assignment target expression for deserialized values.</param>
 internal sealed class ReadContext(GenerationContext shared, string targetExpression)
 {
     /// <summary>Shared generation state.</summary>

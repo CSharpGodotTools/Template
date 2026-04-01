@@ -5,12 +5,14 @@ using System.Collections.Generic;
 
 namespace __TEMPLATE__.Netcode.Examples.Topdown;
 
+/// <summary>
+/// TopDown sample server that tracks players and broadcasts join, leave, and position updates.
+/// </summary>
 public partial class GameServer : GodotServer
 {
     private const int PositionBroadcastIntervalMs = 100;
 
     private readonly PlayerManager _manager = new();
-
 
     protected override void OnPeerDisconnected(uint peerId)
     {
@@ -22,6 +24,7 @@ public partial class GameServer : GodotServer
         // packet registration moved here from base class hook
         OnPacket<CPacketPlayerJoinLeave>(peer =>
         {
+            // Add or remove players based on join/leave packet intent.
             if (peer.Packet.Joined)
                 _manager.Add(peer.PeerId);
             else
@@ -48,6 +51,10 @@ public partial class GameServer : GodotServer
         _manager.PositionUpdated += (_, _) => BroadcastPositions();
     }
 
+    /// <summary>
+    /// Sends a self-join packet to the newly connected peer so it can identify its local player id.
+    /// </summary>
+    /// <param name="peerId">Connected peer id.</param>
     private void NotifySelfJoined(uint peerId)
     {
         Send(new SPacketPlayerJoinedLeaved
@@ -58,6 +65,10 @@ public partial class GameServer : GodotServer
         }, peerId);
     }
 
+    /// <summary>
+    /// Broadcasts a remote-player join packet to all peers except the joining peer.
+    /// </summary>
+    /// <param name="peerId">Joining peer id.</param>
     private void BroadcastPlayerJoin(uint peerId)
     {
         Broadcast(new SPacketPlayerJoinedLeaved
@@ -68,26 +79,41 @@ public partial class GameServer : GodotServer
         }, peerId);
     }
 
-
+    /// <summary>
+    /// Broadcasts a player-leave packet to connected peers.
+    /// </summary>
+    /// <param name="playerId">Peer id that left the session.</param>
     private void BroadcastPlayerLeave(uint playerId)
     {
         Broadcast(new SPacketPlayerJoinedLeaved { Id = playerId, Joined = false });
     }
 
+    /// <summary>
+    /// Sends existing-player join packets to a newly connected peer.
+    /// </summary>
+    /// <param name="peerId">Target peer id.</param>
     private void SendExistingPlayersTo(uint peerId)
     {
         Send(peerId, _manager.BuildJoinPackets(peerId));
     }
 
-
+    /// <summary>
+    /// Sends the latest position map snapshot to a specific peer.
+    /// </summary>
+    /// <param name="peerId">Target peer id.</param>
     private void SendPositionsSnapshotTo(uint peerId)
     {
         // Pass positions dictionary from player manager.
         Send(new SPacketPlayerPositions { Positions = new Dictionary<uint, Vector2>(_manager.Positions) }, peerId);
     }
 
+    /// <summary>
+    /// Broadcasts position updates to connected peers, honoring throttle rules unless forced.
+    /// </summary>
+    /// <param name="force">True to bypass throttling for immediate delivery.</param>
     private void BroadcastPositions(bool force = false)
     {
+        // Skip broadcasts when no players are currently tracked.
         if (_manager.Count == 0)
             return;
 

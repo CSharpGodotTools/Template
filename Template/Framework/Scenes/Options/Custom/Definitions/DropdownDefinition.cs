@@ -32,10 +32,12 @@ public abstract class DropdownOptionDefinition : OptionDefinition
     /// <summary>
     /// Reads the current selected item index from your game settings source.
     /// </summary>
+    /// <returns>Current selected item index.</returns>
     public abstract int GetValue();
 
     /// <summary>
     /// Writes the selected item index back to your game settings source.
     /// </summary>
+    /// <param name="value">Selected item index to persist.</param>
     public abstract void SetValue(int value);
 }

@@ -59,6 +59,10 @@ internal sealed class PacketGeneratorWriteReadTests
         AssertNoGeneratorErrors(harness.Result);
     }
 
+    /// <summary>
+    /// Provides round-trip scenarios that exercise primitive, generic, and empty-collection packet shapes.
+    /// </summary>
+    /// <returns>Sequence of round-trip test cases.</returns>
     private static IEnumerable<RoundTripCase> GetRoundTripCases()
     {
         yield return new RoundTripCase(
@@ -80,6 +84,11 @@ internal sealed class PacketGeneratorWriteReadTests
             properties: BuildEmptyCollectionCases());
     }
 
+    /// <summary>
+    /// Assigns all property values for a packet instance under test.
+    /// </summary>
+    /// <param name="target">Packet object whose properties are set.</param>
+    /// <param name="properties">Property/value pairs to apply.</param>
     private static void AssignProperties(object target, IReadOnlyList<PropertyCase> properties)
     {
         foreach (PropertyCase property in properties)
@@ -88,6 +97,11 @@ internal sealed class PacketGeneratorWriteReadTests
         }
     }
 
+    /// <summary>
+    /// Verifies that all expected properties match their round-tripped values.
+    /// </summary>
+    /// <param name="actualPacket">Packet instance after read-back.</param>
+    /// <param name="expectedProperties">Expected property/value pairs.</param>
     private static void AssertRoundTripValues(object actualPacket, IReadOnlyList<PropertyCase> expectedProperties)
     {
         foreach (PropertyCase property in expectedProperties)
@@ -97,17 +111,29 @@ internal sealed class PacketGeneratorWriteReadTests
         }
     }
 
+    /// <summary>
+    /// Verifies that generated source contains required read/write override structure.
+    /// </summary>
+    /// <param name="generatedSource">Generated source text.</param>
     private static void AssertGeneratedShape(string generatedSource)
     {
         PacketGeneratedSourceAssertions.AssertContainsCoreOverrides(generatedSource);
     }
 
+    /// <summary>
+    /// Fails when generator diagnostics contain errors for a supported packet scenario.
+    /// </summary>
+    /// <param name="result">Generator run result to inspect.</param>
     private static void AssertNoGeneratorErrors(GeneratorTestRunResult result)
     {
         IEnumerable<Diagnostic> errors = result.GeneratorDiagnostics.Where(static d => d.Severity == DiagnosticSeverity.Error);
         Assert.That(errors, Is.Empty, "Generator produced error diagnostics for a supported packet shape.");
     }
 
+    /// <summary>
+    /// Builds source for a packet containing primitive and array property combinations.
+    /// </summary>
+    /// <returns>Packet source code string.</returns>
     private static string BuildPrimitivesAndArraysSource()
     {
         return $$"""
@@ -158,6 +184,10 @@ internal sealed class PacketGeneratorWriteReadTests
         """;
     }
 
+    /// <summary>
+    /// Builds source for a packet containing nested generic list and dictionary properties.
+    /// </summary>
+    /// <returns>Packet source code string.</returns>
     private static string BuildGenericsSource()
     {
         return $$"""
@@ -190,6 +220,10 @@ internal sealed class PacketGeneratorWriteReadTests
         """;
     }
 
+    /// <summary>
+    /// Builds source for a packet containing empty collection-typed properties.
+    /// </summary>
+    /// <returns>Packet source code string.</returns>
     private static string BuildEmptyCollectionSource()
     {
         return $$"""
@@ -208,6 +242,10 @@ internal sealed class PacketGeneratorWriteReadTests
         """;
     }
 
+    /// <summary>
+    /// Creates expected values for primitive and array round-trip assertions.
+    /// </summary>
+    /// <returns>Property/value cases for the primitive/array packet.</returns>
     private static List<PropertyCase> BuildPrimitiveArrayCases()
     {
         return
@@ -254,6 +292,10 @@ internal sealed class PacketGeneratorWriteReadTests
         ];
     }
 
+    /// <summary>
+    /// Creates expected values for generic collection round-trip assertions.
+    /// </summary>
+    /// <returns>Property/value cases for the generic packet.</returns>
     private static List<PropertyCase> BuildGenericCases()
     {
         return
@@ -321,6 +363,10 @@ internal sealed class PacketGeneratorWriteReadTests
         ];
     }
 
+    /// <summary>
+    /// Creates expected values for empty-collection round-trip assertions.
+    /// </summary>
+    /// <returns>Property/value cases containing empty collection instances.</returns>
     private static IReadOnlyList<PropertyCase> BuildEmptyCollectionCases()
     {
         return
@@ -340,6 +386,12 @@ internal sealed class PacketGeneratorWriteReadTests
         public IReadOnlyList<PropertyCase> Properties { get; } = properties;
     }
 
+    /// <summary>
+    /// Clones an array so test cases avoid sharing mutable references.
+    /// </summary>
+    /// <typeparam name="T">Array element type.</typeparam>
+    /// <param name="source">Source array to clone.</param>
+    /// <returns>Shallow clone of the source array.</returns>
     private static T[] CloneArray<T>(T[] source)
     {
         return (T[])source.Clone();

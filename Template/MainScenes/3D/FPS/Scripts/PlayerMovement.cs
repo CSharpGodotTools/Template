@@ -30,6 +30,7 @@ public class PlayerMovement(Player player, PlayerMovementConfig config, PlayerRo
         {
             _gravityVec = Vector3.Zero;
 
+            // Apply jump impulse only on the initial jump button press.
             if (Input.IsActionJustPressed(InputActions.Jump))
                 _gravityVec = Vector3.Up * config.JumpForce * delta;
         }
@@ -49,6 +50,10 @@ public class PlayerMovement(Player player, PlayerMovementConfig config, PlayerRo
         playerRotation.YawChanged -= OnYawChanged;
     }
 
+    /// <summary>
+    /// Caches the latest player yaw used to rotate movement input vectors.
+    /// </summary>
+    /// <param name="yaw">Current yaw angle in radians.</param>
     private void OnYawChanged(float yaw)
     {
         _yaw = yaw;

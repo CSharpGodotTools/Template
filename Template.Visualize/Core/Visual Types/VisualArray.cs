@@ -6,12 +6,21 @@ using System.Reflection;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Array-control builders for Godot and CLR array containers.
+/// </summary>
 internal static partial class VisualControlTypes
 {
+    /// <summary>
+    /// Creates a control for non-generic <see cref="Godot.Collections.Array"/> values.
+    /// </summary>
+    /// <param name="context">Initial value and change callback context.</param>
+    /// <returns>Created array-control info.</returns>
     private static VisualControlInfo VisualGodotArray(VisualControlContext context)
     {
         object arrayObject = context.InitialValue ?? new Godot.Collections.Array();
 
+        // Prefer IList path when array object already exposes indexed collection APIs.
         if (arrayObject is IList list)
         {
             return CreateIndexedCollectionControl(
@@ -24,6 +33,7 @@ internal static partial class VisualControlTypes
                 () => list,
                 value =>
                 {
+                    // Replace captured list reference when parent control swaps value.
                     if (value is IList nextList)
                     {
                         list = nextList;
@@ -40,6 +50,7 @@ internal static partial class VisualControlTypes
         Type indexerValueType = indexerProperty?.PropertyType ?? typeof(object);
         Type addValueType = addMethod?.GetParameters().Length == 1 ? addMethod.GetParameters()[0].ParameterType : typeof(object);
 
+        // Abort when reflection APIs for list-like behavior are incomplete.
         if (countProperty == null || indexerProperty == null || addMethod == null || removeAtMethod == null)
         {
             return new VisualControlInfo(null);
@@ -55,6 +66,7 @@ internal static partial class VisualControlTypes
             () => arrayObject,
             value =>
             {
+                // Replace captured array object when parent control swaps value.
                 if (value != null)
                 {
                     arrayObject = value;
@@ -63,6 +75,12 @@ internal static partial class VisualControlTypes
             context);
     }
 
+    /// <summary>
+    /// Creates a control for CLR array values.
+    /// </summary>
+    /// <param name="type">Concrete CLR array type.</param>
+    /// <param name="context">Initial value and change callback context.</param>
+    /// <returns>Created array-control info.</returns>
     private static VisualControlInfo VisualArray(Type type, VisualControlContext context)
     {
         Type? elementType = type.GetElementType();
@@ -77,6 +95,7 @@ internal static partial class VisualControlTypes
             () => array,
             value =>
             {
+                // Replace captured CLR array when parent control swaps value.
                 if (value is Array nextArray)
                 {
                     array = nextArray;
@@ -85,10 +104,17 @@ internal static partial class VisualControlTypes
             context);
     }
 
+    /// <summary>
+    /// Finds the first method with the given name that has exactly one parameter.
+    /// </summary>
+    /// <param name="type">Type to inspect.</param>
+    /// <param name="methodName">Method name to match.</param>
+    /// <returns>Matching method info, or null when not found.</returns>
     private static MethodInfo? FindSingleParameterMethod(Type type, string methodName)
     {
         foreach (MethodInfo method in type.GetMethods())
         {
+            // Match method by name and a single-parameter signature.
             if (method.Name == methodName && method.GetParameters().Length == 1)
             {
                 return method;
@@ -98,13 +124,21 @@ internal static partial class VisualControlTypes
         return null;
     }
 
+    /// <summary>
+    /// Converts a value to the type expected by Godot array APIs when needed.
+    /// </summary>
+    /// <param name="value">Incoming value.</param>
+    /// <param name="expectedType">Expected destination type.</param>
+    /// <returns>Converted value when needed.</returns>
     private static object? ConvertArrayValueToExpectedType(object? value, Type expectedType)
     {
+        // Normalize to Variant payload when Godot API expects Variant values.
         if (expectedType == typeof(Variant))
         {
             return ConvertToVariantValue(value);
         }
 
+        // Preserve input when already null or assignable to expected type.
         if (value == null || expectedType.IsInstanceOfType(value))
         {
             return value;
@@ -113,6 +147,11 @@ internal static partial class VisualControlTypes
         return value;
     }
 
+    /// <summary>
+    /// Converts known runtime values to <see cref="Variant"/> payloads.
+    /// </summary>
+    /// <param name="value">Value to convert.</param>
+    /// <returns>Variant payload.</returns>
     private static Variant ConvertToVariantValue(object? value)
     {
         return value switch

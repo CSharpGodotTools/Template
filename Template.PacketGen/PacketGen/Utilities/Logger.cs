@@ -44,6 +44,7 @@ internal static class Logger
     private static bool _initialized;
 
     /// <summary>Must be called at the start of every <see cref="SourceProductionContext"/> callback to bind the logger to the current context.</summary>
+    /// <param name="context">Current source-production context.</param>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static void Init(SourceProductionContext context)
     {
@@ -52,37 +53,53 @@ internal static class Logger
     }
 
     /// <summary>Reports an error diagnostic for the given symbol location.</summary>
+    /// <param name="symbol">Symbol used to anchor diagnostic location.</param>
+    /// <param name="message">Diagnostic message text.</param>
     public static void Err(ISymbol symbol, string? message)
     {
         Log(symbol, message, _errorDescriptor);
     }
 
     /// <summary>Reports a warning diagnostic for the given symbol location.</summary>
+    /// <param name="symbol">Symbol used to anchor diagnostic location.</param>
+    /// <param name="message">Diagnostic message text.</param>
     public static void Warn(ISymbol symbol, string? message)
     {
         Log(symbol, message, _warningDescriptor);
     }
 
     /// <summary>Reports an informational diagnostic with no associated symbol location.</summary>
+    /// <param name="message">Diagnostic message text.</param>
     public static void Info(string? message)
     {
         Info(null, message);
     }
 
     /// <summary>Reports an informational diagnostic, optionally anchored to a symbol location.</summary>
+    /// <param name="symbol">Optional symbol used to anchor diagnostic location.</param>
+    /// <param name="message">Diagnostic message text.</param>
     public static void Info(ISymbol? symbol, string? message)
     {
         Log(symbol, message, _infoDescriptor);
     }
 
+    /// <summary>
+    /// Reports a diagnostic to the current source production context.
+    /// </summary>
+    /// <param name="symbol">Optional symbol used to anchor the diagnostic location.</param>
+    /// <param name="message">Diagnostic message text.</param>
+    /// <param name="descriptor">Descriptor that defines id, severity, and category.</param>
     private static void Log(ISymbol? symbol, string? message, DiagnosticDescriptor descriptor)
     {
+        // Drop log attempts until Init binds a valid source production context.
         if (!_initialized)
             return;
 
         string detail = string.IsNullOrWhiteSpace(message) ? "(no details provided)" : message!;
 
         Location location = Location.None;
+
+        // Anchor diagnostics to the first symbol location when available.
         if (symbol != null)
         {
             ImmutableArray<Location> locations = symbol.Locations;

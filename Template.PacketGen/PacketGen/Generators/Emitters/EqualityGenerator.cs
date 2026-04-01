@@ -9,7 +9,11 @@ namespace PacketGen.Generators.Emitters;
 /// </summary>
 internal sealed class EqualityGenerator : IEqualityGenerator
 {
-    /// <inheritdoc/>
+    /// <summary>
+    /// Appends equality-expression lines for a packet property.
+    /// </summary>
+    /// <param name="equalsLines">Destination collection of equality lines.</param>
+    /// <param name="property">Property being emitted.</param>
     public void Generate(List<EqualityLine> equalsLines, IPropertySymbol property)
     {
         string left = property.Name;

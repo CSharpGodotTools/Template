@@ -19,6 +19,7 @@ public class WorldBoundaryArea3D : ShapeArea3D<WorldBoundaryShape3D>
     /// <summary>
     /// Creates a world boundary area with the provided plane.
     /// </summary>
+    /// <param name="plane">Boundary plane.</param>
     internal WorldBoundaryArea3D(Plane plane) : base(new WorldBoundaryShape3D { Plane = plane })
     {
     }

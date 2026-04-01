@@ -11,6 +11,7 @@ public static class Tweens
     /// <summary>
     /// Creates a <see cref="NodeTween"/> bound to <paramref name="node"/>.
     /// </summary>
+    /// <param name="node">Node to animate.</param>
     /// <returns>The <see cref="NodeTween"/> for chain building.</returns>
     public static NodeTween Animate(Node node)
     {
@@ -20,6 +21,8 @@ public static class Tweens
     /// <summary>
     /// Creates a <see cref="NodeTweenProp"/> bound to <paramref name="node"/> ready to animate on <paramref name="property"/>.
     /// </summary>
+    /// <param name="node">Node to animate.</param>
+    /// <param name="property">Property path to animate.</param>
     /// <returns>The <see cref="NodeTweenProp"/> for chain building.</returns>
     public static NodeTweenProp Animate(Node node, string property)
     {
@@ -29,6 +32,7 @@ public static class Tweens
     /// <summary>
     /// Creates a <see cref="NodeTween2D"/> bound to <paramref name="node"/>.
     /// </summary>
+    /// <param name="node">Node2D to animate.</param>
     /// <returns>The <see cref="NodeTween2D"/> for chain building.</returns>
     public static NodeTween2D Animate(Node2D node)
     {
@@ -38,6 +42,7 @@ public static class Tweens
     /// <summary>
     /// Creates a <see cref="NodeTweenControl"/> bound to <paramref name="control"/>.
     /// </summary>
+    /// <param name="control">Control to animate.</param>
     /// <returns>The <see cref="NodeTweenControl"/> for chain building.</returns>
     public static NodeTweenControl Animate(Control control)
     {
@@ -47,6 +52,7 @@ public static class Tweens
     /// <summary>
     /// Creates a <see cref="ShaderTween"/> bound to <paramref name="canvasItem"/>.
     /// </summary>
+    /// <param name="canvasItem">Canvas item with shader material to animate.</param>
     /// <returns>The <see cref="ShaderTween"/> for chain building.</returns>
     public static ShaderTween AnimateShader(CanvasItem canvasItem)
     {
@@ -56,6 +62,8 @@ public static class Tweens
     /// <summary>
     /// Creates a <see cref="ShaderTween"/> bound to <paramref name="canvasItem"/> ready to animate <paramref name="property"/>.
     /// </summary>
+    /// <param name="canvasItem">Canvas item with shader material to animate.</param>
+    /// <param name="property">Shader parameter name.</param>
     /// <returns>The <see cref="ShaderTween"/> for chain building.</returns>
     public static ShaderTweenProp AnimateShader(CanvasItem canvasItem, string property)
     {
@@ -65,6 +73,8 @@ public static class Tweens
     /// <summary>
     /// Creates a tween bound to <paramref name="node"/> ready to animate on the <paramref name="property"/>.
     /// </summary>
+    /// <param name="node">Node2D to animate.</param>
+    /// <param name="property">Property path to animate.</param>
     /// <returns>The tween for chain building.</returns>
     public static NodeTweenProp Animate(Node2D node, string property)
     {
@@ -74,6 +84,8 @@ public static class Tweens
     /// <summary>
     /// Creates a tween bound to <paramref name="control"/> ready to animate on the <paramref name="property"/>.
     /// </summary>
+    /// <param name="control">Control to animate.</param>
+    /// <param name="property">Property path to animate.</param>
     /// <returns>The tween for chain building.</returns>
     public static NodeTweenProp Animate(Control control, string property)
     {
@@ -83,6 +95,10 @@ public static class Tweens
     /// <summary>
     /// Creates a <see cref="NodeTween"/> bound to <paramref name="node"/> and runs <paramref name="callback"/> after <paramref name="seconds"/>.
     /// </summary>
+    /// <param name="node">Node to own and process the tween.</param>
+    /// <param name="seconds">Delay duration in seconds.</param>
+    /// <param name="callback">Callback invoked after delay.</param>
+    /// <returns>Created tween instance.</returns>
     public static NodeTween Delay(Node node, double seconds, Action callback)
     {
         NodeTween tween = new(node);
@@ -96,6 +112,10 @@ public static class Tweens
     /// <summary>
     /// Creates a <see cref="NodeTween2D"/> bound to <paramref name="node"/> and runs <paramref name="callback"/> after <paramref name="seconds"/>.
     /// </summary>
+    /// <param name="node">Node2D to own and process the tween.</param>
+    /// <param name="seconds">Delay duration in seconds.</param>
+    /// <param name="callback">Callback invoked after delay.</param>
+    /// <returns>Created tween instance.</returns>
     public static NodeTween2D Delay(Node2D node, double seconds, Action callback)
     {
         NodeTween2D tween = new(node);
@@ -109,6 +129,10 @@ public static class Tweens
     /// <summary>
     /// Creates a <see cref="NodeTweenControl"/> bound to <paramref name="control"/> and runs <paramref name="callback"/> after <paramref name="seconds"/>.
     /// </summary>
+    /// <param name="control">Control to own and process the tween.</param>
+    /// <param name="seconds">Delay duration in seconds.</param>
+    /// <param name="callback">Callback invoked after delay.</param>
+    /// <returns>Created tween instance.</returns>
     public static NodeTweenControl Delay(Control control, double seconds, Action callback)
     {
         NodeTweenControl tween = new(control);

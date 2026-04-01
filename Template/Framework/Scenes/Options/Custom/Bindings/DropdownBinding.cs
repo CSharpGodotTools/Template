@@ -6,6 +6,9 @@ namespace __TEMPLATE__.Ui;
 /// <summary>
 /// Disposable helper that owns a dropdown row and its event subscription.
 /// </summary>
+/// <param name="row">Row container that owns the dropdown control.</param>
+/// <param name="dropdown">Dropdown control bound to option state.</param>
+/// <param name="onItemSelected">Signal handler used to persist selected item changes.</param>
 internal sealed class DropdownBinding(HBoxContainer row, OptionButton dropdown, OptionButton.ItemSelectedEventHandler onItemSelected) : IDisposable
 {
     private readonly HBoxContainer _row = row;
@@ -15,6 +18,10 @@ internal sealed class DropdownBinding(HBoxContainer row, OptionButton dropdown, 
     /// <summary>
     /// Builds the dropdown control, populates items, syncs selection, and wires events.
     /// </summary>
+    /// <param name="tabContainer">Tab container that will own the row.</param>
+    /// <param name="navButton">Navigation button used for focus wiring.</param>
+    /// <param name="dropdownOption">Registered dropdown option metadata.</param>
+    /// <returns>Disposable binding that owns row and signal subscription.</returns>
     internal static DropdownBinding Create(
         VBoxContainer tabContainer, Button navButton,
         RegisteredDropdownOption dropdownOption)
@@ -46,11 +53,16 @@ internal sealed class DropdownBinding(HBoxContainer row, OptionButton dropdown, 
         return new DropdownBinding(row, dropdown, onItemSelected);
     }
 
+    /// <summary>
+    /// Unsubscribes events and frees the generated row.
+    /// </summary>
     public void Dispose()
     {
+        // Unsubscribe only while the dropdown instance is still valid.
         if (GodotObject.IsInstanceValid(_dropdown))
             _dropdown.ItemSelected -= _onItemSelected;
 
+        // Free row only while the row instance is still valid.
         if (GodotObject.IsInstanceValid(_row))
             _row.QueueFree();
     }

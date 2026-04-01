@@ -125,6 +125,12 @@ internal sealed class PacketTests
         GeneratedAssemblyCompiler.Compile(result, fileStore);
     }
 
+    /// <summary>
+    /// Runs the packet generator and fails the test when the expected file is missing.
+    /// </summary>
+    /// <param name="source">Input source code for generation.</param>
+    /// <param name="generatedFile">Expected generated file name.</param>
+    /// <returns>Successful generator run result.</returns>
     private static GeneratorTestRunResult RunAndRequireGeneratedSource(string source, string generatedFile)
     {
         GeneratorTestOptions options = new GeneratorTestBuilder<PacketGenerator>(source)

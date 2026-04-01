@@ -30,9 +30,11 @@ public class PlayerRotation(Player player, Camera3D camera, IOptionsService opti
 
     protected override void ProcessInput(InputEvent @event)
     {
+        // Ignore look input unless the mouse is captured by the game.
         if (Input.MouseMode != Input.MouseModeEnum.Captured)
             return;
 
+        // Apply yaw/pitch updates only for mouse motion events.
         if (@event is InputEventMouseMotion motion)
         {
             float sensitivity = FpsOptions.GetMouseSensitivity(optionsService) * 0.001f;

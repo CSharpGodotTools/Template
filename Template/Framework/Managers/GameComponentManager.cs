@@ -3,8 +3,14 @@ using GodotUtils;
 
 namespace __TEMPLATE__;
 
+/// <summary>
+/// Forwards Godot lifecycle callbacks into the framework <see cref="ComponentManager"/>.
+/// </summary>
 public partial class GameComponentManager : Node
 {
+    /// <summary>
+    /// Root component manager that orchestrates composed game components.
+    /// </summary>
     private ComponentManager _componentManager = null!;
 
     // Godot Overrides

@@ -2,8 +2,15 @@ using PacketGen.Generators.TypeHandlers;
 
 namespace PacketGen.Generators;
 
+/// <summary>
+/// Creates fully-wired type-handler registries for packet generation.
+/// </summary>
 internal sealed class PacketTypeHandlerRegistryFactory
 {
+    /// <summary>
+    /// Creates and configures the type-handler registry used by emitters.
+    /// </summary>
+    /// <returns>Configured type-handler registry.</returns>
     public TypeHandlerRegistry Create()
     {
         TypeHandlerRegistry registry = new();

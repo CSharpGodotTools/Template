@@ -2,10 +2,18 @@ using Godot;
 
 namespace Template.Setup.Testing;
 
+/// <summary>
+/// Builds struct-based packet fixtures used by ENet packet tests.
+/// </summary>
 public static class PacketStructTypesFactory
 {
+    /// <summary>
+    /// Creates a packet with sequential movement snapshots.
+    /// </summary>
+    /// <returns>Packet populated with spawn, current, and target snapshots.</returns>
     public static CPacketStructTypes CreateSample()
     {
+        // Keep ticks ordered to mirror a realistic movement timeline.
         MovementSnapshot spawn = new()
         {
             Tick = 40,

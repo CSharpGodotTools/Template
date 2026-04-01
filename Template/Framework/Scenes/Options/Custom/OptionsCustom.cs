@@ -16,14 +16,31 @@ public sealed class OptionsCustom : IDisposable
     private readonly Action<RegisteredRightControl> _rightControlHandler;
 
     // Properties
+    /// <summary>
+    /// Gets navigation helper used to resolve tabs and tab containers.
+    /// </summary>
     internal OptionsNav Nav { get; }
+
+    /// <summary>
+    /// Gets options manager that provides registration events and data.
+    /// </summary>
     internal OptionsManager OptionsManager { get; }
+
+    /// <summary>
+    /// Gets active custom option bindings keyed by option id.
+    /// </summary>
     internal Dictionary<int, IDisposable> Bindings { get; } = [];
+
+    /// <summary>
+    /// Gets active right-control bindings keyed by right-control id.
+    /// </summary>
     internal Dictionary<int, IDisposable> RightControlBindings { get; } = [];
 
     /// <summary>
     /// Constructs the custom options UI manager and subscribes to option registration events.
     /// </summary>
+    /// <param name="nav">Navigation helper for tab lookup/selection.</param>
+    /// <param name="optionsManager">Options manager providing registrations/events.</param>
     public OptionsCustom(OptionsNav nav, OptionsManager optionsManager)
     {
         Nav = nav;

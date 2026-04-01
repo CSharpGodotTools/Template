@@ -32,8 +32,11 @@ public class PlayerManager
     /// <summary>
     /// Adds a player ID. Returns true if the player was new.
     /// </summary>
+    /// <param name="playerId">Player id to add.</param>
+    /// <returns><see langword="true"/> when player was newly added.</returns>
     public bool Add(uint playerId)
     {
+        // Fire join events only when this player id is newly tracked.
         if (_players.Add(playerId))
         {
             PlayerJoined?.Invoke(playerId);
@@ -46,8 +49,11 @@ public class PlayerManager
     /// <summary>
     /// Removes a player ID. Returns true if the player was present.
     /// </summary>
+    /// <param name="playerId">Player id to remove.</param>
+    /// <returns><see langword="true"/> when player existed and was removed.</returns>
     public bool Remove(uint playerId)
     {
+        // Fire leave events only when this player id existed in the set.
         if (_players.Remove(playerId))
         {
             _positions.Remove(playerId);
@@ -61,8 +67,12 @@ public class PlayerManager
     /// <summary>
     /// Update a player's position. Ignored if the player isn't tracked.
     /// </summary>
+    /// <param name="playerId">Player id to update.</param>
+    /// <param name="position">Latest player position.</param>
+    /// <returns><see langword="true"/> when position was updated.</returns>
     public bool UpdatePosition(uint playerId, Vector2 position)
     {
+        // Ignore updates for players that are not currently tracked.
         if (!_players.Contains(playerId))
             return false;
 
@@ -74,6 +84,8 @@ public class PlayerManager
     /// <summary>
     /// Enumerates all tracked player IDs, optionally excluding one.
     /// </summary>
+    /// <param name="except">Optional player id to exclude.</param>
+    /// <returns>Tracked player id sequence.</returns>
     public IEnumerable<uint> ExistingPlayersExcept(uint? except = null)
     {
         return except.HasValue ? _players.Where(id => id != except.Value) : _players;
@@ -83,6 +95,8 @@ public class PlayerManager
     /// Build the join notification packets for every player except the given
     /// ID.
     /// </summary>
+    /// <param name="except">Player id that should not be included.</param>
+    /// <returns>Join packets for all existing players except the provided id.</returns>
     public IEnumerable<ServerPacket> BuildJoinPackets(uint except)
     {
         foreach (uint playerId in ExistingPlayersExcept(except))

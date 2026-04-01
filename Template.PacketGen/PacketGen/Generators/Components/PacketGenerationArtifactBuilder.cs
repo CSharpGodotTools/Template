@@ -7,13 +7,26 @@ using System.Linq;
 
 namespace PacketGen.Generators;
 
+/// <summary>
+/// Builds write/read/equality/hash generation artifacts for packet source composition.
+/// </summary>
+/// <param name="registryFactory">Factory for type-handler registries used by emitters.</param>
 internal sealed class PacketGenerationArtifactBuilder(PacketTypeHandlerRegistryFactory registryFactory)
 {
     private readonly PacketTypeHandlerRegistryFactory _registryFactory = registryFactory;
 
+    /// <summary>
+    /// Produces all generation artifacts for a packet model.
+    /// </summary>
+    /// <param name="compilation">Current Roslyn compilation.</param>
+    /// <param name="model">Packet generation model.</param>
+    /// <param name="packetFrameworkNamespace">Optional runtime packet namespace.</param>
+    /// <returns>Complete artifact set for source composition.</returns>
     public PacketGenerationArtifacts Build(Compilation compilation, PacketGenerationModel model, string? packetFrameworkNamespace)
     {
         HashSet<string> namespaces = [];
+
+        // Include framework namespace when packet runtime APIs are externally scoped.
         if (packetFrameworkNamespace is not null)
             namespaces.Add(packetFrameworkNamespace);
 
@@ -45,9 +58,11 @@ internal sealed class PacketGenerationArtifactBuilder(PacketTypeHandlerRegistryF
         bool needsEqualityComparer = equalsLines.Any(line => !line.UsesDeepEquality)
             || hashLines.Any(line => !line.UsesDeepHash);
 
+        // Structural comparer APIs require generic collections namespace support.
         if (needsEqualityComparer)
             namespaces.Add("System.Collections.Generic");
 
+        // Deep helpers require runtime and non-generic collection namespaces.
         if (needsDeepEquals || needsDeepHash)
         {
             namespaces.Add("System");
@@ -66,6 +81,16 @@ internal sealed class PacketGenerationArtifactBuilder(PacketTypeHandlerRegistryF
     }
 }
 
+/// <summary>
+/// Immutable container of generated packet source fragments and helper requirements.
+/// </summary>
+/// <param name="namespaces">Namespaces required by generated source.</param>
+/// <param name="writeLines">Write-method body lines.</param>
+/// <param name="readLines">Read-method body lines.</param>
+/// <param name="equalsLines">Equality-expression lines and metadata.</param>
+/// <param name="hashLines">Hash-code expression lines and metadata.</param>
+/// <param name="needsDeepEquals">Whether deep-equality helper methods are required.</param>
+/// <param name="needsDeepHash">Whether deep-hash helper methods are required.</param>
 internal sealed class PacketGenerationArtifacts(
     HashSet<string> namespaces,
     List<string> writeLines,

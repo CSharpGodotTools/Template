@@ -1,5 +1,8 @@
 namespace __TEMPLATE__.Ui;
 
+/// <summary>
+/// Defines persistence keys used by framework options settings.
+/// </summary>
 internal static class FrameworkOptionsSaveKeys
 {
     public const string Language = "Language";

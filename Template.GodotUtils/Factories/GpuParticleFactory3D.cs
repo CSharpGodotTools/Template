@@ -10,6 +10,9 @@ public static class GpuParticleFactory3D
     /// <summary>
     /// Instantiates a one-shot GPU particle and frees it when finished.
     /// </summary>
+    /// <param name="parent">Parent node that receives the particle instance.</param>
+    /// <param name="particleScene">Packed scene containing a <see cref="GpuParticles3D"/> root.</param>
+    /// <returns>Configured one-shot particle instance.</returns>
     public static GpuParticles3D OneShot(Node parent, PackedScene particleScene)
     {
         GpuParticles3D particles = particleScene.Instantiate<GpuParticles3D>();

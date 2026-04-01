@@ -22,6 +22,7 @@ internal sealed class MaxFpsFeedbackController : IDisposable
 
     public void Dispose()
     {
+        // Unsubscribe only while the slider instance is still valid.
         if (GodotObject.IsInstanceValid(_slider))
             _slider.ValueChanged -= _onValueChanged;
     }

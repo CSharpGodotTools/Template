@@ -5,6 +5,9 @@ using System.Collections.Generic;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Builds the anchor-selection popup used by visual title-bar controls.
+/// </summary>
 internal sealed class VisualTitleBarAnchorPopupBuilder : IVisualTitleBarAnchorPopupBuilder
 {
     private const int AnchorPopupMargin = 6;
@@ -14,6 +17,10 @@ internal sealed class VisualTitleBarAnchorPopupBuilder : IVisualTitleBarAnchorPo
     private const int AnchorButtonMinHeight = 36;
     private static readonly Color _unselectedAnchorColor = new(0.45f, 0.45f, 0.45f);
 
+    /// <summary>
+    /// Creates the popup panel with a 3x3 anchor grid and refresh callback.
+    /// </summary>
+    /// <returns>Anchor popup record containing panel and selection refresh action.</returns>
     public VisualTitleBarAnchorPopup Build()
     {
         PopupPanel popup = new();
@@ -42,6 +49,7 @@ internal sealed class VisualTitleBarAnchorPopupBuilder : IVisualTitleBarAnchorPo
 
         void refreshSelection()
         {
+            // Repaint all buttons so only the current anchor appears highlighted.
             foreach ((Button button, Vector2 anchor) in anchorButtons)
             {
                 bool isSelected = anchor == VisualAnchorSettings.NormalizedAnchor;
@@ -62,6 +70,14 @@ internal sealed class VisualTitleBarAnchorPopupBuilder : IVisualTitleBarAnchorPo
         return new VisualTitleBarAnchorPopup(popup, refreshSelection);
     }
 
+    /// <summary>
+    /// Adds a single anchor-selection button to the popup grid.
+    /// </summary>
+    /// <param name="grid">Grid container that hosts anchor buttons.</param>
+    /// <param name="popup">Popup panel to hide after selection.</param>
+    /// <param name="anchorButtons">List used to track button/anchor associations.</param>
+    /// <param name="text">Button label text.</param>
+    /// <param name="anchor">Normalized anchor value represented by the button.</param>
     private static void AddAnchorButton(
         GridContainer grid,
         PopupPanel popup,

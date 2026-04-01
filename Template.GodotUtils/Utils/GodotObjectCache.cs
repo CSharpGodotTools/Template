@@ -14,10 +14,13 @@ public class GodotObjectCache<TValue> where TValue : GodotObject
     /// <summary>
     /// Returns the cached object if it exists; otherwise adds the object to the cache and returns it.
     /// </summary>
+    /// <param name="obj">Object to retrieve or cache.</param>
+    /// <returns>Cached instance for the object ID.</returns>
     public TValue Get(TValue obj)
     {
         ulong key = obj.GetInstanceId();
 
+        // Reuse existing cached entry when present.
         if (_cache.TryGetValue(key, out TValue? value))
             return value;
 
@@ -28,6 +31,7 @@ public class GodotObjectCache<TValue> where TValue : GodotObject
     /// <summary>
     /// Removes an object from the cache.
     /// </summary>
+    /// <param name="obj">Object whose cache entry should be removed.</param>
     public void Remove(TValue obj)
     {
         _cache.Remove(obj.GetInstanceId());

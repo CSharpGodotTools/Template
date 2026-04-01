@@ -1,5 +1,8 @@
 namespace __TEMPLATE__.Ui;
 
+/// <summary>
+/// Defines standard framework options tab names.
+/// </summary>
 internal static class FrameworkOptionsTabs
 {
     public const string General = "General";

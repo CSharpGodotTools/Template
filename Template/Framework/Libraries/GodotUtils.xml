@@ -11,8 +11,11 @@
         </member>
         <member name="M:GodotUtils.Debugging.JsonExceptionHandler.Handle(System.Text.Json.JsonException,System.String,System.String)">
             <summary>
-            Prints a formatted JSON parsing error with context.
+            Prints a formatted JSON parsing error with nearby source context when line data is available.
             </summary>
+            <param name="ex">JSON exception describing the parse failure.</param>
+            <param name="jsonText">Original JSON source text.</param>
+            <param name="path">Path of the JSON resource being parsed.</param>
         </member>
         <member name="T:GodotUtils.Debugging.ParamValidator">
             <summary>
@@ -21,8 +24,12 @@
         </member>
         <member name="M:GodotUtils.Debugging.ParamValidator.ThrowIfNull(Godot.Node,System.Object,System.String)">
             <summary>
-            Throws when <paramref name="obj"/> is null and disables the node.
+            Validates an object argument and disables the node before throwing when the value is null.
             </summary>
+            <param name="node">Node to disable when validation fails.</param>
+            <param name="obj">Argument value to validate.</param>
+            <param name="paramName">Name of the validated argument.</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="obj"/> is null.</exception>
         </member>
         <member name="T:GodotUtils.Deprecated.EventManager`1">
             <summary>
@@ -133,31 +140,48 @@
             <summary>
             Sets a condition briefly and auto-resets after 0.1 seconds.
             </summary>
+            <param name="tree">Animation tree to update.</param>
+            <param name="path">Condition parameter path segment.</param>
+            <param name="value">Condition value to set briefly.</param>
         </member>
         <member name="M:GodotUtils.AnimationTreeExtensions.SetBlendSpace1DPosition(Godot.AnimationTree,Godot.StringName,System.Single)">
             <summary>
             Sets the blend position of a BlendSpace1D by name.
             </summary>
+            <param name="tree">Animation tree to update.</param>
+            <param name="name">Blend space parameter name.</param>
+            <param name="value">Blend position value.</param>
         </member>
         <member name="M:GodotUtils.AnimationTreeExtensions.SetParam(Godot.AnimationTree,Godot.StringName,Godot.Variant)">
             <summary>
             Sets a parameter value on the animation tree.
             </summary>
+            <param name="tree">Animation tree to update.</param>
+            <param name="path">Parameter path segment under <c>parameters/</c>.</param>
+            <param name="value">Value to assign.</param>
         </member>
         <member name="M:GodotUtils.AnimationTreeExtensions.GetParam(Godot.AnimationTree,Godot.StringName)">
             <summary>
             Gets a parameter value from the animation tree.
             </summary>
+            <param name="tree">Animation tree to read.</param>
+            <param name="path">Parameter path segment under <c>parameters/</c>.</param>
+            <returns>Resolved parameter value.</returns>
         </member>
         <member name="M:GodotUtils.AnimationTreeExtensions.GetCondition(Godot.AnimationTree,Godot.StringName)">
             <summary>
             Gets a condition value from the animation tree.
             </summary>
+            <param name="tree">Animation tree to read.</param>
+            <param name="path">Condition path segment under <c>conditions/</c>.</param>
+            <returns>Resolved condition value.</returns>
         </member>
         <member name="M:GodotUtils.AnimationTreeExtensions.GetStateMachine(Godot.AnimationTree)">
             <summary>
             Gets the state machine playback controller.
             </summary>
+            <param name="tree">Animation tree to read.</param>
+            <returns>State machine playback controller.</returns>
         </member>
         <member name="T:GodotUtils.Area2DExtensions">
             <summary>
@@ -168,11 +192,15 @@
             <summary>
             Sets Monitoring using deferred property updates.
             </summary>
+            <param name="area">Area to update.</param>
+            <param name="enabled">Target monitoring state.</param>
         </member>
         <member name="M:GodotUtils.Area2DExtensions.SetMonitorableDeferred(Godot.Area2D,System.Boolean)">
             <summary>
             Sets Monitorable using deferred property updates.
             </summary>
+            <param name="area">Area to update.</param>
+            <param name="enabled">Target monitorable state.</param>
         </member>
         <member name="T:GodotUtils.Area3DExtensions">
             <summary>
@@ -183,11 +211,15 @@
             <summary>
             Sets Monitoring using deferred property updates.
             </summary>
+            <param name="area">Area to update.</param>
+            <param name="enabled">Target monitoring state.</param>
         </member>
         <member name="M:GodotUtils.Area3DExtensions.SetMonitorableDeferred(Godot.Area3D,System.Boolean)">
             <summary>
             Sets Monitorable using deferred property updates.
             </summary>
+            <param name="area">Area to update.</param>
+            <param name="enabled">Target monitorable state.</param>
         </member>
         <member name="T:GodotUtils.Camera2DExtensions">
             <summary>
@@ -198,6 +230,8 @@
             <summary>
             Sets the camera position without smoothing, then restores smoothing if needed.
             </summary>
+            <param name="camera">Camera to reposition.</param>
+            <param name="position">Target position.</param>
         </member>
         <member name="T:GodotUtils.CanvasItemExtensions">
             <summary>
@@ -208,16 +242,21 @@
             <summary>
             Applies an unshaded material to the canvas item.
             </summary>
+            <param name="canvasItem">Canvas item to modify.</param>
         </member>
         <member name="M:GodotUtils.CanvasItemExtensions.GetScreenPosition(Godot.CanvasItem)">
             <summary>
             Converts the canvas item position to a screen position.
             </summary>
+            <param name="canvasItem">Canvas item to project into screen coordinates.</param>
+            <returns>Screen position of the canvas item origin.</returns>
         </member>
         <member name="M:GodotUtils.CanvasItemExtensions.SetTransparent(Godot.CanvasItem)">
             <summary>
             Sets the canvas item fully transparent and returns it.
             </summary>
+            <param name="canvasItem">Canvas item to modify.</param>
+            <returns>The same canvas item instance.</returns>
         </member>
         <member name="T:GodotUtils.CollectionsExtensions">
             <summary>
@@ -228,6 +267,8 @@
             <summary>
             Iterates over the sequence and invokes <paramref name="action"/> for each element.
             </summary>
+            <param name="value">Source sequence.</param>
+            <param name="action">Action invoked for each element.</param>
         </member>
         <member name="T:GodotUtils.CollisionObject2DExtensions">
             <summary>
@@ -267,6 +308,11 @@
         <member name="M:GodotUtils.CollisionObject2DExtensions.ConvertToUniqueIntArray(System.String)">
             <summary>
             Converts a string to a unique int array. For example "1223" becomes [1, 2, 3].
+            </summary>
+        </member>
+        <member name="T:GodotUtils.ControlExtensions">
+            <summary>
+            Extension helpers for configuring common <see cref="T:Godot.Control"/> properties.
             </summary>
         </member>
         <member name="M:GodotUtils.ControlExtensions.SetLayout(Godot.Control,Godot.Control.LayoutPreset)">
@@ -311,11 +357,20 @@
             <summary>
             Merges all entries from <paramref name="merge"/> into <paramref name="me"/>, overwriting keys that exist.
             </summary>
+            <param name="me">Destination dictionary.</param>
+            <param name="merge">Source dictionary to merge from.</param>
+        </member>
+        <member name="T:GodotUtils.DoubleExtensions">
+            <summary>
+            Extension helpers for <see cref="T:System.Double"/> values.
+            </summary>
         </member>
         <member name="M:GodotUtils.DoubleExtensions.IsInteger(System.Double)">
             <summary>
             Returns true when the value has no fractional part.
             </summary>
+            <param name="value">Value to test.</param>
+            <returns><see langword="true"/> when value is mathematically an integer.</returns>
         </member>
         <member name="T:GodotUtils.GpuParticles2DExtensions">
             <summary>
@@ -326,6 +381,8 @@
             <summary>
             Gets the ParticleProcessMaterial assigned to the particle node.
             </summary>
+            <param name="particles">Particle node to inspect.</param>
+            <returns>Assigned particle process material.</returns>
         </member>
         <member name="T:GodotUtils.InputEventKeyExtensions">
             <summary>
@@ -429,7 +486,7 @@
         </member>
         <member name="T:GodotUtils.MathExtensions">
             <summary>
-            Extension helpers for math utilities.
+            Numeric and geometry extension helpers used across gameplay code.
             </summary>
         </member>
         <member name="M:GodotUtils.MathExtensions.Lerp(Godot.Color,Godot.Color,System.Single)">
@@ -496,11 +553,15 @@
             <summary>
             Sets the color of the given node only.
             </summary>
+            <param name="node">Node to tint.</param>
+            <param name="color">Tint color.</param>
         </member>
         <member name="M:GodotUtils.Node2DExtensions.SetColorRecursive(Godot.Node2D,Godot.Color)">
             <summary>
             Recursively sets the color of the node and all its children.
             </summary>
+            <param name="node">Node subtree root to tint.</param>
+            <param name="color">Tint color.</param>
         </member>
         <member name="T:GodotUtils.NodeExtensions">
             <summary>
@@ -682,6 +743,18 @@
             Excludes all parent collision objects from the raycast.
             </summary>
         </member>
+        <member name="T:GodotUtils.RayCastParentTraversal">
+            <summary>
+            Shared parent-chain traversal helper for raycast extension utilities.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.RayCastParentTraversal.ForEachParent(Godot.Node,System.Action{Godot.Node})">
+            <summary>
+            Iterates parent nodes from nearest to root, invoking callback for each.
+            </summary>
+            <param name="parent">Starting parent node.</param>
+            <param name="callback">Action invoked for each parent node.</param>
+        </member>
         <member name="T:GodotUtils.RigidBody2dExtensions">
             <summary>
             Extension helpers for RigidBody2D.
@@ -691,6 +764,11 @@
             <summary>
             Smoothly rotates a rigid body toward a target position.
             </summary>
+            <param name="rigidBody">Rigid body to rotate.</param>
+            <param name="targetPosition">Target world position.</param>
+            <param name="rotationSpeed">Speed multiplier for angular correction.</param>
+            <param name="maxAngularSpeed">Maximum absolute angular velocity.</param>
+            <param name="smoothness">Lerp factor for angular velocity smoothing.</param>
         </member>
         <member name="T:GodotUtils.SceneTreeExtensions">
             <summary>
@@ -821,10 +899,19 @@
             <summary>
             Returns true when the type is numeric.
             </summary>
+            <param name="type">Type to test.</param>
+            <returns><see langword="true"/> when type is in known numeric set.</returns>
         </member>
         <member name="M:GodotUtils.TypeExtensions.IsWholeNumber(System.Type)">
             <summary>
             Returns true if the <paramref name="type"/> is a whole number.
+            </summary>
+            <param name="type">Type to test.</param>
+            <returns><see langword="true"/> for integral numeric types.</returns>
+        </member>
+        <member name="F:GodotUtils.TypeExtensions._numericTypes">
+            <summary>
+            Lookup set used by <see cref="M:GodotUtils.TypeExtensions.IsNumericType(System.Type)"/>.
             </summary>
         </member>
         <member name="T:GodotUtils.AreaFactory2D">
@@ -1101,6 +1188,7 @@
             <summary>
             Builds a default highlighter with keyword and token colors.
             </summary>
+            <returns>Configured <see cref="T:Godot.CodeHighlighter"/> instance.</returns>
         </member>
         <member name="T:GodotUtils.ColorPickerButtonFactory">
             <summary>
@@ -1111,6 +1199,8 @@
             <summary>
             Creates a <see cref="T:Godot.ColorPickerButton"/> with <paramref name="defaultColor"/>.
             </summary>
+            <param name="defaultColor">Initial picker color.</param>
+            <returns>Configured color picker button.</returns>
         </member>
         <member name="T:GodotUtils.GodotTimerFactory">
             <summary>
@@ -1121,21 +1211,37 @@
             <summary>
             Creates a one-shot scene tree timer that invokes <paramref name="timeout"/>.
             </summary>
+            <param name="tree">Scene tree used to create the timer.</param>
+            <param name="seconds">Delay before timeout callback runs.</param>
+            <param name="timeout">Callback invoked on timeout.</param>
         </member>
         <member name="M:GodotUtils.GodotTimerFactory.OneShot(Godot.Node,System.Double,System.Action)">
             <summary>
             Creates a one-shot timer as a child of <paramref name="node"/>.
             </summary>
+            <param name="node">Parent node for the timer.</param>
+            <param name="seconds">Delay before timeout callback runs.</param>
+            <param name="timeout">Callback invoked on timeout.</param>
+            <returns>Configured timer instance.</returns>
         </member>
         <member name="M:GodotUtils.GodotTimerFactory.Looping(Godot.Node,System.Double,System.Action)">
             <summary>
             Creates a looping timer as a child of <paramref name="node"/>.
             </summary>
+            <param name="node">Parent node for the timer.</param>
+            <param name="seconds">Delay between timeout callbacks.</param>
+            <param name="timeout">Callback invoked on each timeout.</param>
+            <returns>Configured timer instance.</returns>
         </member>
         <member name="M:GodotUtils.GodotTimerFactory.Create(Godot.Node,System.Double,System.Boolean,System.Action)">
             <summary>
             Creates and configures a timer with optional one-shot behavior.
             </summary>
+            <param name="node">Parent node for the timer.</param>
+            <param name="seconds">Timer wait time in seconds.</param>
+            <param name="oneShot">Whether timer should auto-free after first timeout.</param>
+            <param name="timeout">Callback invoked on timeout.</param>
+            <returns>Configured timer instance.</returns>
         </member>
         <member name="T:GodotUtils.GpuParticleFactory2D">
             <summary>
@@ -1146,11 +1252,17 @@
             <summary>
             Instantiates a one-shot GPU particle and frees it when finished.
             </summary>
+            <param name="parent">Parent node that receives the particle instance.</param>
+            <param name="particleScene">Packed scene containing a <see cref="T:Godot.GpuParticles2D"/> root.</param>
+            <returns>Configured one-shot particle instance.</returns>
         </member>
         <member name="M:GodotUtils.GpuParticleFactory2D.Looping(Godot.Node,Godot.PackedScene)">
             <summary>
             Instantiates a looping GPU particle without auto-free.
             </summary>
+            <param name="parent">Parent node that receives the particle instance.</param>
+            <param name="particleScene">Packed scene containing a <see cref="T:Godot.GpuParticles2D"/> root.</param>
+            <returns>Configured looping particle instance.</returns>
         </member>
         <member name="T:GodotUtils.GpuParticleFactory3D">
             <summary>
@@ -1161,6 +1273,9 @@
             <summary>
             Instantiates a one-shot GPU particle and frees it when finished.
             </summary>
+            <param name="parent">Parent node that receives the particle instance.</param>
+            <param name="particleScene">Packed scene containing a <see cref="T:Godot.GpuParticles3D"/> root.</param>
+            <returns>Configured one-shot particle instance.</returns>
         </member>
         <member name="T:GodotUtils.LabelFactory">
             <summary>
@@ -1171,6 +1286,9 @@
             <summary>
             Creates a centered label with the provided text and font size.
             </summary>
+            <param name="text">Initial label text.</param>
+            <param name="fontSize">Font size in points.</param>
+            <returns>Configured label instance.</returns>
         </member>
         <member name="T:GodotUtils.LinkButtonFactory">
             <summary>
@@ -1181,6 +1299,9 @@
             <summary>
             Creates a link button with the provided text and font size.
             </summary>
+            <param name="text">Button label and URI value.</param>
+            <param name="fontSize">Font size in points.</param>
+            <returns>Configured link button.</returns>
         </member>
         <member name="T:GodotUtils.MarginContainerFactory">
             <summary>
@@ -1191,11 +1312,18 @@
             <summary>
             Creates a margin container with uniform padding.
             </summary>
+            <param name="padding">Padding value applied to all sides.</param>
+            <returns>Configured margin container.</returns>
         </member>
         <member name="M:GodotUtils.MarginContainerFactory.Create(System.Int32,System.Int32,System.Int32,System.Int32)">
             <summary>
             Creates a margin container with per-side padding.
             </summary>
+            <param name="left">Left padding.</param>
+            <param name="right">Right padding.</param>
+            <param name="top">Top padding.</param>
+            <param name="bottom">Bottom padding.</param>
+            <returns>Configured margin container.</returns>
         </member>
         <member name="T:GodotUtils.BaseTween`1">
             <summary>
@@ -1221,21 +1349,30 @@
             <summary>
             Creates a tween bound to the provided node.
             </summary>
+            <param name="node">Node that owns the tween and receives property updates.</param>
         </member>
         <member name="M:GodotUtils.BaseTween`1.Property(System.String,Godot.Variant,System.Double)">
             <summary>
             Tweens a property to the target value over the given duration.
             </summary>
+            <param name="property">Property path to animate.</param>
+            <param name="finalValue">Target value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.SetProcessMode(Godot.Tween.TweenProcessMode)">
             <summary>
             Sets the tween processing mode.
             </summary>
+            <param name="mode">Tween processing mode.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.Loop(System.Int32)">
             <summary>
             Sets the tween to loop the specified number of times.
             </summary>
+            <param name="loops">Loop count; 0 means infinite looping.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.FinishedAsync">
             <summary>
@@ -1246,51 +1383,67 @@
             <summary>
             Makes the next tweener run in parallel with the previous one.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.SetParallel(System.Boolean)">
             <summary>
             Sets whether appended tweeners run in parallel.
             </summary>
+            <param name="parallel">True to run newly appended tweeners in parallel.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.Then(System.Action)">
             <summary>
             Registers a callback when the tween reaches this point.
             </summary>
+            <param name="callback">Callback to invoke.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.Delay(System.Double)">
             <summary>
             Inserts a delay before the next tween step.
             </summary>
+            <param name="seconds">Delay duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.Finished(System.Action)">
             <summary>
             Registers a callback when the tween finishes.
             </summary>
+            <param name="callback">Callback invoked when tween finishes.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.Stop">
             <summary>
             Stops the tween if it is looping.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.Pause">
             <summary>
             Pauses the tween.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.Resume">
             <summary>
             Resumes a paused tween.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.SetTrans(Godot.Tween.TransitionType)">
             <summary>
             Sets the transition type for the current property tweener.
             </summary>
+            <param name="transType">Transition curve type.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.SetEase(Godot.Tween.EaseType)">
             <summary>
             Sets the ease type for the current property tweener.
             </summary>
+            <param name="easeType">Ease function type.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.TransLinear">
             <summary>
@@ -1376,16 +1529,21 @@
             <summary>
             Returns true if the tween is running.
             </summary>
+            <returns>True when tween is currently running.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.Kill">
             <summary>
             Kills the tween.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.UpdateTweener(System.String,System.Action)">
             <summary>
             Executes an action on the current tweener.
             </summary>
+            <param name="methodName">Method name used in error messages.</param>
+            <param name="action">Action to execute on the current tweener.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="T:GodotUtils.Tweens">
             <summary>
@@ -1396,64 +1554,88 @@
             <summary>
             Creates a <see cref="T:GodotUtils.NodeTween"/> bound to <paramref name="node"/>.
             </summary>
+            <param name="node">Node to animate.</param>
             <returns>The <see cref="T:GodotUtils.NodeTween"/> for chain building.</returns>
         </member>
         <member name="M:GodotUtils.Tweens.Animate(Godot.Node,System.String)">
             <summary>
             Creates a <see cref="T:GodotUtils.NodeTweenProp"/> bound to <paramref name="node"/> ready to animate on <paramref name="property"/>.
             </summary>
+            <param name="node">Node to animate.</param>
+            <param name="property">Property path to animate.</param>
             <returns>The <see cref="T:GodotUtils.NodeTweenProp"/> for chain building.</returns>
         </member>
         <member name="M:GodotUtils.Tweens.Animate(Godot.Node2D)">
             <summary>
             Creates a <see cref="T:GodotUtils.NodeTween2D"/> bound to <paramref name="node"/>.
             </summary>
+            <param name="node">Node2D to animate.</param>
             <returns>The <see cref="T:GodotUtils.NodeTween2D"/> for chain building.</returns>
         </member>
         <member name="M:GodotUtils.Tweens.Animate(Godot.Control)">
             <summary>
             Creates a <see cref="T:GodotUtils.NodeTweenControl"/> bound to <paramref name="control"/>.
             </summary>
+            <param name="control">Control to animate.</param>
             <returns>The <see cref="T:GodotUtils.NodeTweenControl"/> for chain building.</returns>
         </member>
         <member name="M:GodotUtils.Tweens.AnimateShader(Godot.CanvasItem)">
             <summary>
             Creates a <see cref="T:GodotUtils.ShaderTween"/> bound to <paramref name="canvasItem"/>.
             </summary>
+            <param name="canvasItem">Canvas item with shader material to animate.</param>
             <returns>The <see cref="T:GodotUtils.ShaderTween"/> for chain building.</returns>
         </member>
         <member name="M:GodotUtils.Tweens.AnimateShader(Godot.CanvasItem,System.String)">
             <summary>
             Creates a <see cref="T:GodotUtils.ShaderTween"/> bound to <paramref name="canvasItem"/> ready to animate <paramref name="property"/>.
             </summary>
+            <param name="canvasItem">Canvas item with shader material to animate.</param>
+            <param name="property">Shader parameter name.</param>
             <returns>The <see cref="T:GodotUtils.ShaderTween"/> for chain building.</returns>
         </member>
         <member name="M:GodotUtils.Tweens.Animate(Godot.Node2D,System.String)">
             <summary>
             Creates a tween bound to <paramref name="node"/> ready to animate on the <paramref name="property"/>.
             </summary>
+            <param name="node">Node2D to animate.</param>
+            <param name="property">Property path to animate.</param>
             <returns>The tween for chain building.</returns>
         </member>
         <member name="M:GodotUtils.Tweens.Animate(Godot.Control,System.String)">
             <summary>
             Creates a tween bound to <paramref name="control"/> ready to animate on the <paramref name="property"/>.
             </summary>
+            <param name="control">Control to animate.</param>
+            <param name="property">Property path to animate.</param>
             <returns>The tween for chain building.</returns>
         </member>
         <member name="M:GodotUtils.Tweens.Delay(Godot.Node,System.Double,System.Action)">
             <summary>
             Creates a <see cref="T:GodotUtils.NodeTween"/> bound to <paramref name="node"/> and runs <paramref name="callback"/> after <paramref name="seconds"/>.
             </summary>
+            <param name="node">Node to own and process the tween.</param>
+            <param name="seconds">Delay duration in seconds.</param>
+            <param name="callback">Callback invoked after delay.</param>
+            <returns>Created tween instance.</returns>
         </member>
         <member name="M:GodotUtils.Tweens.Delay(Godot.Node2D,System.Double,System.Action)">
             <summary>
             Creates a <see cref="T:GodotUtils.NodeTween2D"/> bound to <paramref name="node"/> and runs <paramref name="callback"/> after <paramref name="seconds"/>.
             </summary>
+            <param name="node">Node2D to own and process the tween.</param>
+            <param name="seconds">Delay duration in seconds.</param>
+            <param name="callback">Callback invoked after delay.</param>
+            <returns>Created tween instance.</returns>
         </member>
         <member name="M:GodotUtils.Tweens.Delay(Godot.Control,System.Double,System.Action)">
             <summary>
             Creates a <see cref="T:GodotUtils.NodeTweenControl"/> bound to <paramref name="control"/> and runs <paramref name="callback"/> after <paramref name="seconds"/>.
             </summary>
+            <param name="control">Control to own and process the tween.</param>
+            <param name="seconds">Delay duration in seconds.</param>
+            <param name="callback">Callback invoked after delay.</param>
+            <returns>Created tween instance.</returns>
         </member>
         <member name="T:GodotUtils.NodeTween">
             <summary>
@@ -1464,6 +1646,7 @@
             <summary>
             Creates a tween bound to the provided node.
             </summary>
+            <param name="node">Node to animate.</param>
         </member>
         <member name="T:GodotUtils.NodeTween2D">
             <summary>
@@ -1744,11 +1927,16 @@
             <summary>
             Creates a tween for the specified node property.
             </summary>
+            <param name="node">Node to animate.</param>
+            <param name="property">Property path to animate.</param>
         </member>
         <member name="M:GodotUtils.NodeTweenProp.PropertyTo(Godot.Variant,System.Double)">
             <summary>
             Tweens the property to the target value over the given duration.
             </summary>
+            <param name="finalValue">Target value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="T:GodotUtils.ShaderTween">
             <summary>
@@ -1759,11 +1947,19 @@
             <summary>
             Creates a shader tween bound to the provided canvas item.
             </summary>
+            <param name="canvasItem">Canvas item with assigned shader material.</param>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when <paramref name="canvasItem"/> does not have a <see cref="T:Godot.ShaderMaterial"/>.
+            </exception>
         </member>
         <member name="M:GodotUtils.ShaderTween.Property(System.String,Godot.Variant,System.Double)">
             <summary>
             Tweens a shader parameter to the target value over the given duration.
             </summary>
+            <param name="shaderParam">Shader parameter name.</param>
+            <param name="finalValue">Target parameter value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="T:GodotUtils.ShaderTweenProp">
             <summary>
@@ -1774,22 +1970,35 @@
             <summary>
             Creates a tween for the given shader parameter on a CanvasItem.
             </summary>
+            <param name="node">Canvas item node to animate.</param>
+            <param name="shaderParam">Shader parameter name.</param>
+            <exception cref="T:System.ArgumentException">
+            Thrown when <paramref name="node"/> is not a <see cref="T:Godot.CanvasItem"/>.
+            </exception>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when node does not have a <see cref="T:Godot.ShaderMaterial"/>.
+            </exception>
         </member>
         <member name="M:GodotUtils.ShaderTweenProp.PropertyTo(Godot.Variant,System.Double)">
             <summary>
             Tweens the shader parameter to the target value over the given duration.
             </summary>
+            <param name="finalValue">Target parameter value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="T:GodotUtils.CacheManager`2">
             <summary>
-            A generic cache manager that stores and retrieves objects based on a key.
-            If the object associated with the key does not exist, it creates and caches it.
+            Generic key-based cache that lazily creates values on first access.
             </summary>
         </member>
         <member name="M:GodotUtils.CacheManager`2.Get(`0,System.Func{`1})">
             <summary>
-            Retrieves the cached object associated with the specified key, or creates and caches it if not present.
+            Returns an existing cached value or creates, stores, and returns a new value for the key.
             </summary>
+            <param name="key">Cache key.</param>
+            <param name="createFunc">Factory used when the key has no cached value.</param>
+            <returns>Cached or newly created value.</returns>
         </member>
         <member name="T:GodotUtils.SpriteShakeManager">
             <summary>
@@ -1811,6 +2020,12 @@
             Resets sprite offsets to zero.
             </summary>
         </member>
+        <member name="M:GodotUtils.SpriteShakeManager.SetVerticalOffset(System.Single)">
+            <summary>
+            Applies the same vertical offset to all tracked sprites while preserving horizontal offset.
+            </summary>
+            <param name="offsetY">Vertical offset to apply.</param>
+        </member>
         <member name="T:GodotUtils.ColorUtils">
             <summary>
             Color helper functions.
@@ -1820,11 +2035,18 @@
             <summary>
             Creates a color from HSV values using 0-359 hue, 0-100 saturation/value, and 0-255 alpha.
             </summary>
+            <param name="hue">Hue in range 0-359.</param>
+            <param name="saturation">Saturation in range 0-100.</param>
+            <param name="value">Value (brightness) in range 0-100.</param>
+            <param name="alpha">Alpha in range 0-255.</param>
+            <returns>Constructed color.</returns>
         </member>
         <member name="M:GodotUtils.ColorUtils.Random(System.Int32)">
             <summary>
             Generates a random color.
             </summary>
+            <param name="alpha">Alpha in range 0-255.</param>
+            <returns>Random RGB color with provided alpha.</returns>
         </member>
         <member name="T:GodotUtils.Component">
             <summary>
@@ -1845,6 +2067,7 @@
             <summary>
             Creates a component attached to the provided owner node.
             </summary>
+            <param name="owner">Node that owns this component instance.</param>
         </member>
         <member name="M:GodotUtils.Component.Ready">
             <summary>
@@ -1855,21 +2078,25 @@
             <summary>
             Called every frame while processing is enabled.
             </summary>
+            <param name="delta">Frame delta time in seconds.</param>
         </member>
         <member name="M:GodotUtils.Component.PhysicsProcess(System.Double)">
             <summary>
             Called every physics frame while physics processing is enabled.
             </summary>
+            <param name="delta">Physics delta time in seconds.</param>
         </member>
         <member name="M:GodotUtils.Component.ProcessInput(Godot.InputEvent)">
             <summary>
             Called when an input event is received while input is enabled.
             </summary>
+            <param name="event">Input event payload.</param>
         </member>
         <member name="M:GodotUtils.Component.UnhandledInput(Godot.InputEvent)">
             <summary>
             Called when an unhandled input event is received while input is enabled.
             </summary>
+            <param name="event">Input event payload.</param>
         </member>
         <member name="M:GodotUtils.Component.ExitTree">
             <summary>
@@ -1880,31 +2107,37 @@
             <summary>
             Enables or disables all processing callbacks for this component.
             </summary>
+            <param name="active">True to enable callbacks; false to disable them.</param>
         </member>
         <member name="M:GodotUtils.Component.SetPausable(System.Boolean)">
             <summary>
             Sets whether this component is blocked while the tree is paused.
             </summary>
+            <param name="enabled">True to pause this component with the tree.</param>
         </member>
         <member name="M:GodotUtils.Component.SetProcess(System.Boolean)">
             <summary>
             Enables or disables per-frame processing.
             </summary>
+            <param name="enabled">True to register process callback.</param>
         </member>
         <member name="M:GodotUtils.Component.SetPhysicsProcess(System.Boolean)">
             <summary>
             Enables or disables physics processing.
             </summary>
+            <param name="enabled">True to register physics callback.</param>
         </member>
         <member name="M:GodotUtils.Component.SetInput(System.Boolean)">
             <summary>
             Enables or disables input processing.
             </summary>
+            <param name="enabled">True to register input callback.</param>
         </member>
         <member name="M:GodotUtils.Component.SetUnhandledInput(System.Boolean)">
             <summary>
             Enables or disables unhandled input processing.
             </summary>
+            <param name="enabled">True to register unhandled input callback.</param>
         </member>
         <member name="T:GodotUtils.ComponentList">
             <summary>
@@ -1913,33 +2146,38 @@
         </member>
         <member name="M:GodotUtils.ComponentList.Add(GodotUtils.Component)">
             <summary>
-            Add a component.
+            Adds a component to the set.
             </summary>
+            <param name="component">Component to add.</param>
         </member>
         <member name="M:GodotUtils.ComponentList.Add(GodotUtils.ComponentList)">
             <summary>
-            Add a list of components.
+            Adds all components from another list.
             </summary>
+            <param name="components">Source list to merge from.</param>
         </member>
         <member name="M:GodotUtils.ComponentList.Remove(GodotUtils.Component)">
             <summary>
-            Remove a component.
+            Removes a component from the set.
             </summary>
+            <param name="component">Component to remove.</param>
         </member>
         <member name="M:GodotUtils.ComponentList.RemoveAll">
             <summary>
-            Remove all components.
+            Removes all components from the set.
             </summary>
         </member>
         <member name="M:GodotUtils.ComponentList.Get``1">
             <summary>
-            Get a component.
+            Returns the first component of type <typeparamref name="T"/>.
             </summary>
+            <returns>Matching component, or <see langword="null"/> when absent.</returns>
         </member>
         <member name="M:GodotUtils.ComponentList.SetActive(System.Boolean)">
             <summary>
-            Enable or disable all components.
+            Enables or disables all tracked components.
             </summary>
+            <param name="active">Desired active state.</param>
         </member>
         <member name="T:GodotUtils.ComponentManager">
             <summary>
@@ -2010,20 +2248,50 @@
             <summary>
             Returns area nodes under the mouse cursor.
             </summary>
+            <param name="node">Node providing world and cursor context.</param>
+            <param name="maxResults">Maximum number of hits to return.</param>
+            <returns>Matched area nodes.</returns>
         </member>
         <member name="M:GodotUtils.CursorUtils.GetBodiesUnderCursor(Godot.Node2D,System.Int32)">
             <summary>
             Returns physics body nodes under the mouse cursor.
             </summary>
+            <param name="node">Node providing world and cursor context.</param>
+            <param name="maxResults">Maximum number of hits to return.</param>
+            <returns>Matched body nodes.</returns>
         </member>
         <member name="M:GodotUtils.CursorUtils.GetAreasUnder(Godot.Node2D,System.Int32)">
             <summary>
             Returns area nodes under the provided node position.
             </summary>
+            <param name="node">Node providing world and position context.</param>
+            <param name="maxResults">Maximum number of hits to return.</param>
+            <returns>Matched area nodes.</returns>
         </member>
         <member name="M:GodotUtils.CursorUtils.GetBodiesUnder(Godot.Node2D,System.Int32)">
             <summary>
             Returns physics body nodes under the provided node position.
+            </summary>
+            <param name="node">Node providing world and position context.</param>
+            <param name="maxResults">Maximum number of hits to return.</param>
+            <returns>Matched body nodes.</returns>
+        </member>
+        <member name="M:GodotUtils.CursorUtils.GetPhysicsNodesAtPosition``1(Godot.Node2D,Godot.Vector2,System.Boolean,System.Boolean,System.Boolean,System.Int32)">
+            <summary>
+            Executes a point query and returns colliders of the requested node type.
+            </summary>
+            <typeparam name="TNode">Expected collider node type.</typeparam>
+            <param name="node">Node used to resolve world/space state.</param>
+            <param name="position">World position to query.</param>
+            <param name="collideWithAreas">Include <see cref="T:Godot.Area2D"/> colliders.</param>
+            <param name="collideWithBodies">Include <see cref="T:Godot.PhysicsBody2D"/> colliders.</param>
+            <param name="excludeSelf">Exclude the source node hierarchy from hits.</param>
+            <param name="maxResults">Maximum hit count.</param>
+            <returns>Matching collider nodes.</returns>
+        </member>
+        <member name="T:GodotUtils.DirectoryUtils">
+            <summary>
+            Directory traversal and cleanup helpers for Godot project paths.
             </summary>
         </member>
         <member name="M:GodotUtils.DirectoryUtils.Traverse(System.String,System.Func{GodotUtils.DirectoryUtils.TraverseEntry,GodotUtils.TraverseDecision})">
@@ -2035,6 +2303,38 @@
             Traverse("res://", entry => GD.Print(entry.FullPath));
             </code>
             </summary>
+            <param name="directory">Root directory path.</param>
+            <param name="visitor">Callback invoked for each entry.</param>
+            <returns>Final traversal decision.</returns>
+        </member>
+        <member name="T:GodotUtils.DirectoryUtils.TraverseEntry">
+            <summary>
+            Single directory entry visited during traversal.
+            </summary>
+            <param name="fullPath">Full path to the entry.</param>
+            <param name="isDirectory">Whether the entry is a directory.</param>
+        </member>
+        <member name="M:GodotUtils.DirectoryUtils.TraverseEntry.#ctor(System.String,System.Boolean)">
+            <summary>
+            Single directory entry visited during traversal.
+            </summary>
+            <param name="fullPath">Full path to the entry.</param>
+            <param name="isDirectory">Whether the entry is a directory.</param>
+        </member>
+        <member name="P:GodotUtils.DirectoryUtils.TraverseEntry.FullPath">
+            <summary>
+            Full normalized path.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.DirectoryUtils.TraverseEntry.IsDirectory">
+            <summary>
+            Indicates whether the entry is a directory.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.DirectoryUtils.TraverseEntry.FileName">
+            <summary>
+            File or directory name component.
+            </summary>
         </member>
         <member name="M:GodotUtils.DirectoryUtils.FindFile(System.String,System.String)">
             <summary>
@@ -2045,27 +2345,34 @@
             string fullPathToPlayer = FindFile("res://", "Player.tscn")
             </code>
             </summary>
+            <param name="directory">Root directory to search.</param>
+            <param name="fileName">Exact file name to locate.</param>
             <returns>Returns the full path to the file or null if the file is not found</returns>
         </member>
         <member name="M:GodotUtils.DirectoryUtils.NormalizePath(System.String)">
             <summary>
             Normalizes path separators to the current OS.
             </summary>
+            <param name="path">Path to normalize.</param>
+            <returns>Normalized path string.</returns>
         </member>
         <member name="M:GodotUtils.DirectoryUtils.DeleteEmptyDirectories(System.String)">
             <summary>
             Recursively deletes all empty folders in this folder
             </summary>
+            <param name="path">Root directory to clean.</param>
         </member>
         <member name="M:GodotUtils.DirectoryUtils.DeleteEmptyDirectory(System.String)">
             <summary>
             Checks if the folder is empty and deletes it if it is
             </summary>
+            <param name="path">Directory path to evaluate.</param>
         </member>
         <member name="M:GodotUtils.DirectoryUtils.IsDirectoryEmpty(System.String)">
             <summary>
             Checks if the directory is empty
             </summary>
+            <param name="path">Directory path to evaluate.</param>
             <returns>Returns true if the directory is empty</returns>
         </member>
         <member name="T:GodotUtils.EditorUtils">
@@ -2098,6 +2405,18 @@
             Returns true when running on macOS.
             </summary>
         </member>
+        <member name="T:GodotUtils.ExceptionGuard">
+            <summary>
+            Classifies exceptions as fatal or non-fatal for guarded background execution.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.ExceptionGuard.IsNonFatal(System.Exception)">
+            <summary>
+            Returns whether an exception is considered non-fatal for the process.
+            </summary>
+            <param name="exception">Exception to classify.</param>
+            <returns><see langword="true"/> when exception is non-fatal.</returns>
+        </member>
         <member name="T:GodotUtils.GodotObjectCache`1">
             <summary>
             Stores objects by their instance ID and returns the cached instance if it already exists.
@@ -2108,15 +2427,23 @@
             <summary>
             Returns the cached object if it exists; otherwise adds the object to the cache and returns it.
             </summary>
+            <param name="obj">Object to retrieve or cache.</param>
+            <returns>Cached instance for the object ID.</returns>
         </member>
         <member name="M:GodotUtils.GodotObjectCache`1.Remove(`0)">
             <summary>
             Removes an object from the cache.
             </summary>
+            <param name="obj">Object whose cache entry should be removed.</param>
         </member>
         <member name="M:GodotUtils.GodotObjectCache`1.Clear">
             <summary>
             Clears all objects from the cache.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.ImageUtils">
+            <summary>
+            Image transparency scanning helpers used by sprite-size utilities.
             </summary>
         </member>
         <member name="M:GodotUtils.ImageUtils.GetTransparentColumnsLeft(Godot.Image,Godot.Vector2)">
@@ -2139,9 +2466,19 @@
             Returns the number of fully transparent rows on the bottom of the image.
             </summary>
         </member>
+        <member name="T:GodotUtils.InputUtils">
+            <summary>
+            Input helper methods for common movement and key-state patterns.
+            </summary>
+        </member>
         <member name="M:GodotUtils.InputUtils.GetMoveVector">
             <summary>
             Returns a normalized movement vector from arrow or WASD input.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.MathUtils">
+            <summary>
+            Shared math helpers for randomization, bit-layer masks, and angle operations.
             </summary>
         </member>
         <member name="M:GodotUtils.MathUtils.SumNaturalNumbers(System.Int32)">
@@ -2215,16 +2552,20 @@
             Creates a pool of nodes using <paramref name="createNodeFunc"/> and attaches them as children
             of <paramref name="parent"/> to avoid expensive QueueFree calls.
             </summary>
+            <param name="parent">Parent node that receives pooled node instances.</param>
+            <param name="createNodeFunc">Factory that creates new pooled nodes when needed.</param>
         </member>
         <member name="M:GodotUtils.BaseNodePool`1.Acquire">
             <summary>
             Returns an available node or creates a new one if all are in use.
             </summary>
+            <returns>Active node instance ready for use.</returns>
         </member>
         <member name="M:GodotUtils.BaseNodePool`1.Release(`0)">
             <summary>
             Releases the node back to the pool.
             </summary>
+            <param name="node">Node to release.</param>
         </member>
         <member name="M:GodotUtils.BaseNodePool`1.QueueFreeAll">
             <summary>
@@ -2235,26 +2576,31 @@
             <summary>
             Gets the onCreate callback. Can be null if no special creation handling needed.
             </summary>
+            <returns>Creation callback invoked for newly created nodes.</returns>
         </member>
         <member name="P:GodotUtils.BaseNodePool`1.OnAcquireCallback">
             <summary>
             Gets the onAcquire callback. Can be null if no special acquire handling needed.
             </summary>
+            <returns>Acquire callback invoked for each acquired node.</returns>
         </member>
         <member name="P:GodotUtils.BaseNodePool`1.OnReleaseCallback">
             <summary>
             Gets the onRelease callback. Can be null if no special release handling needed.
             </summary>
+            <returns>Release callback invoked for each released node.</returns>
         </member>
         <member name="M:GodotUtils.BaseNodePool`1.PerformAcquire">
             <summary>
             Performs the actual acquire with registered callbacks.
             </summary>
+            <returns>Active node instance.</returns>
         </member>
         <member name="M:GodotUtils.BaseNodePool`1.PerformRelease(`0)">
             <summary>
             Performs the actual release with registered callbacks.
             </summary>
+            <param name="node">Node to release.</param>
         </member>
         <member name="T:GodotUtils.ComponentPool`1">
             <summary>
@@ -2267,37 +2613,45 @@
             <summary>
             Creates a pool of component nodes.
             </summary>
+            <param name="parent">Parent node that receives pooled node instances.</param>
+            <param name="createNodeFunc">Factory that creates new pooled nodes.</param>
         </member>
         <member name="M:GodotUtils.ComponentPool`1.Acquire">
             <summary>
             Returns an available node or creates a new one if all are in use.
             </summary>
+            <returns>Active node instance ready for use.</returns>
         </member>
         <member name="M:GodotUtils.ComponentPool`1.Release(`0)">
             <summary>
             Releases the node back to the pool.
             </summary>
+            <param name="node">Node to release.</param>
         </member>
         <member name="T:GodotUtils.IComponentPoolable`1">
             <summary>
             Defines creation callbacks for pooled nodes that use components.
             </summary>
+            <typeparam name="TNode">Node type participating in component-pool callbacks.</typeparam>
         </member>
         <member name="P:GodotUtils.IComponentPoolable`1.Components">
             <summary>
             Gets the component host for the node.
             </summary>
+            <returns>Component list that should be toggled on acquire/release.</returns>
         </member>
         <member name="M:GodotUtils.IComponentPoolable`1.OnCreate(GodotUtils.ComponentPool{`0})">
             <summary>
             Invoked when a new <typeparamref name="TNode"/> is created.
             </summary>
+            <param name="pool">Owning pool instance for this node.</param>
         </member>
         <member name="T:GodotUtils.INodePool`1">
             <summary>
             Common interface for pool operations across all pool types.
             Abstracts pool lifecycle and access patterns.
             </summary>
+            <typeparam name="TNode">Node type managed by the pool.</typeparam>
         </member>
         <member name="P:GodotUtils.INodePool`1.ActiveNodes">
             <summary>
@@ -2308,11 +2662,13 @@
             <summary>
             Acquires a node from the pool, creating one if necessary.
             </summary>
+            <returns>Active node instance ready for use.</returns>
         </member>
         <member name="M:GodotUtils.INodePool`1.Release(`0)">
             <summary>
             Releases a node back to the pool for reuse.
             </summary>
+            <param name="node">Node to return to the pool.</param>
         </member>
         <member name="M:GodotUtils.INodePool`1.QueueFreeAll">
             <summary>
@@ -2323,11 +2679,13 @@
             <summary>
             Defines lifecycle callbacks for pooled nodes.
             </summary>
+            <typeparam name="TNode">Node type participating in pooling lifecycle callbacks.</typeparam>
         </member>
         <member name="M:GodotUtils.IPoolable`1.OnCreate(GodotUtils.IPoolContext{`0})">
             <summary>
             Invoked when a new <typeparamref name="TNode"/> is created.
             </summary>
+            <param name="pool">Pool context used to release this node later.</param>
         </member>
         <member name="M:GodotUtils.IPoolable`1.OnAcquire">
             <summary>
@@ -2343,11 +2701,13 @@
             <summary>
             Context passed to pooled nodes for releasing themselves.
             </summary>
+            <typeparam name="TNode">Node type handled by the pool context.</typeparam>
         </member>
         <member name="M:GodotUtils.IPoolContext`1.Release(`0)">
             <summary>
             Releases a node back into the pool.
             </summary>
+            <param name="node">Node instance to release.</param>
         </member>
         <member name="T:GodotUtils.LifecycleNodePool`1">
             <summary>
@@ -2360,16 +2720,20 @@
             <summary>
             Creates a pool of lifecycle-managed nodes.
             </summary>
+            <param name="parent">Parent node that receives pooled node instances.</param>
+            <param name="createNodeFunc">Factory that creates new pooled nodes.</param>
         </member>
         <member name="M:GodotUtils.LifecycleNodePool`1.Acquire">
             <summary>
             Returns an available node or creates a new one if all are in use.
             </summary>
+            <returns>Active node instance ready for use.</returns>
         </member>
         <member name="M:GodotUtils.LifecycleNodePool`1.Release(`0)">
             <summary>
             Releases the node back to the pool.
             </summary>
+            <param name="node">Node to release.</param>
         </member>
         <member name="T:GodotUtils.NodePool`1">
             <summary>
@@ -2382,15 +2746,24 @@
             <summary>
             Creates a pool of basic nodes.
             </summary>
+            <param name="parent">Parent node that receives pooled node instances.</param>
+            <param name="createNodeFunc">Factory that creates new pooled nodes.</param>
         </member>
         <member name="M:GodotUtils.NodePool`1.Acquire">
             <summary>
             Returns an available node or creates a new one if all are in use.
             </summary>
+            <returns>Active node instance ready for use.</returns>
         </member>
         <member name="M:GodotUtils.NodePool`1.Release(`0)">
             <summary>
             Releases the node back to the pool.
+            </summary>
+            <param name="node">Node to release.</param>
+        </member>
+        <member name="T:GodotUtils.PoolCore`1">
+            <summary>
+            Internal pooling engine shared by node-pool wrappers.
             </summary>
         </member>
         <member name="P:GodotUtils.PoolCore`1.ActiveNodes">
@@ -2418,9 +2791,19 @@
             Queue frees all inactive and active nodes in the pool.
             </summary>
         </member>
+        <member name="T:GodotUtils.PrintUtils">
+            <summary>
+            Minimal print helpers for warnings and diagnostic output.
+            </summary>
+        </member>
         <member name="M:GodotUtils.PrintUtils.Warning(System.Object)">
             <summary>
             Prints a warning with a yellow highlight and pushes it to the editor warnings.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.RegEx.RegexUtils">
+            <summary>
+            Centralized generated-regex definitions used across Godot utility helpers.
             </summary>
         </member>
         <member name="M:GodotUtils.RegEx.RegexUtils.ScriptPath">
@@ -2490,14 +2873,52 @@
             </code>
             </remarks>
         </member>
+        <member name="T:GodotUtils.State">
+            <summary>
+            Lightweight state container with enter, update, and exit callbacks.
+            </summary>
+            <param name="name">Optional state name used for diagnostics.</param>
+        </member>
+        <member name="M:GodotUtils.State.#ctor(System.String)">
+            <summary>
+            Lightweight state container with enter, update, and exit callbacks.
+            </summary>
+            <param name="name">Optional state name used for diagnostics.</param>
+        </member>
+        <member name="P:GodotUtils.State.Enter">
+            <summary>
+            Called when the state becomes active.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.State.Update">
+            <summary>
+            Called each frame while the state is active.
+            </summary>
+        </member>
+        <member name="P:GodotUtils.State.Exit">
+            <summary>
+            Called when the state is exited.
+            </summary>
+        </member>
         <member name="M:GodotUtils.State.ToString">
             <summary>
             Returns the state name in lowercase.
             </summary>
         </member>
+        <member name="T:GodotUtils.IStateMachine">
+            <summary>
+            Defines the minimal contract for state-machine transitions.
+            </summary>
+        </member>
         <member name="M:GodotUtils.IStateMachine.SwitchState(GodotUtils.State)">
             <summary>
             Switches to the provided state.
+            </summary>
+            <param name="newState">State to activate.</param>
+        </member>
+        <member name="T:GodotUtils.TaskUtils">
+            <summary>
+            Helpers for fire-and-forget task execution with non-fatal exception logging.
             </summary>
         </member>
         <member name="M:GodotUtils.TaskUtils.FireAndForget(System.Func{System.Threading.Tasks.Task})">
@@ -2505,6 +2926,18 @@
             Runs a task and logs any errors, intended for fire-and-forget usage.
             <para>For example:</para>
             <code>TaskUtils.FireAndForget(() =&gt; ExitGame());</code>
+            </summary>
+            <param name="task">Task delegate to execute.</param>
+        </member>
+        <member name="M:GodotUtils.TaskUtils.FireAndForgetInternal(System.Func{System.Threading.Tasks.Task})">
+            <summary>
+            Executes the task and handles expected cancellation and non-fatal failures.
+            </summary>
+            <param name="task">Task delegate to execute.</param>
+        </member>
+        <member name="T:GodotUtils.Ui.ToolScriptHelpers">
+            <summary>
+            Editor-only utility toggles for project housekeeping tasks.
             </summary>
         </member>
         <member name="P:GodotUtils.Ui.ToolScriptHelpers.RemoveEmptyFolders">
@@ -2517,15 +2950,52 @@
             Triggers removal of orphaned .cs.uid files when toggled in the editor.
             </summary>
         </member>
+        <member name="M:GodotUtils.Ui.ToolScriptHelpers.DeleteEmptyFolders">
+            <summary>
+            Deletes empty directories across the project when running in editor context.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Ui.ToolScriptHelpers.DeleteOrphanedCSUIDFiles">
+            <summary>
+            Deletes orphaned .cs.uid files whose corresponding .cs files no longer exist.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Ui.ToolScriptHelpers.IsEditorContext">
+            <summary>
+            Returns whether execution is currently in editor context.
+            </summary>
+            <returns><see langword="true"/> when running in editor.</returns>
+        </member>
         <member name="T:GodotUtils.TraverseDecision">
             <summary>
             Decision returned by a traversal callback.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.TraverseDecision.Continue">
+            <summary>
+            Continue traversal normally.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.TraverseDecision.SkipChildren">
+            <summary>
+            Skip traversing children of the current directory entry.
+            </summary>
+        </member>
+        <member name="F:GodotUtils.TraverseDecision.Stop">
+            <summary>
+            Stop traversal immediately.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.VectorUtils">
+            <summary>
+            Helper methods for common vector generation tasks.
             </summary>
         </member>
         <member name="M:GodotUtils.VectorUtils.RandomDirection2D">
             <summary>
             Returns a random normalized 2D direction vector.
             </summary>
+            <returns>Random unit-length 2D direction.</returns>
         </member>
         <member name="T:GodotUtils.WindowUtils">
             <summary>
@@ -2536,6 +3006,7 @@
             <summary>
             Sets the main window title.
             </summary>
+            <param name="title">Window title text.</param>
         </member>
         <member name="M:GodotUtils.WindowUtils.GetCenter">
             <summary>
@@ -2550,6 +3021,11 @@
         <member name="M:GodotUtils.WindowUtils.GetHeight">
             <summary>
             Gets the main window height in pixels.
+            </summary>
+        </member>
+        <member name="T:GodotUtils.WindowMode">
+            <summary>
+            High-level window mode options.
             </summary>
         </member>
         <member name="T:System.Text.RegularExpressions.Generated.ScriptPath_0">

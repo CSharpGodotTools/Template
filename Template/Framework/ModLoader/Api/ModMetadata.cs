@@ -3,6 +3,11 @@ namespace __TEMPLATE__.Mods;
 /// <summary>
 /// Immutable metadata snapshot for a loaded mod.
 /// </summary>
+/// <param name="id">Unique mod identifier.</param>
+/// <param name="name">Display name of the mod.</param>
+/// <param name="author">Author declared by the mod.</param>
+/// <param name="modVersion">Version string declared by the mod package.</param>
+/// <param name="gameVersion">Target game version declared by the mod package.</param>
 public sealed class ModMetadata(string id, string name, string author, string modVersion, string gameVersion)
 {
     /// <summary>

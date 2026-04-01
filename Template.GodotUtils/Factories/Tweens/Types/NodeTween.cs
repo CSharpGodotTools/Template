@@ -12,6 +12,7 @@ public class NodeTween : BaseTween<NodeTween>
     /// <summary>
     /// Creates a tween bound to the provided node.
     /// </summary>
+    /// <param name="node">Node to animate.</param>
     internal NodeTween(Node node) : base(node)
     {
     }

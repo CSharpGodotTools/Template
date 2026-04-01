@@ -3,8 +3,16 @@ using Godot;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Vector3I visual-control builders.
+/// </summary>
 internal static partial class VisualControlTypes
 {
+    /// <summary>
+    /// Creates a control for <see cref="Vector3I"/> values.
+    /// </summary>
+    /// <param name="context">Initial value and change callback context.</param>
+    /// <returns>Created vector-control info.</returns>
     private static VisualControlInfo VisualVector3I(VisualControlContext context)
     {
         return CreateVectorControl<Vector3I>(
@@ -14,6 +22,7 @@ internal static partial class VisualControlTypes
             value => [value.X, value.Y, value.Z],
             (value, index, component) =>
             {
+                // Map component indices to vector axes.
                 switch (index)
                 {
                     case 0:

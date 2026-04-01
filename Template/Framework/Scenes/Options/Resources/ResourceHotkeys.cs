@@ -19,7 +19,13 @@ namespace __TEMPLATE__.Ui;
  * However this is undesired because values are saved through string keys
  * instead of props.
  */
+/// <summary>
+/// Serializable resource that stores input action bindings for options hotkeys.
+/// </summary>
 public partial class ResourceHotkeys : Resource
 {
+    /// <summary>
+    /// Gets or sets action-to-events mapping used to rebuild InputMap bindings.
+    /// </summary>
     [Export] public Dictionary<StringName, Array<InputEvent>> Actions { get; set; } = [];
 }

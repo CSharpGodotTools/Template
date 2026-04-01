@@ -20,10 +20,12 @@ public abstract class LineEditOptionDefinition : OptionDefinition
     /// <summary>
     /// Reads the current text from your game settings source.
     /// </summary>
+    /// <returns>Current text value.</returns>
     public abstract string GetValue();
 
     /// <summary>
     /// Writes text back to your game settings source.
     /// </summary>
+    /// <param name="value">Text value to persist.</param>
     public abstract void SetValue(string value);
 }

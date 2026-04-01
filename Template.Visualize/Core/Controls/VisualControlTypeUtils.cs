@@ -6,15 +6,19 @@ using static Godot.Control;
 namespace GodotUtils.Debugging;
 
 /// <summary>
-/// More utility methods
+/// Shared utility helpers used by visual control factory implementations.
 /// </summary>
 internal static partial class VisualControlTypes
 {
-    // Helper method to remove an element from an array
     private const double FloatStep = 0.1;
     private const double DecimalStep = 0.01;
     private const double IntStep = 1;
 
+    /// <summary>
+    /// Registers cleanup logic that runs once when a node exits the scene tree.
+    /// </summary>
+    /// <param name="node">Node whose exit triggers cleanup.</param>
+    /// <param name="cleanup">Cleanup callback to execute.</param>
     private static void CleanupOnTreeExited(Node node, Action cleanup)
     {
         void OnTreeExited()
@@ -26,10 +30,17 @@ internal static partial class VisualControlTypes
         node.TreeExited += OnTreeExited;
     }
 
+    /// <summary>
+    /// Returns a new array with the element at <paramref name="index"/> removed.
+    /// </summary>
+    /// <param name="source">Source array.</param>
+    /// <param name="index">Zero-based index to remove.</param>
+    /// <returns>New array without the removed element.</returns>
     private static Array RemoveAt(this Array source, int index)
     {
         ArgumentNullException.ThrowIfNull(source);
 
+        // Guard against invalid indices before copying array segments.
         if (index < 0 || index >= source.Length)
         {
             throw new ArgumentOutOfRangeException(nameof(index), index, $"[Visualize] Index was out of range");
@@ -42,6 +53,12 @@ internal static partial class VisualControlTypes
         return dest;
     }
 
+    /// <summary>
+    /// Returns a new array with <paramref name="value"/> appended.
+    /// </summary>
+    /// <param name="source">Source array.</param>
+    /// <param name="value">Value to append.</param>
+    /// <returns>New array including appended value.</returns>
     private static Array Append(Array source, object value)
     {
         ArgumentNullException.ThrowIfNull(source);
@@ -54,6 +71,11 @@ internal static partial class VisualControlTypes
         return dest;
     }
 
+    /// <summary>
+    /// Creates a configured spin box for a numeric type.
+    /// </summary>
+    /// <param name="type">Numeric type represented by the spin box.</param>
+    /// <returns>Configured spin box.</returns>
     private static SpinBox CreateSpinBox(Type type)
     {
         SpinBox spinBox = new()
@@ -77,6 +99,13 @@ internal static partial class VisualControlTypes
         return spinBox;
     }
 
+    /// <summary>
+    /// Creates a text-based control adapter using custom parse/stringify functions.
+    /// </summary>
+    /// <param name="context">Initial value and change callback context.</param>
+    /// <param name="parse">Converts edited text to value.</param>
+    /// <param name="stringify">Converts value to display text.</param>
+    /// <returns>Created text-control info.</returns>
     private static VisualControlInfo CreateTextControl(VisualControlContext context, Func<string, object> parse, Func<object, string> stringify)
     {
         string initialText = stringify(context.InitialValue!);
@@ -90,6 +119,16 @@ internal static partial class VisualControlTypes
         return new VisualControlInfo(new TextControl(lineEdit, stringify));
     }
 
+    /// <summary>
+    /// Creates a multi-spin-box control for vector-like composite values.
+    /// </summary>
+    /// <typeparam name="T">Composite value type.</typeparam>
+    /// <param name="context">Initial value and change callback context.</param>
+    /// <param name="labels">Component labels.</param>
+    /// <param name="componentType">Numeric type used by component spin boxes.</param>
+    /// <param name="getComponents">Function that reads component values.</param>
+    /// <param name="setComponent">Function that writes one component value.</param>
+    /// <returns>Created composite control info.</returns>
     private static VisualControlInfo CreateVectorControl<T>(
         VisualControlContext context,
         string[] labels,
@@ -127,6 +166,19 @@ internal static partial class VisualControlTypes
         return new VisualControlInfo(new MultiSpinBoxControl<T>(container, spinBoxes, getComponents));
     }
 
+    /// <summary>
+    /// Creates a reusable editable UI for indexed collections (arrays/lists/dictionaries values).
+    /// </summary>
+    /// <param name="elementType">Collection element type.</param>
+    /// <param name="getCount">Returns current item count.</param>
+    /// <param name="getValue">Reads item by index.</param>
+    /// <param name="setValue">Writes item by index.</param>
+    /// <param name="addValue">Adds a new item.</param>
+    /// <param name="removeValue">Removes item by index.</param>
+    /// <param name="getCollectionValue">Returns current collection value.</param>
+    /// <param name="setCollectionValue">Optional collection replacement callback.</param>
+    /// <param name="context">Initial value and change callback context.</param>
+    /// <returns>Container-based visual control info.</returns>
     private static VisualControlInfo CreateIndexedCollectionControl(
         Type elementType,
         Func<int> getCount,
@@ -155,6 +207,7 @@ internal static partial class VisualControlTypes
                 context.ValueChanged(getCollectionValue());
             }));
 
+            // Skip rows when no visual editor can be created for the element type.
             if (control.VisualControl == null)
                 return;
 
@@ -165,6 +218,7 @@ internal static partial class VisualControlTypes
 
             void OnRemovePressed()
             {
+                // Ignore remove clicks while the collection is in readonly mode.
                 if (!isEditable)
                 {
                     return;
@@ -193,6 +247,7 @@ internal static partial class VisualControlTypes
 
         void OnAddPressed()
         {
+            // Ignore add clicks while the collection is in readonly mode.
             if (!isEditable)
             {
                 return;
@@ -229,12 +284,15 @@ internal static partial class VisualControlTypes
         {
             foreach (Node child in listVBox.GetChildren())
             {
+                // Only indexed entry rows participate in index re-numbering.
                 if (child is not HBoxContainer row || !row.HasMeta(IndexMetaKey))
                 {
                     continue;
                 }
 
                 int currentIndex = GetRowIndex(row);
+
+                // Shift rows that were after the removed element.
                 if (currentIndex > removedIndex)
                 {
                     row.SetMeta(IndexMetaKey, currentIndex - 1);
@@ -253,6 +311,7 @@ internal static partial class VisualControlTypes
         {
             foreach (Node child in listVBox.GetChildren())
             {
+                // Keep the add button and rebuild only entry rows.
                 if (child == addButton)
                 {
                     continue;

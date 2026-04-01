@@ -2,6 +2,9 @@ using Godot;
 
 namespace __TEMPLATE__.Netcode.Examples.Topdown;
 
+/// <summary>
+/// Manages local-player node creation, movement, and position send throttling.
+/// </summary>
 internal sealed class LocalPlayer
 {
     private const float MoveSpeed = 200f;
@@ -23,26 +26,44 @@ internal sealed class LocalPlayer
     private float _sendAccumulator;
     private Vector2 _lastSentPosition;
 
+    /// <summary>
+    /// Gets whether a local-player node currently exists.
+    /// </summary>
     public bool HasLocalPlayer => _node != null;
 
+    /// <summary>
+    /// Creates local-player controller for a world instance.
+    /// </summary>
+    /// <param name="world">TopDown world host node.</param>
     public LocalPlayer(World world)
     {
         _world = world;
     }
 
+    /// <summary>
+    /// Attaches a game client used to send local position updates.
+    /// </summary>
+    /// <param name="client">Connected game client instance.</param>
     public void AttachClient(GameClient client)
     {
         _client = client;
     }
 
+    /// <summary>
+    /// Detaches active client and clears local-player node state.
+    /// </summary>
     public void DetachClient()
     {
         _client = null;
         Clear();
     }
 
+    /// <summary>
+    /// Creates local-player node when client is attached and node is missing.
+    /// </summary>
     public void EnsureLocalPlayer()
     {
+        // Create the local avatar only once after a client is attached.
         if (_node == null && _client != null)
         {
             _node = CreateLocalPlayerNode();
@@ -52,8 +73,12 @@ internal sealed class LocalPlayer
         }
     }
 
+    /// <summary>
+    /// Resets local-player position to screen center and sends immediate update.
+    /// </summary>
     public void ResetAtCenter()
     {
+        // Reset only when both the local node and active client are available.
         if (_node != null && _client != null)
         {
             Vector2 center = _world.GetScreenCenter();
@@ -64,8 +89,13 @@ internal sealed class LocalPlayer
         }
     }
 
+    /// <summary>
+    /// Updates local movement and sends throttled position updates.
+    /// </summary>
+    /// <param name="deltaSeconds">Frame delta in seconds.</param>
     public void Tick(float deltaSeconds)
     {
+        // Skip movement and network sends until local node and client both exist.
         if (_node != null && _client != null)
         {
             UpdateMovement(_node, deltaSeconds);
@@ -73,6 +103,9 @@ internal sealed class LocalPlayer
         }
     }
 
+    /// <summary>
+    /// Clears local-player node and send-throttle state.
+    /// </summary>
     public void Clear()
     {
         _node?.QueueFree();
@@ -81,6 +114,10 @@ internal sealed class LocalPlayer
         _sendAccumulator = 0f;
     }
 
+    /// <summary>
+    /// Creates a local-player visual node centered in the world.
+    /// </summary>
+    /// <returns>Configured local-player color-rect node.</returns>
     private ColorRect CreateLocalPlayerNode()
     {
         ColorRect localPlayer = World.CreatePlayerRect(new Color(0.2f, 0.8f, 1f));
@@ -89,24 +126,38 @@ internal sealed class LocalPlayer
         return localPlayer;
     }
 
+    /// <summary>
+    /// Applies frame movement input to the local-player node.
+    /// </summary>
+    /// <param name="node">Local-player node.</param>
+    /// <param name="deltaSeconds">Frame delta in seconds.</param>
     private static void UpdateMovement(ColorRect node, float deltaSeconds)
     {
         Vector2 inputDirection = Input.GetVector(_moveLeft, _moveRight, _moveUp, _moveDown);
 
+        // Move only when there is non-zero directional input this frame.
         if (inputDirection != Vector2.Zero)
         {
             node.Position += inputDirection * MoveSpeed * deltaSeconds;
         }
     }
 
+    /// <summary>
+    /// Sends position updates at a fixed interval when movement exceeds epsilon.
+    /// </summary>
+    /// <param name="position">Current local-player position.</param>
+    /// <param name="deltaSeconds">Frame delta in seconds.</param>
     private void TrySendPosition(Vector2 position, float deltaSeconds)
     {
         _sendAccumulator += deltaSeconds;
+
+        // Throttle updates to the configured send interval.
         if (_sendAccumulator < SendIntervalSeconds)
         {
             return;
         }
 
+        // Avoid network sends for sub-epsilon jitter.
         if (!HasSignificantMovement(position))
         {
             return;
@@ -117,6 +168,11 @@ internal sealed class LocalPlayer
         _client!.SendPosition(position);
     }
 
+    /// <summary>
+    /// Returns whether movement delta is large enough to justify a network update.
+    /// </summary>
+    /// <param name="position">Current local-player position.</param>
+    /// <returns><see langword="true"/> when movement exceeds configured epsilon.</returns>
     private bool HasSignificantMovement(Vector2 position)
     {
         return (position - _lastSentPosition).LengthSquared() >= SendEpsilonSq;

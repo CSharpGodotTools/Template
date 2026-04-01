@@ -5,8 +5,17 @@ using System.Reflection;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// List/array-like visual-control builders for generic list types.
+/// </summary>
 internal static partial class VisualControlTypes
 {
+    /// <summary>
+    /// Creates a control for generic list-like collections.
+    /// </summary>
+    /// <param name="type">Concrete list type.</param>
+    /// <param name="context">Initial value and change callback context.</param>
+    /// <returns>Created list-control info.</returns>
     private static VisualControlInfo VisualList(Type type, VisualControlContext context)
     {
         Type elementType = type.GetGenericArguments()[0];
@@ -25,6 +34,7 @@ internal static partial class VisualControlTypes
                 () => list,
                 value =>
                 {
+                    // Replace backing list reference when the collection instance changes.
                     if (value is IList nextList)
                     {
                         list = nextList;
@@ -54,6 +64,7 @@ internal static partial class VisualControlTypes
             () => listObject,
             value =>
             {
+                // Replace backing object when a non-null list-like value is provided.
                 if (value != null)
                 {
                     listObject = value;

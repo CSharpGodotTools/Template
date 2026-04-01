@@ -4,6 +4,9 @@ using System;
 
 namespace __TEMPLATE__.Ui;
 
+/// <summary>
+/// Coordinates input rebinding behavior for the options menu input tab.
+/// </summary>
 public sealed partial class OptionsInput : IDisposable
 {
     // Constants
@@ -19,6 +22,14 @@ public sealed partial class OptionsInput : IDisposable
     private readonly HotkeyListView _view;
     private readonly HotkeyEditor _editor;
 
+    /// <summary>
+    /// Initializes input-tab controllers and wires UI events.
+    /// </summary>
+    /// <param name="options">Options scene instance containing tab nodes.</param>
+    /// <param name="inputNavButton">Left-side navigation button used for focus neighbors.</param>
+    /// <param name="optionsManager">Manager that stores and persists hotkey bindings.</param>
+    /// <param name="sceneManager">Scene manager used for cancel-to-main-menu behavior.</param>
+    /// <param name="focusOutline">Focus helper used while navigating dynamic controls.</param>
     public OptionsInput(
         Options options,
         Button inputNavButton,
@@ -43,6 +54,9 @@ public sealed partial class OptionsInput : IDisposable
         _resetInputToDefaultsBtn.Pressed += OnResetToDefaultsPressed;
     }
 
+    /// <summary>
+    /// Unsubscribes events and exits listen mode resources.
+    /// </summary>
     public void Dispose()
     {
         _resetInputToDefaultsBtn.Pressed -= OnResetToDefaultsPressed;
@@ -51,8 +65,13 @@ public sealed partial class OptionsInput : IDisposable
         _editor.Clear();
     }
 
+    /// <summary>
+    /// Handles input for active keybinding capture or normal cancel navigation.
+    /// </summary>
+    /// <param name="event">Input event received from the owning options scene.</param>
     public void HandleInput(InputEvent @event)
     {
+        // Route input to hotkey editor while actively listening for a new binding.
         if (_editor.IsListening)
         {
             _editor.HandleInput(@event);
@@ -62,16 +81,26 @@ public sealed partial class OptionsInput : IDisposable
         HandleNonListeningInput();
     }
 
+    /// <summary>
+    /// Starts capture flow for an existing binding button.
+    /// </summary>
+    /// <param name="info">Metadata for the pressed binding button.</param>
     private void OnHotkeyButtonPressed(HotkeyButtonInfo info)
     {
+        // Ignore presses while another binding capture is in progress.
         if (_editor.IsListening)
             return;
 
         _editor.StartListening(info, fromPlus: false);
     }
 
+    /// <summary>
+    /// Starts capture flow for a new binding and appends a replacement plus button.
+    /// </summary>
+    /// <param name="info">Metadata for the pressed plus button.</param>
     private void OnPlusButtonPressed(HotkeyButtonInfo info)
     {
+        // Ignore presses while another binding capture is in progress.
         if (_editor.IsListening)
             return;
 
@@ -79,17 +108,25 @@ public sealed partial class OptionsInput : IDisposable
         _view.AddPlusButton(info.Action);
     }
 
+    /// <summary>
+    /// Handles cancel behavior when not actively capturing a new binding.
+    /// </summary>
     private void HandleNonListeningInput()
     {
+        // Handle only cancel input in non-listening mode.
         if (!Input.IsActionJustPressed(InputActions.UICancel))
             return;
 
+        // Ignore cancel handling when current scene is not the options scene.
         if (_scene.CurrentScene.Name != OptionsSceneName)
             return;
 
         _scene.SwitchToMainMenu();
     }
 
+    /// <summary>
+    /// Restores default hotkeys and rebuilds the input list UI.
+    /// </summary>
     private void OnResetToDefaultsPressed()
     {
         _view.Clear();
@@ -99,11 +136,18 @@ public sealed partial class OptionsInput : IDisposable
         _view.Build();
     }
 
+    /// <summary>
+    /// Converts an input event into a short human-readable label for buttons.
+    /// </summary>
+    /// <param name="inputEvent">Input event to format.</param>
+    /// <returns>Readable binding text, or empty string for unsupported event types.</returns>
     private static string GetReadableForInput(InputEvent inputEvent)
     {
+        // Format keyboard input using Godot's readable key helper.
         if (inputEvent is InputEventKey key)
             return key.Readable();
 
+        // Format mouse-button bindings as "Mouse <index>".
         if (inputEvent is InputEventMouseButton mb)
             return $"Mouse {mb.ButtonIndex}";
 

@@ -8,9 +8,12 @@ namespace GodotUtils;
 public static class ColorPickerButtonFactory
 {
     private const int DefaultButtonSize = 30;
+
     /// <summary>
     /// Creates a <see cref="ColorPickerButton"/> with <paramref name="defaultColor"/>.
     /// </summary>
+    /// <param name="defaultColor">Initial picker color.</param>
+    /// <returns>Configured color picker button.</returns>
     public static ColorPickerButton Create(Color defaultColor)
     {
         ColorPickerButton button = new()

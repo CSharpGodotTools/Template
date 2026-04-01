@@ -9,6 +9,7 @@ namespace __TEMPLATE__;
 /// Services have a scene lifetime meaning they will be destroyed when the scene changes. Services
 /// aid as an alternative to using the static keyword everywhere.
 /// </summary>
+/// <param name="autoloads">Autoload container used to subscribe to scene lifecycle events.</param>
 public class Services(AutoloadsFramework autoloads)
 {
     /// <summary>
@@ -27,6 +28,8 @@ public class Services(AutoloadsFramework autoloads)
     public T Get<T>()
     {
         Type serviceType = typeof(T);
+
+        // Throw when the requested service type was not registered for this scene.
         if (!_services.TryGetValue(serviceType, out Node? service))
             throw new InvalidOperationException($"Unable to obtain service '{serviceType.Name}'.");
 
@@ -45,6 +48,8 @@ public class Services(AutoloadsFramework autoloads)
     public void Register(Node node)
     {
         Type serviceType = node.GetType();
+
+        // Enforce one service instance per concrete type.
         if (_services.ContainsKey(serviceType))
             throw new InvalidOperationException($"There can only be one service of type '{serviceType.Name}'.");
 
@@ -55,6 +60,7 @@ public class Services(AutoloadsFramework autoloads)
     /// <summary>
     /// Adds a service to the service provider.
     /// </summary>
+    /// <param name="node">Service node instance to register.</param>
     private void AddService(Node node)
     {
         _services.Add(node.GetType(), node);
@@ -66,6 +72,7 @@ public class Services(AutoloadsFramework autoloads)
     /// </summary>
     private void EnsureCleanupSubscription()
     {
+        // Avoid duplicate scene-change subscriptions.
         if (_isCleanupSubscribed)
         {
             return;
@@ -86,8 +93,9 @@ public class Services(AutoloadsFramework autoloads)
     }
 
     /// <summary>
-    /// A formatted string of the all the services.
+    /// Returns a formatted string containing all registered services.
     /// </summary>
+    /// <returns>Formatted text representation of registered services.</returns>
     public override string ToString()
     {
         return _services.ToFormattedString()!;

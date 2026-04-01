@@ -3,8 +3,16 @@ using Godot;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Quaternion visual-control builders.
+/// </summary>
 internal static partial class VisualControlTypes
 {
+    /// <summary>
+    /// Creates a control for <see cref="Quaternion"/> values.
+    /// </summary>
+    /// <param name="context">Initial value and change callback context.</param>
+    /// <returns>Created vector-control info.</returns>
     private static VisualControlInfo VisualQuaternion(VisualControlContext context)
     {
         return CreateVectorControl<Quaternion>(
@@ -14,6 +22,7 @@ internal static partial class VisualControlTypes
             value => [value.X, value.Y, value.Z, value.W],
             (value, index, component) =>
             {
+                // Map component indices to quaternion components.
                 switch (index)
                 {
                     case 0:

@@ -5,18 +5,29 @@ using System.Reflection;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Builds UI rows for mutable visualized members.
+/// </summary>
 internal static class VisualMemberElementBuilder
 {
     private const int MemberRowSeparation = 8;
     private const int ClassContainerSeparation = 4;
     private const string LabelSpacerName = "LabelSpacer";
 
+    /// <summary>
+    /// Adds mutable controls for each member to the target container.
+    /// </summary>
+    /// <param name="vbox">Container that receives generated controls.</param>
+    /// <param name="members">Members to visualize.</param>
+    /// <param name="target">Instance owning member values.</param>
+    /// <param name="displayName">Display name used in diagnostics.</param>
     public static void AddMutableControls(Control vbox, IEnumerable<MemberInfo> members, object target, string displayName)
     {
         foreach (MemberInfo member in members)
         {
             Control? element = CreateMemberInfoElement(member, target, displayName);
 
+            // Add only successfully created controls.
             if (element != null)
             {
                 vbox.AddChild(element);
@@ -24,10 +35,18 @@ internal static class VisualMemberElementBuilder
         }
     }
 
+    /// <summary>
+    /// Creates the mutable UI element for a single member.
+    /// </summary>
+    /// <param name="member">Member metadata.</param>
+    /// <param name="target">Instance owning member value.</param>
+    /// <param name="displayName">Display name used for warnings.</param>
+    /// <returns>Generated control element, or <see langword="null"/> when value/control cannot be created.</returns>
     private static Control? CreateMemberInfoElement(MemberInfo member, object target, string displayName)
     {
         object? initialValue = VisualHandler.GetMemberValue(member, target);
 
+        // Null member values cannot initialize editable controls reliably.
         if (initialValue == null)
         {
             PrintUtils.Warning($"[Visualize] '{member.Name}' value in '{displayName}' is null");
@@ -44,6 +63,7 @@ internal static class VisualMemberElementBuilder
 
         Label label = new();
 
+        // Class controls use title-style labels rather than standard row labels.
         if (element.VisualControl is ClassControl)
         {
             label.LabelSettings = new LabelSettings
@@ -59,11 +79,13 @@ internal static class VisualMemberElementBuilder
         label.CustomMinimumSize = new Vector2(VisualUiLayout.MemberLabelMinWidth, 0);
         container.Name = member.Name;
 
+        // Return label-only container when no editable control exists for this type.
         if (element.VisualControl == null)
         {
             return container;
         }
 
+        // Class controls render in nested layout with title row and content row.
         if (element.VisualControl is ClassControl)
         {
             label.LabelSettings = new LabelSettings

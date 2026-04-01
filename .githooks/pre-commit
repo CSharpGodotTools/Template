@@ -20,7 +20,7 @@ set -euo pipefail
 
 # dotnet format mode: whitespace or full.
 # whitespace is faster for commit-time checks while still using dotnet format.
-: "${PRECOMMIT_FORMAT_MODE:=whitespace}"
+: "${PRECOMMIT_FORMAT_MODE:=full}"
 
 # true: run targeted builds for changed project areas.
 : "${PRECOMMIT_ENABLE_BUILD_GODOTUTILS:=true}"

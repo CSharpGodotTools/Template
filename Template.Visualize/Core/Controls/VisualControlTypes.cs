@@ -6,11 +6,18 @@ using System.Reflection;
 
 namespace GodotUtils.Debugging;
 
+/// <summary>
+/// Maps reflected .NET/Godot types to concrete visualize UI control implementations.
+/// </summary>
 internal static partial class VisualControlTypes
 {
     /// <summary>
-    /// Creates a control for the given member type and context
+    /// Creates a visual control for the provided member type and initial context.
     /// </summary>
+    /// <param name="type">Member or parameter type to render.</param>
+    /// <param name="memberInfo">Optional member metadata used by some control providers.</param>
+    /// <param name="context">Initial value and change callback context.</param>
+    /// <returns>Control info containing created control or null when unsupported.</returns>
     public static VisualControlInfo CreateControlForType(Type type, MemberInfo? memberInfo, VisualControlContext context)
     {
         VisualControlInfo info = type switch
@@ -55,6 +62,7 @@ internal static partial class VisualControlTypes
             _ => new VisualControlInfo(null)
         };
 
+            // Return an unsupported control placeholder when no visual control was created.
         if (info.VisualControl == null)
         {
             PrintUtils.Warning($"[Visualize] The type '{type.Namespace}.{type.Name}' is not supported for the {nameof(VisualizeAttribute)}");
@@ -63,6 +71,12 @@ internal static partial class VisualControlTypes
         return info;
     }
 
+    /// <summary>
+    /// Creates dictionary visual controls through the dictionary-provider pipeline.
+    /// </summary>
+    /// <param name="dictionaryType">Dictionary runtime type.</param>
+    /// <param name="context">Initial value and change callback context.</param>
+    /// <returns>Dictionary visual control info.</returns>
     private static VisualControlInfo CreateDictionaryControl(Type dictionaryType, VisualControlContext context)
     {
         VisualDictionaryControlProvider provider = new(

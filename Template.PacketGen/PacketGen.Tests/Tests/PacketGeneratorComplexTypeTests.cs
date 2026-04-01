@@ -61,6 +61,13 @@ internal sealed class PacketGeneratorComplexTypeTests
         }
     }
 
+    /// <summary>
+    /// Creates and initializes an inventory entry instance for complex-type packet tests.
+    /// </summary>
+    /// <param name="entryType">Generated entry CLR type.</param>
+    /// <param name="itemId">Item identifier value.</param>
+    /// <param name="quantity">Item quantity value.</param>
+    /// <returns>Initialized entry instance.</returns>
     private static object CreateEntry(Type entryType, int itemId, int quantity)
     {
         object entry = Activator.CreateInstance(entryType)!;
@@ -69,6 +76,13 @@ internal sealed class PacketGeneratorComplexTypeTests
         return entry;
     }
 
+    /// <summary>
+    /// Creates and initializes a player stats struct instance.
+    /// </summary>
+    /// <param name="statsType">Generated stats CLR type.</param>
+    /// <param name="level">Level value.</param>
+    /// <param name="spawn">Spawn position value.</param>
+    /// <returns>Initialized stats instance.</returns>
     private static object CreateStats(Type statsType, int level, Vector2 spawn)
     {
         object stats = Activator.CreateInstance(statsType)!;
@@ -77,6 +91,15 @@ internal sealed class PacketGeneratorComplexTypeTests
         return stats;
     }
 
+    /// <summary>
+    /// Creates and initializes a player profile object with nested collections.
+    /// </summary>
+    /// <param name="profileType">Generated profile CLR type.</param>
+    /// <param name="entryType">Generated inventory entry CLR type.</param>
+    /// <param name="stats">Stats object assigned to the profile.</param>
+    /// <param name="name">Profile name.</param>
+    /// <param name="entries">Inventory entry payload.</param>
+    /// <returns>Initialized profile instance.</returns>
     private static object CreateProfile(Type profileType, Type entryType, object stats, string name, object[] entries)
     {
         object profile = Activator.CreateInstance(profileType)!;
@@ -88,6 +111,12 @@ internal sealed class PacketGeneratorComplexTypeTests
         return profile;
     }
 
+    /// <summary>
+    /// Creates an array of the specified element type and fills it with provided values.
+    /// </summary>
+    /// <param name="elementType">Array element CLR type.</param>
+    /// <param name="values">Values to assign by index.</param>
+    /// <returns>Populated array instance.</returns>
     private static Array CreateArray(Type elementType, object[] values)
     {
         Array array = Array.CreateInstance(elementType, values.Length);
@@ -99,6 +128,12 @@ internal sealed class PacketGeneratorComplexTypeTests
         return array;
     }
 
+    /// <summary>
+    /// Creates a strongly typed list instance and appends the provided values.
+    /// </summary>
+    /// <param name="elementType">List element CLR type.</param>
+    /// <param name="values">Values to add to the list.</param>
+    /// <returns>Populated list instance.</returns>
     private static object CreateList(Type elementType, object?[] values)
     {
         Type listType = typeof(List<>).MakeGenericType(elementType);
@@ -112,6 +147,13 @@ internal sealed class PacketGeneratorComplexTypeTests
         return list;
     }
 
+    /// <summary>
+    /// Creates a strongly typed dictionary and fills it from alternating key/value entries.
+    /// </summary>
+    /// <param name="keyType">Dictionary key CLR type.</param>
+    /// <param name="valueType">Dictionary value CLR type.</param>
+    /// <param name="entries">Alternating key/value sequence.</param>
+    /// <returns>Populated dictionary instance.</returns>
     private static object CreateDictionary(Type keyType, Type valueType, object?[] entries)
     {
         Type dictionaryType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
@@ -127,12 +169,22 @@ internal sealed class PacketGeneratorComplexTypeTests
         return dictionary;
     }
 
+    /// <summary>
+    /// Creates a boxed nullable value for the specified underlying struct type.
+    /// </summary>
+    /// <param name="valueType">Underlying value type of the nullable.</param>
+    /// <param name="value">Value to wrap.</param>
+    /// <returns>Boxed nullable instance.</returns>
     private static object CreateNullable(Type valueType, object value)
     {
         Type nullableType = typeof(Nullable<>).MakeGenericType(valueType);
         return Activator.CreateInstance(nullableType, value)!;
     }
 
+    /// <summary>
+    /// Builds packet source used for complex class, struct, nullable, and collection serialization tests.
+    /// </summary>
+    /// <returns>Packet source code string.</returns>
     private static string BuildComplexTypeSource()
     {
         return $$"""

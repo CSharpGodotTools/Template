@@ -12,6 +12,8 @@ internal interface ITypeHandler
     /// <summary>
     /// Returns <c>true</c> if this handler can emit serialization code for the given type.
     /// </summary>
+    /// <param name="type">Type symbol to evaluate.</param>
+    /// <returns><see langword="true"/> when this handler supports the provided type.</returns>
     bool CanHandle(ITypeSymbol type);
 
     /// <summary>
