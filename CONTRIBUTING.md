@@ -16,7 +16,9 @@ Currently git hooks do the following:
 3. Verify everything still works with dotnet build
 ```
 
-Setup git hooks with `git config core.hooksPath .githooks` (and `chmod +x .githooks/*` if you are on Linux or Mac)
+Setup git hooks with `git config core.hooksPath .githooks` (or `chmod +x .githooks/*` if you are on Linux or Mac)
+
+Use `--no-verify` to bypass hooks. For example `git commit --no-verify -a -m "Message"`.
 
 ## GDUnit Tests
 > [!IMPORTANT]
