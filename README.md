@@ -283,7 +283,7 @@ This is just like the built-in Godot debugger dock except with more features.
 - Double click to open any entry in VSCode
 - Hide methods from stack trace with `[StackTraceHidden]` attribute
 
-<img width="1301" height="318" alt="image" src="https://github.com/user-attachments/assets/4283793b-134d-4731-b226-f4a69f7dc201" />
+<img width="835" height="407" alt="image" src="https://github.com/user-attachments/assets/380c374e-9e4b-41ef-83c5-a61da310f721" />
 
 <img width="501" height="434" alt="image" src="https://github.com/user-attachments/assets/b9037052-08bc-4864-a00b-66d64387d6eb" />
 
