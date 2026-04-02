@@ -8,14 +8,11 @@
     <a href="https://discord.gg/j8HQZZ76r8"><img src="https://img.shields.io/discord/955956101554266132?label=discord&style=flat&color=000000&labelColor=1a1a1a" alt="Discord" /></a>
 </div>
 
-This is just another Godot 4 C# template, right?
-
 ## Overview
-- [Multiplayer](#multiplayer)
-  - [Why use this?](#why-use-this)
-  - [Your first netcode](#your-first-netcode)
-  - [Working with packets](#working-with-packets)
-  - [Note about Apple ARM](#note-about-apple-arm)
+- [Setup](#setup)
+  - [Prerequisites](#prerequisites)
+  - [Install](#install)
+  - [Update](#update)
 - [Templates](#templates)
   - Minimal 2D scene
   - Minimal 3D scene
@@ -34,197 +31,29 @@ This is just another Godot 4 C# template, right?
   - [Services](#services)
   - [Custom main run args](#custom-main-run-args)
   - [GDUnit4 testing](#gdunit-testing)
-- [Prerequisites](#prerequisites)
-- [Install](#install)
-- [Update](#update)
+- [Multiplayer](#multiplayer)
+  - [Why use this?](#why-use-this)
+  - [Your first netcode](#your-first-netcode)
+  - [Working with packets](#working-with-packets)
+  - [Note about Apple ARM](#note-about-apple-arm)
 - [Thank You](#thank-you)
 
-## Multiplayer
-### Why use this?
-Minimum packet data sent. For example if we send the string "Dog", we have 3 bytes for the data, 1 byte for the packet opcode and 1 byte from ENets overhead.
+## Setup
 
-Packet scripts are kept small. The `Write` and `Read` methods are generated for you.
+### Prerequisites
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Latest Godot C# Release](https://godotengine.org/)
 
-Tested and reliably works with up to 475 clients sending positions to each other.
+### Install  
+Download the [latest release](https://github.com/CSharpGodotTools/Template/releases/latest) and open `project.godot`. Click `Run Setup` to restart Godot with your template ready to go.
 
-### Your First Netcode
+<img width="411" height="313" alt="image" src="https://github.com/user-attachments/assets/d5c663a9-29c1-40a0-b851-17f9e5cb7f00" />
 
-```cs
-// Packets
-public partial class CPlayerJoined : ClientPacket
-{
-    public string Username { get; set; }
-}
+### Update
 
-public partial class SPlayerPositions : ServerPacket
-{
-    public Dictionary<uint, Vector2> Positions { get; set; }
-}
+Updates can be done from `Dev Tools > Update`.
 
-// Client
-public partial class GameClient : GodotClient
-{
-    public GameClient()
-    {
-        OnPacket<SPlayerPositions>(packet =>
-        {
-            Log($"Received {packet.Positions.Count} player positions");
-        });
-    }
-
-    protected override void OnConnected()
-    {
-        Send(new CPlayerJoined("Valk"));
-    }
-}
-
-// Server
-public partial class GameServer : GodotServer
-{
-    public Dictionary<uint, Vector2> Players { get; } = new();
-
-    public GameServer()
-    {
-        OnPacket<CPlayerJoined>(peer =>
-        {
-            Players[peer.PeerId] = Vector2.Zero;
-
-            Send(new SPlayerPositions(Players), peer.PeerId);
-        });
-    }
-
-    protected override void OnPeerDisconnected(uint peerId)
-    {
-        Players.Remove(peerId);
-    }
-}
-
-// World
-public partial class World : Node
-{
-    private const int Port = 25565;
-    private const string Ip = "127.0.0.1";
-
-    private Net<GameClient, GameServer> _net = null!;
-
-    public override void _Ready()
-    {
-        _net = new Net<GameClient, GameServer>();
-
-        // Start server and client
-        _net.StartServer(Port);
-        _net.StartClient(Ip, Port);
-    }
-}
-```
-
-### Working with Packets
-
-Packets extend from `ClientPacket` or `ServerPacket`. All packets are prefixed with `C` for client or `S` for server, this is just convention and not required.
-```cs
-public partial class CPacketPlayerPosition : ClientPacket
-{
-    public uint Id { get; set; }
-    public Vector2 Position { get; set; }
-
-    // Properties can be excluded so their not part of the packet
-    [NetExclude]
-    public Vector2 PrevPosition { get; set; }
-}
-```
-
-The following is what is outputted by the source gen for you.
-```cs
-public partial class CPacketPlayerPosition
-{
-    public override void Write(PacketWriter writer)
-    {
-        writer.Write(Id);
-        writer.Write(Position);
-    }
-
-    public override void Read(PacketReader reader)
-    {
-        Id = reader.ReadUInt();
-        Position = reader.ReadVector2();
-    }
-}
-```
-
-If a type is not supported, you will need to manually override `Write` and `Read`. Manually overriding the methods prevents the source gen from generating anything. You should get a warning in your IDE telling you the type is not supported.
-
-| Type              | Supported | Example Types                       |
-| ----------------- | --------- | ----------------------------------- |
-| Primitives        | ✅        | `int`, `bool`, `ulong`              |
-| Vectors & byte[]  | ✅        | `Vector2`, `Vector3`, `byte[]`      |
-| Generics          | ✅        | `List<List<int>>`, `Dictionary<string, List<char>>`      |
-| Arrays            | ✅        | `int[]`, `bool[]`                             |
-| Classes & Structs | ✅        | `PlayerData`                        |
-
-You have full control over the order of which data gets sent when you override `Write` and `Read`.
-
-```cs
-// Since we need to use if conditions we actually have to type out the Write and Read functions
-public partial class SPacketPlayerJoinLeave : ServerPacket
-{
-    public uint Id { get; set; }
-    public string Username { get; set; }
-    public Vector2 Position { get; set; }
-    public bool Joined { get; set; }
-
-    public override void Write(PacketWriter writer)
-    {
-        // Not required to cast explicit types but helps prevent human error
-        writer.Write((uint)Id);
-        writer.Write((bool)Joined);
-
-        if (Joined)
-        {
-            writer.Write((string)Username);
-            writer.Write((Vector2)Position);
-        }
-    }
-
-    public override void Read(PacketReader reader)
-    {
-        Id = reader.ReadUInt();
-
-        Joined = reader.ReadBool();
-
-        if (Joined)
-        {
-            Username = reader.ReadString();
-            Position = reader.ReadVector2();
-        }
-    }
-}
-```
-
-By default you can only have up to `256` different client packet classes and `256` different server packets for a total of `512` different packet classes. 
-
-If you need more space, you have 2 options.
-
-1. (Recommended) Add a `OpcodeEnum Opcode { get; set; }` property to any of your packet classes with a conditional if-else chain kind of like what you see above but instead of a bool it is a enum. Replace `OpcodeEnum` with your own enum. (All enums are converted to bytes so you cannot have more than `256` options in any enum you send over the network! _This may be changed in the future._)  
-2. In `PacketRegistry.cs`, change `byte` to `ushort` but note that now all your packets will have a 2 byte overhead instead of just 1 byte. Note that `ushort` has a size of `65,535` compared to `byte` that only has `255`.
-
-```cs
-// res://Framework/Netcode/Packet/PacketRegistry.cs
-[PacketRegistry(typeof(byte))]
-public partial class PacketRegistry
-{
-}
-```
-
-### Note about Apple ARM
-
-If you are running on an OS without a build for your platform (such as Apple ARM), you
-may need to provide your own build of `ENet-CSharp`. To do so, follow the build instructions
-[here](https://github.com/nxrighthere/ENet-CSharp), and place the resulting `ENet-CSharp.dll`
-and `.so` or `.dylib` in the games root directory.
-
-### 475 Bot Stress Test
-
-[Stress Test.webm](https://github.com/user-attachments/assets/997ab9c1-7875-4c83-86e2-a3d98075b4a7)
+<img width="1498" height="334" alt="image" src="https://github.com/user-attachments/assets/b3eef36d-57f3-4a15-954d-d65c59ddfa57" />
 
 ## Templates
 
@@ -544,13 +373,10 @@ Here are some screenshots of what the options look like in-game.
 
 ### Services
 
-> [!IMPORTANT]
-> The service attribute is only valid on scripts that extend from Node and the node must be in the scene tree.
-
 ```cs
 // Services assume there will only ever be one instance of this script.
 // All services get cleaned up on scene change. 
-public partial class Player : Node
+public partial class Player : Node // Script must extend from Node
 {
     // Use _EnterTree() if the service is not being registered soon enough
     public override void _Ready()
@@ -692,20 +518,192 @@ public class Tests
 }
 ```
 
-## Prerequisites
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [Latest Godot C# Release](https://godotengine.org/)
+## Multiplayer
+### Why use this?
+Minimum packet data sent. For example if we send the string "Dog", we have 3 bytes for the data, 1 byte for the packet opcode and 1 byte from ENets overhead.
 
-## Install  
-Download the [latest release](https://github.com/CSharpGodotTools/Template/releases/latest) and open `project.godot`. Click `Run Setup` to restart Godot with your template ready to go.
+Packet scripts are kept small. The `Write` and `Read` methods are generated for you.
 
-<img width="411" height="313" alt="image" src="https://github.com/user-attachments/assets/d5c663a9-29c1-40a0-b851-17f9e5cb7f00" />
+Tested and reliably works with up to 475 clients sending positions to each other.
 
-## Update
+### Your First Netcode
 
-Updates can be done from `Dev Tools > Update`.
+```cs
+// Packets
+public partial class CPlayerJoined : ClientPacket
+{
+    public string Username { get; set; }
+}
 
-<img width="1498" height="334" alt="image" src="https://github.com/user-attachments/assets/b3eef36d-57f3-4a15-954d-d65c59ddfa57" />
+public partial class SPlayerPositions : ServerPacket
+{
+    public Dictionary<uint, Vector2> Positions { get; set; }
+}
+
+// Client
+public partial class GameClient : GodotClient
+{
+    public GameClient()
+    {
+        OnPacket<SPlayerPositions>(packet =>
+        {
+            Log($"Received {packet.Positions.Count} player positions");
+        });
+    }
+
+    protected override void OnConnected()
+    {
+        Send(new CPlayerJoined("Valk"));
+    }
+}
+
+// Server
+public partial class GameServer : GodotServer
+{
+    public Dictionary<uint, Vector2> Players { get; } = new();
+
+    public GameServer()
+    {
+        OnPacket<CPlayerJoined>(peer =>
+        {
+            Players[peer.PeerId] = Vector2.Zero;
+
+            Send(new SPlayerPositions(Players), peer.PeerId);
+        });
+    }
+
+    protected override void OnPeerDisconnected(uint peerId)
+    {
+        Players.Remove(peerId);
+    }
+}
+
+// World
+public partial class World : Node
+{
+    private const int Port = 25565;
+    private const string Ip = "127.0.0.1";
+
+    private Net<GameClient, GameServer> _net = null!;
+
+    public override void _Ready()
+    {
+        _net = new Net<GameClient, GameServer>();
+
+        // Start server and client
+        _net.StartServer(Port);
+        _net.StartClient(Ip, Port);
+    }
+}
+```
+
+### Working with Packets
+
+Packets extend from `ClientPacket` or `ServerPacket`. All packets are prefixed with `C` for client or `S` for server, this is just convention and not required.
+```cs
+public partial class CPacketPlayerPosition : ClientPacket
+{
+    public uint Id { get; set; }
+    public Vector2 Position { get; set; }
+
+    // Properties can be excluded so their not part of the packet
+    [NetExclude]
+    public Vector2 PrevPosition { get; set; }
+}
+```
+
+The following is what is outputted by the source gen for you.
+```cs
+public partial class CPacketPlayerPosition
+{
+    public override void Write(PacketWriter writer)
+    {
+        writer.Write(Id);
+        writer.Write(Position);
+    }
+
+    public override void Read(PacketReader reader)
+    {
+        Id = reader.ReadUInt();
+        Position = reader.ReadVector2();
+    }
+}
+```
+
+If a type is not supported, you will need to manually override `Write` and `Read`. Manually overriding the methods prevents the source gen from generating anything. You should get a warning in your IDE telling you the type is not supported.
+
+| Type              | Supported | Example Types                       |
+| ----------------- | --------- | ----------------------------------- |
+| Primitives        | ✅        | `int`, `bool`, `ulong`              |
+| Vectors & byte[]  | ✅        | `Vector2`, `Vector3`, `byte[]`      |
+| Generics          | ✅        | `List<List<int>>`, `Dictionary<string, List<char>>`      |
+| Arrays            | ✅        | `int[]`, `bool[]`                             |
+| Classes & Structs | ✅        | `PlayerData`                        |
+
+You have full control over the order of which data gets sent when you override `Write` and `Read`.
+
+```cs
+// Since we need to use if conditions we actually have to type out the Write and Read functions
+public partial class SPacketPlayerJoinLeave : ServerPacket
+{
+    public uint Id { get; set; }
+    public string Username { get; set; }
+    public Vector2 Position { get; set; }
+    public bool Joined { get; set; }
+
+    public override void Write(PacketWriter writer)
+    {
+        // Not required to cast explicit types but helps prevent human error
+        writer.Write((uint)Id);
+        writer.Write((bool)Joined);
+
+        if (Joined)
+        {
+            writer.Write((string)Username);
+            writer.Write((Vector2)Position);
+        }
+    }
+
+    public override void Read(PacketReader reader)
+    {
+        Id = reader.ReadUInt();
+
+        Joined = reader.ReadBool();
+
+        if (Joined)
+        {
+            Username = reader.ReadString();
+            Position = reader.ReadVector2();
+        }
+    }
+}
+```
+
+By default you can only have up to `256` different client packet classes and `256` different server packets for a total of `512` different packet classes. 
+
+If you need more space, you have 2 options.
+
+1. (Recommended) Add a `OpcodeEnum Opcode { get; set; }` property to any of your packet classes with a conditional if-else chain kind of like what you see above but instead of a bool it is a enum. Replace `OpcodeEnum` with your own enum. (All enums are converted to bytes so you cannot have more than `256` options in any enum you send over the network! _This may be changed in the future._)  
+2. In `PacketRegistry.cs`, change `byte` to `ushort` but note that now all your packets will have a 2 byte overhead instead of just 1 byte. Note that `ushort` has a size of `65,535` compared to `byte` that only has `255`.
+
+```cs
+// res://Framework/Netcode/Packet/PacketRegistry.cs
+[PacketRegistry(typeof(byte))]
+public partial class PacketRegistry
+{
+}
+```
+
+### Note about Apple ARM
+
+If you are running on an OS without a build for your platform (such as Apple ARM), you
+may need to provide your own build of `ENet-CSharp`. To do so, follow the build instructions
+[here](https://github.com/nxrighthere/ENet-CSharp), and place the resulting `ENet-CSharp.dll`
+and `.so` or `.dylib` in the games root directory.
+
+### 475 Bot Stress Test
+
+[Stress Test.webm](https://github.com/user-attachments/assets/997ab9c1-7875-4c83-86e2-a3d98075b4a7)
 
 ## Thank You
 [Brian Shao](https://github.com/cydq)  
