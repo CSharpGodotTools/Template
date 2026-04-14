@@ -26,6 +26,27 @@ tab_width = 4
 end_of_line = lf # Godot requires LF line endings
 insert_final_newline = true
 
+# Remove braces
+dotnet_diagnostic.rcs1002.severity = warning
+
+# Remove unused usings
+dotnet_diagnostic.CS8019.severity = suggestion
+
+# Remove blank lines
+dotnet_diagnostic.IDE2000.severity = suggestion
+dotnet_style_allow_multiple_blank_lines_experimental = false
+
+# ------ Suppressed analyzers ---
+# Remove unused usings (enabled as suggestion above in CS8019)
+dotnet_diagnostic.IDE0005.severity = none
+
+# Remove whitespace (this is handled by the formatter for us)
+dotnet_diagnostic.RCS1037.severity = silent
+
+# --- Disabled broken analyzers ---
+# https://github.com/dotnet/format/issues/1623
+dotnet_diagnostic.IDE0130.severity = none
+
 #### .NET Code Actions ####
 
 # Type members
