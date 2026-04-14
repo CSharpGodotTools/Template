@@ -48,11 +48,6 @@ source "$SCRIPTS_DIR/lib/common.sh"
 
 mapfile -t STAGED_PATHS < <(git diff --cached --name-only --diff-filter=ACMR)
 
-if [ "${#STAGED_PATHS[@]}" -eq 0 ]; then
-    echo "[pre-commit] No staged files detected. Skipping."
-    exit 0
-fi
-
 STAGED="$(printf '%s\n' "${STAGED_PATHS[@]}")"
 
 declare -a STAGED_CS=()
@@ -64,11 +59,6 @@ for staged_path in "${STAGED_PATHS[@]}"; do
             ;;
     esac
 done
-
-if is_enabled "$PRECOMMIT_SKIP_IF_NO_CS" && [ "${#STAGED_CS[@]}" -eq 0 ]; then
-    echo "[pre-commit] No staged C# changes detected. Skipping pre-commit checks."
-    exit 0
-fi
 
 echo "[pre-commit] dotnet version: $(dotnet_cmd --version 2>&1)"
 
