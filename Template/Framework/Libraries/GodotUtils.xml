@@ -35,21 +35,31 @@
             <summary>
             Legacy event manager for dispatching events by enum key.
             </summary>
+            <typeparam name="TEvent">Enum key type used to group and dispatch listeners.</typeparam>
         </member>
         <member name="M:GodotUtils.Deprecated.EventManager`1.AddListener(`0,System.Action{System.Object[]},System.String)">
             <summary>
             Adds a listener that receives raw argument arrays.
             </summary>
+            <param name="eventType">Event key to subscribe to.</param>
+            <param name="action">Callback invoked with all notify arguments.</param>
+            <param name="id">Optional identifier used for grouped removal.</param>
         </member>
         <member name="M:GodotUtils.Deprecated.EventManager`1.AddListener``1(`0,System.Action{``0},System.String)">
             <summary>
             Adds a typed listener that receives the first argument as <typeparamref name="T"/>.
             </summary>
+            <typeparam name="T">Expected type of the first notify argument.</typeparam>
+            <param name="eventType">Event key to subscribe to.</param>
+            <param name="action">Typed callback invoked with the first notify argument.</param>
+            <param name="id">Optional identifier used for grouped removal.</param>
         </member>
         <member name="M:GodotUtils.Deprecated.EventManager`1.RemoveListeners(`0,System.String)">
             <summary>
             Removes all listeners of type <paramref name="eventType"/> with the provided id.
             </summary>
+            <param name="eventType">Event key whose listeners should be filtered.</param>
+            <param name="id">Identifier used to match listener entries for removal.</param>
         </member>
         <member name="M:GodotUtils.Deprecated.EventManager`1.RemoveAllListeners">
             <summary>
@@ -60,16 +70,38 @@
             <summary>
             Notifies all listeners for the provided event type.
             </summary>
+            <param name="eventType">Event key to dispatch.</param>
+            <param name="args">Arguments passed through to each listener callback.</param>
+        </member>
+        <member name="M:GodotUtils.Deprecated.EventManager`1.AddListenerInternal(`0,System.Action{System.Object[]},System.String)">
+            <summary>
+            Registers a raw listener for the given event type, creating the listener list when needed.
+            </summary>
+            <param name="eventType">Event key used to group listeners.</param>
+            <param name="action">Listener callback that receives the notify argument array.</param>
+            <param name="id">Optional listener identifier used by removal APIs.</param>
+        </member>
+        <member name="M:GodotUtils.Deprecated.EventManager`1.WrapAction``1(System.Action{``0})">
+            <summary>
+            Wraps a typed listener so it can be invoked by the raw object-array dispatch pipeline.
+            </summary>
+            <typeparam name="T">Expected argument type at index zero.</typeparam>
+            <param name="action">Typed listener callback.</param>
+            <returns>Adapter callback compatible with raw listener storage.</returns>
         </member>
         <member name="T:GodotUtils.Deprecated.Listener">
             <summary>
             Stores a listener delegate and identifier.
             </summary>
+            <param name="action">Callback delegate to invoke during event dispatch.</param>
+            <param name="id">Optional identifier used for listener removal filters.</param>
         </member>
         <member name="M:GodotUtils.Deprecated.Listener.#ctor(System.Object,System.String)">
             <summary>
             Stores a listener delegate and identifier.
             </summary>
+            <param name="action">Callback delegate to invoke during event dispatch.</param>
+            <param name="id">Optional identifier used for listener removal filters.</param>
         </member>
         <member name="P:GodotUtils.Deprecated.Listener.Action">
             <summary>
@@ -90,46 +122,88 @@
             <summary>
             Plays an animation immediately without the usual switch delay.
             </summary>
+            <param name="sprite">Animated sprite to update.</param>
+            <param name="anim">Animation name to play.</param>
         </member>
         <member name="M:GodotUtils.AnimatedSprite2DExtensions.InstantPlay(Godot.AnimatedSprite2D,System.String,System.Int32)">
             <summary>
             Plays an animation immediately at the provided frame.
             </summary>
+            <param name="sprite">Animated sprite to update.</param>
+            <param name="anim">Animation name to play.</param>
+            <param name="frame">Frame index to set before playback starts.</param>
         </member>
         <member name="M:GodotUtils.AnimatedSprite2DExtensions.PlayRandom(Godot.AnimatedSprite2D,System.String)">
             <summary>
             Plays an animation starting at a random frame.
             </summary>
+            <param name="sprite">Animated sprite to update.</param>
+            <param name="anim">Optional animation name, or empty to use the current animation.</param>
         </member>
         <member name="M:GodotUtils.AnimatedSprite2DExtensions.GetSize(Godot.AnimatedSprite2D,System.String)">
             <summary>
             Gets the unscaled size of the first frame.
             </summary>
+            <param name="sprite">Animated sprite that owns the animation frames.</param>
+            <param name="anim">Optional animation name, or empty to use the current animation.</param>
+            <returns>Width and height of frame zero before node scaling.</returns>
         </member>
         <member name="M:GodotUtils.AnimatedSprite2DExtensions.GetScaledSize(Godot.AnimatedSprite2D,System.String)">
             <summary>
             Gets the scaled size of the first frame.
             </summary>
+            <param name="sprite">Animated sprite that owns the animation frames.</param>
+            <param name="anim">Optional animation name, or empty to use the current animation.</param>
+            <returns>Width and height of frame zero after node scaling.</returns>
         </member>
         <member name="M:GodotUtils.AnimatedSprite2DExtensions.GetPixelSize(Godot.AnimatedSprite2D,System.String)">
             <summary>
             Gets the visible pixel size after trimming transparent borders.
             </summary>
+            <param name="sprite">Animated sprite that owns the animation frames.</param>
+            <param name="anim">Optional animation name, or empty to use the current animation.</param>
+            <returns>Visible pixel width and height after transparency trimming.</returns>
         </member>
         <member name="M:GodotUtils.AnimatedSprite2DExtensions.GetPixelWidth(Godot.AnimatedSprite2D,System.String)">
             <summary>
             Gets the visible pixel width after trimming transparent columns.
             </summary>
+            <param name="sprite">Animated sprite that owns the animation frames.</param>
+            <param name="anim">Optional animation name, or empty to use the current animation.</param>
+            <returns>Visible width in pixels after transparency trimming and scaling.</returns>
         </member>
         <member name="M:GodotUtils.AnimatedSprite2DExtensions.GetPixelHeight(Godot.AnimatedSprite2D,System.String)">
             <summary>
             Gets the visible pixel height after trimming transparent rows.
             </summary>
+            <param name="sprite">Animated sprite that owns the animation frames.</param>
+            <param name="anim">Optional animation name, or empty to use the current animation.</param>
+            <returns>Visible height in pixels after transparency trimming and scaling.</returns>
         </member>
         <member name="M:GodotUtils.AnimatedSprite2DExtensions.GetPixelBottomY(Godot.AnimatedSprite2D,System.String)">
             <summary>
             Gets the offset from the bottom to the first opaque pixel.
             </summary>
+            <param name="sprite">Animated sprite that owns the animation frames.</param>
+            <param name="anim">Optional animation name, or empty to use the current animation.</param>
+            <returns>Pixel distance from the frame bottom to the first opaque center pixel.</returns>
+        </member>
+        <member name="M:GodotUtils.AnimatedSprite2DExtensions.ResolveAnimation(Godot.AnimatedSprite2D,System.String)">
+            <summary>
+            Returns the requested animation name or falls back to the sprite's current animation.
+            </summary>
+            <param name="sprite">Animated sprite that provides the fallback animation.</param>
+            <param name="anim">Requested animation name.</param>
+            <returns>Resolved animation name to use for frame lookups.</returns>
+        </member>
+        <member name="M:GodotUtils.AnimatedSprite2DExtensions.GetFrameImage(Godot.AnimatedSprite2D,System.String,Godot.Vector2I@)">
+            <summary>
+            Gets the first frame image for an animation and outputs its dimensions.
+            </summary>
+            <param name="sprite">Animated sprite that owns the frame set.</param>
+            <param name="anim">Animation name used for frame retrieval.</param>
+            <param name="size">Resolved frame image dimensions.</param>
+            <returns>Image for frame zero of the resolved animation.</returns>
         </member>
         <member name="T:GodotUtils.AnimationTreeExtensions">
             <summary>
@@ -267,6 +341,7 @@
             <summary>
             Iterates over the sequence and invokes <paramref name="action"/> for each element.
             </summary>
+            <typeparam name="T">Type of each element in the source sequence.</typeparam>
             <param name="value">Source sequence.</param>
             <param name="action">Action invoked for each element.</param>
         </member>
@@ -279,36 +354,48 @@
             <summary>
             Disable ALL collision layers, then enable the specified layers.
             </summary>
+            <param name="collisionObject">Collision object whose layer bitmask will be updated.</param>
+            <param name="layers">Layer indices to enable after resetting all layers.</param>
         </member>
         <member name="M:GodotUtils.CollisionObject2DExtensions.EnableCollisionLayers(Godot.CollisionObject2D,System.String)">
             <summary>
             Disable ALL collision layers, then enable the specified layers.
             </summary>
+            <param name="collisionObject">Collision object whose layer bitmask will be updated.</param>
+            <param name="layers">String of digit characters representing layer indices.</param>
         </member>
         <member name="M:GodotUtils.CollisionObject2DExtensions.EnableCollisionMasks(Godot.CollisionObject2D,System.Int32[])">
             <summary>
             Disable ALL mask layers, then enable the specified layers.
             </summary>
+            <param name="collisionObject">Collision object whose mask bitmask will be updated.</param>
+            <param name="layers">Layer indices to enable after resetting all masks.</param>
         </member>
         <member name="M:GodotUtils.CollisionObject2DExtensions.EnableCollisionMasks(Godot.CollisionObject2D,System.String)">
             <summary>
             Disable ALL mask layers, then enable the specified layers.
             </summary>
+            <param name="collisionObject">Collision object whose mask bitmask will be updated.</param>
+            <param name="layers">String of digit characters representing layer indices.</param>
         </member>
         <member name="M:GodotUtils.CollisionObject2DExtensions.DisableAllCollisionLayers(Godot.CollisionObject2D)">
             <summary>
             Disable ALL collision layers.
             </summary>
+            <param name="collisionObject2D">Collision object whose layer mask will be cleared.</param>
         </member>
         <member name="M:GodotUtils.CollisionObject2DExtensions.DisableAllCollisionMasks(Godot.CollisionObject2D)">
             <summary>
             Disable ALL collision masks.
             </summary>
+            <param name="collisionObject2D">Collision object whose mask will be cleared.</param>
         </member>
         <member name="M:GodotUtils.CollisionObject2DExtensions.ConvertToUniqueIntArray(System.String)">
             <summary>
             Converts a string to a unique int array. For example "1223" becomes [1, 2, 3].
             </summary>
+            <param name="numberString">String containing digit characters that represent layer indices.</param>
+            <returns>Unique set of parsed layer indices.</returns>
         </member>
         <member name="T:GodotUtils.ControlExtensions">
             <summary>
@@ -319,6 +406,9 @@
             <summary>
             Sets the layout for the specified control.
             </summary>
+            <param name="control">Control to configure.</param>
+            <param name="layout">Preset layout to apply.</param>
+            <returns>The same control instance for fluent chaining.</returns>
             <remarks>
             Applies immediately if inside the tree, otherwise waits for ready.
             </remarks>
@@ -327,26 +417,50 @@
             <summary>
             Sets the font size override.
             </summary>
+            <param name="control">Control to configure.</param>
+            <param name="fontSize">Font size override value.</param>
+            <returns>The same control instance for fluent chaining.</returns>
         </member>
         <member name="M:GodotUtils.ControlExtensions.SetMarginLeft(Godot.Control,System.Int32)">
             <summary>
             Sets the left margin override.
             </summary>
+            <param name="control">Control to configure.</param>
+            <param name="padding">Margin value in pixels.</param>
+            <returns>The same control instance for fluent chaining.</returns>
         </member>
         <member name="M:GodotUtils.ControlExtensions.SetMarginRight(Godot.Control,System.Int32)">
             <summary>
             Sets the right margin override.
             </summary>
+            <param name="control">Control to configure.</param>
+            <param name="padding">Margin value in pixels.</param>
+            <returns>The same control instance for fluent chaining.</returns>
         </member>
         <member name="M:GodotUtils.ControlExtensions.SetMarginTop(Godot.Control,System.Int32)">
             <summary>
             Sets the top margin override.
             </summary>
+            <param name="control">Control to configure.</param>
+            <param name="padding">Margin value in pixels.</param>
+            <returns>The same control instance for fluent chaining.</returns>
         </member>
         <member name="M:GodotUtils.ControlExtensions.SetMarginBottom(Godot.Control,System.Int32)">
             <summary>
             Sets the bottom margin override.
             </summary>
+            <param name="control">Control to configure.</param>
+            <param name="padding">Margin value in pixels.</param>
+            <returns>The same control instance for fluent chaining.</returns>
+        </member>
+        <member name="M:GodotUtils.ControlExtensions.SetMargin(Godot.Control,System.String,System.Int32)">
+            <summary>
+            Applies a theme margin override and returns the same control for fluent chaining.
+            </summary>
+            <param name="control">Control receiving the override.</param>
+            <param name="key">Theme constant key for the margin side.</param>
+            <param name="padding">Margin value in pixels.</param>
+            <returns>The same control instance.</returns>
         </member>
         <member name="T:GodotUtils.DictionaryExtensions">
             <summary>
@@ -357,6 +471,8 @@
             <summary>
             Merges all entries from <paramref name="merge"/> into <paramref name="me"/>, overwriting keys that exist.
             </summary>
+            <typeparam name="TKey">Dictionary key type.</typeparam>
+            <typeparam name="TValue">Dictionary value type.</typeparam>
             <param name="me">Destination dictionary.</param>
             <param name="merge">Source dictionary to merge from.</param>
         </member>
@@ -393,16 +509,24 @@
             <summary>
             Returns true when the key is pressed this frame without repeat.
             </summary>
+            <param name="v">Input key event to evaluate.</param>
+            <param name="key">Target key to compare against.</param>
+            <returns><see langword="true"/> when the key is newly pressed.</returns>
         </member>
         <member name="M:GodotUtils.InputEventKeyExtensions.IsJustReleased(Godot.InputEventKey,Godot.Key)">
             <summary>
             Returns true when the key is released this frame without repeat.
             </summary>
+            <param name="v">Input key event to evaluate.</param>
+            <param name="key">Target key to compare against.</param>
+            <returns><see langword="true"/> when the key is newly released.</returns>
         </member>
         <member name="M:GodotUtils.InputEventKeyExtensions.Readable(Godot.InputEventKey)">
             <summary>
             Converts to a human readable key string (e.g. "Ctrl + Shift + E").
             </summary>
+            <param name="v">Input key event to convert.</param>
+            <returns>Formatted key string including active modifiers.</returns>
         </member>
         <member name="T:GodotUtils.InputEventMouseButtonExtensions">
             <summary>
@@ -413,61 +537,117 @@
             <summary>
             Returns true when the mouse wheel is scrolled up.
             </summary>
+            <param name="event">Mouse button event to evaluate.</param>
+            <returns><see langword="true"/> when the event represents wheel-up input.</returns>
         </member>
         <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsWheelDown(Godot.InputEventMouseButton)">
             <summary>
             Returns true when the mouse wheel is scrolled down.
             </summary>
+            <param name="event">Mouse button event to evaluate.</param>
+            <returns><see langword="true"/> when the event represents wheel-down input.</returns>
         </member>
         <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsZoomIn(Godot.InputEventMouseButton)">
             <summary>
             Returns true when the mouse wheel is scrolled up.
             </summary>
+            <param name="event">Mouse button event to evaluate.</param>
+            <returns><see langword="true"/> when the event represents a zoom-in input.</returns>
         </member>
         <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsZoomOut(Godot.InputEventMouseButton)">
             <summary>
             Returns true when the mouse wheel is scrolled down.
             </summary>
+            <param name="event">Mouse button event to evaluate.</param>
+            <returns><see langword="true"/> when the event represents a zoom-out input.</returns>
         </member>
         <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsLeftClickPressed(Godot.InputEventMouseButton)">
             <summary>
             Returns true when the left mouse button is pressed.
             </summary>
+            <param name="event">Mouse button event to evaluate.</param>
+            <returns><see langword="true"/> when the left button is currently pressed.</returns>
         </member>
         <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsLeftClickJustPressed(Godot.InputEventMouseButton)">
             <summary>
             Returns true when the left mouse button is just pressed.
             </summary>
+            <param name="event">Mouse button event to evaluate.</param>
+            <returns><see langword="true"/> when the left button has just been pressed.</returns>
         </member>
         <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsRightClickPressed(Godot.InputEventMouseButton)">
             <summary>
             Returns true when the right mouse button is pressed.
             </summary>
+            <param name="event">Mouse button event to evaluate.</param>
+            <returns><see langword="true"/> when the right button is currently pressed.</returns>
         </member>
         <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsRightClickJustPressed(Godot.InputEventMouseButton)">
             <summary>
             Returns true when the right mouse button is just pressed.
             </summary>
+            <param name="event">Mouse button event to evaluate.</param>
+            <returns><see langword="true"/> when the right button has just been pressed.</returns>
         </member>
         <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsLeftClickReleased(Godot.InputEventMouseButton)">
             <summary>
             Returns true when the left mouse button is released.
             </summary>
+            <param name="event">Mouse button event to evaluate.</param>
+            <returns><see langword="true"/> when the left button is currently released.</returns>
         </member>
         <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsLeftClickJustReleased(Godot.InputEventMouseButton)">
             <summary>
             Returns true when the left mouse button is just released.
             </summary>
+            <param name="event">Mouse button event to evaluate.</param>
+            <returns><see langword="true"/> when the left button has just been released.</returns>
         </member>
         <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsRightClickReleased(Godot.InputEventMouseButton)">
             <summary>
             Returns true when the right mouse button is released.
             </summary>
+            <param name="event">Mouse button event to evaluate.</param>
+            <returns><see langword="true"/> when the right button is currently released.</returns>
         </member>
         <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsRightClickJustReleased(Godot.InputEventMouseButton)">
             <summary>
             Returns true when the right mouse button is just released.
             </summary>
+            <param name="event">Mouse button event to evaluate.</param>
+            <returns><see langword="true"/> when the right button has just been released.</returns>
+        </member>
+        <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsPressed(Godot.InputEventMouseButton,Godot.MouseButton)">
+            <summary>
+            Returns whether the event represents a pressed state for the requested mouse button.
+            </summary>
+            <param name="event">Mouse button input event.</param>
+            <param name="button">Button index to test.</param>
+            <returns><see langword="true"/> when the button is pressed in this event.</returns>
+        </member>
+        <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsJustPressed(Godot.InputEventMouseButton,Godot.MouseButton)">
+            <summary>
+            Returns whether the event is an initial press for the requested mouse button.
+            </summary>
+            <param name="event">Mouse button input event.</param>
+            <param name="button">Button index to test.</param>
+            <returns><see langword="true"/> when the button was pressed and the event is not echoed.</returns>
+        </member>
+        <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsReleased(Godot.InputEventMouseButton,Godot.MouseButton)">
+            <summary>
+            Returns whether the event represents a released state for the requested mouse button.
+            </summary>
+            <param name="event">Mouse button input event.</param>
+            <param name="button">Button index to test.</param>
+            <returns><see langword="true"/> when the button is released in this event.</returns>
+        </member>
+        <member name="M:GodotUtils.InputEventMouseButtonExtensions.IsJustReleased(Godot.InputEventMouseButton,Godot.MouseButton)">
+            <summary>
+            Returns whether the event is an initial release for the requested mouse button.
+            </summary>
+            <param name="event">Mouse button input event.</param>
+            <param name="button">Button index to test.</param>
+            <returns><see langword="true"/> when the button was released and the event is not echoed.</returns>
         </member>
         <member name="T:GodotUtils.LineEditExtensions">
             <summary>
@@ -478,11 +658,26 @@
             <summary>
             Filters text input by reverting to the last valid value.
             </summary>
+            <param name="lineEdit">Input control whose text should be validated.</param>
+            <param name="filter">Predicate that returns whether a candidate text value is valid.</param>
+            <returns>The accepted text value after filtering.</returns>
         </member>
         <member name="M:GodotUtils.LineEditExtensions.ValidateNumber(System.String,Godot.LineEdit,System.Int32,System.Int32,System.Int32@)">
             <summary>
             Validates numeric input and clamps it between <paramref name="min"/> and <paramref name="max"/>.
             </summary>
+            <param name="value">Raw text value to parse.</param>
+            <param name="input">Line edit control whose text will be normalized.</param>
+            <param name="min">Minimum allowed numeric value.</param>
+            <param name="max">Maximum allowed numeric value.</param>
+            <param name="prevNum">Previously accepted value used when parsing fails.</param>
+        </member>
+        <member name="M:GodotUtils.LineEditExtensions.EditInputText(Godot.LineEdit,System.String)">
+            <summary>
+            Updates input text and keeps the caret anchored at the end.
+            </summary>
+            <param name="input">Target line edit control.</param>
+            <param name="text">Text to assign to the control.</param>
         </member>
         <member name="T:GodotUtils.MathExtensions">
             <summary>
@@ -493,56 +688,92 @@
             <summary>
             Linearly interpolates between two colors.
             </summary>
+            <param name="color1">Starting color value.</param>
+            <param name="color2">Ending color value.</param>
+            <param name="t">Interpolation factor in the range 0..1.</param>
+            <returns>Interpolated color value.</returns>
         </member>
         <member name="M:GodotUtils.MathExtensions.Remap(System.Single,System.Single,System.Single,System.Single,System.Single)">
             <summary>
             Remaps a value from one range to another.
             </summary>
+            <param name="value">Input value in the source range.</param>
+            <param name="from1">Source range minimum.</param>
+            <param name="to1">Source range maximum.</param>
+            <param name="from2">Destination range minimum.</param>
+            <param name="to2">Destination range maximum.</param>
+            <returns>Input value mapped into the destination range.</returns>
         </member>
         <member name="M:GodotUtils.MathExtensions.LerpRotationToTarget(Godot.Sprite2D,Godot.Vector2,System.Single)">
             <summary>
             Smoothly rotates a sprite toward a target position.
             </summary>
+            <param name="sprite">Sprite to rotate.</param>
+            <param name="target">World position to face.</param>
+            <param name="t">Smoothing factor used by angle interpolation.</param>
         </member>
         <member name="M:GodotUtils.MathExtensions.ToRadians(System.Single)">
             <summary>
             Converts degrees to radians.
             </summary>
+            <param name="degrees">Angle in degrees.</param>
+            <returns>Equivalent angle in radians.</returns>
         </member>
         <member name="M:GodotUtils.MathExtensions.ToDegrees(System.Single)">
             <summary>
             Converts radians to degrees.
             </summary>
+            <param name="radians">Angle in radians.</param>
+            <returns>Equivalent angle in degrees.</returns>
         </member>
         <member name="M:GodotUtils.MathExtensions.Clamp(System.Int32,System.Int32,System.Int32)">
             <summary>
             Clamps an integer between <paramref name="min"/> and <paramref name="max"/>.
             </summary>
+            <param name="v">Input value to clamp.</param>
+            <param name="min">Inclusive lower bound.</param>
+            <param name="max">Inclusive upper bound.</param>
+            <returns>Clamped integer value.</returns>
         </member>
         <member name="M:GodotUtils.MathExtensions.Clamp(System.Single,System.Single,System.Single)">
             <summary>
             Clamps a float between <paramref name="min"/> and <paramref name="max"/>.
             </summary>
+            <param name="v">Input value to clamp.</param>
+            <param name="min">Inclusive lower bound.</param>
+            <param name="max">Inclusive upper bound.</param>
+            <returns>Clamped float value.</returns>
         </member>
         <member name="M:GodotUtils.MathExtensions.Lerp(System.Single,System.Single,System.Single)">
             <summary>
             Linearly interpolates between two floats.
             </summary>
+            <param name="a">Starting value.</param>
+            <param name="b">Ending value.</param>
+            <param name="t">Interpolation factor in the range 0..1.</param>
+            <returns>Interpolated float value.</returns>
         </member>
         <member name="M:GodotUtils.MathExtensions.Pulse(System.Single,System.Single)">
             <summary>
             Pulses a value from 0 to 1 over time.
             </summary>
+            <param name="time">Time value in seconds.</param>
+            <param name="frequency">Pulse frequency multiplier.</param>
+            <returns>Pulsing value in the range 0..1.</returns>
         </member>
         <member name="M:GodotUtils.MathExtensions.CountDigits(System.Int32)">
             <summary>
             Counts the number of digits in the value.
             </summary>
+            <param name="num">Input integer value.</param>
+            <returns>Number of decimal digits in the absolute value.</returns>
         </member>
         <member name="M:GodotUtils.MathExtensions.CountDigits(System.UInt16)">
             <summary>
             Counts the number of digits in the value.
             </summary>
+            <param name="num">Input unsigned short value.</param>
+            <returns>Number of decimal digits.</returns>
         </member>
         <member name="T:GodotUtils.Node2DExtensions">
             <summary>
@@ -574,91 +805,168 @@
             <code>Global global = someNode.GetAutoload&lt;Global&gt;("Global");</code>
             </summary>
             <typeparam name="T">Type of the autoload node, must inherit from Node.</typeparam>
+            <param name="node">Node used to access the current scene tree.</param>
+            <param name="autoload">Autoload node name registered in project settings.</param>
+            <returns>Resolved autoload node cast to <typeparamref name="T"/>.</returns>
         </member>
         <member name="M:GodotUtils.NodeExtensions.AddToCurrentSceneDeferred(Godot.Node,Godot.Node)">
             <summary>
             Adds a child to the current scene using a deferred call.
             </summary>
+            <param name="node">Node used to resolve the current scene.</param>
+            <param name="child">Child node to add to the current scene.</param>
         </member>
         <member name="M:GodotUtils.NodeExtensions.AddToCurrentScene(Godot.Node,Godot.Node)">
             <summary>
             Adds a child to the current scene immediately.
             </summary>
+            <param name="node">Node used to resolve the current scene.</param>
+            <param name="child">Child node to add to the current scene.</param>
         </member>
         <member name="M:GodotUtils.NodeExtensions.GetNodeInCurrentScene(Godot.Node,System.String)">
             <summary>
             Gets a node at <paramref name="path"/> from the current scene.
             </summary>
+            <param name="node">Node used to resolve the current scene.</param>
+            <param name="path">Relative node path inside the current scene.</param>
+            <returns>Node found at the requested path.</returns>
         </member>
         <member name="M:GodotUtils.NodeExtensions.GetCurrentScene(Godot.Node)">
             <summary>
             Gets the current scene from the tree.
             </summary>
+            <param name="node">Node used to access the scene tree.</param>
+            <returns>Current scene root node.</returns>
         </member>
         <member name="M:GodotUtils.NodeExtensions.GetSceneNode``1(Godot.Node,System.String)">
             <summary>
             Gets a node of type <typeparamref name="T"/> from the current scene by path.
             </summary>
+            <typeparam name="T">Expected node type.</typeparam>
+            <param name="node">Node used to access the scene tree.</param>
+            <param name="path">Relative node path inside the current scene.</param>
+            <returns>Matching node when found; otherwise <see langword="null"/>.</returns>
         </member>
         <member name="M:GodotUtils.NodeExtensions.GetSceneNode``1(Godot.Node)">
             <summary>
             Gets a node of type <typeparamref name="T"/> from the current scene.
             </summary>
+            <typeparam name="T">Expected node type.</typeparam>
+            <param name="node">Node used to access the scene tree.</param>
+            <returns>First direct child of the current scene matching <typeparamref name="T"/>.</returns>
         </member>
         <member name="M:GodotUtils.NodeExtensions.GetNodes(Godot.Node,System.Type)">
             <summary>
             Recursively searches for all nodes of a specific type.
             </summary>
+            <param name="node">Root node for the search.</param>
+            <param name="type">Exact runtime type to include in results.</param>
+            <returns>All matching nodes discovered under the root.</returns>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.RecursiveTypeMatchSearch(Godot.Node,System.Type,System.Collections.Generic.List{Godot.Node})">
+            <summary>
+            Traverses the node tree depth-first and collects nodes whose runtime type equals the target type.
+            </summary>
+            <param name="node">Current node to evaluate.</param>
+            <param name="type">Exact runtime type to match.</param>
+            <param name="nodes">Accumulator for matched nodes.</param>
         </member>
         <member name="M:GodotUtils.NodeExtensions.TryGetNode``1(Godot.Node,``0@,System.Boolean)">
             <summary>
             Attempts to find a child node of type <typeparamref name="T"/>.
             </summary>
+            <typeparam name="T">Target node type to locate.</typeparam>
+            <param name="node">Root node whose children are searched.</param>
+            <param name="foundNode">Resolved node when one is found.</param>
+            <param name="recursive">Whether descendants are included in the search.</param>
+            <returns><see langword="true"/> when a matching node is found.</returns>
         </member>
         <member name="M:GodotUtils.NodeExtensions.HasNode``1(Godot.Node,System.Boolean)">
             <summary>
             Returns true when a child node of type <typeparamref name="T"/> exists.
             </summary>
+            <typeparam name="T">Target node type to locate.</typeparam>
+            <param name="node">Root node whose children are searched.</param>
+            <param name="recursive">Whether descendants are included in the search.</param>
+            <returns><see langword="true"/> when a matching node exists.</returns>
         </member>
         <member name="M:GodotUtils.NodeExtensions.GetComponent``1(Godot.Node,System.Boolean)">
             <summary>
             Finds a child node of type <typeparamref name="T"/>.
             </summary>
+            <typeparam name="T">Target node type to locate.</typeparam>
+            <param name="node">Root node whose children are searched.</param>
+            <param name="recursive">Whether descendants are included in the search.</param>
+            <returns>First matching node when found; otherwise <see langword="null"/>.</returns>
         </member>
         <member name="M:GodotUtils.NodeExtensions.GetNode``1(Godot.Node,System.Boolean)">
             <summary>
             Finds a child node of type <typeparamref name="T"/>.
             </summary>
+            <typeparam name="T">Target node type to locate.</typeparam>
+            <param name="node">Root node whose children are searched.</param>
+            <param name="recursive">Whether descendants are included in the search.</param>
+            <returns>First matching node when found; otherwise <see langword="null"/>.</returns>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.FindNode``1(Godot.Collections.Array{Godot.Node},System.Boolean)">
+            <summary>
+            Finds the first child node assignable to <typeparamref name="T"/> in the provided collection.
+            </summary>
+            <typeparam name="T">Target node type.</typeparam>
+            <param name="children">Children to inspect.</param>
+            <param name="recursive">Whether descendants should be searched recursively.</param>
+            <returns>First matching node; otherwise <see langword="null"/>.</returns>
         </member>
         <member name="M:GodotUtils.NodeExtensions.WaitOneFrame(Godot.Node)">
             <summary>
             Asynchronously waits for one process frame.
             </summary>
+            <param name="parent">Node whose scene tree emits the process-frame signal.</param>
+            <returns>Task that completes on the next process frame.</returns>
         </member>
         <member name="M:GodotUtils.NodeExtensions.AddChildDeferred(Godot.Node,Godot.Node)">
             <summary>
             Adds a child using a deferred call.
             </summary>
+            <param name="node">Parent node that receives the child.</param>
+            <param name="child">Child node to add.</param>
         </member>
         <member name="M:GodotUtils.NodeExtensions.GetChildren``1(Godot.Node,System.Boolean)">
             <summary>
             Recursively retrieves all nodes of type <typeparamref name="T"/>.
             </summary>
+            <typeparam name="T">Target node type to collect.</typeparam>
+            <param name="node">Root node whose children are scanned.</param>
+            <param name="recursive">Whether descendants are included in the traversal.</param>
+            <returns>List of matching child nodes.</returns>
+        </member>
+        <member name="M:GodotUtils.NodeExtensions.FindChildrenOfType``1(Godot.Node,System.Collections.Generic.List{``0},System.Boolean)">
+            <summary>
+            Recursively appends child nodes assignable to <typeparamref name="T"/> to the destination list.
+            </summary>
+            <typeparam name="T">Target node type.</typeparam>
+            <param name="node">Root node whose children are scanned.</param>
+            <param name="children">Destination list for all matched child nodes.</param>
+            <param name="recursive">Whether descendants should be traversed recursively.</param>
         </member>
         <member name="M:GodotUtils.NodeExtensions.QueueFreeChildren(Godot.Node)">
             <summary>
             Queue frees all children attached to this node.
             </summary>
+            <param name="parentNode">Parent node whose children will be queued for deletion.</param>
         </member>
         <member name="M:GodotUtils.NodeExtensions.RemoveAllGroups(Godot.Node)">
             <summary>
             Removes all groups this node is attached to.
             </summary>
+            <param name="node">Node to detach from all assigned groups.</param>
         </member>
         <member name="M:GodotUtils.NodeExtensions.TraverseNodes(Godot.Node,System.Action{Godot.Node})">
             <summary>
             Recursively traverses the tree and executes <paramref name="code"/> for each node.
             </summary>
+            <param name="node">Current traversal node.</param>
+            <param name="code">Callback invoked for each visited node.</param>
         </member>
         <member name="T:GodotUtils.PrintExtensions">
             <summary>
@@ -669,21 +977,31 @@
             <summary>
             Prints a collection using a formatted string.
             </summary>
+            <typeparam name="T">Element type of the collection.</typeparam>
+            <param name="value">Collection to print.</param>
+            <param name="newLine">Whether items should be formatted on separate lines.</param>
         </member>
         <member name="M:GodotUtils.PrintExtensions.PrintFormatted(System.Object)">
             <summary>
             Prints an object as formatted JSON.
             </summary>
+            <param name="v">Object to serialize and print.</param>
         </member>
         <member name="M:GodotUtils.PrintExtensions.ToFormattedString``1(System.Collections.Generic.IEnumerable{``0},System.Boolean)">
             <summary>
             Converts a collection to a formatted string.
             </summary>
+            <typeparam name="T">Element type of the collection.</typeparam>
+            <param name="value">Collection to format.</param>
+            <param name="newLine">Whether items should be formatted on separate lines.</param>
+            <returns>Formatted collection string, or <see langword="null"/> when input is null.</returns>
         </member>
         <member name="M:GodotUtils.PrintExtensions.ToFormattedString(System.Object)">
             <summary>
             Converts an object to formatted JSON.
             </summary>
+            <param name="v">Object to serialize.</param>
+            <returns>JSON string formatted with indentation.</returns>
         </member>
         <member name="T:GodotUtils.PrintExtensions.IgnorePropsResolver">
             <summary>
@@ -707,26 +1025,37 @@
             <summary>
             Gets custom tile data from the tilemap layer the raycast hits.
             </summary>
+            <param name="raycast">Raycast used for collision lookup.</param>
+            <param name="layerName">Custom data layer name to read from the hit tile.</param>
+            <returns>Custom data value when available; otherwise default.</returns>
         </member>
         <member name="M:GodotUtils.RayCast2DExtensions.SetCollisionMask(Godot.RayCast2D,System.Int32[])">
             <summary>
             Sets only the provided collision mask values to true.
             </summary>
+            <param name="node">Raycast whose collision mask should be updated.</param>
+            <param name="values">Collision layer values to enable.</param>
         </member>
         <member name="M:GodotUtils.RayCast2DExtensions.ExcludeRaycastParents(Godot.RayCast2D,Godot.Node)">
             <summary>
             Excludes all parent CollisionObject2D nodes from the raycast.
             </summary>
+            <param name="raycast">Raycast that should ignore parent colliders.</param>
+            <param name="parent">Node whose parent chain is traversed for exclusions.</param>
         </member>
         <member name="M:GodotUtils.RayCast2DExtensions.IsAnyRayCastColliding(Godot.RayCast2D[])">
             <summary>
             Returns true if any raycast in the collection is colliding.
             </summary>
+            <param name="raycasts">Raycasts to inspect.</param>
+            <returns><see langword="true"/> when any raycast currently collides.</returns>
         </member>
         <member name="M:GodotUtils.RayCast2DExtensions.GetAnyRayCastCollider(Godot.RayCast2D[])">
             <summary>
             Returns the first colliding raycast in the collection.
             </summary>
+            <param name="raycasts">Raycasts to inspect.</param>
+            <returns>First colliding raycast, or <see langword="null"/> when none collide.</returns>
         </member>
         <member name="T:GodotUtils.RayCast3DExtensions">
             <summary>
@@ -737,11 +1066,14 @@
             <summary>
             Returns the number of raycasts currently colliding.
             </summary>
+            <param name="raycasts">Raycasts to inspect.</param>
+            <returns>Count of raycasts with active collisions.</returns>
         </member>
         <member name="M:GodotUtils.RayCast3DExtensions.ExcludeRaycastParents(Godot.RayCast3D)">
             <summary>
             Excludes all parent collision objects from the raycast.
             </summary>
+            <param name="raycast">Raycast that should ignore parent colliders.</param>
         </member>
         <member name="T:GodotUtils.RayCastParentTraversal">
             <summary>
@@ -779,16 +1111,24 @@
             <summary>
             Returns the current scene as the specified type.
             </summary>
+            <typeparam name="T">Expected scene type.</typeparam>
+            <param name="tree">Scene tree that owns the current scene.</param>
+            <returns>Current scene cast to <typeparamref name="T"/> when compatible.</returns>
         </member>
         <member name="M:GodotUtils.SceneTreeExtensions.GetAutoload``1(Godot.SceneTree,System.String)">
             <summary>
             Retrieves an autoload from the scene tree using the given name.
             </summary>
+            <typeparam name="T">Expected autoload node type.</typeparam>
+            <param name="tree">Scene tree whose root contains autoload nodes.</param>
+            <param name="autoload">Autoload node name registered in project settings.</param>
+            <returns>Resolved autoload node cast to <typeparamref name="T"/>.</returns>
         </member>
         <member name="M:GodotUtils.SceneTreeExtensions.UnfocusCurrentControl(Godot.SceneTree)">
             <summary>
             Removes focus from the currently focused UI control, if any.
             </summary>
+            <param name="tree">Scene tree whose focused control should be cleared.</param>
         </member>
         <member name="T:GodotUtils.Sprite2DExtensions">
             <summary>
@@ -799,31 +1139,51 @@
             <summary>
             Gets the size multiplied by the sprite scale.
             </summary>
+            <param name="sprite">Sprite whose scaled size is requested.</param>
+            <returns>Texture size multiplied by sprite scale.</returns>
         </member>
         <member name="M:GodotUtils.Sprite2DExtensions.GetSize(Godot.Sprite2D)">
             <summary>
             Gets the unscaled texture size.
             </summary>
+            <param name="sprite">Sprite whose texture size is requested.</param>
+            <returns>Raw texture size in pixels.</returns>
         </member>
         <member name="M:GodotUtils.Sprite2DExtensions.GetPixelSize(Godot.Sprite2D)">
             <summary>
             Gets the visible pixel size after trimming transparent borders.
             </summary>
+            <param name="sprite">Sprite whose visible pixel size is requested.</param>
+            <returns>Visible width and height after transparency trimming.</returns>
         </member>
         <member name="M:GodotUtils.Sprite2DExtensions.GetPixelWidth(Godot.Sprite2D)">
             <summary>
             Gets the visible pixel width after trimming transparent columns.
             </summary>
+            <param name="sprite">Sprite whose visible pixel width is requested.</param>
+            <returns>Visible width in pixels after transparency trimming and scaling.</returns>
         </member>
         <member name="M:GodotUtils.Sprite2DExtensions.GetPixelHeight(Godot.Sprite2D)">
             <summary>
             Gets the visible pixel height after trimming transparent rows.
             </summary>
+            <param name="sprite">Sprite whose visible pixel height is requested.</param>
+            <returns>Visible height in pixels after transparency trimming and scaling.</returns>
         </member>
         <member name="M:GodotUtils.Sprite2DExtensions.GetPixelBottomY(Godot.Sprite2D)">
             <summary>
             Gets the offset from the bottom to the first opaque pixel.
             </summary>
+            <param name="sprite">Sprite whose bottom transparent offset is requested.</param>
+            <returns>Pixel distance from the bottom edge to the first opaque center pixel.</returns>
+        </member>
+        <member name="M:GodotUtils.Sprite2DExtensions.GetTextureImage(Godot.Sprite2D,Godot.Vector2I@)">
+            <summary>
+            Retrieves the sprite texture image and returns its size.
+            </summary>
+            <param name="sprite">Sprite whose texture image is requested.</param>
+            <param name="size">Texture size in pixels.</param>
+            <returns>Image data for the sprite texture.</returns>
         </member>
         <member name="T:GodotUtils.StringExtensions">
             <summary>
@@ -834,41 +1194,59 @@
             <summary>
             Returns true if the string looks like an IP address or "localhost".
             </summary>
+            <param name="v">Input string to evaluate.</param>
+            <returns><see langword="true"/> when the string matches an address pattern.</returns>
         </member>
         <member name="M:GodotUtils.StringExtensions.AddSpaceBeforeEachCapital(System.String)">
             <summary>
             Converts "helloWorld" into "hello World".
             </summary>
+            <param name="v">Input camel/pascal case string.</param>
+            <returns>String with spaces inserted before capital letters.</returns>
         </member>
         <member name="M:GodotUtils.StringExtensions.IsAlphaNumeric(System.String)">
             <summary>
             Returns true when the string contains only letters or digits.
             </summary>
+            <param name="v">Input string to evaluate.</param>
+            <returns><see langword="true"/> when all characters are alphanumeric.</returns>
         </member>
         <member name="M:GodotUtils.StringExtensions.IsAlphaOnly(System.String)">
             <summary>
             Returns true when the string contains only letters.
             </summary>
+            <param name="v">Input string to evaluate.</param>
+            <returns><see langword="true"/> when all characters are letters.</returns>
         </member>
         <member name="M:GodotUtils.StringExtensions.IsNumericOnly(System.String)">
             <summary>
             Returns true when the string contains only digits.
             </summary>
+            <param name="v">Input string to evaluate.</param>
+            <returns><see langword="true"/> when all characters are numeric.</returns>
         </member>
         <member name="M:GodotUtils.StringExtensions.ToTitleCase(System.String)">
             <summary>
             Converts "hello world" into "Hello World".
             </summary>
+            <param name="v">Input string to convert.</param>
+            <returns>Title-cased string using the current culture.</returns>
         </member>
         <member name="M:GodotUtils.StringExtensions.SmallWordsToUpper(System.String,System.Int32,System.Func{System.String,System.Boolean})">
             <summary>
             Uppercases words with length less than or equal to <paramref name="maxLength"/>.
             </summary>
+            <param name="v">Input string whose words may be transformed.</param>
+            <param name="maxLength">Maximum word length that will be uppercased.</param>
+            <param name="filter">Optional predicate for deciding whether a small word should be uppercased.</param>
+            <returns>Input string with selected short words uppercased.</returns>
         </member>
         <member name="M:GodotUtils.StringExtensions.FirstCharToUpper(System.String)">
             <summary>
             Uppercases the first character in the string.
             </summary>
+            <param name="input">Input string to transform.</param>
+            <returns>String with the first character converted to upper case.</returns>
         </member>
         <member name="T:GodotUtils.TextEditExtensions">
             <summary>
@@ -879,6 +1257,16 @@
             <summary>
             Filters text input by reverting to the last valid value.
             </summary>
+            <param name="textEdit">Text editor whose input should be validated.</param>
+            <param name="filter">Predicate used to validate candidate text.</param>
+            <returns>Accepted text value, or <see langword="null"/> when no valid text exists.</returns>
+        </member>
+        <member name="M:GodotUtils.TextEditExtensions.ChangeTextEditText(Godot.TextEdit,System.String)">
+            <summary>
+            Assigns text directly to the editor as part of the filter rollback flow.
+            </summary>
+            <param name="textEdit">Target text editor instance.</param>
+            <param name="text">Text value to apply.</param>
         </member>
         <member name="T:GodotUtils.TileMapExtensions">
             <summary>
@@ -889,6 +1277,11 @@
             <summary>
             Gets custom data of type <typeparamref name="T"/> at the tile coordinates.
             </summary>
+            <typeparam name="T">Expected custom-data value type.</typeparam>
+            <param name="tileMap">Tile map layer that contains the target cell.</param>
+            <param name="tileCoordinates">Cell coordinates to inspect.</param>
+            <param name="customDataLayerName">Custom data layer name to read from the tile.</param>
+            <returns>Custom data value for the requested cell, or default when tile data is missing.</returns>
         </member>
         <member name="T:GodotUtils.TypeExtensions">
             <summary>
@@ -923,21 +1316,30 @@
             <summary>
             Creates a world boundary area.
             </summary>
+            <param name="normal">Boundary normal direction.</param>
+            <returns>Configured world-boundary area instance.</returns>
         </member>
         <member name="M:GodotUtils.AreaFactory2D.Capsule(System.Single,System.Single)">
             <summary>
             Creates a capsule area.
             </summary>
+            <param name="radius">Capsule radius.</param>
+            <param name="height">Capsule cylinder height.</param>
+            <returns>Configured capsule area instance.</returns>
         </member>
         <member name="M:GodotUtils.AreaFactory2D.Circle(System.Single)">
             <summary>
             Creates a circle area.
             </summary>
+            <param name="radius">Circle radius.</param>
+            <returns>Configured circle area instance.</returns>
         </member>
         <member name="M:GodotUtils.AreaFactory2D.Rect(Godot.Vector2)">
             <summary>
             Creates a rectangle area.
             </summary>
+            <param name="size">Rectangle size.</param>
+            <returns>Configured rectangle area instance.</returns>
         </member>
         <member name="T:GodotUtils.AreaFactory3D">
             <summary>
@@ -948,31 +1350,44 @@
             <summary>
             Creates a world boundary area.
             </summary>
+            <param name="plane">Boundary plane used by the world-boundary shape.</param>
+            <returns>Configured world-boundary area instance.</returns>
         </member>
         <member name="M:GodotUtils.AreaFactory3D.Cylinder(System.Single,System.Single)">
             <summary>
             Creates a cylinder area.
             </summary>
+            <param name="radius">Cylinder radius.</param>
+            <param name="height">Cylinder height.</param>
+            <returns>Configured cylinder area instance.</returns>
         </member>
         <member name="M:GodotUtils.AreaFactory3D.Capsule(System.Single,System.Single)">
             <summary>
             Creates a capsule area.
             </summary>
+            <param name="radius">Capsule radius.</param>
+            <param name="height">Capsule cylinder height.</param>
+            <returns>Configured capsule area instance.</returns>
         </member>
         <member name="M:GodotUtils.AreaFactory3D.Sphere(System.Single)">
             <summary>
             Creates a sphere area.
             </summary>
+            <param name="radius">Sphere radius.</param>
+            <returns>Configured sphere area instance.</returns>
         </member>
         <member name="M:GodotUtils.AreaFactory3D.Box(Godot.Vector3)">
             <summary>
             Creates a box area.
             </summary>
+            <param name="size">Box dimensions.</param>
+            <returns>Configured box area instance.</returns>
         </member>
         <member name="T:GodotUtils.ShapeArea2D`1">
             <summary>
             Base class for 2D shape areas that directly expose the full Area2D API.
             </summary>
+            <typeparam name="TShape">Concrete 2D shape resource type used by the area.</typeparam>
         </member>
         <member name="P:GodotUtils.ShapeArea2D`1.Shape">
             <summary>
@@ -988,21 +1403,25 @@
             <summary>
             Creates a shape area backed by the provided shape.
             </summary>
+            <param name="shape">Shape resource assigned to the collision node.</param>
         </member>
         <member name="M:GodotUtils.ShapeArea2D`1.SetColor(Godot.Color)">
             <summary>
             Sets the debug color for the collision shape.
             </summary>
+            <param name="color">Debug color applied to the collision shape.</param>
         </member>
         <member name="M:GodotUtils.ShapeArea2D`1.GetColor">
             <summary>
             Gets the debug color for the collision shape.
             </summary>
+            <returns>Current collision debug color.</returns>
         </member>
         <member name="T:GodotUtils.ShapeArea3D`1">
             <summary>
             Base class for 3D shape areas that directly expose the full Area3D API.
             </summary>
+            <typeparam name="TShape">Concrete 3D shape resource type used by the area.</typeparam>
         </member>
         <member name="P:GodotUtils.ShapeArea3D`1.Shape">
             <summary>
@@ -1018,16 +1437,20 @@
             <summary>
             Creates a shape area backed by the provided shape.
             </summary>
+            <param name="shape">Shape resource assigned to the collision node.</param>
         </member>
         <member name="M:GodotUtils.ShapeArea3D`1.SetColor(Godot.Color,System.Boolean)">
             <summary>
             Sets the debug color for the collision shape.
             </summary>
+            <param name="color">Base debug color to apply.</param>
+            <param name="transparent">Whether alpha should be forced to fully transparent.</param>
         </member>
         <member name="M:GodotUtils.ShapeArea3D`1.GetColor">
             <summary>
             Gets the debug color for the collision shape.
             </summary>
+            <returns>Current collision debug color.</returns>
         </member>
         <member name="T:GodotUtils.CapsuleArea2D">
             <summary>
@@ -1048,6 +1471,8 @@
             <summary>
             Creates a capsule area with the provided radius and height.
             </summary>
+            <param name="radius">Capsule radius.</param>
+            <param name="height">Capsule cylinder height.</param>
         </member>
         <member name="T:GodotUtils.CircleArea2D">
             <summary>
@@ -1063,6 +1488,7 @@
             <summary>
             Creates a circle area with the provided radius.
             </summary>
+            <param name="radius">Circle radius.</param>
         </member>
         <member name="T:GodotUtils.RectArea2D">
             <summary>
@@ -1078,6 +1504,7 @@
             <summary>
             Creates a rectangle area with the provided size.
             </summary>
+            <param name="size">Rectangle dimensions.</param>
         </member>
         <member name="T:GodotUtils.WorldBoundaryArea2D">
             <summary>
@@ -1093,6 +1520,7 @@
             <summary>
             Creates a world boundary area with the provided normal.
             </summary>
+            <param name="normal">Boundary normal direction.</param>
         </member>
         <member name="T:GodotUtils.BoxArea3D">
             <summary>
@@ -1108,6 +1536,7 @@
             <summary>
             Creates a box area with the provided size.
             </summary>
+            <param name="size">Box dimensions.</param>
         </member>
         <member name="T:GodotUtils.CapsuleArea3D">
             <summary>
@@ -1128,6 +1557,8 @@
             <summary>
             Creates a capsule area with the provided radius and height.
             </summary>
+            <param name="radius">Capsule radius.</param>
+            <param name="height">Capsule cylinder height.</param>
         </member>
         <member name="T:GodotUtils.CylinderArea3D">
             <summary>
@@ -1148,6 +1579,8 @@
             <summary>
             Creates a cylinder area with the provided radius and height.
             </summary>
+            <param name="radius">Cylinder radius.</param>
+            <param name="height">Cylinder height.</param>
         </member>
         <member name="T:GodotUtils.SphereArea3D">
             <summary>
@@ -1163,6 +1596,7 @@
             <summary>
             Creates a sphere area with the provided radius.
             </summary>
+            <param name="radius">Sphere radius.</param>
         </member>
         <member name="T:GodotUtils.WorldBoundaryArea3D">
             <summary>
@@ -1178,6 +1612,7 @@
             <summary>
             Creates a world boundary area with the provided plane.
             </summary>
+            <param name="plane">Boundary plane.</param>
         </member>
         <member name="T:GodotUtils.CodeHighlighterFactory">
             <summary>
@@ -1329,6 +1764,7 @@
             <summary>
             Base class for tween builders.
             </summary>
+            <typeparam name="TSelf">Concrete tween builder type returned by fluent APIs.</typeparam>
         </member>
         <member name="F:GodotUtils.BaseTween`1._node">
             <summary>
@@ -1378,6 +1814,7 @@
             <summary>
             Awaits the tween finish signal.
             </summary>
+            <returns>Task that completes when the tween emits its finished signal.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.Parallel">
             <summary>
@@ -1449,81 +1886,97 @@
             <summary>
             Sets the transition type to Linear.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.TransBack">
             <summary>
             Sets the transition type to Back.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.TransSine">
             <summary>
             Sets the transition type to Sine.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.TransBounce">
             <summary>
             Sets the transition type to Bounce.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.TransCirc">
             <summary>
             Sets the transition type to Circ.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.TransCubic">
             <summary>
             Sets the transition type to Cubic.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.TransElastic">
             <summary>
             Sets the transition type to Elastic.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.TransExpo">
             <summary>
             Sets the transition type to Expo.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.TransQuad">
             <summary>
             Sets the transition type to Quad.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.TransQuart">
             <summary>
             Sets the transition type to Quart.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.TransQuint">
             <summary>
             Sets the transition type to Quint.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.TransSpring">
             <summary>
             Sets the transition type to Spring.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.EaseIn">
             <summary>
             Sets the ease type to In.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.EaseOut">
             <summary>
             Sets the ease type to Out.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.EaseInOut">
             <summary>
             Sets the ease type to InOut.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.EaseOutIn">
             <summary>
             Sets the ease type to OutIn.
             </summary>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.BaseTween`1.IsRunning">
             <summary>
@@ -1657,146 +2110,231 @@
             <summary>
             Creates a tween bound to the provided Node2D.
             </summary>
+            <param name="node">Node that receives tweened property updates.</param>
         </member>
         <member name="M:GodotUtils.NodeTween2D.Position(Godot.Vector2,System.Double)">
             <summary>
             Tweens the local position.
             </summary>
+            <param name="position">Target local position.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.PositionX(System.Double,System.Double)">
             <summary>
             Tweens the local X position.
             </summary>
+            <param name="x">Target local X value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.PositionY(System.Double,System.Double)">
             <summary>
             Tweens the local Y position.
             </summary>
+            <param name="y">Target local Y value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.PositionZ(System.Double,System.Double)">
             <summary>
             Tweens the local Z position.
             </summary>
+            <param name="z">Target local Z value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalPosition(Godot.Vector2,System.Double)">
             <summary>
             Tweens the global position.
             </summary>
+            <param name="globalPosition">Target global position.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalPositionX(System.Double,System.Double)">
             <summary>
             Tweens the global X position.
             </summary>
+            <param name="x">Target global X value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalPositionY(System.Double,System.Double)">
             <summary>
             Tweens the global Y position.
             </summary>
+            <param name="y">Target global Y value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalPositionZ(System.Double,System.Double)">
             <summary>
             Tweens the global Z position.
             </summary>
+            <param name="z">Target global Z value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.Rotation(System.Double,System.Double)">
             <summary>
             Tweens the rotation.
             </summary>
+            <param name="rotation">Target rotation value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.RotationX(System.Double,System.Double)">
             <summary>
             Tweens the rotation on the X axis.
             </summary>
+            <param name="x">Target rotation X component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.RotationY(System.Double,System.Double)">
             <summary>
             Tweens the rotation on the Y axis.
             </summary>
+            <param name="y">Target rotation Y component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.RotationZ(System.Double,System.Double)">
             <summary>
             Tweens the rotation on the Z axis.
             </summary>
+            <param name="z">Target rotation Z component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalRotation(System.Double,System.Double)">
             <summary>
             Tweens the global rotation.
             </summary>
+            <param name="rotation">Target global rotation value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalRotationX(System.Double,System.Double)">
             <summary>
             Tweens the global rotation on the X axis.
             </summary>
+            <param name="x">Target global rotation X component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalRotationY(System.Double,System.Double)">
             <summary>
             Tweens the global rotation on the Y axis.
             </summary>
+            <param name="y">Target global rotation Y component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalRotationZ(System.Double,System.Double)">
             <summary>
             Tweens the global rotation on the Z axis.
             </summary>
+            <param name="z">Target global rotation Z component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.Scale(Godot.Vector2,System.Double)">
             <summary>
             Tweens the scale.
             </summary>
+            <param name="scale">Target local scale.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.ScaleX(System.Double,System.Double)">
             <summary>
             Tweens the scale on the X axis.
             </summary>
+            <param name="x">Target scale X component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.ScaleY(System.Double,System.Double)">
             <summary>
             Tweens the scale on the Y axis.
             </summary>
+            <param name="y">Target scale Y component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.ScaleZ(System.Double,System.Double)">
             <summary>
             Tweens the scale on the Z axis.
             </summary>
+            <param name="z">Target scale Z component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalScale(Godot.Vector2,System.Double)">
             <summary>
             Tweens the global scale.
             </summary>
+            <param name="globalScale">Target global scale.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalScaleX(System.Double,System.Double)">
             <summary>
             Tweens the global scale on the X axis.
             </summary>
+            <param name="x">Target global scale X component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalScaleY(System.Double,System.Double)">
             <summary>
             Tweens the global scale on the Y axis.
             </summary>
+            <param name="y">Target global scale Y component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalScaleZ(System.Double,System.Double)">
             <summary>
             Tweens the global scale on the Z axis.
             </summary>
+            <param name="z">Target global scale Z component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.Color(Godot.Color,System.Double)">
             <summary>
             Tweens the self modulate color.
             </summary>
+            <param name="color">Target self-modulate color.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.ColorRecursive(Godot.Color,System.Double)">
             <summary>
             Tweens the modulate color (including children).
             </summary>
+            <param name="color">Target modulate color.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.Skew(System.Single,System.Double)">
             <summary>
             Tweens the skew.
             </summary>
+            <param name="skew">Target skew value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTween2D.GlobalSkew(System.Single,System.Double)">
             <summary>
             Tweens the global skew.
             </summary>
+            <param name="globalSkew">Target global skew value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="T:GodotUtils.NodeTweenControl">
             <summary>
@@ -1807,116 +2345,183 @@
             <summary>
             Creates a tween bound to the provided control.
             </summary>
+            <param name="control">Control that receives tweened property updates.</param>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.Position(Godot.Vector2,System.Double)">
             <summary>
             Tweens the local position.
             </summary>
+            <param name="position">Target local position.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.PositionX(System.Double,System.Double)">
             <summary>
             Tweens the local X position.
             </summary>
+            <param name="x">Target local X value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.PositionY(System.Double,System.Double)">
             <summary>
             Tweens the local Y position.
             </summary>
+            <param name="y">Target local Y value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.PositionZ(System.Double,System.Double)">
             <summary>
             Tweens the local Z position.
             </summary>
+            <param name="z">Target local Z value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.GlobalPosition(Godot.Vector2,System.Double)">
             <summary>
             Tweens the global position.
             </summary>
+            <param name="globalPosition">Target global position.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.GlobalPositionX(System.Double,System.Double)">
             <summary>
             Tweens the global X position.
             </summary>
+            <param name="x">Target global X value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.GlobalPositionY(System.Double,System.Double)">
             <summary>
             Tweens the global Y position.
             </summary>
+            <param name="y">Target global Y value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.GlobalPositionZ(System.Double,System.Double)">
             <summary>
             Tweens the global Z position.
             </summary>
+            <param name="z">Target global Z value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.Rotation(System.Double,System.Double)">
             <summary>
             Tweens the rotation.
             </summary>
+            <param name="rotation">Target rotation value.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.RotationX(System.Double,System.Double)">
             <summary>
             Tweens the rotation on the X axis.
             </summary>
+            <param name="x">Target rotation X component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.RotationY(System.Double,System.Double)">
             <summary>
             Tweens the rotation on the Y axis.
             </summary>
+            <param name="y">Target rotation Y component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.RotationZ(System.Double,System.Double)">
             <summary>
             Tweens the rotation on the Z axis.
             </summary>
+            <param name="z">Target rotation Z component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.Scale(Godot.Vector2,System.Double)">
             <summary>
             Tweens the scale.
             </summary>
+            <param name="scale">Target local scale.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.ScaleX(System.Double,System.Double)">
             <summary>
             Tweens the scale on the X axis.
             </summary>
+            <param name="x">Target scale X component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.ScaleY(System.Double,System.Double)">
             <summary>
             Tweens the scale on the Y axis.
             </summary>
+            <param name="y">Target scale Y component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.ScaleZ(System.Double,System.Double)">
             <summary>
             Tweens the scale on the Z axis.
             </summary>
+            <param name="z">Target scale Z component.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.Size(Godot.Vector2,System.Double)">
             <summary>
             Tweens the size.
             </summary>
+            <param name="size">Target control size.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.CustomMinimumSize(Godot.Vector2,System.Double)">
             <summary>
             Tweens the custom minimum size.
             </summary>
+            <param name="customMinimumSize">Target custom minimum size.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.PivotOffset(Godot.Vector2,System.Double)">
             <summary>
             Tweens the pivot offset.
             </summary>
+            <param name="pivotOffset">Target pivot offset.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.SizeFlagsStretchRatio(System.Single,System.Double)">
             <summary>
             Tweens the size flags stretch ratio.
             </summary>
+            <param name="stretchRatio">Target size-flags stretch ratio.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.Color(Godot.Color,System.Double)">
             <summary>
             Tweens the self modulate color.
             </summary>
+            <param name="color">Target self-modulate color.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="M:GodotUtils.NodeTweenControl.ColorRecursive(Godot.Color,System.Double)">
             <summary>
             Tweens the modulate color (including children).
             </summary>
+            <param name="color">Target modulate color.</param>
+            <param name="duration">Tween duration in seconds.</param>
+            <returns>Current tween builder for chaining.</returns>
         </member>
         <member name="T:GodotUtils.NodeTweenProp">
             <summary>
@@ -1991,6 +2596,8 @@
             <summary>
             Generic key-based cache that lazily creates values on first access.
             </summary>
+            <typeparam name="TKey">Cache key type.</typeparam>
+            <typeparam name="TValue">Cached value type.</typeparam>
         </member>
         <member name="M:GodotUtils.CacheManager`2.Get(`0,System.Func{`1})">
             <summary>
@@ -2009,11 +2616,13 @@
             <summary>
             Creates a manager for the provided sprite nodes.
             </summary>
+            <param name="sprites">Sprites that receive shake offsets.</param>
         </member>
         <member name="M:GodotUtils.SpriteShakeManager.Shake(System.Single)">
             <summary>
             Applies a vertical shake offset with the provided intensity.
             </summary>
+            <param name="intensity">Maximum absolute vertical offset to apply.</param>
         </member>
         <member name="M:GodotUtils.SpriteShakeManager.Reset">
             <summary>
@@ -2139,6 +2748,16 @@
             </summary>
             <param name="enabled">True to register unhandled input callback.</param>
         </member>
+        <member name="M:GodotUtils.Component.OnReady">
+            <summary>
+            Captures the active component manager and forwards to <see cref="M:GodotUtils.Component.Ready"/> when the owner node becomes ready.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Component.OnExitedTree">
+            <summary>
+            Forwards owner tree-exit notification and guarantees component cleanup and event unsubscription.
+            </summary>
+        </member>
         <member name="T:GodotUtils.ComponentList">
             <summary>
             Holds and manages a set of components.
@@ -2171,6 +2790,7 @@
             <summary>
             Returns the first component of type <typeparamref name="T"/>.
             </summary>
+            <typeparam name="T">Component type to locate.</typeparam>
             <returns>Matching component, or <see langword="null"/> when absent.</returns>
         </member>
         <member name="M:GodotUtils.ComponentList.SetActive(System.Boolean)">
@@ -2193,51 +2813,111 @@
             <summary>
             Creates a manager tied to the provided node.
             </summary>
+            <param name="managerNode">Node that owns processing callbacks for dispatch.</param>
         </member>
         <member name="M:GodotUtils.ComponentManager.RegisterProcess(GodotUtils.Component)">
             <summary>
             Registers a component for per-frame processing.
             </summary>
+            <param name="component">Component to register.</param>
         </member>
         <member name="M:GodotUtils.ComponentManager.UnregisterProcess(GodotUtils.Component)">
             <summary>
             Unregisters a component from per-frame processing.
             </summary>
+            <param name="component">Component to unregister.</param>
         </member>
         <member name="M:GodotUtils.ComponentManager.RegisterPhysicsProcess(GodotUtils.Component)">
             <summary>
             Registers a component for physics processing.
             </summary>
+            <param name="component">Component to register.</param>
         </member>
         <member name="M:GodotUtils.ComponentManager.UnregisterPhysicsProcess(GodotUtils.Component)">
             <summary>
             Unregisters a component from physics processing.
             </summary>
+            <param name="component">Component to unregister.</param>
         </member>
         <member name="M:GodotUtils.ComponentManager.RegisterInput(GodotUtils.Component)">
             <summary>
             Registers a component for input processing.
             </summary>
+            <param name="component">Component to register.</param>
         </member>
         <member name="M:GodotUtils.ComponentManager.UnregisterInput(GodotUtils.Component)">
             <summary>
             Unregisters a component from input processing.
             </summary>
+            <param name="component">Component to unregister.</param>
         </member>
         <member name="M:GodotUtils.ComponentManager.RegisterUnhandledInput(GodotUtils.Component)">
             <summary>
             Registers a component for unhandled input processing.
             </summary>
+            <param name="component">Component to register.</param>
         </member>
         <member name="M:GodotUtils.ComponentManager.UnregisterUnhandledInput(GodotUtils.Component)">
             <summary>
             Unregisters a component from unhandled input processing.
             </summary>
+            <param name="component">Component to unregister.</param>
         </member>
         <member name="M:GodotUtils.ComponentManager.UnregisterAll(GodotUtils.Component)">
             <summary>
             Unregisters a component from all processing types.
             </summary>
+            <param name="component">Component to unregister from every dispatch group.</param>
+        </member>
+        <member name="M:GodotUtils.ComponentManager.Register(GodotUtils.Component,GodotUtils.ComponentManager.ComponentGroup,GodotUtils.ComponentManager.ComponentGroup)">
+            <summary>
+            Adds a component to the main group and to the paused group when it should keep running while paused.
+            </summary>
+            <param name="component">Component to register.</param>
+            <param name="mainGroup">Primary dispatch group.</param>
+            <param name="pausedGroup">Dispatch group used while the tree is paused.</param>
+        </member>
+        <member name="M:GodotUtils.ComponentManager.Unregister(GodotUtils.Component,GodotUtils.ComponentManager.ComponentGroup,GodotUtils.ComponentManager.ComponentGroup)">
+            <summary>
+            Removes a component from both the main and paused dispatch groups.
+            </summary>
+            <param name="component">Component to unregister.</param>
+            <param name="mainGroup">Primary dispatch group.</param>
+            <param name="pausedGroup">Dispatch group used while the tree is paused.</param>
+        </member>
+        <member name="M:GodotUtils.ComponentManager.SyncPausedGroup(GodotUtils.Component,GodotUtils.ComponentManager.ComponentGroup,GodotUtils.ComponentManager.ComponentGroup)">
+            <summary>
+            Keeps paused-group membership in sync with the component's pausable state.
+            </summary>
+            <param name="component">Component whose pausable state changed.</param>
+            <param name="mainGroup">Primary dispatch group.</param>
+            <param name="pausedGroup">Dispatch group used while the tree is paused.</param>
+        </member>
+        <member name="M:GodotUtils.ComponentManager.Dispatch(GodotUtils.ComponentManager.ComponentGroup,GodotUtils.ComponentManager.ComponentGroup,System.Action{GodotUtils.Component})">
+            <summary>
+            Dispatches a callback to either the main or paused group depending on scene-tree pause state.
+            </summary>
+            <param name="mainGroup">Primary dispatch group.</param>
+            <param name="pausedGroup">Dispatch group used while the tree is paused.</param>
+            <param name="dispatch">Callback invoked for each selected component.</param>
+        </member>
+        <member name="M:GodotUtils.ComponentManager.RegisterAndEnable(GodotUtils.Component,GodotUtils.ComponentManager.ComponentGroup,GodotUtils.ComponentManager.ComponentGroup,System.Action{System.Boolean})">
+            <summary>
+            Registers a component and enables the owning node callback when the first item is added.
+            </summary>
+            <param name="component">Component to register.</param>
+            <param name="mainGroup">Primary dispatch group.</param>
+            <param name="pausedGroup">Dispatch group used while the tree is paused.</param>
+            <param name="setEnabled">Callback that toggles the corresponding node processing flag.</param>
+        </member>
+        <member name="M:GodotUtils.ComponentManager.UnregisterAndDisable(GodotUtils.Component,GodotUtils.ComponentManager.ComponentGroup,GodotUtils.ComponentManager.ComponentGroup,System.Action{System.Boolean})">
+            <summary>
+            Unregisters a component and disables the owning node callback when no items remain.
+            </summary>
+            <param name="component">Component to unregister.</param>
+            <param name="mainGroup">Primary dispatch group.</param>
+            <param name="pausedGroup">Dispatch group used while the tree is paused.</param>
+            <param name="setEnabled">Callback that toggles the corresponding node processing flag.</param>
         </member>
         <member name="T:GodotUtils.CursorUtils">
             <summary>
@@ -2335,6 +3015,7 @@
             <summary>
             File or directory name component.
             </summary>
+            <value>Terminal file-system name extracted from <see cref="P:GodotUtils.DirectoryUtils.TraverseEntry.FullPath"/>.</value>
         </member>
         <member name="M:GodotUtils.DirectoryUtils.FindFile(System.String,System.String)">
             <summary>
@@ -2384,26 +3065,31 @@
             <summary>
             Returns true when running an exported release build.
             </summary>
+            <returns><see langword="true"/> when the runtime is an exported template build.</returns>
         </member>
         <member name="M:GodotUtils.EditorUtils.IsEditor">
             <summary>
             Returns true when running inside the editor.
             </summary>
+            <returns><see langword="true"/> when running in the Godot editor.</returns>
         </member>
         <member name="M:GodotUtils.EditorUtils.IsWindows">
             <summary>
             Returns true when running on Windows.
             </summary>
+            <returns><see langword="true"/> on Windows platforms.</returns>
         </member>
         <member name="M:GodotUtils.EditorUtils.IsLinux">
             <summary>
             Returns true when running on Linux.
             </summary>
+            <returns><see langword="true"/> on Linux platforms.</returns>
         </member>
         <member name="M:GodotUtils.EditorUtils.IsMac">
             <summary>
             Returns true when running on macOS.
             </summary>
+            <returns><see langword="true"/> on macOS platforms.</returns>
         </member>
         <member name="T:GodotUtils.ExceptionGuard">
             <summary>
@@ -2450,21 +3136,55 @@
             <summary>
             Returns the number of fully transparent columns on the left side of the image.
             </summary>
+            <param name="img">Image to scan.</param>
+            <param name="size">Image size in pixels.</param>
+            <returns>Count of transparent columns from the left edge.</returns>
         </member>
         <member name="M:GodotUtils.ImageUtils.GetTransparentColumnsRight(Godot.Image,Godot.Vector2)">
             <summary>
             Returns the number of fully transparent columns on the right side of the image.
             </summary>
+            <param name="img">Image to scan.</param>
+            <param name="size">Image size in pixels.</param>
+            <returns>Count of transparent columns from the right edge.</returns>
         </member>
         <member name="M:GodotUtils.ImageUtils.GetTransparentRowsTop(Godot.Image,Godot.Vector2)">
             <summary>
             Returns the number of fully transparent rows on the top of the image.
             </summary>
+            <param name="img">Image to scan.</param>
+            <param name="size">Image size in pixels.</param>
+            <returns>Count of transparent rows from the top edge.</returns>
         </member>
         <member name="M:GodotUtils.ImageUtils.GetTransparentRowsBottom(Godot.Image,Godot.Vector2)">
             <summary>
             Returns the number of fully transparent rows on the bottom of the image.
             </summary>
+            <param name="img">Image to scan.</param>
+            <param name="size">Image size in pixels.</param>
+            <returns>Count of transparent rows from the bottom edge.</returns>
+        </member>
+        <member name="M:GodotUtils.ImageUtils.CountTransparentColumns(Godot.Image,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Counts fully transparent columns while scanning horizontally from a starting x index.
+            </summary>
+            <param name="img">Image to scan.</param>
+            <param name="width">Image width in pixels.</param>
+            <param name="height">Image height in pixels.</param>
+            <param name="startX">First x coordinate to inspect.</param>
+            <param name="step">Horizontal scan direction, typically 1 or -1.</param>
+            <returns>Number of consecutive transparent columns encountered.</returns>
+        </member>
+        <member name="M:GodotUtils.ImageUtils.CountTransparentRows(Godot.Image,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Counts fully transparent rows while scanning vertically from a starting y index.
+            </summary>
+            <param name="img">Image to scan.</param>
+            <param name="width">Image width in pixels.</param>
+            <param name="height">Image height in pixels.</param>
+            <param name="startY">First y coordinate to inspect.</param>
+            <param name="step">Vertical scan direction, typically 1 or -1.</param>
+            <returns>Number of consecutive transparent rows encountered.</returns>
         </member>
         <member name="T:GodotUtils.InputUtils">
             <summary>
@@ -2475,6 +3195,7 @@
             <summary>
             Returns a normalized movement vector from arrow or WASD input.
             </summary>
+            <returns>Normalized movement vector based on active directional keys.</returns>
         </member>
         <member name="T:GodotUtils.MathUtils">
             <summary>
@@ -2486,11 +3207,16 @@
             <para>Returns the sum of the first n natural numbers</para>
             <para>For example if n = 4 then this would return 0 + 1 + 2 + 3</para>
             </summary>
+            <param name="n">Number of natural numbers to sum.</param>
+            <returns>Sum of natural numbers in the range [0, n).</returns>
         </member>
         <member name="M:GodotUtils.MathUtils.UIntPow(System.UInt32,System.UInt32)">
             <summary>
             Computes <paramref name="x"/> raised to <paramref name="pow"/>.
             </summary>
+            <param name="x">Base value.</param>
+            <param name="pow">Exponent value.</param>
+            <returns>Result of raising <paramref name="x"/> to <paramref name="pow"/>.</returns>
         </member>
         <member name="M:GodotUtils.MathUtils.GetLayerValues(System.Int32[])">
             <summary>
@@ -2504,36 +3230,52 @@
             
             <code>player.CollisionLayer = MathUtils.GetLayerValues(1, 4, 5)</code>
             </summary>
+            <param name="layers">One-based layer indices to enable in the resulting mask.</param>
+            <returns>Bitmask value with the requested layers enabled.</returns>
         </member>
         <member name="M:GodotUtils.MathUtils.RandomRange(System.Double,System.Double)">
             <summary>
             Returns a random float within the range [<paramref name="min"/>, <paramref name="max"/>].
             </summary>
+            <param name="min">Minimum inclusive random value.</param>
+            <param name="max">Maximum inclusive random value.</param>
+            <returns>Random float in the requested range.</returns>
         </member>
         <member name="M:GodotUtils.MathUtils.RandomRangeInt(System.Int32,System.Int32)">
             <summary>
             Returns a random integer within the range [<paramref name="min"/>, <paramref name="max"/>].
             </summary>
+            <param name="min">Minimum inclusive random value.</param>
+            <param name="max">Maximum inclusive random value.</param>
+            <returns>Random integer in the requested range.</returns>
         </member>
         <member name="M:GodotUtils.MathUtils.RandDir">
             <summary>
             Returns a random unit direction vector.
             </summary>
+            <returns>Random normalized direction vector.</returns>
         </member>
         <member name="M:GodotUtils.MathUtils.RandAngle">
             <summary>
             Returns a random angle in radians between 0 and 2π.
             </summary>
+            <returns>Random angle in radians.</returns>
         </member>
         <member name="M:GodotUtils.MathUtils.GetAngle(Godot.Vector2,Godot.Vector2)">
             <summary>
             Returns the angle from <paramref name="from"/> to <paramref name="to"/> in radians.
             </summary>
+            <param name="to">Target position.</param>
+            <param name="from">Origin position.</param>
+            <returns>Angle from origin to target in radians.</returns>
         </member>
         <member name="M:GodotUtils.MathUtils.GetAngleDiff(System.Single,System.Single)">
             <summary>
             Returns the wrapped angular difference between <paramref name="to"/> and <paramref name="from"/>.
             </summary>
+            <param name="to">Target angle in radians.</param>
+            <param name="from">Source angle in radians.</param>
+            <returns>Wrapped angular difference in the range [-π, π].</returns>
         </member>
         <member name="T:GodotUtils.BaseNodePool`1">
             <summary>
@@ -2657,6 +3399,7 @@
             <summary>
             Nodes currently in use by the pool.
             </summary>
+            <value>Enumerable view of nodes currently acquired from the pool.</value>
         </member>
         <member name="M:GodotUtils.INodePool`1.Acquire">
             <summary>
@@ -2765,6 +3508,7 @@
             <summary>
             Internal pooling engine shared by node-pool wrappers.
             </summary>
+            <typeparam name="TNode">Canvas-item node type managed by the pool.</typeparam>
         </member>
         <member name="P:GodotUtils.PoolCore`1.ActiveNodes">
             <summary>
@@ -2775,21 +3519,35 @@
             <summary>
             Creates a pool of nodes using <paramref name="createNodeFunc"/> and attaches them as children of <paramref name="parent"/> to avoid expensive <c>QueueFree()</c> calls.
             </summary>
+            <param name="parent">Parent node that owns pooled instances.</param>
+            <param name="createNodeFunc">Factory used to create new pooled nodes.</param>
         </member>
         <member name="M:GodotUtils.PoolCore`1.Acquire(System.Action{`0},System.Action{`0})">
             <summary>
             Returns an available <typeparamref name="TNode"/> or creates a new one if all are in use.
             </summary>
+            <param name="onCreate">Callback invoked when a new node instance is created.</param>
+            <param name="onAcquire">Callback invoked whenever a node is acquired.</param>
+            <returns>Active pooled node ready for use.</returns>
         </member>
         <member name="M:GodotUtils.PoolCore`1.Release(`0,System.Action{`0})">
             <summary>
             Releases the <paramref name="node"/> from the pool.
             </summary>
+            <param name="node">Node to release back to the inactive pool.</param>
+            <param name="onRelease">Callback invoked after the node is released.</param>
         </member>
         <member name="M:GodotUtils.PoolCore`1.QueueFreeAll">
             <summary>
             Queue frees all inactive and active nodes in the pool.
             </summary>
+        </member>
+        <member name="M:GodotUtils.PoolCore`1.GetAnyActiveNode(System.Collections.Generic.HashSet{`0})">
+            <summary>
+            Returns an arbitrary active node from the set.
+            </summary>
+            <param name="nodes">Active node set.</param>
+            <returns>One active node instance.</returns>
         </member>
         <member name="T:GodotUtils.PrintUtils">
             <summary>
@@ -2800,6 +3558,7 @@
             <summary>
             Prints a warning with a yellow highlight and pushes it to the editor warnings.
             </summary>
+            <param name="message">Warning message to display.</param>
         </member>
         <member name="T:GodotUtils.RegEx.RegexUtils">
             <summary>
@@ -2904,6 +3663,7 @@
             <summary>
             Returns the state name in lowercase.
             </summary>
+            <returns>Lowercase state name.</returns>
         </member>
         <member name="T:GodotUtils.IStateMachine">
             <summary>
@@ -2934,6 +3694,7 @@
             Executes the task and handles expected cancellation and non-fatal failures.
             </summary>
             <param name="task">Task delegate to execute.</param>
+            <returns>Task representing the fire-and-forget execution lifecycle.</returns>
         </member>
         <member name="T:GodotUtils.Ui.ToolScriptHelpers">
             <summary>
@@ -3012,16 +3773,25 @@
             <summary>
             Gets the center point of the main window in pixels.
             </summary>
+            <returns>Window center position in pixels.</returns>
         </member>
         <member name="M:GodotUtils.WindowUtils.GetWidth">
             <summary>
             Gets the main window width in pixels.
             </summary>
+            <returns>Window width in pixels.</returns>
         </member>
         <member name="M:GodotUtils.WindowUtils.GetHeight">
             <summary>
             Gets the main window height in pixels.
             </summary>
+            <returns>Window height in pixels.</returns>
+        </member>
+        <member name="M:GodotUtils.WindowUtils.GetSize">
+            <summary>
+            Gets the current main window size.
+            </summary>
+            <returns>Window size in pixels.</returns>
         </member>
         <member name="T:GodotUtils.WindowMode">
             <summary>

@@ -43,26 +43,35 @@
             <summary>
             Wraps readonly member metadata and value retrieval for visualization binding.
             </summary>
+            <param name="name">Display/name key for the member.</param>
+            <param name="member">Reflection metadata for the underlying field or property.</param>
+            <param name="memberType">Declared CLR type of the underlying member.</param>
         </member>
         <member name="M:GodotUtils.Debugging.ReadonlyMemberAccessor.#ctor(System.String,System.Reflection.MemberInfo,System.Type)">
             <summary>
             Wraps readonly member metadata and value retrieval for visualization binding.
             </summary>
+            <param name="name">Display/name key for the member.</param>
+            <param name="member">Reflection metadata for the underlying field or property.</param>
+            <param name="memberType">Declared CLR type of the underlying member.</param>
         </member>
         <member name="P:GodotUtils.Debugging.ReadonlyMemberAccessor.Name">
             <summary>
             Member display/name key.
             </summary>
+            <value>Member display/name key.</value>
         </member>
         <member name="P:GodotUtils.Debugging.ReadonlyMemberAccessor.Member">
             <summary>
             Reflection metadata for the underlying field or property.
             </summary>
+            <value>Reflection metadata for the underlying field or property.</value>
         </member>
         <member name="P:GodotUtils.Debugging.ReadonlyMemberAccessor.MemberType">
             <summary>
             Declared type of the underlying member.
             </summary>
+            <value>Declared type of the underlying member.</value>
         </member>
         <member name="M:GodotUtils.Debugging.ReadonlyMemberAccessor.GetValue(System.Object)">
             <summary>
@@ -107,6 +116,7 @@
             <param name="readonlyMembers">Readonly members container.</param>
             <param name="target">Target object owning the member.</param>
             <param name="displayName">Display name used for status logging.</param>
+            <returns>Task that completes once polling finishes or times out.</returns>
         </member>
         <member name="M:GodotUtils.Debugging.ReadonlyMemberBinder.AddReadonlyControl(GodotUtils.Debugging.ReadonlyMemberAccessor,Godot.Control,System.Object,System.Object)">
             <summary>
@@ -170,11 +180,21 @@
             <summary>
             Input data required to register a visualization panel for a 2D/canvas anchor node.
             </summary>
+            <param name="anchorNode">Anchor node whose lifecycle owns the visualization.</param>
+            <param name="positionalNode">Node providing 2D position updates for placement.</param>
+            <param name="visualPanel">Visual panel control to register.</param>
+            <param name="actions">Per-frame actions associated with the visualization.</param>
+            <param name="existingTrackers">Existing trackers used for overlap/offset calculations.</param>
         </member>
         <member name="M:GodotUtils.Debugging.Visual2DRegistrationContext.#ctor(Godot.Node,Godot.Node,Godot.Control,System.Collections.Generic.IReadOnlyList{System.Action},System.Collections.Generic.ICollection{GodotUtils.Debugging.VisualNodeInfo})">
             <summary>
             Input data required to register a visualization panel for a 2D/canvas anchor node.
             </summary>
+            <param name="anchorNode">Anchor node whose lifecycle owns the visualization.</param>
+            <param name="positionalNode">Node providing 2D position updates for placement.</param>
+            <param name="visualPanel">Visual panel control to register.</param>
+            <param name="actions">Per-frame actions associated with the visualization.</param>
+            <param name="existingTrackers">Existing trackers used for overlap/offset calculations.</param>
         </member>
         <member name="P:GodotUtils.Debugging.Visual2DRegistrationContext.AnchorNode">
             <summary>
@@ -238,11 +258,21 @@
             <summary>
             Input data required to register a visualization panel for a 3D anchor node.
             </summary>
+            <param name="anchorNode">Anchor node whose lifecycle owns the visualization.</param>
+            <param name="anchorNode3D">3D anchor used for world-space placement updates.</param>
+            <param name="visualPanel">Visual panel control rendered for this tracker.</param>
+            <param name="actions">Per-frame actions associated with the visualization.</param>
+            <param name="existingTrackers">Existing trackers used for overlap/offset calculations.</param>
         </member>
         <member name="M:GodotUtils.Debugging.Visual3DRegistrationContext.#ctor(Godot.Node,Godot.Node3D,Godot.Control,System.Collections.Generic.IReadOnlyList{System.Action},System.Collections.Generic.ICollection{GodotUtils.Debugging.VisualNodeInfo})">
             <summary>
             Input data required to register a visualization panel for a 3D anchor node.
             </summary>
+            <param name="anchorNode">Anchor node whose lifecycle owns the visualization.</param>
+            <param name="anchorNode3D">3D anchor used for world-space placement updates.</param>
+            <param name="visualPanel">Visual panel control rendered for this tracker.</param>
+            <param name="actions">Per-frame actions associated with the visualization.</param>
+            <param name="existingTrackers">Existing trackers used for overlap/offset calculations.</param>
         </member>
         <member name="P:GodotUtils.Debugging.Visual3DRegistrationContext.AnchorNode">
             <summary>
@@ -273,11 +303,21 @@
             <summary>
             Aggregates anchor/object/member metadata required to build visualization UI.
             </summary>
+            <param name="anchorNode">Scene node used as the visualization anchor.</param>
+            <param name="visualizedObject">Object instance whose members are visualized.</param>
+            <param name="properties">Annotated properties to expose in the panel.</param>
+            <param name="fields">Annotated fields to expose in the panel.</param>
+            <param name="methods">Annotated methods to expose as invokable actions.</param>
         </member>
         <member name="M:GodotUtils.Debugging.VisualData.#ctor(Godot.Node,System.Object,System.Collections.Generic.IReadOnlyList{System.Reflection.PropertyInfo},System.Collections.Generic.IReadOnlyList{System.Reflection.FieldInfo},System.Collections.Generic.IReadOnlyList{System.Reflection.MethodInfo})">
             <summary>
             Aggregates anchor/object/member metadata required to build visualization UI.
             </summary>
+            <param name="anchorNode">Scene node used as the visualization anchor.</param>
+            <param name="visualizedObject">Object instance whose members are visualized.</param>
+            <param name="properties">Annotated properties to expose in the panel.</param>
+            <param name="fields">Annotated fields to expose in the panel.</param>
+            <param name="methods">Annotated methods to expose as invokable actions.</param>
         </member>
         <member name="P:GodotUtils.Debugging.VisualData.AnchorNode">
             <summary>
@@ -604,6 +644,8 @@
             <summary>
             Applies editable state to this control and all control descendants.
             </summary>
+            <param name="control">Root control to update.</param>
+            <param name="editable">Whether editable controls should accept user input.</param>
         </member>
         <member name="T:GodotUtils.Debugging.VisualControlContext">
             <summary>
@@ -920,10 +962,22 @@
             <param name="context">Initial value and change callback context.</param>
             <returns>Created node-path control info.</returns>
         </member>
+        <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualNumeric(System.Type,System.Reflection.MemberInfo,GodotUtils.Debugging.VisualControlContext)">
+            <summary>
+            Builds a numeric spin-box control for the requested numeric member type.
+            </summary>
+            <param name="type">Target numeric CLR type used for conversion.</param>
+            <param name="memberInfo">Optional member metadata used to read export range hints.</param>
+            <param name="context">Initial value and value-changed callback context.</param>
+            <returns>Configured numeric visual-control info.</returns>
+        </member>
         <member name="M:GodotUtils.Debugging.VisualControlTypes.TryGetExportAttributeRange(System.Reflection.MemberInfo,GodotUtils.Debugging.VisualControlTypes.ExportAttributeRange@)">
             <summary>
             Checks if the member has [Export(PropertyHint.Range, "0, 1, 0.1")] and gets the min, max, and step values.
             </summary>
+            <param name="memberInfo">Member metadata to inspect for an export range hint.</param>
+            <param name="exportAttributeRange">Parsed range values when a valid range hint is present.</param>
+            <returns><see langword="true"/> when a valid numeric export range is found; otherwise <see langword="false"/>.</returns>
         </member>
         <member name="M:GodotUtils.Debugging.VisualControlTypes.VisualObject(GodotUtils.Debugging.VisualControlContext)">
             <summary>
@@ -1362,11 +1416,17 @@
             <summary>
             Builds and wires title-bar controls for visual panels, including visibility toggles and anchor popup behavior.
             </summary>
+            <param name="anchorPopupBuilder">Builder that creates and configures the anchor popup UI.</param>
+            <param name="columnVisibilityController">Service that applies mutable/readonly/method visibility rules.</param>
+            <param name="valueSyncService">Service that syncs readonly values into mutable controls.</param>
         </member>
         <member name="M:GodotUtils.Debugging.VisualTitleBarControlComponent.#ctor(GodotUtils.Debugging.IVisualTitleBarAnchorPopupBuilder,GodotUtils.Debugging.IVisualTitleBarColumnVisibilityController,GodotUtils.Debugging.IVisualTitleBarValueSyncService)">
             <summary>
             Builds and wires title-bar controls for visual panels, including visibility toggles and anchor popup behavior.
             </summary>
+            <param name="anchorPopupBuilder">Builder that creates and configures the anchor popup UI.</param>
+            <param name="columnVisibilityController">Service that applies mutable/readonly/method visibility rules.</param>
+            <param name="valueSyncService">Service that syncs readonly values into mutable controls.</param>
         </member>
         <member name="M:GodotUtils.Debugging.VisualTitleBarControlComponent.Build(GodotUtils.Debugging.VisualTitleBarBuildRequest)">
             <summary>
@@ -1969,6 +2029,13 @@
             <param name="expectedType">Expected runtime type.</param>
             <returns>Converted value.</returns>
         </member>
+        <member name="M:GodotUtils.Debugging.VisualDictionaryValueConverter.ConvertVariant(System.Object)">
+            <summary>
+            Converts common CLR and Godot values into a <see cref="T:Godot.Variant"/> payload.
+            </summary>
+            <param name="value">Source value to convert.</param>
+            <returns>Equivalent variant value.</returns>
+        </member>
         <member name="T:GodotUtils.Debugging.MemberControlBinding">
             <summary>
             Binds a reflected member to its visual control and editability state.
@@ -2057,15 +2124,51 @@
             </summary>
             <param name="editable">Whether the control is editable.</param>
         </member>
+        <member name="M:GodotUtils.Debugging.ColorPickerButtonControl.OnTreeEntered">
+            <summary>
+            Recomputes control modulation when the picker enters the tree to keep the displayed color accurate.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ColorPickerButtonControl.OnTreeExited">
+            <summary>
+            Detaches temporary tree event handlers when the picker exits the tree.
+            </summary>
+        </member>
+        <member name="M:GodotUtils.Debugging.ColorPickerButtonControl.GetInheritedTint(Godot.Node)">
+            <summary>
+            Accumulates inherited modulation tint from parent <see cref="T:Godot.CanvasItem"/> nodes.
+            </summary>
+            <param name="node">Node whose parent chain is inspected.</param>
+            <returns>Combined tint color inherited from ancestors.</returns>
+        </member>
+        <member name="M:GodotUtils.Debugging.ColorPickerButtonControl.InvertTint(Godot.Color)">
+            <summary>
+            Inverts tint channels so the picker can neutralize inherited modulation.
+            </summary>
+            <param name="tint">Tint to invert.</param>
+            <returns>Inverted tint with alpha forced to 1.</returns>
+        </member>
         <member name="T:GodotUtils.Debugging.VisualDictionaryControlProvider">
             <summary>
             Builds dictionary controls using adapter-based access for typed and untyped dictionary variants.
             </summary>
+            <param name="adapterFactory">Factory that creates dictionary adapters for runtime dictionary instances.</param>
+            <param name="keyResolver">Resolver used to parse and validate key input from UI controls.</param>
+            <param name="displayOrderTrackerFactory">Factory for stable dictionary entry display-order tracking.</param>
+            <param name="createControlForType">Factory that builds value controls for runtime types.</param>
+            <param name="createDefaultValue">Factory that creates default key/value instances for add-entry flows.</param>
+            <param name="cleanupOnTreeExited">Callback used to register cleanup when controls leave the scene tree.</param>
         </member>
         <member name="M:GodotUtils.Debugging.VisualDictionaryControlProvider.#ctor(GodotUtils.Debugging.IVisualDictionaryAdapterFactory,GodotUtils.Debugging.IVisualDictionaryKeyResolver,GodotUtils.Debugging.IVisualDictionaryDisplayOrderTrackerFactory,System.Func{System.Type,GodotUtils.Debugging.VisualControlContext,GodotUtils.Debugging.VisualControlInfo},System.Func{System.Type,System.Object},System.Action{Godot.Node,System.Action})">
             <summary>
             Builds dictionary controls using adapter-based access for typed and untyped dictionary variants.
             </summary>
+            <param name="adapterFactory">Factory that creates dictionary adapters for runtime dictionary instances.</param>
+            <param name="keyResolver">Resolver used to parse and validate key input from UI controls.</param>
+            <param name="displayOrderTrackerFactory">Factory for stable dictionary entry display-order tracking.</param>
+            <param name="createControlForType">Factory that builds value controls for runtime types.</param>
+            <param name="createDefaultValue">Factory that creates default key/value instances for add-entry flows.</param>
+            <param name="cleanupOnTreeExited">Callback used to register cleanup when controls leave the scene tree.</param>
         </member>
         <member name="M:GodotUtils.Debugging.VisualDictionaryControlProvider.CreateControl(System.Type,GodotUtils.Debugging.VisualControlContext)">
             <summary>
@@ -2631,11 +2734,19 @@
             <summary>
             Stores visualization state and callbacks for a tracked scene node.
             </summary>
+            <param name="actions">Per-frame actions that refresh displayed values.</param>
+            <param name="anchorNode">Original node whose values are being visualized.</param>
+            <param name="visualRoot">Root node for generated visualization content.</param>
+            <param name="updatePosition">Callback that updates visualization position to follow its anchor.</param>
         </member>
         <member name="M:GodotUtils.Debugging.VisualNodeInfo.#ctor(System.Collections.Generic.IReadOnlyList{System.Action},Godot.Node,Godot.Node,System.Action)">
             <summary>
             Stores visualization state and callbacks for a tracked scene node.
             </summary>
+            <param name="actions">Per-frame actions that refresh displayed values.</param>
+            <param name="anchorNode">Original node whose values are being visualized.</param>
+            <param name="visualRoot">Root node for generated visualization content.</param>
+            <param name="updatePosition">Callback that updates visualization position to follow its anchor.</param>
         </member>
         <member name="P:GodotUtils.Debugging.VisualNodeInfo.Actions">
             <summary>
