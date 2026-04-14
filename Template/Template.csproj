@@ -24,8 +24,13 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <!-- https://github.com/Cat-Lips/GodotSharp.SourceGenerators -->
         <PackageReference Include="GodotSharp.SourceGenerators" Version="2.7.0-260331-1947.Release" />
-        <PackageReference Include="PacketGen" Version="1.3.24" />
-        <PackageReference Include="Template.OptionsGen" Version="1.0.8" />
+        <PackageReference Include="PacketGen" Version="1.3.25" />
+        <PackageReference Include="Template.OptionsGen" Version="1.0.9" />
+
+        <PackageReference Include="Roslynator.Analyzers" Version="4.15.0">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
 
         <!-- gdUnit4 package dependencies -->
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />

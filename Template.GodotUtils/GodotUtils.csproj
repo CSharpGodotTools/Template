@@ -1,32 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
-		<LangVersion>latest</LangVersion>
-		<ImplicitUsings>disable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<RootNamespace>GodotUtils</RootNamespace>
-		<OutputPath>$(SolutionDir)bin\</OutputPath>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<!-- CS1591: Ignore missing XML comment warnings -->
-		<!-- IDE0130: Ignore invalid namespace name warnings -->
-		<!-- IDE0290: Ignore primary constructor suggestions -->
-		<NoWarn>CS1591;IDE0130;IDE0290;</NoWarn>
-		<!-- <DefineConstants>$(DefineConstants);NETCODE_ENABLED</DefineConstants> -->
-	</PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>GodotUtils</RootNamespace>
+        <OutputPath>$(SolutionDir)bin\</OutputPath>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <!-- CS1591: Ignore missing XML comment warnings -->
+        <!-- IDE0130: Ignore invalid namespace name warnings -->
+        <!-- IDE0290: Ignore primary constructor suggestions -->
+        <NoWarn>CS1591;IDE0130;IDE0290;</NoWarn>
+        <!-- <DefineConstants>$(DefineConstants);NETCODE_ENABLED</DefineConstants> -->
+    </PropertyGroup>
 
-	<ItemGroup>
-		<!-- Conditional ENet package -->
-		<PackageReference Include="ENet-CSharp" Version="2.4.8" Condition="!Exists('ENet-CSharp.dll')" />
-		<!-- JSON support -->
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="GodotSharp" Version="4.6.1" />
-	</ItemGroup>
+    <ItemGroup>
+        <!-- Conditional ENet package -->
+        <PackageReference Include="ENet-CSharp" Version="2.4.8" Condition="!Exists('ENet-CSharp.dll')" />
+        <!-- JSON support -->
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="GodotSharp" Version="4.6.1" />
 
-	<!-- Local ENet DLL -->
-	<ItemGroup>
-		<Reference Include="ENet-CSharp" Condition="Exists('ENet-CSharp.dll')">
-			<HintPath>ENet-CSharp.dll</HintPath>
-		</Reference>
-	</ItemGroup>
+        <PackageReference Include="Roslynator.Analyzers" Version="4.15.0">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <!-- Local ENet DLL -->
+    <ItemGroup>
+        <Reference Include="ENet-CSharp" Condition="Exists('ENet-CSharp.dll')">
+            <HintPath>ENet-CSharp.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 
 </Project>

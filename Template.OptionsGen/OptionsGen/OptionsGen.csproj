@@ -12,7 +12,7 @@
         <NoWarn>NU5128</NoWarn>
 
         <!-- Package Settings -->
-        <Version>1.0.8</Version>
+        <Version>1.0.9</Version>
         <PackageId>Template.OptionsGen</PackageId>
         <AssemblyName>Template.OptionsGen</AssemblyName>
         <Description>Strongly typed options settings source generator for CSharpGodotTools/Template</Description>
@@ -25,6 +25,11 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0" PrivateAssets="all" />
+
+        <PackageReference Include="Roslynator.Analyzers" Version="4.15.0">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
 
         <None Include="..\README.md" Pack="true" PackagePath="\" />
         <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />

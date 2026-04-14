@@ -1,24 +1,29 @@
 <Project Sdk="Godot.NET.Sdk/4.6.2">
-	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
-		<LangVersion>latest</LangVersion>
-		<ImplicitUsings>disable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
-		<EnableDynamicLoading>true</EnableDynamicLoading>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<!-- CS1591: Ignore missing XML comment warnings -->
-		<!-- IDE0130: Ignore invalid namespace name warnings -->
-		<NoWarn>CS1591;IDE0130</NoWarn>
-	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="ENet-CSharp" Version="2.4.8" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-		<PackageReference Include="GodotSharp.SourceGenerators" Version="2.4.0" />
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <!-- CS1591: Ignore missing XML comment warnings -->
+        <!-- IDE0130: Ignore invalid namespace name warnings -->
+        <NoWarn>CS1591;IDE0130</NoWarn>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="ENet-CSharp" Version="2.4.8" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="GodotSharp.SourceGenerators" Version="2.4.0" />
 
-		<Reference Include="GodotUtils">
-			<HintPath>Framework\Libraries\GodotUtils.dll</HintPath>
-		</Reference>
-	</ItemGroup>
+        <Reference Include="GodotUtils">
+            <HintPath>Framework\Libraries\GodotUtils.dll</HintPath>
+        </Reference>
+
+        <PackageReference Include="Roslynator.Analyzers" Version="4.15.0">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
 
 </Project>
