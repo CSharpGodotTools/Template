@@ -65,9 +65,7 @@ internal sealed class VisualDictionaryRowBuilder(
 
             // Ignore no-op key updates.
             if (Equals(v, currentKey))
-            {
                 return;
-            }
 
             IVisualDictionaryAdapter adapter = _getAdapter();
             object resolvedKey = v;
@@ -99,9 +97,7 @@ internal sealed class VisualDictionaryRowBuilder(
 
             // Sync UI when the resolver adjusted the key.
             if (keyWasAutoAdjusted)
-            {
                 keyControlInfo?.VisualControl?.SetValue(currentKey);
-            }
 
             valueControl.VisualControl?.SetValue(_typeInfo.DefaultValue);
         }));
@@ -110,9 +106,7 @@ internal sealed class VisualDictionaryRowBuilder(
 
         // Abort when the key or value control is unsupported.
         if (keyControl.VisualControl == null || valueControl.VisualControl == null)
-        {
             return;
-        }
 
         bool isEditable = _getIsEditable();
         keyControl.VisualControl.SetValue(currentKey);
@@ -127,9 +121,7 @@ internal sealed class VisualDictionaryRowBuilder(
         {
             // Guard against removal when locked.
             if (!_getIsEditable())
-            {
                 return;
-            }
 
             dictionaryVBox.RemoveChild(row);
             row.QueueFree();

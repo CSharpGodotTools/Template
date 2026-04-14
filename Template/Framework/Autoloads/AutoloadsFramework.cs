@@ -63,11 +63,6 @@ public abstract partial class AutoloadsFramework : Node
     public SceneManager SceneManager { get; private set; } = null!;
 
     /// <summary>
-    /// Gets the profiler used to capture and publish timing data.
-    /// </summary>
-    public Profiler Profiler { get; private set; } = null!;
-
-    /// <summary>
     /// Gets the manager that renders focus outlines for UI controls.
     /// </summary>
     public FocusOutlineManager FocusOutline { get; private set; } = null!;
@@ -137,7 +132,6 @@ public abstract partial class AutoloadsFramework : Node
         MetricsOverlay metricsOverlay = new();
         Metrics = metricsOverlay;
         AddChild(metricsOverlay);
-        Profiler = new Profiler();
         GameConsole = GetNode<GameConsole>("%Console");
         FocusOutline = new FocusOutlineManager(this);
         Logger = new Logger(GameConsole);
@@ -157,7 +151,6 @@ public abstract partial class AutoloadsFramework : Node
             OptionsManager,
             Metrics,
             SceneManager,
-            Profiler,
             Services,
             FocusOutline,
             Logger,
@@ -209,9 +202,7 @@ public abstract partial class AutoloadsFramework : Node
     {
         // Route window-close notifications to graceful shutdown flow.
         if (what == NotificationWMCloseRequest)
-        {
             BackgroundTasks.Run(_ => ExitGame(), "Autoloads.ExitGame");
-        }
 
         Notification(what);
     }

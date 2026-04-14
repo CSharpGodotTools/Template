@@ -150,9 +150,7 @@ public partial class GameClient : GodotClient
         {
             // Keep only remote peers in the remote position cache.
             if (entry.Key != localId)
-            {
                 _remotePositions[entry.Key] = entry.Value;
-            }
         }
 
         // Pass the internal dictionary directly — callers must not retain the reference.

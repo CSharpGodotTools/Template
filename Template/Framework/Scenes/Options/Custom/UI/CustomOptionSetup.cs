@@ -35,46 +35,46 @@ internal static class CustomOptionSetup
     }
 
     // Event handlers for runtime registration
-            /// <summary>
-            /// Handles slider registration after runtime option additions.
-            /// </summary>
-            /// <param name="c">Custom options UI owner.</param>
-            /// <param name="s">Registered slider option.</param>
+    /// <summary>
+    /// Handles slider registration after runtime option additions.
+    /// </summary>
+    /// <param name="c">Custom options UI owner.</param>
+    /// <param name="s">Registered slider option.</param>
     public static void OnSliderRegistered(OptionsCustom c, RegisteredSliderOption s) => AddOrReplace(c, new CustomOptionDescriptor(s));
 
-            /// <summary>
-            /// Handles dropdown registration after runtime option additions.
-            /// </summary>
-            /// <param name="c">Custom options UI owner.</param>
-            /// <param name="d">Registered dropdown option.</param>
+    /// <summary>
+    /// Handles dropdown registration after runtime option additions.
+    /// </summary>
+    /// <param name="c">Custom options UI owner.</param>
+    /// <param name="d">Registered dropdown option.</param>
     public static void OnDropdownRegistered(OptionsCustom c, RegisteredDropdownOption d) => AddOrReplace(c, new CustomOptionDescriptor(d));
 
-            /// <summary>
-            /// Handles line-edit registration after runtime option additions.
-            /// </summary>
-            /// <param name="c">Custom options UI owner.</param>
-            /// <param name="l">Registered line-edit option.</param>
+    /// <summary>
+    /// Handles line-edit registration after runtime option additions.
+    /// </summary>
+    /// <param name="c">Custom options UI owner.</param>
+    /// <param name="l">Registered line-edit option.</param>
     public static void OnLineEditRegistered(OptionsCustom c, RegisteredLineEditOption l) => AddOrReplace(c, new CustomOptionDescriptor(l));
 
-            /// <summary>
-            /// Handles toggle registration after runtime option additions.
-            /// </summary>
-            /// <param name="c">Custom options UI owner.</param>
-            /// <param name="t">Registered toggle option.</param>
+    /// <summary>
+    /// Handles toggle registration after runtime option additions.
+    /// </summary>
+    /// <param name="c">Custom options UI owner.</param>
+    /// <param name="t">Registered toggle option.</param>
     public static void OnToggleRegistered(OptionsCustom c, RegisteredToggleOption t) => AddOrReplace(c, new CustomOptionDescriptor(t));
 
-            /// <summary>
-            /// Handles right-control registration after runtime additions.
-            /// </summary>
-            /// <param name="c">Custom options UI owner.</param>
-            /// <param name="r">Registered right-control definition.</param>
+    /// <summary>
+    /// Handles right-control registration after runtime additions.
+    /// </summary>
+    /// <param name="c">Custom options UI owner.</param>
+    /// <param name="r">Registered right-control definition.</param>
     public static void OnRightControlRegistered(OptionsCustom c, RegisteredRightControl r) => AddOrReplaceRightControl(c, r);
 
-            /// <summary>
-            /// Adds or replaces a custom option row binding.
-            /// </summary>
-            /// <param name="custom">Custom options UI owner.</param>
-            /// <param name="option">Descriptor for option to bind.</param>
+    /// <summary>
+    /// Adds or replaces a custom option row binding.
+    /// </summary>
+    /// <param name="custom">Custom options UI owner.</param>
+    /// <param name="option">Descriptor for option to bind.</param>
     private static void AddOrReplace(OptionsCustom custom, CustomOptionDescriptor option)
     {
         // Skip registration when target tab/button cannot be resolved.

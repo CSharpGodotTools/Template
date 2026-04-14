@@ -42,9 +42,7 @@ internal sealed class OptionsHotkeysService
 
         // Report save failures for troubleshooting user storage permissions.
         if (error != Error.Ok)
-        {
             GD.Print($"Failed to save hotkeys: {error}");
-        }
     }
 
     /// <summary>
@@ -60,9 +58,7 @@ internal sealed class OptionsHotkeysService
             Godot.Collections.Array<InputEvent> clonedEvents = [];
 
             foreach (InputEvent item in _defaultHotkeys[element.Key])
-            {
                 clonedEvents.Add((InputEvent)item.Duplicate());
-            }
 
             _hotkeys.Actions.Add(element.Key, clonedEvents);
         }
@@ -79,18 +75,14 @@ internal sealed class OptionsHotkeysService
         Godot.Collections.Array<StringName> actions = InputMap.GetActions();
 
         foreach (StringName action in actions)
-        {
             InputMap.EraseAction(action);
-        }
 
         foreach (StringName action in hotkeys.Keys)
         {
             InputMap.AddAction(action);
 
             foreach (InputEvent @event in hotkeys[action])
-            {
                 InputMap.ActionAddEvent(action, @event);
-            }
         }
     }
 
@@ -106,10 +98,7 @@ internal sealed class OptionsHotkeysService
         {
             actions.Add(action, []);
 
-            foreach (InputEvent actionEvent in InputMap.ActionGetEvents(action))
-            {
-                actions[action].Add(actionEvent);
-            }
+            actions[action].AddRange(InputMap.ActionGetEvents(action));
         }
 
         _defaultHotkeys = actions;

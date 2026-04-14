@@ -56,9 +56,7 @@ internal sealed class ColorPickerButtonControl : IVisualControl
     {
         // Only apply updates when a color value is provided.
         if (value is Color color)
-        {
             _colorPickerButton.Color = color;
-        }
     }
 
     /// <summary>

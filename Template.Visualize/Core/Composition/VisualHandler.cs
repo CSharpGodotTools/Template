@@ -54,7 +54,7 @@ internal static class VisualHandler
 
             MethodInfo? setter = property.SetMethod;
             // Static setters do not require an instance target.
-            if (setter != null && setter.IsStatic)
+            if (setter?.IsStatic == true)
             {
                 property.SetValue(null, convertedValue);
             }
@@ -104,23 +104,17 @@ internal static class VisualHandler
     {
         // Missing member metadata yields default immediately.
         if (member == null)
-        {
             return default;
-        }
 
         object? value = GetMemberValue(member, node);
 
         // Null values map to default generic result.
         if (value == null)
-        {
             return default;
-        }
 
         // Support float-to-double adaptation for numeric UI controls.
         if (value is float floatValue && typeof(T) == typeof(double))
-        {
             return (T)(object)Convert.ToDouble(floatValue);
-        }
 
         return (T)value;
     }
@@ -134,7 +128,7 @@ internal static class VisualHandler
     /// <exception cref="ArgumentException">Thrown when member is neither field nor property.</exception>
     public static object? GetMemberValue(MemberInfo member, object? obj)
     {
-        return (member switch
+        return member switch
         {
             FieldInfo fieldInfo when fieldInfo.IsStatic => fieldInfo.GetValue(null),
             FieldInfo fieldInfo => fieldInfo.GetValue(obj),
@@ -143,7 +137,7 @@ internal static class VisualHandler
             PropertyInfo propertyInfo => propertyInfo.GetValue(obj),
 
             _ => throw new ArgumentException(MemberTypeErrorMessage)
-        });
+        };
     }
 
     /// <summary>
@@ -156,15 +150,11 @@ internal static class VisualHandler
     {
         // Preserve null assignments for nullable/reference targets.
         if (value == null)
-        {
             return null;
-        }
 
         // Skip conversion when value already matches target type.
         if (targetType.IsInstanceOfType(value))
-        {
             return value;
-        }
 
         return Convert.ChangeType(value, targetType);
     }

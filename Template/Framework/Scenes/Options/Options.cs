@@ -135,9 +135,7 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
 
                 // Skip animation when popup was closed or freed before the next frame.
                 if (!IsInstanceValid(popup) || !popup.Visible)
-                {
                     return;
-                }
 
                 AnimatePopupIn(popup);
             };

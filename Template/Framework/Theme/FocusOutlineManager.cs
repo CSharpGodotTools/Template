@@ -62,7 +62,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         _time += (float)delta;
 
         // Alpha pulse
-        float t = Mathf.Sin(_time * _flashSpeed) * 0.5f + 0.5f;
+        float t = (Mathf.Sin(_time * _flashSpeed) * 0.5f) + 0.5f;
         float alpha = Mathf.Lerp(_minAlpha, _maxAlpha, t);
 
         // Modulate
@@ -73,7 +73,7 @@ public partial class FocusOutlineManager(Node owner) : Component(owner)
         // Position and size match the focused control, with padding
         Vector2 padding = new(1, 1);
         _outline.GlobalPosition = _currentFocus.GlobalPosition - padding;
-        _outline.Size = _currentFocus.Size + padding * 2;
+        _outline.Size = _currentFocus.Size + (padding * 2);
     }
 
     protected override void ExitTree()

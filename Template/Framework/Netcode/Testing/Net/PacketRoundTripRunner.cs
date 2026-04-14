@@ -63,9 +63,7 @@ public static class PacketRoundTripRunner
 
         // Emit timing output only when receive latency was successfully captured.
         if (receiveMs >= 0)
-        {
             TestOutput.Timing("Packet received", receiveMs);
-        }
 
         AssertBool(expected.Equals(capture.Packet)).IsTrue();
     }

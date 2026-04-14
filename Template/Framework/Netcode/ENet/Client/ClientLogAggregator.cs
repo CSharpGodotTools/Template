@@ -71,24 +71,18 @@ internal sealed class ClientLogAggregator : EventLogAggregator
 
         // Exit early when no lifecycle events were captured.
         if (connectedSnapshot == 0 && disconnectedSnapshot == 0 && timeoutSnapshot == 0)
-        {
             return;
-        }
 
         long windowStartTicks = Interlocked.Read(ref _eventWindowStartTicks);
         long eventLastTicks = Interlocked.Read(ref _eventLastEventTicks);
 
         // Skip emitting until burst thresholds are reached unless a forced flush is requested.
         if (!ShouldFlush(windowStartTicks, eventLastTicks, out double windowSeconds) && !force)
-        {
             return;
-        }
 
         // Try to claim ownership of flushing
         if (!force && Interlocked.CompareExchange(ref _eventLastEventTicks, 0, eventLastTicks) != eventLastTicks)
-        {
             return;
-        }
 
         int connects = Interlocked.Exchange(ref _connectedCount, 0);
         int disconnects = Interlocked.Exchange(ref _disconnectedCount, 0);
@@ -102,9 +96,7 @@ internal sealed class ClientLogAggregator : EventLogAggregator
 
         // Reset last-event marker when flush was forced.
         if (force)
-        {
             Interlocked.Exchange(ref _eventLastEventTicks, 0);
-        }
 
         Interlocked.CompareExchange(ref _eventWindowStartTicks, 0, windowStartTicks);
 
@@ -113,21 +105,15 @@ internal sealed class ClientLogAggregator : EventLogAggregator
 
         // Emit connect summary when one or more connect events were captured.
         if (connects > 0)
-        {
             logEntries.Add(new LogEntry { Tick = lastConnectTicks, LogAction = () => log(FormatConnectMessage(connects, lastConnectPeerId, reportSeconds)) });
-        }
 
         // Emit disconnect summary when one or more disconnect events were captured.
         if (disconnects > 0)
-        {
             logEntries.Add(new LogEntry { Tick = lastDisconnectTicks, LogAction = () => log(FormatDisconnectMessage(disconnects, lastDisconnectPeerId, reportSeconds)) });
-        }
 
         // Emit timeout summary when one or more timeout events were captured.
         if (timeouts > 0)
-        {
             logEntries.Add(new LogEntry { Tick = lastTimeoutTicks, LogAction = () => log(FormatTimeoutMessage(timeouts, lastTimeoutPeerId, reportSeconds)) });
-        }
 
         EmitLogEntries(logEntries);
     }
@@ -160,9 +146,7 @@ internal sealed class ClientLogAggregator : EventLogAggregator
         {
             // Include peer id when available.
             if (peerId > 0)
-            {
                 return $"Connected to server as peer {peerId}";
-            }
 
             return "Connected to server";
         }
@@ -184,9 +168,7 @@ internal sealed class ClientLogAggregator : EventLogAggregator
         {
             // Include peer id when available.
             if (peerId > 0)
-            {
                 return $"Disconnected from server (peer {peerId})";
-            }
 
             return "Disconnected from server";
         }

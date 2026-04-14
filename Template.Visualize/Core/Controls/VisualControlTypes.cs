@@ -62,11 +62,9 @@ internal static partial class VisualControlTypes
             _ => new VisualControlInfo(null)
         };
 
-            // Return an unsupported control placeholder when no visual control was created.
+        // Return an unsupported control placeholder when no visual control was created.
         if (info.VisualControl == null)
-        {
             PrintUtils.Warning($"[Visualize] The type '{type.Namespace}.{type.Name}' is not supported for the {nameof(VisualizeAttribute)}");
-        }
 
         return info;
     }

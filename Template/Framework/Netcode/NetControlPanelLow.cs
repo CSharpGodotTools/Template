@@ -100,10 +100,8 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     public override void _Process(double delta)
     {
         // Pump client packets each frame only while a client instance exists.
-        if (Net != null && Net.Client != null)
-        {
+        if (Net?.Client != null)
             Net.Client.HandlePackets();
-        }
     }
 
     public override void _ExitTree()
@@ -216,9 +214,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     {
         // Accept usernames only when characters are alphanumeric.
         if (text.IsAlphaNumeric())
-        {
             _username = text;
-        }
     }
 
     /// <summary>
@@ -248,9 +244,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     {
         // Replace prior client subscription before wiring a new one.
         if (_subscribedClient != null)
-        {
             UnsubscribeFromClient(_subscribedClient);
-        }
 
         // Subscribe only when a valid client instance is provided.
         if (client != null)
@@ -276,9 +270,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 
         // Clear tracking only when unsubscribing the currently tracked client.
         if (_subscribedClient == client)
-        {
             _subscribedClient = null;
-        }
     }
 
     /// <summary>
@@ -288,9 +280,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     {
         // Lock server controls when client connected to a remote host.
         if (!Net!.Server.IsRunning)
-        {
             DisableServerButtons();
-        }
 
         GetTree().UnfocusCurrentControl();
     }
@@ -335,9 +325,7 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
 
         // Apply parsed port only when host:port format includes a valid port.
         if (addressParts.Length > 1 && ushort.TryParse(addressParts[1], out ushort parsedPort))
-        {
             port = parsedPort;
-        }
 
         return ip;
     }

@@ -40,9 +40,7 @@ public static class CodeHighlighterFactory
 
         // Apply a consistent keyword color map for basic C# token highlighting.
         foreach (string keyword in keywords)
-        {
             editor.KeywordColors.Add(keyword, new Color(LightLilac));
-        }
 
         return editor;
     }

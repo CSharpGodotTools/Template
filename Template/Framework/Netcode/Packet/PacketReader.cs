@@ -214,39 +214,27 @@ public class PacketReader : IDisposable
 
         // Handle primitive-like built-in values directly.
         if (IsPrimitiveLike(type))
-        {
             return ReadPrimitive<T>(type);
-        }
 
         // Handle Godot Vector2 values with dedicated read helpers.
         if (type == typeof(Vector2))
-        {
             return (T)(object)ReadVector2();
-        }
 
         // Handle Godot Vector3 values with dedicated read helpers.
         if (type == typeof(Vector3))
-        {
             return (T)(object)ReadVector3();
-        }
 
         // Handle System.Numerics Vector2 values with dedicated read helpers.
         if (type == typeof(SysVector2))
-        {
             return (T)(object)ReadVector2Numerics();
-        }
 
         // Delegate supported generic collections to specialized readers.
         if (type.IsGenericType)
-        {
             return ReadGeneric<T>(type);
-        }
 
         // Deserialize enum values via their underlying primitive type.
         if (type.IsEnum)
-        {
             return ReadEnum<T>();
-        }
 
         // Read arrays by deserializing each element.
         if (type.IsArray)
@@ -257,9 +245,7 @@ public class PacketReader : IDisposable
 
         // Fallback to member-wise reflection for structs and classes.
         if (type.IsValueType || type.IsClass)
-        {
             return ReadStructOrClass<T>(type);
-        }
 
         throw new NotImplementedException($"PacketReader: {type} is not a supported type.");
     }
@@ -339,15 +325,11 @@ public class PacketReader : IDisposable
 
         // Read list-like collections as count-prefixed sequences.
         if (genericDefinition == typeof(IList<>) || genericDefinition == typeof(List<>))
-        {
             return ReadList<T>(genericType);
-        }
 
         // Read dictionary-like collections as count-prefixed key/value entries.
         if (genericDefinition == typeof(IDictionary<,>) || genericDefinition == typeof(Dictionary<,>))
-        {
             return ReadDictionary<T>(genericType);
-        }
 
         throw new NotImplementedException($"PacketReader: {genericType} is not a supported generic type.");
     }
@@ -365,9 +347,7 @@ public class PacketReader : IDisposable
 
         int count = ReadInt();
         for (int index = 0; index < count; index++)
-        {
             list.Add(Read(valueType));
-        }
 
         return (T)list;
     }
@@ -405,9 +385,7 @@ public class PacketReader : IDisposable
         int count = ReadInt();
         Array array = Array.CreateInstance(elementType, count);
         for (int index = 0; index < count; index++)
-        {
             array.SetValue(Read(elementType), index);
-        }
 
         return array;
     }
@@ -424,14 +402,10 @@ public class PacketReader : IDisposable
         PacketMemberMap members = GetMembersForStructOrClass(type);
 
         foreach (FieldInfo field in members.Fields)
-        {
             field.SetValue(instance, Read(field.FieldType));
-        }
 
         foreach (PropertyInfo property in members.Properties)
-        {
             property.SetValue(instance, Read(property.PropertyType));
-        }
 
         return (T)instance;
     }

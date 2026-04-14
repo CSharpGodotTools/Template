@@ -218,9 +218,7 @@ public class PacketWriter : IDisposable
         Write(array.Length);
 
         foreach (object item in array)
-        {
             Write(item);
-        }
     }
 
     /// <summary>
@@ -258,9 +256,7 @@ public class PacketWriter : IDisposable
         Write(list.Count);
 
         foreach (object item in list)
-        {
             Write(item);
-        }
     }
 
     /// <summary>
@@ -289,14 +285,10 @@ public class PacketWriter : IDisposable
         PacketMemberMap members = GetMembersForStructOrClass(valueType);
 
         foreach (FieldInfo field in members.Fields)
-        {
             Write(field.GetValue(value));
-        }
 
         foreach (PropertyInfo property in members.Properties)
-        {
             Write(property.GetValue(value));
-        }
     }
 
     /// <summary>

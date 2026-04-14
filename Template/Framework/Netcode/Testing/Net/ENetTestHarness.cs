@@ -71,9 +71,7 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
 
         // Abort connect flow when server did not reach running state in time.
         if (!serverRunning)
-        {
             return false;
-        }
 
         // Keep the connect task so disposal can await outstanding connection work.
         Console.WriteLine("[Test] Starting client...");
@@ -96,9 +94,7 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
     {
         // Print packet-send diagnostics when requested by caller.
         if (log)
-        {
             Console.WriteLine($"[Test] Sending packet {packet.GetType().Name}...");
-        }
 
         Client.Send(packet);
     }
@@ -111,21 +107,15 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
     {
         // Stop client before waiting for final shutdown state.
         if (Client.IsRunning)
-        {
             Client.Stop();
-        }
 
         // Stop server before waiting for final shutdown state.
         if (Server.IsRunning)
-        {
             Server.Stop();
-        }
 
         // Await outstanding connect task to avoid orphaned background work.
         if (ConnectTask != null)
-        {
             await ConnectTask;
-        }
 
         await WaitForStoppedAsync("client", () => Client.IsRunning, _shutdownTimeout);
         await WaitForStoppedAsync("server", () => Server.IsRunning, _shutdownTimeout);
@@ -148,9 +138,7 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
         {
             // Return immediately once client reports connected.
             if (client.IsConnected)
-            {
                 return true;
-            }
 
             await Task.Delay(10);
         }
@@ -172,9 +160,7 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
         {
             // Return immediately once endpoint reports running.
             if (enet.IsRunning)
-            {
                 return true;
-            }
 
             await Task.Delay(10);
         }
@@ -194,15 +180,11 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
         Stopwatch stopwatch = Stopwatch.StartNew();
 
         while (isRunning() && stopwatch.Elapsed < timeout)
-        {
             await Task.Delay(ShutdownPollIntervalMs);
-        }
 
         // Warn when endpoint remains running after timeout window.
         if (isRunning())
-        {
             Console.WriteLine($"[Test] Warning: {name} did not stop within {timeout.TotalSeconds:0.##}s");
-        }
     }
 
     /// <summary>
@@ -212,9 +194,7 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
     {
         // Initialize ENet only on first active harness instance.
         if (Interlocked.Increment(ref _enetRefCount) == 1)
-        {
             ENet.Library.Initialize();
-        }
     }
 
     /// <summary>
@@ -224,8 +204,6 @@ public sealed class ENetTestHarness<TPacket> : IAsyncDisposable
     {
         // Deinitialize ENet after the last harness is released.
         if (Interlocked.Decrement(ref _enetRefCount) == 0)
-        {
             ENet.Library.Deinitialize();
-        }
     }
 }

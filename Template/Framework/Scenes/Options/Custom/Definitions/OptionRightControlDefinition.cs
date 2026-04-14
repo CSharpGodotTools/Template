@@ -8,12 +8,6 @@ namespace __TEMPLATE__.Ui;
 /// </summary>
 public sealed class OptionRightControlDefinition
 {
-    private readonly string _tab;
-    private readonly string _targetLabel;
-    private readonly string _name;
-    private readonly Func<Control, Control> _createControl;
-    private readonly Action<Control, Control>? _onAttached;
-    private readonly Action<Control, Control>? _onDetaching;
 
     /// <summary>
     /// Initializes a right-control definition.
@@ -32,41 +26,41 @@ public sealed class OptionRightControlDefinition
         Action<Control, Control>? onAttached = null,
         Action<Control, Control>? onDetaching = null)
     {
-        _tab = tab;
-        _targetLabel = targetLabel;
-        _name = name;
-        _createControl = createControl;
-        _onAttached = onAttached;
-        _onDetaching = onDetaching;
+        Tab = tab;
+        TargetLabel = targetLabel;
+        Name = name;
+        CreateControl = createControl;
+        OnAttached = onAttached;
+        OnDetaching = onDetaching;
     }
 
     /// <summary>
     /// Gets target tab name.
     /// </summary>
-    public string Tab => _tab;
+    public string Tab { get; }
 
     /// <summary>
     /// Gets target option label.
     /// </summary>
-    public string TargetLabel => _targetLabel;
+    public string TargetLabel { get; }
 
     /// <summary>
     /// Gets right control name.
     /// </summary>
-    public string Name => _name;
+    public string Name { get; }
 
     /// <summary>
     /// Gets control factory delegate.
     /// </summary>
-    public Func<Control, Control> CreateControl => _createControl;
+    public Func<Control, Control> CreateControl { get; }
 
     /// <summary>
     /// Gets callback invoked after control attachment.
     /// </summary>
-    public Action<Control, Control>? OnAttached => _onAttached;
+    public Action<Control, Control>? OnAttached { get; }
 
     /// <summary>
     /// Gets callback invoked before control detaches.
     /// </summary>
-    public Action<Control, Control>? OnDetaching => _onDetaching;
+    public Action<Control, Control>? OnDetaching { get; }
 }

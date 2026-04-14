@@ -106,7 +106,7 @@ internal sealed class PacketTests
     [Test]
     public void GeneratedSource_CompilesIntoAssembly()
     {
-        string className = "CSimplePacket";
+        const string className = "CSimplePacket";
         string testCode = $$"""
         using {{PacketGenTestConstants.PacketNamespace}};
 

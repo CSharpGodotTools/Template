@@ -44,16 +44,12 @@ public static class JsonExceptionHandler
             errorMessage.AppendLine();
 
             for (int i = startLine; i < lineIndex; i++)
-            {
                 errorMessage.AppendLine(lines[i]);
-            }
 
             errorMessage.AppendLine($"{problematicLine} <--- Syntax error could be on this line or the next line");
 
             for (int i = lineIndex + 1; i < endLine; i++)
-            {
                 errorMessage.AppendLine(lines[i]);
-            }
 
             GD.Print(errorMessage);
         }

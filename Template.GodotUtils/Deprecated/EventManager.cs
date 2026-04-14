@@ -97,15 +97,11 @@ public class EventManager<TEvent> where TEvent : notnull
     {
         // Unknown event types simply have no listeners to notify.
         if (!_eventListeners.TryGetValue(eventType, out List<Listener>? value))
-        {
             return;
-        }
 
         // Iterate snapshot to avoid collection-modified issues during callbacks.
         foreach (Listener listener in value.ToList()) // if ToList() is not here then issue #137 will occur
-        {
             ((Action<object[]>)listener.Action)(args);
-        }
     }
 
     /// <summary>

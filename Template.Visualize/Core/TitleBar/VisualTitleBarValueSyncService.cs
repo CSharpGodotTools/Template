@@ -24,9 +24,7 @@ internal sealed class VisualTitleBarValueSyncService : IVisualTitleBarValueSyncS
 
             // Skip rows where either side cannot provide a value control.
             if (mutableValueControl == null || readonlyValueControl == null)
-            {
                 continue;
-            }
 
             CopyControlValues(readonlyValueControl, mutableValueControl);
         }
@@ -108,9 +106,7 @@ internal sealed class VisualTitleBarValueSyncService : IVisualTitleBarValueSyncS
         {
             // Recurse only when both child nodes are controls.
             if (source.GetChild(i) is Control sourceChild && target.GetChild(i) is Control targetChild)
-            {
                 CopyControlValues(sourceChild, targetChild);
-            }
         }
     }
 }

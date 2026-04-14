@@ -109,9 +109,7 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
     {
         // Return to main menu when the cancel action is pressed.
         if (Input.IsActionJustPressed(InputActions.UICancel))
-        {
             _sceneManager.SwitchToMainMenu();
-        }
     }
 
     // Private Methods
@@ -173,6 +171,6 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
     /// </summary>
     private static void OnOpenModsFolderPressed()
     {
-        Process.Start(new ProcessStartInfo(@$"{ProjectSettings.GlobalizePath("res://Mods")}") { UseShellExecute = true });
+        Process.Start(new ProcessStartInfo($"{ProjectSettings.GlobalizePath("res://Mods")}") { UseShellExecute = true });
     }
 }

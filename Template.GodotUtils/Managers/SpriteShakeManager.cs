@@ -72,13 +72,9 @@ public class SpriteShakeManager
     private void SetVerticalOffset(float offsetY)
     {
         foreach (Sprite2D sprite in _sprites)
-        {
             sprite.Offset = new Vector2(sprite.Offset.X, offsetY);
-        }
 
         foreach (AnimatedSprite2D sprite in _animatedSprites)
-        {
             sprite.Offset = new Vector2(sprite.Offset.X, offsetY);
-        }
     }
 }

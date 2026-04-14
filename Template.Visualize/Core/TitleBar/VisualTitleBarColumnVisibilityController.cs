@@ -103,9 +103,7 @@ internal sealed class VisualTitleBarColumnVisibilityController : IVisualTitleBar
     {
         // Missing toggle means that column is unavailable in this panel.
         if (toggleButton == null)
-        {
             return;
-        }
 
         toggleButton.SelfModulate = isVisible ? Colors.White : Colors.White * ToggleInactiveModulateFactor;
     }
@@ -121,15 +119,11 @@ internal sealed class VisualTitleBarColumnVisibilityController : IVisualTitleBar
         {
             // Ignore rows that do not follow the expected HBox label/value layout.
             if (node is not HBoxContainer row || row.GetChildCount() == 0)
-            {
                 continue;
-            }
 
             // Toggle the first label when present.
             if (row.GetChild(0) is Label label)
-            {
                 label.Visible = visible;
-            }
         }
     }
 
@@ -144,9 +138,7 @@ internal sealed class VisualTitleBarColumnVisibilityController : IVisualTitleBar
         {
             // Only canvas items participate in render visibility toggling.
             if (child is CanvasItem canvasItem)
-            {
                 canvasItem.Visible = visible;
-            }
         }
     }
 
@@ -161,9 +153,7 @@ internal sealed class VisualTitleBarColumnVisibilityController : IVisualTitleBar
         {
             // Skip nodes that cannot be treated as row controls.
             if (node is not Control row)
-            {
                 continue;
-            }
 
             // Rows without children are shown only when not in labels-only mode.
             if (row.GetChildCount() == 0)
@@ -185,9 +175,7 @@ internal sealed class VisualTitleBarColumnVisibilityController : IVisualTitleBar
             {
                 // Hide non-label canvas children while retaining the label itself.
                 if (row.GetChild(i) is CanvasItem canvasItem)
-                {
                     canvasItem.Visible = !labelsOnly;
-                }
             }
         }
     }
@@ -206,9 +194,7 @@ internal sealed class VisualTitleBarColumnVisibilityController : IVisualTitleBar
         {
             // Skip rows that are not controls.
             if (mutableMembersVbox.GetChild(i) is not Control mutableRow)
-            {
                 continue;
-            }
 
             // In full mode, clear explicit height overrides.
             if (!matchReadonly)
@@ -219,9 +205,7 @@ internal sealed class VisualTitleBarColumnVisibilityController : IVisualTitleBar
 
             // Skip readonly rows that cannot provide a minimum height.
             if (readonlyMembersVbox.GetChild(i) is not Control readonlyRow)
-            {
                 continue;
-            }
 
             float readonlyHeight = readonlyRow.GetCombinedMinimumSize().Y;
             mutableRow.CustomMinimumSize = new Vector2(mutableRow.CustomMinimumSize.X, readonlyHeight);
@@ -239,15 +223,11 @@ internal sealed class VisualTitleBarColumnVisibilityController : IVisualTitleBar
         {
             // Alignment updates only apply to standard HBox row layouts.
             if (node is not HBoxContainer row || row.GetChildCount() == 0)
-            {
                 continue;
-            }
 
             // Rows without a leading label are not part of label alignment adjustments.
             if (row.GetChild(0) is not Label label)
-            {
                 continue;
-            }
 
             row.Alignment = mutableVisible ? BoxContainer.AlignmentMode.Begin : BoxContainer.AlignmentMode.End;
             label.HorizontalAlignment = HorizontalAlignment.Right;

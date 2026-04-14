@@ -20,10 +20,7 @@ internal sealed class PacketFrameworkNamespaceResolver
         string? semanticNamespace = GetPacketFrameworkNamespaceFromSymbols(symbol);
 
         // Prefer semantic resolution when it yields a namespace.
-        if (semanticNamespace is not null)
-            return semanticNamespace;
-
-        return GetPacketFrameworkNamespaceFromSyntax(symbol);
+        return semanticNamespace ?? GetPacketFrameworkNamespaceFromSyntax(symbol);
     }
 
     /// <summary>
@@ -102,7 +99,9 @@ internal sealed class PacketFrameworkNamespaceResolver
             // Match fully-qualified packet base types and strip trailing type name.
             if (baseTypeText.EndsWith("." + PacketGenConstants.ClientPacketTypeName)
                 || baseTypeText.EndsWith("." + PacketGenConstants.ServerPacketTypeName))
+            {
                 return baseTypeText.Substring(0, baseTypeText.LastIndexOf('.'));
+            }
         }
 
         return null;

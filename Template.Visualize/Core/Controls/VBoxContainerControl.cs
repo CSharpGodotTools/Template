@@ -50,29 +50,21 @@ internal sealed class VBoxContainerControl(
     {
         // Composite controls contain multiple input nodes; lock or unlock all descendants.
         if (control is BaseButton button)
-        {
             button.Disabled = !editable;
-        }
 
         // Spin boxes expose editability through the Editable property.
         if (control is SpinBox spinBox)
-        {
             spinBox.Editable = editable;
-        }
 
         // Line edits expose editability through the Editable property.
         if (control is LineEdit lineEdit)
-        {
             lineEdit.Editable = editable;
-        }
 
         foreach (Node child in control.GetChildren())
         {
             // Recurse only into child nodes that are controls.
             if (child is Control childControl)
-            {
                 ApplyEditableRecursive(childControl, editable);
-            }
         }
     }
 }

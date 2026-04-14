@@ -106,9 +106,7 @@ public abstract class ENetLow
         {
             // Stop this poll cycle when there are no more pending events.
             if (!TryGetNextEvent(out Event netEvent, out hasServiced))
-            {
                 break;
-            }
 
             DispatchEvent(netEvent);
         }
@@ -207,9 +205,7 @@ public abstract class ENetLow
     {
         // Omit byte-size decorations when packet-size logging is disabled.
         if (!Options.PrintPacketByteSize)
-        {
             return string.Empty;
-        }
 
         return $"({bytes} byte{(bytes == 1 ? "" : "s")}) ";
     }

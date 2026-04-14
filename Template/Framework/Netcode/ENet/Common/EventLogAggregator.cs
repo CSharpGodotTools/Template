@@ -71,9 +71,7 @@ internal abstract class EventLogAggregator
     {
         // Use singular wording for exactly one event.
         if (count == 1)
-        {
             return $"1 {singular}";
-        }
 
         return $"{count} {singular}s";
     }
@@ -88,9 +86,7 @@ internal abstract class EventLogAggregator
     {
         // Omit duration suffix when there is only a single event.
         if (count == 1)
-        {
             return string.Empty;
-        }
 
         return $" (last {seconds:0.##}s)";
     }
@@ -104,9 +100,7 @@ internal abstract class EventLogAggregator
         entries.Sort(static (left, right) => left.Tick.CompareTo(right.Tick));
 
         foreach (LogEntry entry in entries)
-        {
             entry.LogAction();
-        }
     }
 
     /// <summary>

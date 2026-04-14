@@ -39,9 +39,7 @@ internal sealed class VisualDictionaryAdapterFactory(IVisualDictionaryValueConve
 
         // Fallback to an empty adapter when required members are missing.
         if (indexerProperty == null || containsKeyMethod == null || removeMethod == null)
-        {
             return CreateEmptyAdapter();
-        }
 
         Type indexerKeyType = indexerProperty.GetIndexParameters().Length == 1
             ? indexerProperty.GetIndexParameters()[0].ParameterType
@@ -87,9 +85,7 @@ internal sealed class VisualDictionaryAdapterFactory(IVisualDictionaryValueConve
         {
             // Match the name and expected parameter count.
             if (method.Name == methodName && method.GetParameters().Length == 1)
-            {
                 return method;
-            }
         }
 
         return null;
@@ -103,9 +99,7 @@ internal sealed class VisualDictionaryAdapterFactory(IVisualDictionaryValueConve
     private static IEnumerable<(object Key, object Value)> EnumerateDictionaryEntries(IDictionary dictionary)
     {
         foreach (DictionaryEntry entry in dictionary)
-        {
             yield return (entry.Key, entry.Value!);
-        }
     }
 
     /// <summary>
@@ -117,17 +111,13 @@ internal sealed class VisualDictionaryAdapterFactory(IVisualDictionaryValueConve
     {
         // Stop when the object is not enumerable.
         if (dictionaryObject is not IEnumerable enumerable)
-        {
             yield break;
-        }
 
         foreach (object? entry in enumerable)
         {
             // Skip null entries in the enumeration.
             if (entry == null)
-            {
                 continue;
-            }
 
             // Handle non-generic DictionaryEntry values.
             if (entry is DictionaryEntry dictionaryEntry)
@@ -142,18 +132,14 @@ internal sealed class VisualDictionaryAdapterFactory(IVisualDictionaryValueConve
 
             // Skip entries without key/value properties.
             if (keyProperty == null || valueProperty == null)
-            {
                 continue;
-            }
 
             object? key = keyProperty.GetValue(entry);
             object? value = valueProperty.GetValue(entry);
 
             // Skip entries with null key/value values.
             if (key == null || value == null)
-            {
                 continue;
-            }
 
             yield return (key, value);
         }

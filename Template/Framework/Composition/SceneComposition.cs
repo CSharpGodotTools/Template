@@ -58,9 +58,7 @@ public static class SceneComposition
 
         // Configure only nodes that explicitly accept scene dependencies.
         if (node is ISceneDependencyReceiver receiver)
-        {
             receiver.Configure(services);
-        }
     }
 
     /// <summary>
@@ -73,15 +71,11 @@ public static class SceneComposition
 
         // Exit early when the node does not opt into dependency injection.
         if (node is not ISceneDependencyReceiver receiver)
-        {
             return;
-        }
 
         // Exit early when game-level services are not yet available.
         if (!Game.TryGetServices(out GameServices services))
-        {
             return;
-        }
 
         receiver.Configure(services);
     }

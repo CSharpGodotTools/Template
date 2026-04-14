@@ -36,9 +36,7 @@ internal static partial class VisualControlTypes
                 {
                     // Replace backing list reference when the collection instance changes.
                     if (value is IList nextList)
-                    {
                         list = nextList;
-                    }
                 },
                 context);
         }
@@ -50,9 +48,7 @@ internal static partial class VisualControlTypes
 
         // Fallback path for Godot.Collections.Array<T> and other list-like types without IList.
         if (countProperty == null || indexerProperty == null || addMethod == null || removeAtMethod == null)
-        {
             return new VisualControlInfo(null);
-        }
 
         return CreateIndexedCollectionControl(
             elementType,
@@ -66,9 +62,7 @@ internal static partial class VisualControlTypes
             {
                 // Replace backing object when a non-null list-like value is provided.
                 if (value != null)
-                {
                     listObject = value;
-                }
             },
             context);
     }

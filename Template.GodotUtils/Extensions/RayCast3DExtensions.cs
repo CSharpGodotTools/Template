@@ -20,9 +20,7 @@ public static class RayCast3DExtensions
         {
             // Count each raycast that currently reports a hit.
             if (raycast.IsColliding())
-            {
                 numRaycastsColliding++;
-            }
         }
 
         return numRaycastsColliding;

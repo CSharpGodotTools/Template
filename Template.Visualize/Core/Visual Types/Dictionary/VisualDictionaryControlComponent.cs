@@ -95,9 +95,7 @@ internal sealed class VisualDictionaryControlComponent
         _displayOrderTracker.Seed(entries);
 
         foreach ((object key, object value) in entries)
-        {
             _rowBuilder.AddEntry(_dictionaryVBox, key, value);
-        }
     }
 
     /// <summary>
@@ -107,9 +105,7 @@ internal sealed class VisualDictionaryControlComponent
     {
         // Ignore add requests when editing is disabled.
         if (!_isEditable)
-        {
             return;
-        }
 
         object keyToAdd = _typeInfo.DefaultKey;
 
@@ -158,17 +154,13 @@ internal sealed class VisualDictionaryControlComponent
     {
         // Reconcile stable ordering before rebuilding the UI.
         if (_displayOrderTracker.UseStableOrder)
-        {
             _displayOrderTracker.Reconcile(_adapter.Entries);
-        }
 
         foreach (Node child in _dictionaryVBox.GetChildren())
         {
             // Preserve the add button row.
             if (child == _addButton)
-            {
                 continue;
-            }
 
             _dictionaryVBox.RemoveChild(child);
             child.QueueFree();
@@ -178,9 +170,7 @@ internal sealed class VisualDictionaryControlComponent
         if (!_displayOrderTracker.UseStableOrder)
         {
             foreach ((object key, object value) in _adapter.Entries)
-            {
                 _rowBuilder.AddEntry(_dictionaryVBox, key, value);
-            }
         }
         else
         {
@@ -190,9 +180,7 @@ internal sealed class VisualDictionaryControlComponent
 
                 // Skip keys that no longer exist in the dictionary.
                 if (value == null)
-                {
                     continue;
-                }
 
                 _rowBuilder.AddEntry(_dictionaryVBox, key, value);
             }

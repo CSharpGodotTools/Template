@@ -96,9 +96,7 @@ public static class PacketTimeoutDiagnostics
 
         // Report missing registry members explicitly for timeout triage.
         if (value is null)
-        {
             return $"{memberName}=<missing>.";
-        }
 
         // Dictionaries can report size and packet-type presence details.
         if (value is IDictionary dictionary)
@@ -144,17 +142,13 @@ public static class PacketTimeoutDiagnostics
 
         // Prefer properties before fields when both names are available.
         if (prop != null)
-        {
             return prop.GetValue(null);
-        }
 
         FieldInfo? field = type.GetField(memberName, Flags);
 
         // Fall back to a field lookup for registry data containers.
         if (field != null)
-        {
             return field.GetValue(null);
-        }
 
         return null;
     }

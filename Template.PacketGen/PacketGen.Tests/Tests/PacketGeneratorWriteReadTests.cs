@@ -92,9 +92,7 @@ internal sealed class PacketGeneratorWriteReadTests
     private static void AssignProperties(object target, IReadOnlyList<PropertyCase> properties)
     {
         foreach (PropertyCase property in properties)
-        {
             PacketReflectionHelper.SetProperty(target, property.Name, property.Value);
-        }
     }
 
     /// <summary>

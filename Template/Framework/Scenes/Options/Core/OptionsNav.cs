@@ -49,9 +49,7 @@ public class OptionsNav : IDisposable
         Node content = _options.GetNode("%Content");
 
         foreach (Control child in content.GetChildren().Cast<Control>())
-        {
             _tabs.Add(child.Name, child);
-        }
     }
 
     /// <summary>
@@ -153,9 +151,7 @@ public class OptionsNav : IDisposable
     private void HideAllTabs()
     {
         foreach (Control tab in _tabs.Values)
-        {
             tab.Hide();
-        }
     }
 
     /// <summary>

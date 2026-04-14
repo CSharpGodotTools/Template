@@ -38,11 +38,6 @@ public partial class Game
     public static ISceneService Scene => RuntimeServices.Scene;
 
     /// <summary>
-    /// Gets the global profiler.
-    /// </summary>
-    public static Profiler Profiler => RuntimeServices.Profiler;
-
-    /// <summary>
     /// Gets the scoped services container.
     /// </summary>
     public static Services Services => RuntimeServices.ScopedServices;

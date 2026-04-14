@@ -13,7 +13,6 @@ namespace __TEMPLATE__;
 /// <param name="options">Options service abstraction.</param>
 /// <param name="metrics">Metrics overlay service.</param>
 /// <param name="scene">Scene service abstraction.</param>
-/// <param name="profiler">Profiler service.</param>
 /// <param name="scopedServices">Container for scoped services.</param>
 /// <param name="focusOutline">Focus-outline manager.</param>
 /// <param name="logger">Logger service abstraction.</param>
@@ -26,7 +25,6 @@ public sealed class GameServices(
     IOptionsService options,
     IMetricsOverlay metrics,
     ISceneService scene,
-    Profiler profiler,
     Services scopedServices,
     FocusOutlineManager focusOutline,
     ILoggerService logger,
@@ -62,11 +60,6 @@ public sealed class GameServices(
     /// Scene service abstraction.
     /// </summary>
     public ISceneService Scene { get; } = scene;
-
-    /// <summary>
-    /// Profiler service.
-    /// </summary>
-    public Profiler Profiler { get; } = profiler;
 
     /// <summary>
     /// Scoped services container.

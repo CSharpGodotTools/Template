@@ -43,9 +43,7 @@ public static class PrintExtensions
     {
         // Null collections produce null output.
         if (value == null)
-        {
             return null;
-        }
 
         // Choose multiline or single-line format based on caller preference.
         if (newLine)
@@ -111,9 +109,7 @@ public static class PrintExtensions
 
                 // Ignore properties whose type is a Godot engine type.
                 if (prop.PropertyType != null && (prop.PropertyType == ignoredProp || prop.PropertyType.IsSubclassOf(ignoredProp)))
-                {
                     prop.Ignored = true;
-                }
             }
 
             return prop;

@@ -66,7 +66,7 @@ internal sealed class Visual3DNodeRegistrar
     private static Vector3 CalculateVerticalOffset3D(ICollection<VisualNodeInfo> existingTrackers)
     {
         int current3DPanelCount = existingTrackers.Count(tracker => tracker.VisualRoot is Sprite3D);
-        return new Vector3(0, Base3DHeightOffset + current3DPanelCount * Extra3DHeightPerPanel, 0);
+        return new Vector3(0, Base3DHeightOffset + (current3DPanelCount * Extra3DHeightPerPanel), 0);
     }
 
     /// <summary>
@@ -93,9 +93,7 @@ internal sealed class Visual3DNodeRegistrar
 
         // Fall back to current size when minimum-size metadata has not been established yet.
         if (panelSize == Vector2.Zero)
-        {
             panelSize = visualPanel.Size;
-        }
 
         return panelSize;
     }

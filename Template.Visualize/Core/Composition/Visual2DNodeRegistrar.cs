@@ -37,9 +37,7 @@ internal sealed class Visual2DNodeRegistrar
         {
             // Update panel position only while a valid 2D anchor position is available.
             if (VisualNodeLocator.TryGetGlobalPosition2D(context.PositionalNode, out Vector2 position))
-            {
                 context.VisualPanel.GlobalPosition = position - GetAnchorOffset(baselinePanelSize) + offset;
-            }
         }
 
         return new VisualNodeInfo(context.Actions, context.AnchorNode, canvasLayer, UpdatePosition);
@@ -59,21 +57,15 @@ internal sealed class Visual2DNodeRegistrar
         {
             // Only canvas-layer based visuals participate in 2D overlap offset calculations.
             if (tracker.VisualRoot is not CanvasLayer existingCanvasLayer)
-            {
                 continue;
-            }
 
             // Skip malformed canvas layers that do not contain a control child.
             if (existingCanvasLayer.GetChildCount() == 0 || existingCanvasLayer.GetChild(0) is not Control existingControl)
-            {
                 continue;
-            }
 
             // Accumulate offset only when panel rectangles intersect.
             if (!ControlsOverlapping(visualPanel, existingControl))
-            {
                 continue;
-            }
 
             offset += new Vector2(0, existingControl.GetRect().Size.Y);
         }
@@ -116,9 +108,7 @@ internal sealed class Visual2DNodeRegistrar
 
         // Fall back to current size when minimum-size metadata has not been established yet.
         if (panelSize == Vector2.Zero)
-        {
             panelSize = visualPanel.Size;
-        }
 
         return panelSize;
     }

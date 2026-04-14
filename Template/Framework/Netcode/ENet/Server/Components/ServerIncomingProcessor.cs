@@ -223,7 +223,7 @@ internal sealed class ServerIncomingProcessor
         ENetOptions? options = _optionsProvider();
 
         // Skip receive logging when disabled or explicitly filtered.
-        if (options == null || !options.PrintPacketReceived || _ignoredPacketsProvider().Contains(packetType)) return;
+        if (options?.PrintPacketReceived != true || _ignoredPacketsProvider().Contains(packetType)) return;
         string packetData = options.PrintPacketData ? $"\n{packet.ToFormattedString()}" : string.Empty;
         _log($"Received packet: {packetType.Name} from client {peerId}{packetData}");
     }

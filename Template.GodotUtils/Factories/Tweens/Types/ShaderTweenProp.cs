@@ -29,15 +29,11 @@ public sealed class ShaderTweenProp : BaseTween<ShaderTweenProp>
     {
         // Restrict shader tweening to CanvasItem-derived nodes.
         if (node is not CanvasItem canvasItem)
-        {
             throw new ArgumentException("ShaderTweenProp only supports CanvasItem-derived nodes (Node2D, Control).", nameof(node));
-        }
 
         // Require a ShaderMaterial so shader parameters can be animated.
         if (canvasItem.Material is not ShaderMaterial shaderMaterial)
-        {
             throw new InvalidOperationException("Animating shader material has not been set. Ensure the node has a ShaderMaterial assigned.");
-        }
 
         _shaderMaterial = shaderMaterial;
         _shaderParam = shaderParam;

@@ -84,9 +84,7 @@ internal static partial class VisualControlTypes
 
         // Use the optional third argument as step when parsing succeeds.
         if (args.Length >= 3 && double.TryParse(args[2].Trim(), out double parsedStepValue))
-        {
             stepValue = parsedStepValue;
-        }
 
         exportAttributeRange = new ExportAttributeRange(minValue, maxValue, stepValue);
 

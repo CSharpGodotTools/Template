@@ -33,9 +33,7 @@ public static class MathUtils
         {
             // Multiply accumulator when current exponent bit is set.
             if ((pow & 1) == 1)
-            {
                 ret *= x;
-            }
 
             x *= x;
             pow >>= 1;
@@ -53,7 +51,7 @@ public static class MathUtils
     /// <para>For example to enable the 1st, 4th and 5th layers of a players
     /// collision layer you would do the following.</para>
     /// 
-    /// <code>player.CollisionLayer = MathUtils.GetLayerValues(1, 4, 5)</code>
+    /// <c>player.CollisionLayer = MathUtils.GetLayerValues(1, 4, 5)</c>
     /// </summary>
     /// <param name="layers">One-based layer indices to enable in the resulting mask.</param>
     /// <returns>Bitmask value with the requested layers enabled.</returns>
@@ -62,9 +60,7 @@ public static class MathUtils
         int num = 0;
 
         foreach (int layer in layers)
-        {
             num |= 1 << layer - 1;
-        }
 
         return num;
     }

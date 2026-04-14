@@ -12,7 +12,7 @@ namespace GodotUtils.Debugging;
 /// </summary>
 internal static class VisualizeAttributeHandler
 {
-    private static readonly BindingFlags _flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+    private const BindingFlags _flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
     /// <summary>
     /// Retrieves visualization metadata for an object when at least one annotated member exists.
@@ -30,9 +30,7 @@ internal static class VisualizeAttributeHandler
 
         // Return a visual data payload only when at least one annotated member was found.
         if (properties.Count != 0 || fields.Count != 0 || methods.Count != 0)
-        {
             return new VisualData(anchorNode, visualizedObject, properties, fields, methods);
-        }
 
         // No annotated members means this object should not be tracked by visualize runtime.
         return null;

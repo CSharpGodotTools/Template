@@ -85,9 +85,7 @@ public static class StringExtensions
         {
             // Uppercase small words that satisfy optional filter.
             if (words[i].Length <= maxLength && (filter == null || filter(words[i])))
-            {
                 words[i] = words[i].ToUpper();
-            }
         }
 
         return string.Join(" ", words);

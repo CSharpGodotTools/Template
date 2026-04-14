@@ -28,9 +28,7 @@ public class ConsoleHistory
     {
         // Move upward only when not already at the oldest entry.
         if (_inputHistoryNav > 0)
-        {
             _inputHistoryNav--;
-        }
 
         return Get(_inputHistoryNav);
     }
@@ -43,9 +41,7 @@ public class ConsoleHistory
     {
         // Move downward only while there are newer entries available.
         if (_inputHistoryNav < _inputHistory.Count)
-        {
             _inputHistoryNav++;
-        }
 
         return Get(_inputHistoryNav);
     }
@@ -68,9 +64,7 @@ public class ConsoleHistory
     {
         // Return empty text when requested index is outside history bounds.
         if (nav < 0 || nav >= _inputHistory.Count)
-        {
             return string.Empty;
-        }
 
         return _inputHistory[nav];
     }

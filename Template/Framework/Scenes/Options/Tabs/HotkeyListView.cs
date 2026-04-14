@@ -88,9 +88,7 @@ public partial class OptionsInput
         {
             Godot.Collections.Array<Node> children = _content.GetChildren();
             for (int i = 0; i < children.Count; i++)
-            {
                 _content.GetChild(i).QueueFree();
-            }
 
             _rows.Clear();
         }

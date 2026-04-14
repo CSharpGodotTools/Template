@@ -17,7 +17,6 @@ public class OptionsManager : IDisposable, IOptionsService
     private readonly OptionsRegistrationComponent _registration;
     private readonly OptionsRightControlRegistryComponent _rightControls;
     private readonly OptionsLifecycleComponent _lifecycle;
-    private readonly OptionsSettings _settings;
 
     private string _currentOptionsTab = FrameworkOptionsTabs.Input;
 
@@ -45,7 +44,7 @@ public class OptionsManager : IDisposable, IOptionsService
         _rightControls = rightControls;
         _lifecycle = lifecycle;
 
-        _settings = new OptionsSettings(
+        Settings = new OptionsSettings(
             _settingDispatcher.ReadOptionInt,
             _settingDispatcher.ReadOptionFloat,
             _settingDispatcher.ReadOptionString,
@@ -154,7 +153,7 @@ public class OptionsManager : IDisposable, IOptionsService
     /// <summary>
     /// Gets strongly typed settings access for this manager.
     /// </summary>
-    public OptionsSettings Settings => _settings;
+    public OptionsSettings Settings { get; }
 
     /// <summary>
     /// Gets the hotkeys resource currently managed by options.

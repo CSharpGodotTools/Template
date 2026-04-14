@@ -78,9 +78,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         {
             // Seed overlay with metrics marked as enabled by default.
             if (metric.Value.Enabled)
-            {
                 _currentMetrics.Add(metric.Key, metric.Value.ValueProvider);
-            }
         }
 
         BuildUi();
@@ -97,15 +95,11 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     {
         // Toggle overlay visibility on debug shortcut press.
         if (Input.IsActionJustPressed(InputActions.DebugOverlay))
-        {
             Visible = !Visible;
-        }
 
         // Refresh values only when the overlay is visible.
         if (Visible)
-        {
             UpdateMetrics();
-        }
     }
 
     // API
@@ -272,9 +266,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 
         // Refresh custom variables section only when monitors are registered.
         if (_monitors.Count > 0)
-        {
             UpdateVariablesSection();
-        }
     }
 
     /// <summary>
@@ -304,9 +296,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 
         // Skip rebuild work when there are no custom variables to show.
         if (!hasVariables)
-        {
             return;
-        }
 
         foreach ((string displayName, Func<object> provider) in _monitors.Values)
         {
@@ -363,9 +353,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         {
             // Normalize detected decimals while preserving non-numeric fragments.
             if (double.TryParse(match.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out double number))
-            {
                 return FormatDecimal(number);
-            }
 
             return match.Value;
         });
@@ -500,17 +488,13 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
             Vector2[] fillPoints = new Vector2[bufferLength + 2];
             fillPoints[0] = new Vector2(0, graphSize.Y);
             for (int i = 0; i < bufferLength; i++)
-            {
                 fillPoints[i + 1] = points[i];
-            }
             fillPoints[bufferLength + 1] = new Vector2(graphSize.X, graphSize.Y);
             DrawColoredPolygon(fillPoints, _graphFillColor);
 
             // Draw line
             for (int i = 0; i < bufferLength - 1; i++)
-            {
                 DrawLine(points[i], points[i + 1], _graphLineColor, 2f);
-            }
         }
     }
 }

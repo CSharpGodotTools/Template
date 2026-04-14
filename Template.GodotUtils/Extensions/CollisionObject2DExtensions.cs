@@ -84,9 +84,7 @@ public static class CollisionObject2DExtensions
         {
             // Keep only numeric characters as layer indices.
             if (char.IsDigit(c))
-            {
                 uniqueNumbers.Add(int.Parse(c.ToString()));
-            }
         }
 
         return [.. uniqueNumbers];

@@ -19,8 +19,6 @@ public abstract class ENetClient : ENetLow
     private readonly ClientIncomingProcessor _incoming;
     private readonly ClientOutgoingProcessor _outgoing;
     private readonly ClientLogAggregator _logAggregator;
-    private readonly ConcurrentQueue<Cmd<GodotOpcode>> _mainThreadCommands = new();
-    private readonly ConcurrentQueue<PacketData> _mainThreadPackets = new();
 
     private Peer _peer;
     private ushort _streamCounter;
@@ -48,7 +46,7 @@ public abstract class ENetClient : ENetLow
     {
         _queues = queueManager ?? new ClientQueueManager(() => Options, message => Log(message), DisconnectPeer);
         _commands = commandProcessor ?? new ClientCommandProcessor(_queues, () => CTS.IsCancellationRequested, message => Log(message), DisconnectPeer);
-        _incoming = incomingProcessor ?? new ClientIncomingProcessor(_queues, _mainThreadPackets, () => Options, message => Log(message));
+        _incoming = incomingProcessor ?? new ClientIncomingProcessor(_queues, MainThreadPackets, () => Options, message => Log(message));
         _outgoing = outgoingProcessor ?? new ClientOutgoingProcessor(_queues, () => _peer, NextStreamId, GetMaxFragmentsPerPacket, data => CreateReliablePacket(data), exception => LogOutgoingSendFailure(exception, LogTag));
         _logAggregator = logAggregator ?? _sharedLogAggregator;
     }
@@ -56,12 +54,12 @@ public abstract class ENetClient : ENetLow
     /// <summary>
     /// Gets the queue of transport lifecycle commands to be consumed on the main thread.
     /// </summary>
-    protected ConcurrentQueue<Cmd<GodotOpcode>> MainThreadCommands => _mainThreadCommands;
+    protected ConcurrentQueue<Cmd<GodotOpcode>> MainThreadCommands { get; } = new();
 
     /// <summary>
     /// Gets the queue of decoded server packets to be consumed on the main thread.
     /// </summary>
-    protected ConcurrentQueue<PacketData> MainThreadPackets => _mainThreadPackets;
+    protected ConcurrentQueue<PacketData> MainThreadPackets { get; } = new();
 
     /// <summary>
     /// Gets configurable ENet ping interval in milliseconds.
@@ -149,7 +147,7 @@ public abstract class ENetClient : ENetLow
     protected sealed override void OnConnectLow(Event netEvent)
     {
         Interlocked.Exchange(ref _connected, 1);
-        _mainThreadCommands.Enqueue(new Cmd<GodotOpcode>(GodotOpcode.Connected));
+        MainThreadCommands.Enqueue(new Cmd<GodotOpcode>(GodotOpcode.Connected));
         _logAggregator.RecordConnect(netEvent.Peer.ID);
         TryInvoke(OnConnected);
     }
@@ -167,7 +165,7 @@ public abstract class ENetClient : ENetLow
     protected sealed override void OnTimeoutLow(Event netEvent)
     {
         QueueDisconnected(DisconnectOpcode.Timeout);
-        _mainThreadCommands.Enqueue(new Cmd<GodotOpcode>(GodotOpcode.Timeout));
+        MainThreadCommands.Enqueue(new Cmd<GodotOpcode>(GodotOpcode.Timeout));
         OnDisconnectCleanup(netEvent.Peer);
         _logAggregator.RecordTimeout(netEvent.Peer.ID);
         TryInvoke(OnTimedOut);
@@ -223,8 +221,10 @@ public abstract class ENetClient : ENetLow
 
             // Flush logs only when the final active client worker exits.
             if (Interlocked.Decrement(ref _activeClientWorkers) == 0)
+            {
                 // Flush once when the last active worker exits so bursts are not lost.
                 _logAggregator.Flush(message => Log(message), true);
+            }
         }
     }
 
@@ -243,13 +243,13 @@ public abstract class ENetClient : ENetLow
     /// Builds an optional timestamp prefix based on runtime options.
     /// </summary>
     /// <returns>Prefix string prepended to log messages.</returns>
-    private string BuildTimestampPrefix() => Options != null && Options.ShowLogTimestamps ? $"[{DateTime.Now:HH:mm:ss}] " : string.Empty;
+    private string BuildTimestampPrefix() => Options?.ShowLogTimestamps == true ? $"[{DateTime.Now:HH:mm:ss}] " : string.Empty;
 
     /// <summary>
     /// Queues a disconnect lifecycle command for main-thread handling.
     /// </summary>
     /// <param name="opcode">Disconnect reason opcode.</param>
-    private void QueueDisconnected(DisconnectOpcode opcode) => _mainThreadCommands.Enqueue(new Cmd<GodotOpcode>(GodotOpcode.Disconnected, opcode));
+    private void QueueDisconnected(DisconnectOpcode opcode) => MainThreadCommands.Enqueue(new Cmd<GodotOpcode>(GodotOpcode.Disconnected, opcode));
 
     /// <summary>
     /// Sends a transport-level disconnect signal to the current peer.

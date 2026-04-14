@@ -74,9 +74,7 @@ internal sealed class VisualNodeManager
             info.UpdatePosition();
 
             foreach (Action action in info.Actions)
-            {
                 action();
-            }
         }
     }
 
@@ -92,9 +90,7 @@ internal sealed class VisualNodeManager
         {
             // Only collect trackers that belong to the anchor currently being removed.
             if (tracker.Value.AnchorNode != anchorNode)
-            {
                 continue;
-            }
 
             tracker.Value.VisualRoot.QueueFree();
             trackersToRemove.Add(tracker.Key);
@@ -102,9 +98,7 @@ internal sealed class VisualNodeManager
 
         // Remove by key after iteration to avoid mutating the dictionary during enumeration.
         foreach (ulong id in trackersToRemove)
-        {
             _nodeTrackers.Remove(id);
-        }
 
         // Keep autoload registry aligned with local tracker cleanup.
         VisualizeAutoload.Instance?.UnregisterNode(anchorNode);

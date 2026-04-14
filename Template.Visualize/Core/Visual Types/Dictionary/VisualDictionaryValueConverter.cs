@@ -19,15 +19,11 @@ internal sealed class VisualDictionaryValueConverter : IVisualDictionaryValueCon
     {
         // Convert to Variant when the destination type requires it.
         if (expectedType == typeof(Variant))
-        {
             return ConvertVariant(value);
-        }
 
         // Preserve nulls and already compatible values.
         if (value == null || expectedType.IsInstanceOfType(value))
-        {
             return value;
-        }
 
         return value;
     }

@@ -66,15 +66,11 @@ internal sealed class ServerLogAggregator : EventLogAggregator
     {
         // Exit early when no lifecycle events were captured.
         if (_connectedCount == 0 && _disconnectedCount == 0 && _timeoutCount == 0)
-        {
             return;
-        }
 
         // Wait for quiet-gap/max-window thresholds unless a forced flush was requested.
         if (!ShouldFlush(_windowStartTicks, _lastEventTicks, out double windowSeconds) && !force)
-        {
             return;
-        }
 
         int connects = _connectedCount;
         int disconnects = _disconnectedCount;
@@ -103,21 +99,15 @@ internal sealed class ServerLogAggregator : EventLogAggregator
 
         // Emit connect summary when one or more connect events were captured.
         if (connects > 0)
-        {
             logEntries.Add(new LogEntry { Tick = lastConnectTicks, LogAction = () => log(FormatConnectMessage(connects, lastConnectPeerId, reportSeconds)) });
-        }
 
         // Emit disconnect summary when one or more disconnect events were captured.
         if (disconnects > 0)
-        {
             logEntries.Add(new LogEntry { Tick = lastDisconnectTicks, LogAction = () => log(FormatDisconnectMessage(disconnects, lastDisconnectPeerId, reportSeconds)) });
-        }
 
         // Emit timeout summary when one or more timeout events were captured.
         if (timeouts > 0)
-        {
             logEntries.Add(new LogEntry { Tick = lastTimeoutTicks, LogAction = () => log(FormatTimeoutMessage(timeouts, lastTimeoutPeerId, reportSeconds)) });
-        }
 
         EmitLogEntries(logEntries);
     }
@@ -132,9 +122,7 @@ internal sealed class ServerLogAggregator : EventLogAggregator
 
         // Capture first event timestamp as window start, then track latest event tick.
         if (_windowStartTicks == 0)
-        {
             _windowStartTicks = nowTicks;
-        }
 
         _lastEventTicks = nowTicks;
         eventTypeLastTicks = nowTicks;
@@ -151,9 +139,7 @@ internal sealed class ServerLogAggregator : EventLogAggregator
     {
         // Use detailed singular wording for a single connect event.
         if (count == 1)
-        {
             return $"Client with id {peerId} connected";
-        }
 
         return $"{FormatCount("client", count)} connected{FormatLastSuffix(count, seconds)}";
     }
@@ -169,9 +155,7 @@ internal sealed class ServerLogAggregator : EventLogAggregator
     {
         // Use detailed singular wording for a single disconnect event.
         if (count == 1)
-        {
             return $"Client with id {peerId} disconnected";
-        }
 
         return $"{FormatCount("client", count)} disconnected{FormatLastSuffix(count, seconds)}";
     }
@@ -187,9 +171,7 @@ internal sealed class ServerLogAggregator : EventLogAggregator
     {
         // Use detailed singular wording for a single timeout event.
         if (count == 1)
-        {
             return $"Client with id {peerId} timed out";
-        }
 
         return $"{FormatCount("client", count)} timed out{FormatLastSuffix(count, seconds)}";
     }

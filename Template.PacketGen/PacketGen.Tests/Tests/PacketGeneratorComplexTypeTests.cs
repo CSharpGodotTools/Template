@@ -121,9 +121,7 @@ internal sealed class PacketGeneratorComplexTypeTests
     {
         Array array = Array.CreateInstance(elementType, values.Length);
         for (int i = 0; i < values.Length; i++)
-        {
             array.SetValue(values[i], i);
-        }
 
         return array;
     }
@@ -140,9 +138,7 @@ internal sealed class PacketGeneratorComplexTypeTests
         IList list = (IList)Activator.CreateInstance(listType)!;
 
         foreach (object? value in values)
-        {
             list.Add(value);
-        }
 
         return list;
     }

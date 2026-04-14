@@ -9,6 +9,4 @@ namespace __TEMPLATE__.Netcode;
 /// This attribute only affects reflection fallback paths and does not change generated serializer behavior.
 /// </remarks>
 [AttributeUsage(AttributeTargets.Property)]
-public class NetExcludeAttribute : Attribute
-{
-}
+public class NetExcludeAttribute : Attribute;

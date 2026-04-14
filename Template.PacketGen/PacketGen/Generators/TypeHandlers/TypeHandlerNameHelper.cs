@@ -35,25 +35,19 @@ internal static class TypeHandlerNameHelper
         {
             // Keep only identifier-safe alphanumeric characters.
             if (char.IsLetterOrDigit(c))
-            {
                 builder.Append(c);
-            }
         }
 
         // Fall back to a generic seed when normalization removed all characters.
         if (builder.Length == 0)
-        {
             return "value";
-        }
 
         string normalized = builder.ToString();
         char first = normalized[0];
 
         // Prefix with a letter when the identifier would otherwise start invalid.
         if (!char.IsLetter(first) && first != '_')
-        {
             normalized = "v" + normalized;
-        }
 
         return char.ToLowerInvariant(normalized[0]) + normalized.Substring(1);
     }

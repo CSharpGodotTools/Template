@@ -8,22 +8,19 @@ namespace Template.OptionsGen;
 /// <param name="defaultValueIndex">Positional index of the default-value argument.</param>
 internal sealed class OptionFactoryMetadata(OptionValueKind valueKind, int saveKeyIndex, int defaultValueIndex)
 {
-    private readonly OptionValueKind _valueKind = valueKind;
-    private readonly int _saveKeyIndex = saveKeyIndex;
-    private readonly int _defaultValueIndex = defaultValueIndex;
 
     /// <summary>
     /// Option value kind produced by the factory method.
     /// </summary>
-    public OptionValueKind ValueKind => _valueKind;
+    public OptionValueKind ValueKind { get; } = valueKind;
 
     /// <summary>
     /// Zero-based index of the save-key argument in positional factory calls.
     /// </summary>
-    public int SaveKeyIndex => _saveKeyIndex;
+    public int SaveKeyIndex { get; } = saveKeyIndex;
 
     /// <summary>
     /// Zero-based index of the default-value argument in positional factory calls.
     /// </summary>
-    public int DefaultValueIndex => _defaultValueIndex;
+    public int DefaultValueIndex { get; } = defaultValueIndex;
 }

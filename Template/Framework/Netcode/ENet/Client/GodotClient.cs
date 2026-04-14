@@ -212,17 +212,13 @@ public abstract class GodotClient : ENetClient
     {
         // Skip receive logging when disabled or packet type is ignored.
         if (!Options.PrintPacketReceived || IgnoredPackets.Contains(packetType))
-        {
             return;
-        }
 
         string packetData = string.Empty;
 
         // Include payload dump only when verbose packet-data logging is enabled.
         if (Options.PrintPacketData)
-        {
             packetData = $"\n{packet.ToFormattedString()}";
-        }
 
         Log($"Received packet: {packetType.Name}{packetData}");
     }
@@ -237,17 +233,13 @@ public abstract class GodotClient : ENetClient
 
         // Skip send logging when disabled or packet type is ignored.
         if (!Options.PrintPacketSent || IgnoredPackets.Contains(packetType))
-        {
             return;
-        }
 
         string packetData = string.Empty;
 
         // Include payload dump only when verbose packet-data logging is enabled.
         if (Options.PrintPacketData)
-        {
             packetData = $"\n{packet.ToFormattedString()}";
-        }
 
         Log($"Sent packet: {packetType.Name} {FormatByteSize(packet.GetSize())}{packetData}");
     }

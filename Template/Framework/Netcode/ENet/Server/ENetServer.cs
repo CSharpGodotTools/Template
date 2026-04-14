@@ -206,7 +206,7 @@ public abstract class ENetServer : ENetLow
     /// Builds an optional timestamp prefix based on runtime options.
     /// </summary>
     /// <returns>Prefix string prepended to log messages.</returns>
-    private string BuildTimestampPrefix() => Options != null && Options.ShowLogTimestamps ? $"[{DateTime.Now:HH:mm:ss}] " : string.Empty;
+    private string BuildTimestampPrefix() => Options?.ShowLogTimestamps == true ? $"[{DateTime.Now:HH:mm:ss}] " : string.Empty;
 
     /// <summary>
     /// Attempts to create and bind an ENet host for server listening.

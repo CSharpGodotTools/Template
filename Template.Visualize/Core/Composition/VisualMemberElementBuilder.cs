@@ -29,9 +29,7 @@ internal static class VisualMemberElementBuilder
 
             // Add only successfully created controls.
             if (element != null)
-            {
                 vbox.AddChild(element);
-            }
         }
     }
 
@@ -53,10 +51,7 @@ internal static class VisualMemberElementBuilder
             return null;
         }
 
-        VisualControlInfo element = VisualControlTypes.CreateControlForType(VisualHandler.GetMemberType(member), member, new VisualControlContext(initialValue, v =>
-        {
-            VisualHandler.SetMemberValue(member, target, v);
-        }));
+        VisualControlInfo element = VisualControlTypes.CreateControlForType(VisualHandler.GetMemberType(member), member, new VisualControlContext(initialValue, v => VisualHandler.SetMemberValue(member, target, v)));
 
         HBoxContainer container = new() { Alignment = BoxContainer.AlignmentMode.End };
         container.AddThemeConstantOverride("separation", MemberRowSeparation);
@@ -81,9 +76,7 @@ internal static class VisualMemberElementBuilder
 
         // Return label-only container when no editable control exists for this type.
         if (element.VisualControl == null)
-        {
             return container;
-        }
 
         // Class controls render in nested layout with title row and content row.
         if (element.VisualControl is ClassControl)

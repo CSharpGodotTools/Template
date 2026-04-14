@@ -18,9 +18,7 @@ internal static class DeepAssert
     {
         // Treat identical references as equal.
         if (ReferenceEquals(expected, actual))
-        {
             return;
-        }
 
         // Handle null mismatches early.
         if (expected is null || actual is null)
@@ -60,9 +58,7 @@ internal static class DeepAssert
             {
                 // Fail fast when an expected key is missing.
                 if (!actualDictionary.Contains(entry.Key))
-                {
                     Assert.Fail($"{path} missing key <{Format(entry.Key)}>.");
-                }
 
                 AreEqual(entry.Value, actualDictionary[entry.Key], $"{path}[{Format(entry.Key)}]");
             }
@@ -71,9 +67,7 @@ internal static class DeepAssert
             {
                 // Fail fast when extra keys are present.
                 if (!expectedDictionary.Contains(entry.Key))
-                {
                     Assert.Fail($"{path} had unexpected key <{Format(entry.Key)}>.");
-                }
             }
 
             return;
@@ -85,9 +79,7 @@ internal static class DeepAssert
             Assert.That(actualList, Has.Count.EqualTo(expectedList.Count), $"{path} count mismatch. Expected {expectedList.Count}, got {actualList.Count}.");
 
             for (int i = 0; i < expectedList.Count; i++)
-            {
                 AreEqual(expectedList[i], actualList[i], $"{path}[{i}]");
-            }
 
             return;
         }

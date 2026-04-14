@@ -154,9 +154,7 @@ public static class AnimatedSprite2DExtensions
         {
             // Stop once an opaque pixel is reached in center column.
             if (img.GetPixel(size.X / 2, y).A != 0)
-            {
                 break;
-            }
 
             diff++;
         }

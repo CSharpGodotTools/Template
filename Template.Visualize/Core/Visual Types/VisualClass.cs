@@ -31,11 +31,9 @@ internal static partial class VisualControlTypes
 
         // Return an empty control when there is no object instance to inspect.
         if (context.InitialValue == null)
-        {
             return new VisualControlInfo(new ClassControl(container, []));
-        }
 
-        BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+        const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
         List<MemberControlBinding> memberBindings = [];
         memberBindings.AddRange(AddMembers(container, context, CollectPropertyMembers(type, flags)));
@@ -53,13 +51,11 @@ internal static partial class VisualControlTypes
     /// <returns>Property member descriptors.</returns>
     private static IEnumerable<MemberDescriptor> CollectPropertyMembers(Type type, BindingFlags flags)
     {
-        PropertyInfo[] properties = [.. type.GetProperties(flags).Where(p => !(typeof(Delegate).IsAssignableFrom(p.PropertyType)))];
+        PropertyInfo[] properties = [.. type.GetProperties(flags).Where(p => !typeof(Delegate).IsAssignableFrom(p.PropertyType))];
         FilterByVisualizeAttribute(ref properties);
 
         foreach (PropertyInfo property in properties)
-        {
             yield return new MemberDescriptor(property, property.PropertyType, property.GetSetMethod(true) != null);
-        }
     }
 
     /// <summary>
@@ -76,18 +72,16 @@ internal static partial class VisualControlTypes
         FieldInfo[] fields = [.. type
             .GetFields(flags)
             // Exclude delegate types
-            .Where(f => !(typeof(Delegate).IsAssignableFrom(f.FieldType)))
+            .Where(f => !typeof(Delegate).IsAssignableFrom(f.FieldType) && (!f.Name.StartsWith('<') || !f.Name.EndsWith(">k__BackingField")))
             // Exclude fields created by properties
-            .Where(f => !f.Name.StartsWith('<') || !f.Name.EndsWith(">k__BackingField"))
+            
             // Exclude backing fields for properties
             .Where(f => !backingFieldNames.Contains(f.Name))];
 
         FilterByVisualizeAttribute(ref fields);
 
         foreach (FieldInfo field in fields)
-        {
             yield return new MemberDescriptor(field, field.FieldType, !field.IsLiteral);
-        }
     }
 
     /// <summary>
@@ -109,9 +103,7 @@ internal static partial class VisualControlTypes
             {
                 // Ignore writes for members that are intentionally readonly.
                 if (!member.IsEditable)
-                {
                     return;
-                }
 
                 VisualHandler.SetMemberValue(member.Member, context.InitialValue!, v);
                 context.ValueChanged(context.InitialValue!);
@@ -119,9 +111,7 @@ internal static partial class VisualControlTypes
 
             // Skip rows for member types that have no supported visual editor.
             if (control.VisualControl == null)
-            {
                 continue;
-            }
 
             control.VisualControl.SetEditable(member.IsEditable);
 
@@ -149,13 +139,13 @@ internal static partial class VisualControlTypes
 
         MethodInfo[] methods = [.. type.GetMethods(flags)
             // Exclude delegates
-            .Where(m => !(typeof(Delegate).IsAssignableFrom(m.ReturnType)))
+            .Where(m => !typeof(Delegate).IsAssignableFrom(m.ReturnType) && !m.Name.StartsWith(GetterPrefix) && !m.Name.StartsWith(SetterPrefix))
             // Exclude auto property methods
-            .Where(m => !m.Name.StartsWith(GetterPrefix) && !m.Name.StartsWith(SetterPrefix))
+            
             // Exclude event add and remove event methods
-            .Where(m => !m.Name.StartsWith(EventAddPrefix) && !m.Name.StartsWith(EventRemovePrefix))
+            .Where(m => !m.Name.StartsWith(EventAddPrefix) && !m.Name.StartsWith(EventRemovePrefix) && m.Name != ToStringMethodName)
             // Exclude the override string ToString() method
-            .Where(m => m.Name != ToStringMethodName)];
+            ];
 
         FilterByVisualizeAttribute(ref methods);
 
@@ -185,16 +175,12 @@ internal static partial class VisualControlTypes
         {
             // Keep only members explicitly marked for visualization.
             if (member.GetCustomAttribute<VisualizeAttribute>() != null)
-            {
                 visualizedMembers.Add(member);
-            }
         }
 
         // If any properties are marked with [Visualize] then we only visualize those properties.
         if (visualizedMembers.Count != 0)
-        {
             members = [.. visualizedMembers];
-        }
     }
 
     /// <summary>

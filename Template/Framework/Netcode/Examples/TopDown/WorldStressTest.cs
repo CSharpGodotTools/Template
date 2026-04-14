@@ -237,7 +237,7 @@ public partial class World
                 return;
 
             // Allocate another shared host when the current one is unavailable or full.
-            if (_currentBotHost == null || _currentBotHost.IsAtCapacity)
+            if (_currentBotHost?.IsAtCapacity != false)
             {
                 _currentBotHost = new SharedBotHost(
                     "127.0.0.1", _port, _world.GetScreenCenter(),
@@ -255,10 +255,8 @@ public partial class World
         private void EnsureServerRunning()
         {
             // Start the managed server lazily when net is ready but not running.
-            if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Server != null && !net.Server.IsRunning)
-            {
+            if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Server?.IsRunning == false)
                 StartServerWithSettings();
-            }
         }
 
         /// <summary>
@@ -271,9 +269,7 @@ public partial class World
             {
                 // Read from net only when coordinator is currently available.
                 if (TryGetNet(out Net<GameClient, GameServer>? net))
-                {
                     _port = net.ServerPort;
-                }
             }
         }
 
@@ -283,10 +279,8 @@ public partial class World
         private void EnsureLocalClientRunning()
         {
             // Keep one local client connected so world state can be observed.
-            if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Client != null && !net.Client.IsRunning)
-            {
+            if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Client?.IsRunning == false)
                 net.StartClient("127.0.0.1", _port);
-            }
         }
 
         /// <summary>
@@ -297,9 +291,7 @@ public partial class World
         {
             // Check server state only when coordinator and server are available.
             if (TryGetNet(out Net<GameClient, GameServer>? net) && net.Server != null)
-            {
                 return net.Server.IsRunning;
-            }
 
             return false;
         }
@@ -327,7 +319,7 @@ public partial class World
         private bool ShouldRestartServer()
         {
             // No restart needed when server is not active.
-            if (!TryGetNet(out Net<GameClient, GameServer>? net) || net.Server == null || !net.Server.IsRunning)
+            if (!TryGetNet(out Net<GameClient, GameServer>? net) || net.Server?.IsRunning != true)
                 return false;
 
             // Do not restart servers this stress test did not start.
@@ -366,9 +358,7 @@ public partial class World
         private void StopBots()
         {
             foreach (SharedBotHost host in _botHosts)
-            {
                 host.Stop();
-            }
 
             _botHosts.Clear();
             _currentBotHost = null;
@@ -492,9 +482,7 @@ public partial class World
 
             // Resolve net coordinator only when the control panel has been initialized.
             if (_world._netControlPanel != null)
-            {
                 net = _world._netControlPanel.Net;
-            }
 
             return net != null;
         }
@@ -736,9 +724,7 @@ public partial class World
 
                 // Disconnect all remaining peers before tearing down the host.
                 foreach (BotPeerState state in states.Values)
-                {
                     state.Peer.DisconnectNow(0);
-                }
 
                 host.Flush();
             }
@@ -750,7 +736,7 @@ public partial class World
             /// <returns>Orbit position in world coordinates.</returns>
             private Vector2 ComputeOrbitPosition(float angle)
             {
-                return _center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * _circleRadius;
+                return _center + (new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * _circleRadius);
             }
 
             /// <summary>

@@ -202,7 +202,7 @@ internal sealed class OptionsDisplaySettingsComponent
         // Recenter after resize to keep window placement consistent.
         Vector2I screenSize = DisplayServer.ScreenGetSize();
         Vector2I winSize = _autoloads.GetTree().Root.Size;
-        DisplayServer.WindowSetPosition(screenSize / 2 - winSize / 2);
+        DisplayServer.WindowSetPosition((screenSize / 2) - (winSize / 2));
     }
 
     /// <summary>

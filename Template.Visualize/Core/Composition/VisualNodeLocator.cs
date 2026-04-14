@@ -19,9 +19,7 @@ internal static class VisualNodeLocator
     {
         // Include the current node in the match check before walking up the hierarchy.
         if (IsNodeOfType(node, typesToCheck))
-        {
             return node;
-        }
 
         Node? parent = node.GetParent();
 
@@ -30,9 +28,7 @@ internal static class VisualNodeLocator
         {
             // Return immediately on first matching ancestor.
             if (IsNodeOfType(parent, typesToCheck))
-            {
                 return parent;
-            }
 
             parent = parent.GetParent();
         }
@@ -78,9 +74,7 @@ internal static class VisualNodeLocator
         {
             // Accept the first assignable type match.
             if (type.IsInstanceOfType(node))
-            {
                 return true;
-            }
         }
 
         return false;

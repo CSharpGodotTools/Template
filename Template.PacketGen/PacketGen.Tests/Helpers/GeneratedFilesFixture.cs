@@ -16,8 +16,6 @@ internal sealed class GeneratedFilesFixture
         string[] genFiles = Directory.GetFiles(genDir);
 
         foreach (string genFile in genFiles)
-        {
             File.Delete(genFile);
-        }
     }
 }

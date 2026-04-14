@@ -7,8 +7,6 @@ namespace __TEMPLATE__.Netcode.Server;
 /// </summary>
 internal sealed class IncomingPacket
 {
-    private readonly Packet _packet;
-    private readonly Peer _peer;
 
     /// <summary>
     /// Creates an incoming packet envelope.
@@ -17,17 +15,17 @@ internal sealed class IncomingPacket
     /// <param name="peer">Source peer that sent the packet.</param>
     public IncomingPacket(Packet packet, Peer peer)
     {
-        _packet = packet;
-        _peer = peer;
+        Packet = packet;
+        Peer = peer;
     }
 
     /// <summary>
     /// Gets the received ENet packet.
     /// </summary>
-    public Packet Packet => _packet;
+    public Packet Packet { get; }
 
     /// <summary>
     /// Gets the source peer.
     /// </summary>
-    public Peer Peer => _peer;
+    public Peer Peer { get; }
 }

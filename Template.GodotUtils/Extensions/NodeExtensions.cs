@@ -13,7 +13,7 @@ public static class NodeExtensions
 {
     /// <summary>
     /// Retrieves an autoload from the scene tree using the given name.
-    /// <code>Global global = someNode.GetAutoload&lt;Global&gt;("Global");</code>
+    /// <c>Global global = someNode.GetAutoload&lt;Global&gt;("Global");</c>
     /// </summary>
     /// <typeparam name="T">Type of the autoload node, must inherit from Node.</typeparam>
     /// <param name="node">Node used to access the current scene tree.</param>
@@ -114,9 +114,7 @@ public static class NodeExtensions
             nodes.Add(node);
 
         foreach (Node child in node.GetChildren())
-        {
             RecursiveTypeMatchSearch(child, type, nodes);
-        }
     }
 
     /// <summary>
@@ -252,9 +250,7 @@ public static class NodeExtensions
 
             // Continue traversal when recursive mode is enabled.
             if (recursive)
-            {
                 FindChildrenOfType(child, children, recursive);
-            }
         }
     }
 
@@ -265,9 +261,7 @@ public static class NodeExtensions
     public static void QueueFreeChildren(this Node parentNode)
     {
         foreach (Node node in parentNode.GetChildren())
-        {
             node.QueueFree();
-        }
     }
 
     /// <summary>
@@ -279,9 +273,7 @@ public static class NodeExtensions
         Godot.Collections.Array<StringName> groups = node.GetGroups();
 
         for (int i = 0; i < groups.Count; i++)
-        {
             node.RemoveFromGroup(groups[i]);
-        }
     }
 
     /// <summary>
@@ -296,8 +288,6 @@ public static class NodeExtensions
 
         // Recurse into children
         foreach (Node child in node.GetChildren())
-        {
             TraverseNodes(child, code);
-        }
     }
 }

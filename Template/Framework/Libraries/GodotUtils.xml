@@ -802,7 +802,7 @@
         <member name="M:GodotUtils.NodeExtensions.GetAutoload``1(Godot.Node,System.String)">
             <summary>
             Retrieves an autoload from the scene tree using the given name.
-            <code>Global global = someNode.GetAutoload&lt;Global&gt;("Global");</code>
+            <c>Global global = someNode.GetAutoload&lt;Global&gt;("Global");</c>
             </summary>
             <typeparam name="T">Type of the autoload node, must inherit from Node.</typeparam>
             <param name="node">Node used to access the current scene tree.</param>
@@ -3228,7 +3228,7 @@
             <para>For example to enable the 1st, 4th and 5th layers of a players
             collision layer you would do the following.</para>
             
-            <code>player.CollisionLayer = MathUtils.GetLayerValues(1, 4, 5)</code>
+            <c>player.CollisionLayer = MathUtils.GetLayerValues(1, 4, 5)</c>
             </summary>
             <param name="layers">One-based layer indices to enable in the resulting mask.</param>
             <returns>Bitmask value with the requested layers enabled.</returns>
@@ -3685,7 +3685,7 @@
             <summary>
             Runs a task and logs any errors, intended for fire-and-forget usage.
             <para>For example:</para>
-            <code>TaskUtils.FireAndForget(() =&gt; ExitGame());</code>
+            <c>TaskUtils.FireAndForget(() =&gt; ExitGame());</c>
             </summary>
             <param name="task">Task delegate to execute.</param>
         </member>

@@ -12,12 +12,11 @@ namespace Template.OptionsGen;
 /// <param name="argumentResolver">Resolves invocation arguments by parameter name or position.</param>
 internal sealed class DefaultLiteralResolver(IInvocationArgumentResolver argumentResolver) : IDefaultLiteralResolver
 {
-    private readonly IInvocationArgumentResolver _argumentResolver = argumentResolver ?? throw new ArgumentNullException(nameof(argumentResolver));
 
     /// <summary>
     /// Finds candidate default-value argument expressions for option factory invocations.
     /// </summary>
-    public IInvocationArgumentResolver ArgumentResolver => _argumentResolver;
+    public IInvocationArgumentResolver ArgumentResolver { get; } = argumentResolver ?? throw new ArgumentNullException(nameof(argumentResolver));
 
     /// <summary>
     /// Resolves the default-value argument for an option invocation to emitted literal text,
@@ -36,7 +35,7 @@ internal sealed class DefaultLiteralResolver(IInvocationArgumentResolver argumen
         OptionValueKind valueKind,
         int fallbackPosition)
     {
-        ExpressionSyntax? defaultExpression = _argumentResolver.FindArgumentExpression(
+        ExpressionSyntax? defaultExpression = ArgumentResolver.FindArgumentExpression(
             invocation,
             method,
             OptionsGenConstants.DefaultValueParameterName,

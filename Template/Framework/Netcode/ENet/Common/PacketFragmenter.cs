@@ -65,7 +65,7 @@ internal static class PacketFragmenter
         if (maxFragments == 0)
             throw new ArgumentOutOfRangeException(nameof(maxFragments), "maxFragments must be greater than zero.");
 
-        int opcodeSize = PacketRegistry.OpcodeSize;
+        const int opcodeSize = PacketRegistry.OpcodeSize;
         int headerSize = HeaderSize;
         int maxPayload = MaxPayloadPerFragment;
         int totalFrags = (int)Math.Ceiling((double)data.Length / maxPayload);
@@ -167,7 +167,7 @@ internal static class PacketFragmenter
             return false;
         }
 
-        int opcodeSize = PacketRegistry.OpcodeSize;
+        const int opcodeSize = PacketRegistry.OpcodeSize;
         streamId = BinaryPrimitives.ReadUInt16LittleEndian(bytes.AsSpan(opcodeSize));
         fragIndex = BinaryPrimitives.ReadUInt16LittleEndian(bytes.AsSpan(opcodeSize + 2));
         totalFragments = BinaryPrimitives.ReadUInt16LittleEndian(bytes.AsSpan(opcodeSize + 4));

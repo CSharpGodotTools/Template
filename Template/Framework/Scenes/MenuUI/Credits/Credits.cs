@@ -82,9 +82,7 @@ public partial class Credits : Node, ISceneDependencyReceiver
 
             // Clamp reverse scrolling so credits do not move above start position.
             if (isReverseDirection && creditsAtStart)
-            {
                 position.Y = _startingCreditsPosition.Y;
-            }
 
             _credits.Position = position;
 
@@ -142,7 +140,7 @@ public partial class Credits : Node, ISceneDependencyReceiver
     {
         // Set starting position of the credits
         _credits.Position = new Vector2(
-            GetViewport().GetVisibleRect().Size.X / 2 - _credits.Size.X / 2,
+            (GetViewport().GetVisibleRect().Size.X / 2) - (_credits.Size.X / 2),
             GetViewport().GetVisibleRect().Size.Y);
 
         _startingCreditsPosition = _credits.Position;

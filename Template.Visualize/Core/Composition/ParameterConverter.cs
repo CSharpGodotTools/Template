@@ -22,9 +22,7 @@ internal static class ParameterConverter
         object[] parameters = new object[paramInfos.Length];
 
         for (int i = 0; i < paramInfos.Length; i++)
-        {
             parameters[i] = ConvertParameter(paramInfos[i], providedValues[i]);
-        }
 
         return parameters;
     }
@@ -41,9 +39,7 @@ internal static class ParameterConverter
 
         // Conversion requires a one-to-one value mapping for each method parameter.
         if (paramInfos.Length != providedValues.Length)
-        {
             throw new ArgumentException("The number of provided values does not match the number of method parameters.");
-        }
     }
 
     /// <summary>
@@ -56,15 +52,11 @@ internal static class ParameterConverter
     {
         // Null values map to type-specific defaults.
         if (providedValue == null)
-        {
             return GetDefaultValue(paramInfo.ParameterType);
-        }
 
         // Reject values that cannot be assigned to the parameter type.
         if (!paramInfo.ParameterType.IsAssignableFrom(providedValue.GetType()))
-        {
             throw new InvalidOperationException($"The provided value for parameter '{paramInfo.Name}' is not assignable to the parameter type '{paramInfo.ParameterType}'.");
-        }
 
         return providedValue;
     }
@@ -78,15 +70,11 @@ internal static class ParameterConverter
     {
         // Preserve existing behavior where string defaults to null.
         if (type == typeof(string))
-        {
             return null!;
-        }
 
         // Value types default to a zero-initialized instance.
         if (type.IsValueType)
-        {
             return Activator.CreateInstance(type)!;
-        }
 
         return null!;
     }

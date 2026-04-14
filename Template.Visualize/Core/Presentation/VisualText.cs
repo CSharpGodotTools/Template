@@ -17,9 +17,7 @@ internal static class VisualText
     {
         // Treat empty/whitespace input as no display text.
         if (string.IsNullOrWhiteSpace(identifier))
-        {
             return string.Empty;
-        }
 
         return identifier.ToPascalCase().AddSpaceBeforeEachCapital();
     }
@@ -33,9 +31,7 @@ internal static class VisualText
     {
         // Treat empty/whitespace input as no display text.
         if (string.IsNullOrWhiteSpace(value))
-        {
             return string.Empty;
-        }
 
         return value.AddSpaceBeforeEachCapital();
     }

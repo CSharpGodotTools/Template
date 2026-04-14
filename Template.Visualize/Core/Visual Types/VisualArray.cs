@@ -35,9 +35,7 @@ internal static partial class VisualControlTypes
                 {
                     // Replace captured list reference when parent control swaps value.
                     if (value is IList nextList)
-                    {
                         list = nextList;
-                    }
                 },
                 context);
         }
@@ -52,9 +50,7 @@ internal static partial class VisualControlTypes
 
         // Abort when reflection APIs for list-like behavior are incomplete.
         if (countProperty == null || indexerProperty == null || addMethod == null || removeAtMethod == null)
-        {
             return new VisualControlInfo(null);
-        }
 
         return CreateIndexedCollectionControl(
             typeof(object),
@@ -68,9 +64,7 @@ internal static partial class VisualControlTypes
             {
                 // Replace captured array object when parent control swaps value.
                 if (value != null)
-                {
                     arrayObject = value;
-                }
             },
             context);
     }
@@ -97,9 +91,7 @@ internal static partial class VisualControlTypes
             {
                 // Replace captured CLR array when parent control swaps value.
                 if (value is Array nextArray)
-                {
                     array = nextArray;
-                }
             },
             context);
     }
@@ -116,9 +108,7 @@ internal static partial class VisualControlTypes
         {
             // Match method by name and a single-parameter signature.
             if (method.Name == methodName && method.GetParameters().Length == 1)
-            {
                 return method;
-            }
         }
 
         return null;
@@ -134,15 +124,11 @@ internal static partial class VisualControlTypes
     {
         // Normalize to Variant payload when Godot API expects Variant values.
         if (expectedType == typeof(Variant))
-        {
             return ConvertToVariantValue(value);
-        }
 
         // Preserve input when already null or assignable to expected type.
         if (value == null || expectedType.IsInstanceOfType(value))
-        {
             return value;
-        }
 
         return value;
     }

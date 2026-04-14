@@ -185,9 +185,7 @@ public partial class GameConsole : Node, ISceneDependencyReceiver
     private void FlushPendingMessages()
     {
         while (_pendingMessages.TryDequeue(out string? message))
-        {
             AppendMessage(message);
-        }
     }
 
     /// <summary>
@@ -201,9 +199,7 @@ public partial class GameConsole : Node, ISceneDependencyReceiver
 
         // Keep feed size bounded to prevent unbounded text growth.
         if (_feed.Text.Length > MaxTextFeed)
-        {
             _feed.Text = _feed.Text[^MaxTextFeed..];
-        }
 
         _feed.ScrollVertical = previousScroll;
         ScrollDownIfEnabled();
@@ -235,9 +231,7 @@ public partial class GameConsole : Node, ISceneDependencyReceiver
     {
         // Auto-scroll feed only when the setting is enabled.
         if (_autoScroll)
-        {
             _feed.ScrollVertical = (int)_feed.GetVScrollBar().MaxValue;
-        }
     }
 
     /// <summary>
@@ -265,9 +259,7 @@ public partial class GameConsole : Node, ISceneDependencyReceiver
         int argCount = parts.Length - 1;
         string[] args = new string[argCount];
         for (int index = 0; index < argCount; index++)
-        {
             args[index] = parts[index + 1];
-        }
 
         commandInfo.Code.Invoke(args);
         return true;
@@ -361,9 +353,7 @@ public partial class GameConsole : Node, ISceneDependencyReceiver
     {
         // Open settings popup only when it is currently hidden.
         if (!_settingsPopup.Visible)
-        {
             _settingsPopup.PopupCentered();
-        }
     }
 
     /// <summary>

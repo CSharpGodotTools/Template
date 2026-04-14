@@ -33,9 +33,7 @@ public sealed class AbilityState
     {
         // Equality requires the other object to be an AbilityState instance.
         if (obj is not AbilityState other)
-        {
             return false;
-        }
 
         return string.Equals(AbilityId, other.AbilityId, StringComparison.Ordinal) &&
             CooldownTicks == other.CooldownTicks &&
@@ -90,9 +88,7 @@ public sealed class PlayerClassState
     {
         // Equality requires the other object to be a PlayerClassState instance.
         if (obj is not PlayerClassState other)
-        {
             return false;
-        }
 
         return PlayerId == other.PlayerId &&
             string.Equals(DisplayName, other.DisplayName, StringComparison.Ordinal) &&

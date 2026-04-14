@@ -40,9 +40,7 @@ internal sealed class BoolControl(CheckBox checkBox) : IVisualControl
     {
         // Only apply updates when a boolean value is provided.
         if (value is bool boolValue)
-        {
             checkBox.ButtonPressed = boolValue;
-        }
     }
 
     /// <summary>

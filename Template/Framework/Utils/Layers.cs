@@ -6,6 +6,4 @@ namespace __TEMPLATE__;
 /// Source-generator marker type for project layer constants.
 /// </summary>
 [LayerNames]
-public partial class Layers
-{
-}
+public partial class Layers;

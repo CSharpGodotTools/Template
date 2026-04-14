@@ -83,9 +83,7 @@ public static class CursorUtils
             {
                 // Collect RIDs for collision objects to exclude from results.
                 if (child is CollisionObject2D collision)
-                {
                     rids.Add(collision.GetRid());
-                }
             }
 
             queryParams.Exclude = [.. rids];
@@ -102,7 +100,7 @@ public static class CursorUtils
         foreach (Godot.Collections.Dictionary result in results)
         {
             // Ensure collider payload exists before casting.
-            if (result != null && result.ContainsKey("collider"))
+            if (result?.ContainsKey("collider") == true)
             {
                 Node collider = result["collider"].As<Node>();
 

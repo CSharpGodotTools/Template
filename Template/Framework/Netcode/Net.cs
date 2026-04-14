@@ -139,9 +139,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     {
         // Skip connect request when ENet initialization failed.
         if (!CanUseENet())
-        {
             return;
-        }
 
         // Ignore duplicate start requests while client is already running.
         if (Client.IsRunning)
@@ -199,9 +197,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     {
         // Ensure shutdown pipeline runs once even when called from multiple paths.
         if (Interlocked.CompareExchange(ref _shutdownStarted, 1, 0) != 0)
-        {
             return;
-        }
 
         try
         {
@@ -214,9 +210,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
             }
 
             while (_loggerService.StillWorking())
-            {
                 await Task.Delay(ShutdownPollIntervalMs);
-            }
         }
         finally
         {
@@ -232,9 +226,7 @@ public class Net<TGameClient, TGameServer> : IDisposable
     {
         // Fast path when ENet initialization has completed successfully.
         if (_enetInitialized)
-        {
             return true;
-        }
 
         _loggerService.LogWarning("ENet is not initialized. Network operation was ignored.");
         return false;
@@ -273,16 +265,12 @@ public class Net<TGameClient, TGameServer> : IDisposable
     {
         // Skip shutdown polling when server is already stopped.
         if (!Server.IsRunning)
-        {
             return;
-        }
 
         Server.Stop();
 
         while (Server.IsRunning)
-        {
             await Task.Delay(ShutdownPollIntervalMs);
-        }
     }
 
     /// <summary>
@@ -293,16 +281,12 @@ public class Net<TGameClient, TGameServer> : IDisposable
     {
         // Skip shutdown polling when client is already stopped.
         if (!Client.IsRunning)
-        {
             return;
-        }
 
         Client.Stop();
 
         while (Client.IsRunning)
-        {
             await Task.Delay(ShutdownPollIntervalMs);
-        }
     }
 
     /// <summary>
@@ -320,23 +304,17 @@ public class Net<TGameClient, TGameServer> : IDisposable
     {
         // Prevent duplicate disposal from issuing repeated shutdown requests.
         if (Interlocked.Exchange(ref _disposed, 1) == 1)
-        {
             return;
-        }
 
         _applicationLifetime.PreQuit -= StopThreads;
 
         // Queue shutdown only when no shutdown pipeline is currently active.
         if (Interlocked.Read(ref _shutdownStarted) == 0)
-        {
             QueueStopThreads("Net.Dispose.StopThreads");
-        }
 
         // Dispose task tracker only when this Net instance created it.
         if (_ownsBackgroundTaskTracker)
-        {
             _backgroundTasks.Dispose();
-        }
     }
 
     /// <summary>

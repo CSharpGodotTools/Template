@@ -9,7 +9,7 @@ namespace Template.Setup.Testing;
 /// <summary>
 /// Integration tests that validate ENet connectivity and packet round trips.
 /// </summary>
-public class ENetTests
+public static class ENetTests
 {
     private static readonly TimeSpan _connectTimeout = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan _packetTimeout = TimeSpan.FromSeconds(10);

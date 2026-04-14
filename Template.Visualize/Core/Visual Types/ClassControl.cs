@@ -36,9 +36,7 @@ internal sealed class ClassControl(Control container, List<MemberControlBinding>
     public void SetEditable(bool editable)
     {
         foreach (MemberControlBinding binding in bindings)
-        {
             binding.Control.SetEditable(editable && binding.IsEditable);
-        }
     }
 }
 #endif

@@ -35,7 +35,7 @@ public partial class World : Node2D
     public override void _ExitTree()
     {
         // Unsubscribe only when the multiplayer panel and net layer are available.
-        if (_netControlPanel != null && _netControlPanel.Net != null)
+        if (_netControlPanel?.Net != null)
         {
             _netControlPanel.Net.ClientCreated -= OnClientCreated;
             _netControlPanel.Net.ClientDestroyed -= OnClientDestroyed;
@@ -93,9 +93,7 @@ public partial class World : Node2D
     {
         // Attach only the TopDown game-client implementation.
         if (client is GameClient gameClient)
-        {
             AttachClient(gameClient);
-        }
     }
 
     /// <summary>
@@ -106,9 +104,7 @@ public partial class World : Node2D
     {
         // Detach only when the destroyed client is the currently active one.
         if (client is GameClient gameClient && gameClient == _client)
-        {
             DetachClient();
-        }
     }
 
     /// <summary>
@@ -226,11 +222,10 @@ public partial class World : Node2D
     {
         bool hasReadyNetworkPlayer = _client != null
             && _client.IsConnected
-            && _localPlayer != null
-            && _localPlayer.HasLocalPlayer;
+            && _localPlayer?.HasLocalPlayer == true;
 
         bool serverRunning = _netControlPanel?.Net?.Server?.IsRunning == true;
-        bool stressTestRunning = _stressTest != null && _stressTest.IsRunning;
+        bool stressTestRunning = _stressTest?.IsRunning == true;
         SetProcess(stressTestRunning || hasReadyNetworkPlayer || serverRunning);
     }
 }

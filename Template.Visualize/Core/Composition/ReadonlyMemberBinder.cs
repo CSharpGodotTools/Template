@@ -45,9 +45,7 @@ internal sealed class ReadonlyMemberBinder
         {
             // Skip names that do not resolve to readable fields/properties.
             if (!TryCreateMemberAccessor(target, visualMember, out ReadonlyMemberAccessor? accessor))
-            {
                 continue;
-            }
 
             object? initialValue = accessor.GetValue(target);
 
@@ -77,7 +75,7 @@ internal sealed class ReadonlyMemberBinder
 
         PropertyInfo? property = targetType.GetProperty(visualMember, MemberBindingFlags);
         // Prefer properties with getters when both property and field names overlap.
-        if (property != null && property.GetGetMethod(true) != null)
+        if (property?.GetGetMethod(true) != null)
         {
             accessor = new ReadonlyMemberAccessor(visualMember, property, property.PropertyType);
             return true;
@@ -148,9 +146,7 @@ internal sealed class ReadonlyMemberBinder
 
         // Unsupported member types are skipped to avoid adding unusable controls.
         if (visualControlInfo.VisualControl == null)
-        {
             return;
-        }
 
         IVisualControl visualControl = visualControlInfo.VisualControl;
 
@@ -159,9 +155,7 @@ internal sealed class ReadonlyMemberBinder
 
         // Nested class controls hide internal labels in readonly column layout.
         if (visualControl is ClassControl)
-        {
             SetNestedLabelsVisible(visualControl.Control, false);
-        }
 
         _updateActions.Add(() =>
         {
@@ -169,9 +163,7 @@ internal sealed class ReadonlyMemberBinder
 
             // Push updates only when current value is available.
             if (current is not null)
-            {
                 visualControl.SetValue(current);
-            }
         });
 
         HBoxContainer hbox = new()
@@ -237,15 +229,11 @@ internal sealed class ReadonlyMemberBinder
         {
             // Apply visibility toggle to labels found at this depth.
             if (child is Label label)
-            {
                 label.Visible = visible;
-            }
 
             // Continue traversal through nested controls.
             if (child is Control childControl)
-            {
                 SetNestedLabelsVisible(childControl, visible);
-            }
         }
     }
 

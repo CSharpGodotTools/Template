@@ -5,11 +5,6 @@ namespace __TEMPLATE__.Netcode.Server;
 /// </summary>
 internal sealed class OutgoingMessage
 {
-    private readonly byte[] _data;
-    private readonly bool _isBroadcast;
-    private readonly uint _targetPeerId;
-    private readonly uint _excludePeerId;
-    private readonly bool _hasExclusion;
 
     /// <summary>
     /// Creates an outgoing message envelope.
@@ -26,37 +21,37 @@ internal sealed class OutgoingMessage
         uint excludePeerId,
         bool hasExclusion)
     {
-        _data = data;
-        _isBroadcast = isBroadcast;
-        _targetPeerId = targetPeerId;
-        _excludePeerId = excludePeerId;
-        _hasExclusion = hasExclusion;
+        Data = data;
+        IsBroadcast = isBroadcast;
+        TargetPeerId = targetPeerId;
+        ExcludePeerId = excludePeerId;
+        HasExclusion = hasExclusion;
     }
 
     /// <summary>
     /// Gets serialized payload bytes.
     /// </summary>
-    public byte[] Data => _data;
+    public byte[] Data { get; }
 
     /// <summary>
     /// Gets whether this message is broadcast.
     /// </summary>
-    public bool IsBroadcast => _isBroadcast;
+    public bool IsBroadcast { get; }
 
     /// <summary>
     /// Gets target peer id for unicast messages.
     /// </summary>
-    public uint TargetPeerId => _targetPeerId;
+    public uint TargetPeerId { get; }
 
     /// <summary>
     /// Gets excluded peer id for broadcast-except messages.
     /// </summary>
-    public uint ExcludePeerId => _excludePeerId;
+    public uint ExcludePeerId { get; }
 
     /// <summary>
     /// Gets whether broadcast exclusion is enabled.
     /// </summary>
-    public bool HasExclusion => _hasExclusion;
+    public bool HasExclusion { get; }
 
     /// <summary>
     /// Creates a unicast message targeting one peer.

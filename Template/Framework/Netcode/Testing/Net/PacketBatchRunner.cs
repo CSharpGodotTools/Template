@@ -32,9 +32,7 @@ public static class PacketBatchRunner
     {
         // Batch runs require at least one packet to validate round-trip behavior.
         if (count <= 0)
-        {
             throw new ArgumentOutOfRangeException(nameof(count), "Batch count must be positive.");
-        }
 
         int received = 0;
         Exception? mismatch = null;
@@ -44,9 +42,7 @@ public static class PacketBatchRunner
         {
             // Ignore subsequent packets after the first mismatch is recorded.
             if (mismatch != null)
-            {
                 return;
-            }
 
             // Capture the first payload mismatch and stop further comparisons.
             if (!expected.Equals(packet))
@@ -66,9 +62,7 @@ public static class PacketBatchRunner
 
         TestOutput.Step($"Sending {count}x {typeof(TPacket).Name}");
         for (int i = 0; i < count; i++)
-        {
             harness.Send(createPacket(), log: !suppressLogs);
-        }
 
         Stopwatch stopwatch = Stopwatch.StartNew();
         // Poll until all packets arrive or timeout is exceeded.
@@ -78,9 +72,7 @@ public static class PacketBatchRunner
 
             // Fail fast as soon as the receive callback reports a mismatch.
             if (mismatch != null)
-            {
                 throw mismatch;
-            }
 
             // Exit early once the expected packet count has been reached.
             if (Volatile.Read(ref received) >= count)

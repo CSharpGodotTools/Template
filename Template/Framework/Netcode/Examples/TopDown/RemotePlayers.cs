@@ -43,9 +43,7 @@ internal sealed class RemotePlayers
 
         // Free the visual node only when one exists for this player id.
         if (_players.Remove(id, out ColorRect? playerNode))
-        {
             playerNode.QueueFree();
-        }
 
         _targetPositions.Remove(id);
     }
@@ -58,9 +56,7 @@ internal sealed class RemotePlayers
         _trackedIds.Clear();
 
         foreach (ColorRect playerNode in _players.Values)
-        {
             playerNode.QueueFree();
-        }
 
         _players.Clear();
         _targetPositions.Clear();
@@ -100,9 +96,7 @@ internal sealed class RemotePlayers
     {
         // Skip interpolation work when there are no remote targets.
         if (_targetPositions.Count == 0)
-        {
             return;
-        }
 
         // Exponential interpolation keeps motion smooth regardless of frame rate.
         float interpolation = 1f - Mathf.Exp(-RemoteLerpSpeed * deltaSeconds);
@@ -111,9 +105,7 @@ internal sealed class RemotePlayers
         {
             // Interpolate only nodes that are still present in the scene.
             if (_players.TryGetValue(positionEntry.Key, out ColorRect? playerNode))
-            {
                 playerNode.Position = playerNode.Position.Lerp(positionEntry.Value, interpolation);
-            }
         }
     }
 }

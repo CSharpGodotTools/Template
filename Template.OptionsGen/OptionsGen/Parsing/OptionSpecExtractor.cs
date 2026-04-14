@@ -16,24 +16,21 @@ internal sealed class OptionSpecExtractor(
     IInvocationArgumentResolver argumentResolver,
     IDefaultLiteralResolver defaultLiteralResolver) : IOptionSpecExtractor
 {
-    private readonly IOptionFactoryMetadataResolver _metadataResolver = metadataResolver ?? throw new ArgumentNullException(nameof(metadataResolver));
-    private readonly IInvocationArgumentResolver _argumentResolver = argumentResolver ?? throw new ArgumentNullException(nameof(argumentResolver));
-    private readonly IDefaultLiteralResolver _defaultLiteralResolver = defaultLiteralResolver ?? throw new ArgumentNullException(nameof(defaultLiteralResolver));
 
     /// <summary>
     /// Resolves option factory method metadata from invocation and symbol information.
     /// </summary>
-    public IOptionFactoryMetadataResolver MetadataResolver => _metadataResolver;
+    public IOptionFactoryMetadataResolver MetadataResolver { get; } = metadataResolver ?? throw new ArgumentNullException(nameof(metadataResolver));
 
     /// <summary>
     /// Locates invocation argument expressions by parameter name or position.
     /// </summary>
-    public IInvocationArgumentResolver ArgumentResolver => _argumentResolver;
+    public IInvocationArgumentResolver ArgumentResolver { get; } = argumentResolver ?? throw new ArgumentNullException(nameof(argumentResolver));
 
     /// <summary>
     /// Produces normalized literal text for default option values.
     /// </summary>
-    public IDefaultLiteralResolver DefaultLiteralResolver => _defaultLiteralResolver;
+    public IDefaultLiteralResolver DefaultLiteralResolver { get; } = defaultLiteralResolver ?? throw new ArgumentNullException(nameof(defaultLiteralResolver));
 
     /// <summary>
     /// Attempts to build an option specification from an invocation syntax context.
@@ -56,11 +53,11 @@ internal sealed class OptionSpecExtractor(
             ?? symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().FirstOrDefault();
 
         // Only continue when the invocation matches one of the recognized option factory shapes.
-        if (!_metadataResolver.TryResolve(invocation, method, out OptionFactoryMetadata? metadata) || metadata is null)
+        if (!MetadataResolver.TryResolve(invocation, method, out OptionFactoryMetadata? metadata) || metadata is null)
             return false;
 
         // Resolve the save-key argument using metadata-provided name/index rules.
-        ExpressionSyntax? saveKeyExpression = _argumentResolver.FindArgumentExpression(
+        ExpressionSyntax? saveKeyExpression = ArgumentResolver.FindArgumentExpression(
             invocation,
             method,
             OptionsGenConstants.SaveKeyParameterName,
@@ -72,13 +69,13 @@ internal sealed class OptionSpecExtractor(
 
         // Save keys must be compile-time constant, non-empty strings to guarantee deterministic generation.
         Optional<object?> saveKeyConstant = context.SemanticModel.GetConstantValue(saveKeyExpression);
-        
+
         // Reject missing, non-string, or empty save keys during spec extraction.
         if (!saveKeyConstant.HasValue || saveKeyConstant.Value is not string saveKey || string.IsNullOrWhiteSpace(saveKey))
             return false;
 
         // Normalize the default value to emitted literal syntax for the discovered option kind.
-        string defaultLiteral = _defaultLiteralResolver.ResolveDefaultLiteral(
+        string defaultLiteral = DefaultLiteralResolver.ResolveDefaultLiteral(
             context.SemanticModel,
             invocation,
             method,

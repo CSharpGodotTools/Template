@@ -8,7 +8,7 @@ namespace __TEMPLATE__.Ui;
 /// <summary>
 /// Registers built-in console commands for common debugging and application control tasks.
 /// </summary>
-public class Commands
+public static class Commands
 {
     /// <summary>
     /// Registers all built-in commands on the provided console instance.
@@ -51,7 +51,7 @@ public class Commands
     private static void CommandDebug(string[] args, ILoggerService logger)
     {
         // Require at least one argument before attempting debug output.
-        if (args.Length <= 0)
+        if (args.Length == 0)
         {
             logger.Log("Specify at least one argument");
             return;

@@ -100,9 +100,7 @@ internal sealed class BackgroundTaskTracker(ILoggerService logger) : IBackground
     {
         // Cancel only once when multiple callers race during shutdown.
         if (Interlocked.CompareExchange(ref _shutdownStarted, 1, 0) == 0)
-        {
             _shutdownCts.Cancel();
-        }
 
         await WaitForAllAsync().ConfigureAwait(false);
     }

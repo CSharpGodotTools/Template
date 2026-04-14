@@ -28,9 +28,7 @@ internal static partial class VisualControlTypes
 
         // Populate the option list from enum values.
         foreach (object item in Enum.GetValues(type))
-        {
             optionButton.AddItem(VisualText.ToSpacedName(item.ToString()!));
-        }
 
         void OnItemSelected(long index)
         {

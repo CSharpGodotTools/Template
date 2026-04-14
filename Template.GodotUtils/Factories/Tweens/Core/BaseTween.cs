@@ -32,7 +32,7 @@ public abstract class BaseTween<TSelf> where TSelf : BaseTween<TSelf>
     /// Creates a tween bound to the provided node.
     /// </summary>
     /// <param name="node">Node that owns the tween and receives property updates.</param>
-    public BaseTween(Node node)
+    protected BaseTween(Node node)
     {
         _node = node;
 
@@ -320,9 +320,7 @@ public abstract class BaseTween<TSelf> where TSelf : BaseTween<TSelf>
     {
         // Mutating methods require an active tweener created by Animate.
         if (_tweener == null)
-        {
             throw new InvalidOperationException($"Cannot call {methodName}() because no tweener has been set with tween.Animate(...)");
-        }
 
         action();
         return Self;

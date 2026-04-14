@@ -16,8 +16,6 @@ public partial class OptionsInput
         private readonly Action<HotkeyButtonInfo> _onHotkeyPressed;
         private readonly Action<HotkeyButtonInfo> _onPlusPressed;
         private readonly FocusOutlineManager _focusOutline;
-
-        private readonly HBoxContainer _rowRoot;
         private readonly HBoxContainer _events;
 
         /// <summary>
@@ -43,22 +41,22 @@ public partial class OptionsInput
             _onPlusPressed = onPlusPressed;
             _focusOutline = focusOutline;
 
-            _rowRoot = new HBoxContainer();
+            RowRoot = new HBoxContainer();
 
             Label label = LabelFactory.Create(displayName);
-            _rowRoot.AddChild(label);
+            RowRoot.AddChild(label);
 
             label.HorizontalAlignment = HorizontalAlignment.Left;
             label.CustomMinimumSize = new Vector2(200, 0);
 
             _events = new HBoxContainer();
-            _rowRoot.AddChild(_events);
+            RowRoot.AddChild(_events);
         }
 
         /// <summary>
         /// Root control for this action row.
         /// </summary>
-        public HBoxContainer RowRoot => _rowRoot;
+        public HBoxContainer RowRoot { get; }
 
         /// <summary>
         /// Adds binding buttons for keyboard and mouse events currently assigned to the action.

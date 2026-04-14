@@ -7,7 +7,7 @@ namespace Template.Setup.Testing;
 /// <summary>
 /// Basic smoke tests for test project setup validation.
 /// </summary>
-public class Tests
+public static class Tests
 {
     /// <summary>
     /// Verifies expected lowercase conversion behavior.

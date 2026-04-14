@@ -74,9 +74,7 @@ public class Services(AutoloadsFramework autoloads)
     {
         // Avoid duplicate scene-change subscriptions.
         if (_isCleanupSubscribed)
-        {
             return;
-        }
 
         _sceneManager.PreSceneChanged += CleanupOnSceneChanged;
         _isCleanupSubscribed = true;

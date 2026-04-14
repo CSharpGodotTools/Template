@@ -25,9 +25,9 @@ internal static class CompilationDiagnosticsFormatter
 
         sb.AppendLine("========= Errors =========\n");
 
-        int sevWidth = 8;
-        int idWidth = 7;
-        int locWidth = 18;
+        const int sevWidth = 8;
+        const int idWidth = 7;
+        const int locWidth = 18;
 
         static string Pad(string s, int w) => s.Length >= w ? s : s + new string(' ', w - s.Length);
 
@@ -54,9 +54,7 @@ internal static class CompilationDiagnosticsFormatter
             .Where(p => !string.IsNullOrEmpty(p))];
 
         foreach (string @ref in referencePaths)
-        {
             sb.AppendLine(@ref);
-        }
 
         sb.AppendLine();
         sb.AppendLine("========= Generated source =========\n");

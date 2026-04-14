@@ -24,9 +24,7 @@ public class ShaderTween : BaseTween<ShaderTween>
     {
         // Require a ShaderMaterial so shader parameters can be animated.
         if (canvasItem.Material is not ShaderMaterial shaderMaterial)
-        {
             throw new InvalidOperationException("Animating shader material has not been set. Ensure the node has a ShaderMaterial assigned.");
-        }
 
         _shaderMaterial = shaderMaterial;
     }

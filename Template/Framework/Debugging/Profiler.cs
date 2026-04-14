@@ -7,7 +7,7 @@ namespace __TEMPLATE__.Debugging;
 /// <summary>
 /// Tracks named timings and publishes averaged process metrics to the debug overlay.
 /// </summary>
-public class Profiler
+public static class Profiler
 {
     // Variables
     private static readonly Dictionary<string, ProfilerEntry> _entries = [];

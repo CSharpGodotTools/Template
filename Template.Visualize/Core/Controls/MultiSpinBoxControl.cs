@@ -26,9 +26,7 @@ internal sealed class MultiSpinBoxControl<T>(Control container, SpinBox[] spinBo
         double[] components = getComponents(typedValue);
 
         for (int i = 0; i < spinBoxes.Length && i < components.Length; i++)
-        {
             spinBoxes[i].Value = components[i];
-        }
     }
 
     /// <summary>
@@ -43,9 +41,7 @@ internal sealed class MultiSpinBoxControl<T>(Control container, SpinBox[] spinBo
     public void SetEditable(bool editable)
     {
         foreach (SpinBox spinBox in spinBoxes)
-        {
             spinBox.Editable = editable;
-        }
     }
 }
 #endif

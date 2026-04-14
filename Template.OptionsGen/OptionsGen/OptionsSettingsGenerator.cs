@@ -11,18 +11,16 @@ namespace Template.OptionsGen;
 [Generator]
 public sealed class OptionsSettingsGenerator : IIncrementalGenerator
 {
-    private readonly IOptionSpecExtractor _specExtractor;
-    private readonly IOptionsSettingsSourceEmitter _sourceEmitter;
 
     /// <summary>
     /// Extracts option specifications from syntax contexts.
     /// </summary>
-    internal IOptionSpecExtractor SpecExtractor => _specExtractor;
+    internal IOptionSpecExtractor SpecExtractor { get; }
 
     /// <summary>
     /// Emits generated source from extracted option specifications.
     /// </summary>
-    internal IOptionsSettingsSourceEmitter SourceEmitter => _sourceEmitter;
+    internal IOptionsSettingsSourceEmitter SourceEmitter { get; }
 
     /// <summary>
     /// Creates the generator with default parser and emitter implementations.
@@ -39,8 +37,8 @@ public sealed class OptionsSettingsGenerator : IIncrementalGenerator
     /// <param name="sourceEmitter">Source emitter implementation.</param>
     internal OptionsSettingsGenerator(IOptionSpecExtractor specExtractor, IOptionsSettingsSourceEmitter sourceEmitter)
     {
-        _specExtractor = specExtractor ?? throw new ArgumentNullException(nameof(specExtractor));
-        _sourceEmitter = sourceEmitter ?? throw new ArgumentNullException(nameof(sourceEmitter));
+        SpecExtractor = specExtractor ?? throw new ArgumentNullException(nameof(specExtractor));
+        SourceEmitter = sourceEmitter ?? throw new ArgumentNullException(nameof(sourceEmitter));
     }
 
     /// <summary>
@@ -53,17 +51,14 @@ public sealed class OptionsSettingsGenerator : IIncrementalGenerator
         IncrementalValuesProvider<OptionSettingSpec?> specs = context.SyntaxProvider
             .CreateSyntaxProvider(
                 static (node, _) => node is InvocationExpressionSyntax,
-                (syntaxContext, _) => _specExtractor.TryCreateSpec(syntaxContext, out OptionSettingSpec? spec) ? spec : null);
+                (syntaxContext, _) => SpecExtractor.TryCreateSpec(syntaxContext, out OptionSettingSpec? spec) ? spec : null);
 
         // Combine extracted specs with compilation for final emission stage.
         IncrementalValueProvider<(Compilation Compilation, ImmutableArray<OptionSettingSpec?> Specs)> combined =
             context.CompilationProvider.Combine(specs.Collect());
 
         // Emit generated source once compilation and collected specs are available.
-        context.RegisterSourceOutput(combined, (productionContext, source) =>
-        {
-            _sourceEmitter.Emit(productionContext, source.Compilation, source.Specs);
-        });
+        context.RegisterSourceOutput(combined, (productionContext, source) => SourceEmitter.Emit(productionContext, source.Compilation, source.Specs));
     }
 
     /// <summary>

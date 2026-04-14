@@ -27,24 +27,20 @@ internal sealed class OptionsSettingsSourceEmitter(
         DiagnosticSeverity.Info,
         isEnabledByDefault: true);
 
-    private readonly IOptionSpecDeduplicator _specDeduplicator = specDeduplicator ?? throw new ArgumentNullException(nameof(specDeduplicator));
-    private readonly IOptionsSettingsTypeLocator _typeLocator = typeLocator ?? throw new ArgumentNullException(nameof(typeLocator));
-    private readonly IOptionsSettingsSourceBuilder _sourceBuilder = sourceBuilder ?? throw new ArgumentNullException(nameof(sourceBuilder));
-
     /// <summary>
     /// Deduplicates parsed option specifications before source emission.
     /// </summary>
-    public IOptionSpecDeduplicator SpecDeduplicator => _specDeduplicator;
+    public IOptionSpecDeduplicator SpecDeduplicator { get; } = specDeduplicator ?? throw new ArgumentNullException(nameof(specDeduplicator));
 
     /// <summary>
     /// Locates the runtime options settings type that receives generated properties.
     /// </summary>
-    public IOptionsSettingsTypeLocator TypeLocator => _typeLocator;
+    public IOptionsSettingsTypeLocator TypeLocator { get; } = typeLocator ?? throw new ArgumentNullException(nameof(typeLocator));
 
     /// <summary>
     /// Builds the final generated source text from resolved symbols and normalized specs.
     /// </summary>
-    public IOptionsSettingsSourceBuilder SourceBuilder => _sourceBuilder;
+    public IOptionsSettingsSourceBuilder SourceBuilder { get; } = sourceBuilder ?? throw new ArgumentNullException(nameof(sourceBuilder));
 
     /// <summary>
     /// Emits strongly typed option accessors when option specs are present and an
@@ -63,7 +59,7 @@ internal sealed class OptionsSettingsSourceEmitter(
             return;
 
         // Generated properties target OptionsSettings; skip generation if that type is absent.
-        INamedTypeSymbol? optionsSettings = _typeLocator.FindTypeByName(
+        INamedTypeSymbol? optionsSettings = TypeLocator.FindTypeByName(
             compilation.Assembly.GlobalNamespace,
             OptionsGenConstants.OptionsSettingsTypeName);
 
@@ -75,7 +71,7 @@ internal sealed class OptionsSettingsSourceEmitter(
         }
 
         // Normalize duplicates before emission so each save key maps to a single generated property.
-        IReadOnlyList<OptionSettingSpec> dedupedSpecs = _specDeduplicator.Deduplicate(context, rawSpecs);
+        IReadOnlyList<OptionSettingSpec> dedupedSpecs = SpecDeduplicator.Deduplicate(context, rawSpecs);
 
         // Stop when deduplication yields no remaining option specs.
         if (dedupedSpecs.Count == 0)
@@ -86,7 +82,7 @@ internal sealed class OptionsSettingsSourceEmitter(
         orderedSpecs.Sort(static (left, right) => string.Compare(left.SaveKey, right.SaveKey, StringComparison.Ordinal));
 
         // Emit one generated source file containing all normalized option accessors.
-        string generatedSource = _sourceBuilder.BuildSource(optionsSettings, orderedSpecs);
+        string generatedSource = SourceBuilder.BuildSource(optionsSettings, orderedSpecs);
         context.AddSource(OptionsGenConstants.GeneratedSourceHintName, SourceText.From(generatedSource, Encoding.UTF8));
     }
 }

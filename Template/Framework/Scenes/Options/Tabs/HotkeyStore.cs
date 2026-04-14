@@ -107,9 +107,7 @@ public partial class OptionsInput
         {
             Godot.Collections.Array<InputEvent> events = InputMap.ActionGetEvents(action);
             for (int i = 0; i < events.Count; i++)
-            {
                 InputMap.ActionEraseEvent(action, events[i]);
-            }
         }
 
         /// <summary>
@@ -120,15 +118,11 @@ public partial class OptionsInput
         {
             Godot.Collections.Array<InputEvent> existing = InputMap.ActionGetEvents(action);
             for (int i = 0; i < existing.Count; i++)
-            {
                 InputMap.ActionEraseEvent(action, existing[i]);
-            }
 
             Godot.Collections.Array<InputEvent> stored = Actions[action];
             for (int i = 0; i < stored.Count; i++)
-            {
                 InputMap.ActionAddEvent(action, stored[i]);
-            }
         }
 
         /// <summary>

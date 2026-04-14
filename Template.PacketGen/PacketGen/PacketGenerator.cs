@@ -79,9 +79,7 @@ public sealed class PacketGenerator : IIncrementalGenerator
 
                 // Emit source only when generator returned non-null content.
                 if (source is not null)
-                {
                     spc.AddSource(BuildHintName(symbol), source);
-                }
             });
     }
 
@@ -127,17 +125,13 @@ public sealed class PacketGenerator : IIncrementalGenerator
 
                 // Ignore classes without a semantic type symbol.
                 if (ctx.SemanticModel.GetDeclaredSymbol(syntax) is not INamedTypeSymbol symbol)
-                {
                     return null;
-                }
 
                 foreach (AttributeData attribute in symbol.GetAttributes())
                 {
                     // Keep only classes marked with PacketRegistryAttribute.
                     if (attribute.AttributeClass?.Name == PacketGenConstants.PacketRegistryAttributeTypeName)
-                    {
                         return symbol;
-                    }
                 }
 
                 return null;
@@ -150,7 +144,6 @@ public sealed class PacketGenerator : IIncrementalGenerator
     /// Returns <c>true</c> if <paramref name="symbol"/> inherits from a class named <paramref name="baseTypeName"/>.
     /// </summary>
     /// <param name="symbol">Candidate symbol.</param>
-    /// <param name="baseTypeName">Base type name to match.</param>
     /// <returns>True when symbol inherits from the named base type.</returns>
     private static bool IsPacketType(INamedTypeSymbol symbol)
     {
@@ -171,9 +164,7 @@ public sealed class PacketGenerator : IIncrementalGenerator
         {
             // Match by base-type name while walking inheritance chain.
             if (current.Name == baseTypeName)
-            {
                 return true;
-            }
 
             current = current.BaseType;
         }
@@ -220,9 +211,7 @@ public sealed class PacketGenerator : IIncrementalGenerator
         {
             // Ignore attributes other than PacketRegistryAttribute.
             if (attribute.AttributeClass?.Name != PacketGenConstants.PacketRegistryAttributeTypeName)
-            {
                 continue;
-            }
 
             // Expect a single constructor argument containing the opcode backing type.
             if (attribute.ConstructorArguments.Length == 1)
@@ -231,9 +220,7 @@ public sealed class PacketGenerator : IIncrementalGenerator
 
                 // Return minimally-qualified type name when argument is a type symbol.
                 if (arg.Kind == TypedConstantKind.Type && arg.Value is ITypeSymbol typeSymbol)
-                {
                     return typeSymbol.ToDisplayString(SymbolDisplayFormat.MinimallyQualifiedFormat);
-                }
             }
         }
 

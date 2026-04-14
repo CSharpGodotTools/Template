@@ -42,9 +42,7 @@ internal static partial class VisualControlTypes
 
         // Guard against invalid indices before copying array segments.
         if (index < 0 || index >= source.Length)
-        {
-            throw new ArgumentOutOfRangeException(nameof(index), index, $"[Visualize] Index was out of range");
-        }
+            throw new ArgumentOutOfRangeException(nameof(index), index, "[Visualize] Index was out of range");
 
         Array dest = Array.CreateInstance(source.GetType().GetElementType()!, source.Length - 1);
         Array.Copy(source, 0, dest, 0, index);
@@ -220,9 +218,7 @@ internal static partial class VisualControlTypes
             {
                 // Ignore remove clicks while the collection is in readonly mode.
                 if (!isEditable)
-                {
                     return;
-                }
 
                 int currentIndex = GetRowIndex(row);
                 listVBox.RemoveChild(row);
@@ -241,17 +237,13 @@ internal static partial class VisualControlTypes
         }
 
         for (int i = 0; i < getCount(); i++)
-        {
             AddEntry(getValue(i), i);
-        }
 
         void OnAddPressed()
         {
             // Ignore add clicks while the collection is in readonly mode.
             if (!isEditable)
-            {
                 return;
-            }
 
             object newValue = VisualMethods.CreateDefaultValue(elementType);
             addValue(newValue);
@@ -286,17 +278,13 @@ internal static partial class VisualControlTypes
             {
                 // Only indexed entry rows participate in index re-numbering.
                 if (child is not HBoxContainer row || !row.HasMeta(IndexMetaKey))
-                {
                     continue;
-                }
 
                 int currentIndex = GetRowIndex(row);
 
                 // Shift rows that were after the removed element.
                 if (currentIndex > removedIndex)
-                {
                     row.SetMeta(IndexMetaKey, currentIndex - 1);
-                }
             }
         }
 
@@ -313,18 +301,14 @@ internal static partial class VisualControlTypes
             {
                 // Keep the add button and rebuild only entry rows.
                 if (child == addButton)
-                {
                     continue;
-                }
 
                 listVBox.RemoveChild(child);
                 child.QueueFree();
             }
 
             for (int i = 0; i < getCount(); i++)
-            {
                 AddEntry(getValue(i), i);
-            }
 
             listVBox.MoveChild(addButton, listVBox.GetChildCount() - 1);
         }

@@ -153,9 +153,7 @@ public abstract class GodotServer : ENetServer
         byte[] data = packet.GetData();
 
         foreach (uint peerId in peerIds)
-        {
             EnqueueOutgoing(OutgoingMessage.Unicast(data, peerId));
-        }
     }
 
     // Throttling state keyed by packet opcode.
@@ -267,9 +265,7 @@ public abstract class GodotServer : ENetServer
             return;
 
         foreach (ServerPacket packet in packets)
-        {
             Send(packet, peerId);
-        }
     }
 
     /// <summary>
@@ -283,9 +279,7 @@ public abstract class GodotServer : ENetServer
             return;
 
         foreach (ServerPacket packet in packets)
-        {
             Broadcast(packet);
-        }
     }
 
     /// <summary>
@@ -300,9 +294,7 @@ public abstract class GodotServer : ENetServer
             return;
 
         foreach (ServerPacket packet in packets)
-        {
             Broadcast(packet, excludePeerId);
-        }
     }
 
     /// <summary>
@@ -343,9 +335,7 @@ public abstract class GodotServer : ENetServer
 
         // Skip send logging when disabled or packet type is ignored.
         if (!Options.PrintPacketSent || IgnoredPackets.Contains(packetType))
-        {
             return;
-        }
 
         string byteSize = FormatByteSize(packet.GetSize());
 
@@ -353,9 +343,7 @@ public abstract class GodotServer : ENetServer
 
         // Include packet payload details only when verbose packet-data logging is enabled.
         if (Options.PrintPacketData)
-        {
             packetData = $"\n{packet.ToFormattedString()}";
-        }
 
         Log($"Sending packet {packetType.Name} {byteSize}{targetDescription}{packetData}");
     }

@@ -42,9 +42,7 @@ public static class RayCast2DExtensions
         node.CollisionMask = 0;
 
         foreach (int value in values)
-        {
             node.SetCollisionMaskValue(value, true);
-        }
     }
 
     /// <summary>

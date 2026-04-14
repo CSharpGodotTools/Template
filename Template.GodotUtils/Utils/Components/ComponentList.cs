@@ -26,9 +26,7 @@ public class ComponentList
     public void Add(ComponentList components)
     {
         foreach (Component component in components._components)
-        {
             _components.Add(component);
-        }
     }
 
     /// <summary>
@@ -65,8 +63,6 @@ public class ComponentList
     public void SetActive(bool active)
     {
         foreach (var component in _components)
-        {
             component.SetActive(active);
-        }
     }
 }

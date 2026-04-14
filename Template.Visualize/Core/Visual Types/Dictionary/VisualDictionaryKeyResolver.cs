@@ -47,9 +47,7 @@ internal sealed class VisualDictionaryKeyResolver : IVisualDictionaryKeyResolver
 
         // Non-numeric types cannot be auto-adjusted here.
         if (!keyType.IsNumericType())
-        {
             return false;
-        }
 
         long numericCandidate = duplicateNumeric;
 
@@ -60,15 +58,11 @@ internal sealed class VisualDictionaryKeyResolver : IVisualDictionaryKeyResolver
 
             // Stop when conversion to the target type fails.
             if (!TryConvertFromInt64(numericCandidate, keyType, out object nextKey))
-            {
                 return false;
-            }
 
             // Skip values already in use.
             if (containsKey(nextKey))
-            {
                 continue;
-            }
 
             resolvedKey = nextKey;
             return true;
@@ -92,20 +86,16 @@ internal sealed class VisualDictionaryKeyResolver : IVisualDictionaryKeyResolver
         {
             // Bail when the enum key cannot be converted.
             if (!TryConvertToInt64(duplicateKey, out long candidate))
-            {
                 return false;
-            }
 
             while (true)
             {
-                candidate += 1;
+                candidate++;
                 object enumKey = Enum.ToObject(keyType, candidate);
 
                 // Skip enum candidates that are already present in the dictionary.
                 if (containsKey(enumKey))
-                {
                     continue;
-                }
 
                 resolvedKey = enumKey;
                 return true;
@@ -117,25 +107,19 @@ internal sealed class VisualDictionaryKeyResolver : IVisualDictionaryKeyResolver
         {
             // Bail when the numeric key cannot be converted.
             if (!TryConvertToInt64(duplicateKey, out long candidate))
-            {
                 return false;
-            }
 
             while (true)
             {
-                candidate += 1;
+                candidate++;
 
                 // Abort if the incremented value cannot be represented by keyType.
                 if (!TryConvertFromInt64(candidate, keyType, out object nextKey))
-                {
                     return false;
-                }
 
                 // Skip values already in use.
                 if (containsKey(nextKey))
-                {
                     continue;
-                }
 
                 resolvedKey = nextKey;
                 return true;

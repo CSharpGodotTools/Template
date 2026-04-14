@@ -111,9 +111,7 @@ internal partial class VisualizeExampleSprite : Sprite2D
 
             // Build a readable multi-line payload so each entry is easy to inspect in the debug panel.
             foreach (KeyValuePair<int, Vector4> kvp in dictionary)
-            {
                 logMessage += $"    {{ {kvp.Key}, {kvp.Value} }},\n";
-            }
 
             logMessage = logMessage.TrimEnd('\n', ',') + "\n]";
 

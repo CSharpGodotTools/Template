@@ -137,9 +137,7 @@ internal sealed class LocalPlayer
 
         // Move only when there is non-zero directional input this frame.
         if (inputDirection != Vector2.Zero)
-        {
             node.Position += inputDirection * MoveSpeed * deltaSeconds;
-        }
     }
 
     /// <summary>
@@ -153,15 +151,11 @@ internal sealed class LocalPlayer
 
         // Throttle updates to the configured send interval.
         if (_sendAccumulator < SendIntervalSeconds)
-        {
             return;
-        }
 
         // Avoid network sends for sub-epsilon jitter.
         if (!HasSignificantMovement(position))
-        {
             return;
-        }
 
         _sendAccumulator = 0f;
         _lastSentPosition = position;

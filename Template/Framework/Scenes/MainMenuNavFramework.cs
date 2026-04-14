@@ -73,9 +73,7 @@ public abstract partial class MainMenuNavFramework : Node, ISceneDependencyRecei
 
             // Solve the issue of pressing up key not focusing on play button if focus was never changed before
             if (keyEvent.IsJustPressed(Key.Up) && _focusWasNeverChanged)
-            {
                 FocusOnPlayBtn();
-            }
         }
     }
 

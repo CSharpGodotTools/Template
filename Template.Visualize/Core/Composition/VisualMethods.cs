@@ -52,10 +52,7 @@ internal static class VisualMethods
             int capturedIndex = i;
 
             // Build a typed editor and capture updates into providedValues.
-            VisualControlInfo control = VisualControlTypes.CreateControlForType(paramType, null, new VisualControlContext(providedValues[i], v =>
-            {
-                providedValues[capturedIndex] = v;
-            }));
+            VisualControlInfo control = VisualControlTypes.CreateControlForType(paramType, null, new VisualControlContext(providedValues[i], v => providedValues[capturedIndex] = v));
 
             // Add a row only when a visual control exists for the parameter type.
             if (control.VisualControl != null)
@@ -112,9 +109,7 @@ internal static class VisualMethods
 
         // Apply optional width constraint for aligned method-button layouts.
         if (minButtonWidth > 0)
-        {
             button.CustomMinimumSize = new Vector2(minButtonWidth, 0);
-        }
 
         StyleBoxFlat methodButtonStyle = new()
         {
@@ -206,9 +201,7 @@ internal static class VisualMethods
 
             // Guard against popup creation failures in parameterized mode.
             if (popup == null)
-            {
                 return;
-            }
 
             Vector2 popupSize = popup.GetContentsMinimumSize();
             Vector2 buttonScreenPosition = button.GetScreenPosition();
@@ -225,9 +218,7 @@ internal static class VisualMethods
         {
             // Run button exists only for parameterized popup flows.
             if (runButton == null)
-            {
                 return;
-            }
 
             object[] parameters = ParameterConverter.ConvertParameterInfoToObjectArray(paramInfos, providedValues);
             method.Invoke(target, parameters);
@@ -245,7 +236,7 @@ internal static class VisualMethods
                 popup.AboutToPopup -= OnPopupAboutToPopup;
                 popup.PopupHide -= OnPopupHide;
             }
-            
+
             button.TreeExited -= OnExitedTree;
         }
 
@@ -258,7 +249,7 @@ internal static class VisualMethods
             popup.AboutToPopup += OnPopupAboutToPopup;
             popup.PopupHide += OnPopupHide;
         }
-        
+
         button.TreeExited += OnExitedTree;
 
         return button;
@@ -284,9 +275,7 @@ internal static class VisualMethods
 
         // Concrete reference types with default constructors can be instantiated.
         if (!type.IsAbstract && type.GetConstructor(Type.EmptyTypes) != null)
-        {
             return Activator.CreateInstance(type)!;
-        }
 
         return null!;
     }

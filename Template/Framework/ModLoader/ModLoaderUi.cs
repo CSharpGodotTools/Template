@@ -100,8 +100,8 @@ public class ModLoaderUi
     /// <param name="options">JSON options used for manifest deserialization.</param>
     private void TryLoadModDirectory(Node hostNode, string modsPath, string folderName, JsonSerializerOptions options)
     {
-        string modRoot = $@"{modsPath}/{folderName}";
-        string modJson = $@"{modRoot}/mod.json";
+        string modRoot = $"{modsPath}/{folderName}";
+        string modJson = $"{modRoot}/mod.json";
 
         // Require a manifest file before attempting to load this folder as a mod.
         if (!File.Exists(modJson))
@@ -152,7 +152,7 @@ public class ModLoaderUi
         _mods.Add(modInfo.Id, modInfo);
 
         // Resource pack loading happens first so referenced assets become available to mod scenes.
-        string pckPath = $@"{modRoot}/mod.pck";
+        string pckPath = $"{modRoot}/mod.pck";
 
         // Load optional resource pack when present.
         if (File.Exists(pckPath))
@@ -171,13 +171,11 @@ public class ModLoaderUi
         }
 
         // Managed entrypoints are optional and run after metadata normalization and pack loading.
-        string dllPath = $@"{modRoot}/Mod.dll";
+        string dllPath = $"{modRoot}/Mod.dll";
 
         // Load optional managed assembly when present.
         if (File.Exists(dllPath))
-        {
             TryLoadManagedMod(hostNode, modInfo, dllPath);
-        }
     }
 
     /// <summary>
@@ -207,9 +205,7 @@ public class ModLoaderUi
 
         // Treat a non-null model as a successful deserialization.
         if (modInfo != null)
-        {
             return true;
-        }
 
         _logger.LogWarning($"The file '{modJsonPath}' is empty or malformed and was skipped");
         modInfo = new ModInfo();
@@ -329,9 +325,7 @@ public class ModLoaderUi
 
         // Warn when no entrypoint implementations were found.
         if (entrypoints.Count == 0)
-        {
             _logger.LogWarning($"Managed mod '{modInfo.Id}' does not contain an IModEntrypoint implementation");
-        }
 
         return entrypoints;
     }
@@ -409,18 +403,14 @@ public class ModLoaderUi
         {
             // Share host assemblies so type identity stays consistent across mod boundaries.
             if (_sharedAssemblies.TryGetValue(assemblyName.Name!, out Assembly? sharedAssembly))
-            {
                 return sharedAssembly;
-            }
 
             // Fall back to mod-local dependency resolution for third-party assemblies.
             string? assemblyPath = _resolver.ResolveAssemblyToPath(assemblyName);
 
             // Load dependency from resolved on-disk path when available.
             if (!string.IsNullOrWhiteSpace(assemblyPath))
-            {
                 return LoadFromAssemblyPath(assemblyPath);
-            }
 
             return null;
         }

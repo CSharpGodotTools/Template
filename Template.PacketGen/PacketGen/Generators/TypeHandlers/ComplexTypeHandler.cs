@@ -43,59 +43,40 @@ internal sealed class ComplexTypeHandler : ITypeHandler
     {
         // Complex handling applies only to named type symbols.
         if (type is not INamedTypeSymbol namedType)
-        {
             return false;
-        }
 
         // Handle nullable value-types by validating their wrapped struct type.
         if (ComplexTypeTypeClassifier.IsNullableValueType(namedType))
         {
             // Reject malformed nullable symbols without a named wrapped type.
             if (namedType.TypeArguments[0] is not INamedTypeSymbol nested)
-            {
                 return false;
-            }
 
             // Restrict support to user-authored source types.
             if (!nested.Locations.Any(static location => location.IsInSource))
-            {
                 return false;
-            }
 
             return nested.SpecialType == SpecialType.None && nested.TypeKind == TypeKind.Struct;
         }
 
         // Restrict support to user-authored source types.
         if (!namedType.Locations.Any(static location => location.IsInSource))
-        {
             return false;
-        }
 
         // Exclude intrinsic special types from complex-type handling.
         if (namedType.SpecialType != SpecialType.None)
-        {
             return false;
-        }
 
         // Exclude tuple syntax because it has dedicated handling paths.
         if (namedType.IsTupleType)
-        {
             return false;
-        }
 
         // Allow non-abstract classes.
         if (namedType.TypeKind == TypeKind.Class)
-        {
             return !namedType.IsAbstract;
-        }
 
         // Allow structs.
-        if (namedType.TypeKind == TypeKind.Struct)
-        {
-            return true;
-        }
-
-        return false;
+        return namedType.TypeKind == TypeKind.Struct;
     }
 
     /// <summary>

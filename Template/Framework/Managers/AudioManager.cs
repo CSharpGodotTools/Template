@@ -99,9 +99,7 @@ public class AudioManager : IDisposable, IAudioService
     public void FadeOutSFX(double fadeTime = 1)
     {
         foreach (AudioStreamPlayer2D sfxPlayer in _sfxPool.ActiveNodes)
-        {
             Tweens.Animate(sfxPlayer).Property(AudioStreamPlayer.PropertyName.VolumeDb, MutedVolume, fadeTime);
-        }
     }
 
     /// <summary>
@@ -132,9 +130,7 @@ public class AudioManager : IDisposable, IAudioService
         float mappedVolume = NormalizeConfigVolume(volume);
 
         foreach (AudioStreamPlayer2D sfxPlayer in _sfxPool.ActiveNodes)
-        {
             sfxPlayer.VolumeDb = mappedVolume;
-        }
     }
 
     // Private Methods

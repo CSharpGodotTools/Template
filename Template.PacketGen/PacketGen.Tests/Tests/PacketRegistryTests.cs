@@ -108,13 +108,11 @@ internal sealed class PacketRegistryTests
             Type packetType = (Type)entry.Key;
             // Skip entries until the requested packet type is found.
             if (packetType.FullName != packetTypeName)
-            {
                 continue;
-            }
 
             object packetInfo = entry.Value!;
             FieldInfo opcodeField = packetInfo.GetType().GetField("Opcode", BindingFlags.Public | BindingFlags.Instance)!;
-            int opcode = Convert.ToInt32(opcodeField.GetValue(packetInfo)!);
+            int opcode = Convert.ToInt32(opcodeField.GetValue(packetInfo));
             Assert.That(opcode, Is.EqualTo(expectedOpcode), $"Unexpected opcode for '{packetTypeName}'.");
             return;
         }

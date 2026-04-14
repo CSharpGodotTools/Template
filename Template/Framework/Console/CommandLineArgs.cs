@@ -6,7 +6,7 @@ namespace __TEMPLATE__.Ui.Console;
 /// <summary>
 /// Handles custom command line arguments set for each instance.
 /// </summary>
-public class CommandLineArgs
+public static class CommandLineArgs
 {
     /// <summary>
     /// Applies supported command-line window layout presets when running outside the editor.
@@ -45,7 +45,7 @@ public class CommandLineArgs
     private static Dictionary<string, WindowSettings> GetWindowSettingsMap()
     {
         // Define the vertical space for the window bar
-        int windowBarHeight = 30; // Adjust this value based on your actual window bar height
+        const int windowBarHeight = 30; // Adjust this value based on your actual window bar height
 
         // Get screen size
         Vector2 screenSize = DisplayServer.ScreenGetSize();

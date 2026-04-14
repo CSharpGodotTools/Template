@@ -160,9 +160,7 @@ public static class DirectoryUtils
 
         // Delete only leaf directories that have no files and no subdirectories.
         if (IsDirectoryEmpty(path))
-        {
             Directory.Delete(path, recursive: false);
-        }
     }
 
     /// <summary>

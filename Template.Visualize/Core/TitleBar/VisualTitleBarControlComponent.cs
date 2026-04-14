@@ -171,9 +171,7 @@ internal sealed class VisualTitleBarControlComponent(
         {
             // Optional controls are added only when they were created for this panel configuration.
             if (control != null)
-            {
                 row.AddChild(control);
-            }
         }
     }
 
@@ -186,9 +184,7 @@ internal sealed class VisualTitleBarControlComponent(
     {
         // Null buttons represent disabled feature paths for the current panel.
         if (button == null)
-        {
             return;
-        }
 
         void OnPressed() => handler();
 
@@ -213,15 +209,13 @@ internal sealed class VisualTitleBarControlComponent(
         {
             // Ignore presses while popup lifecycle callbacks have the button temporarily disabled.
             if (anchorButton.Disabled)
-            {
                 return;
-            }
 
             anchorPopup.RefreshSelection();
             Vector2 popupSize = anchorPopup.Popup.GetContentsMinimumSize();
             Vector2 anchorScreenPosition = anchorButton.GetScreenPosition();
             Vector2 popupPosition = new(
-                anchorScreenPosition.X + (anchorButton.Size.X - popupSize.X) * 0.5f,
+                anchorScreenPosition.X + ((anchorButton.Size.X - popupSize.X) * 0.5f),
                 anchorScreenPosition.Y - popupSize.Y - PopupOffsetY);
 
             Vector2 screenSize = DisplayServer.ScreenGetSize();

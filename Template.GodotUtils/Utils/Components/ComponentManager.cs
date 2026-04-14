@@ -260,11 +260,10 @@ public class ComponentManager
 
     private sealed class ComponentGroup
     {
-        private readonly List<Component> _items = [];
         private readonly HashSet<Component> _lookup = [];
 
-        public List<Component> Items => _items;
-        public int Count => _items.Count;
+        public List<Component> Items { get; } = [];
+        public int Count => Items.Count;
 
         public bool Contains(Component component) => _lookup.Contains(component);
 
@@ -274,7 +273,7 @@ public class ComponentManager
             if (!_lookup.Add(component))
                 return false;
 
-            _items.Add(component);
+            Items.Add(component);
             return true;
         }
 
@@ -284,7 +283,7 @@ public class ComponentManager
             if (!_lookup.Remove(component))
                 return false;
 
-            _items.Remove(component);
+            Items.Remove(component);
             return true;
         }
     }

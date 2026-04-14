@@ -12,7 +12,7 @@ public static class TaskUtils
     /// <summary>
     /// Runs a task and logs any errors, intended for fire-and-forget usage.
     /// <para>For example:</para>
-    /// <code>TaskUtils.FireAndForget(() =&gt; ExitGame());</code>
+    /// <c>TaskUtils.FireAndForget(() =&gt; ExitGame());</c>
     /// </summary>
     /// <param name="task">Task delegate to execute.</param>
     public static void FireAndForget(this Func<Task> task)
