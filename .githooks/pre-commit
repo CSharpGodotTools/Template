@@ -15,16 +15,6 @@ set -euo pipefail
 # true: sync root .vscode config files to Template/.vscode when staged.
 : "${PRECOMMIT_ENABLE_VSCODE_SYNC:=true}"
 
-# true: run dotnet format on detected changed C# files.
-: "${PRECOMMIT_ENABLE_FORMAT:=true}"
-
-# true: remove optional braces around return;, return true;, and return false; blocks.
-: "${PRECOMMIT_ENABLE_FORMAT_RETURNS:=true}"
-
-# dotnet format mode: whitespace or full.
-# whitespace is faster for commit-time checks while still using dotnet format.
-: "${PRECOMMIT_FORMAT_MODE:=full}"
-
 # true: run targeted builds for changed project areas.
 : "${PRECOMMIT_ENABLE_BUILD_GODOTUTILS:=true}"
 : "${PRECOMMIT_ENABLE_BUILD_VISUALIZE:=true}"
@@ -71,13 +61,6 @@ build_packetgen=false
 build_optionsgen=false
 build_template=false
 
-declare -a format_godotutils=()
-declare -a format_visualize=()
-declare -a format_packetgen=()
-declare -a format_optionsgen=()
-declare -a format_template=()
-declare -a format_fallback=()
-
 # Only run full solution validation when staged files can affect compilation.
 requires_full_build=false
 
@@ -109,29 +92,6 @@ for staged_path in "${STAGED_PATHS[@]}"; do
     esac
 done
 
-for cs_path in "${STAGED_CS[@]}"; do
-    case "$cs_path" in
-        Template.GodotUtils/*.cs)
-            format_godotutils+=("$cs_path")
-            ;;
-        Template.Visualize/*.cs)
-            format_visualize+=("$cs_path")
-            ;;
-        Template.PacketGen/*.cs)
-            format_packetgen+=("$cs_path")
-            ;;
-        Template.OptionsGen/*.cs)
-            format_optionsgen+=("$cs_path")
-            ;;
-        Template/*.cs)
-            format_template+=("$cs_path")
-            ;;
-        *)
-            format_fallback+=("$cs_path")
-            ;;
-    esac
-done
-
 # Visualize depends on GodotUtils
 if $build_visualize; then
     build_godotutils=true
@@ -158,34 +118,6 @@ if echo "$STAGED" | grep -Eq "^\.vscode/(extensions|settings|tasks)\.json$"; the
     else
         echo "[pre-commit] .vscode sync disabled by PRECOMMIT_ENABLE_VSCODE_SYNC=false"
     fi
-fi
-
-# ------------------------------------------------------------
-# Format changed C# files only
-# ------------------------------------------------------------
-
-if is_enabled "$PRECOMMIT_ENABLE_FORMAT"; then
-    "$SCRIPTS_DIR/format-cs" "$REPO_ROOT/Template.GodotUtils/GodotUtils.csproj" "$PRECOMMIT_FORMAT_MODE" "${format_godotutils[@]}"
-    "$SCRIPTS_DIR/format-cs" "$REPO_ROOT/Template.Visualize/Visualize.csproj" "$PRECOMMIT_FORMAT_MODE" "${format_visualize[@]}"
-    "$SCRIPTS_DIR/format-cs" "$REPO_ROOT/Template.PacketGen/PacketGen.sln" "$PRECOMMIT_FORMAT_MODE" "${format_packetgen[@]}"
-    "$SCRIPTS_DIR/format-cs" "$REPO_ROOT/Template.OptionsGen/OptionsGen/OptionsGen.csproj" "$PRECOMMIT_FORMAT_MODE" "${format_optionsgen[@]}"
-    "$SCRIPTS_DIR/format-cs" "$REPO_ROOT/Template/Template.csproj" "$PRECOMMIT_FORMAT_MODE" "${format_template[@]}"
-
-    if [ "${#format_fallback[@]}" -gt 0 ]; then
-        echo "[pre-commit] Formatting fallback (Template.sln) for unmapped C# paths..."
-        "$SCRIPTS_DIR/format-cs" "$REPO_ROOT/Template.sln" "$PRECOMMIT_FORMAT_MODE" "${format_fallback[@]}"
-    fi
-else
-    echo "[pre-commit] Formatting disabled by PRECOMMIT_ENABLE_FORMAT=false"
-fi
-
-# ------------------------------------------------------------
-# Normalize return brace style
-# ------------------------------------------------------------
-if is_enabled "$PRECOMMIT_ENABLE_FORMAT_RETURNS"; then
-    "$SCRIPTS_DIR/format-returns" "${STAGED_CS[@]}"
-else
-    echo "[pre-commit] Return formatting disabled by PRECOMMIT_ENABLE_FORMAT_RETURNS=false"
 fi
 
 # ------------------------------------------------------------
