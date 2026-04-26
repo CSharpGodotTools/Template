@@ -8,12 +8,12 @@ public class ENetOptions
     /// <summary>
     /// Gets or sets whether packet payload objects are logged using formatted output.
     /// </summary>
-    public bool PrintPacketData { get; set; } = false;
+    public bool PrintPacketData { get; set; }
 
     /// <summary>
     /// Gets or sets whether packet byte sizes are appended to packet send/receive logs.
     /// </summary>
-    public bool PrintPacketByteSize { get; set; } = false;
+    public bool PrintPacketByteSize { get; set; }
 
     /// <summary>
     /// Gets or sets whether received packets are logged.

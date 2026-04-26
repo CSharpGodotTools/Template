@@ -12,7 +12,7 @@ public static class PacketNestedCollectionsFactory
     public static CPacketNestedCollections CreateSample()
     {
         // Cover each supported nesting shape so round-trip tests hit every path.
-        CPacketNestedCollections packet = new()
+        return new()
         {
             BoolValues = [true, false, true],
             ByteValues = [1, 2, 3],
@@ -70,8 +70,6 @@ public static class PacketNestedCollectionsFactory
                 [[4.04m]]
             ]
         };
-
-        return packet;
     }
 
     /// <summary>
@@ -81,7 +79,7 @@ public static class PacketNestedCollectionsFactory
     public static CPacketNestedCollections CreateDeepSample()
     {
         // Use uneven depths and lengths to catch index and shape assumptions.
-        CPacketNestedCollections packet = new()
+        return new()
         {
             BoolValues = [false, true],
             ByteValues = [10, 20],
@@ -136,7 +134,5 @@ public static class PacketNestedCollectionsFactory
                 [[5.05m, 6.06m], [7.07m, 8.08m]]
             ]
         };
-
-        return packet;
     }
 }

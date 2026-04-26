@@ -134,7 +134,7 @@ internal static class PacketRegistryGenerator
         };
 
         // Generate the source code
-        string sourceCode = $$"""
+        return $$"""
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -206,6 +206,5 @@ public sealed class PacketInfo<T>
 }
 
 """;
-        return sourceCode;
     }
 }

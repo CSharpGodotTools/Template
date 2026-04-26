@@ -1,4 +1,3 @@
-using __TEMPLATE__;
 using __TEMPLATE__.Ui;
 using System;
 

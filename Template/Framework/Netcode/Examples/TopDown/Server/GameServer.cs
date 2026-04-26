@@ -8,7 +8,7 @@ namespace __TEMPLATE__.Netcode.Examples.Topdown;
 /// <summary>
 /// TopDown sample server that tracks players and broadcasts join, leave, and position updates.
 /// </summary>
-public partial class GameServer : GodotServer
+public class GameServer : GodotServer
 {
     private const int PositionBroadcastIntervalMs = 100;
 

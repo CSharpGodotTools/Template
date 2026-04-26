@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using SysVector2 = System.Numerics.Vector2;
 
 namespace __TEMPLATE__.Netcode;
 
@@ -58,120 +57,25 @@ public class PacketReader : IDisposable
         _reader = new BinaryReader(_stream);
     }
 
-    /// <summary>
-    /// Reads a <see cref="byte"/> value.
-    /// </summary>
-    /// <returns>Read byte value.</returns>
     public byte ReadByte() => _reader.ReadByte();
-
-    /// <summary>
-    /// Reads an <see cref="sbyte"/> value.
-    /// </summary>
-    /// <returns>Read signed byte value.</returns>
     public sbyte ReadSByte() => _reader.ReadSByte();
-
-    /// <summary>
-    /// Reads a <see cref="char"/> value.
-    /// </summary>
-    /// <returns>Read character value.</returns>
     public char ReadChar() => _reader.ReadChar();
-
-    /// <summary>
-    /// Reads a <see cref="string"/> value.
-    /// </summary>
-    /// <returns>Read string value.</returns>
     public string ReadString() => _reader.ReadString();
-
-    /// <summary>
-    /// Reads a <see cref="bool"/> value.
-    /// </summary>
-    /// <returns>Read boolean value.</returns>
     public bool ReadBool() => _reader.ReadBoolean();
-
-    /// <summary>
-    /// Reads a <see cref="short"/> value.
-    /// </summary>
-    /// <returns>Read 16-bit signed integer.</returns>
     public short ReadShort() => _reader.ReadInt16();
-
-    /// <summary>
-    /// Reads a <see cref="ushort"/> value.
-    /// </summary>
-    /// <returns>Read 16-bit unsigned integer.</returns>
     public ushort ReadUShort() => _reader.ReadUInt16();
-
-    /// <summary>
-    /// Reads an <see cref="int"/> value.
-    /// </summary>
-    /// <returns>Read 32-bit signed integer.</returns>
     public int ReadInt() => _reader.ReadInt32();
-
-    /// <summary>
-    /// Reads a <see cref="uint"/> value.
-    /// </summary>
-    /// <returns>Read 32-bit unsigned integer.</returns>
     public uint ReadUInt() => _reader.ReadUInt32();
-
-    /// <summary>
-    /// Reads a <see cref="float"/> value.
-    /// </summary>
-    /// <returns>Read single-precision floating-point value.</returns>
     public float ReadFloat() => _reader.ReadSingle();
-
-    /// <summary>
-    /// Reads a <see cref="double"/> value.
-    /// </summary>
-    /// <returns>Read double-precision floating-point value.</returns>
     public double ReadDouble() => _reader.ReadDouble();
-
-    /// <summary>
-    /// Reads a <see cref="long"/> value.
-    /// </summary>
-    /// <returns>Read 64-bit signed integer.</returns>
     public long ReadLong() => _reader.ReadInt64();
-
-    /// <summary>
-    /// Reads a <see cref="ulong"/> value.
-    /// </summary>
-    /// <returns>Read 64-bit unsigned integer.</returns>
     public ulong ReadULong() => _reader.ReadUInt64();
-
-    /// <summary>
-    /// Reads a <see cref="decimal"/> value.
-    /// </summary>
-    /// <returns>Read decimal value.</returns>
     public decimal ReadDecimal() => _reader.ReadDecimal();
-
-    /// <summary>
-    /// Reads a fixed number of bytes.
-    /// </summary>
-    /// <param name="count">Number of bytes to read.</param>
-    /// <returns>Buffer containing up to <paramref name="count"/> bytes.</returns>
     public byte[] ReadBytes(int count) => _reader.ReadBytes(count);
-
-    /// <summary>
-    /// Reads a length-prefixed byte array.
-    /// </summary>
-    /// <returns>Read byte array payload.</returns>
     public byte[] ReadBytes() => ReadBytes(ReadInt());
-
-    /// <summary>
-    /// Reads a <see cref="Vector2"/> value.
-    /// </summary>
-    /// <returns>Read <see cref="Vector2"/> value.</returns>
     public Vector2 ReadVector2() => new(ReadFloat(), ReadFloat());
-
-    /// <summary>
-    /// Reads a <see cref="Vector3"/> value.
-    /// </summary>
-    /// <returns>Read <see cref="Vector3"/> value.</returns>
     public Vector3 ReadVector3() => new(ReadFloat(), ReadFloat(), ReadFloat());
-
-    /// <summary>
-    /// Reads a <see cref="System.Numerics.Vector2"/> value.
-    /// </summary>
-    /// <returns>Read <see cref="System.Numerics.Vector2"/> value.</returns>
-    public SysVector2 ReadVector2Numerics() => new(ReadFloat(), ReadFloat());
+    public System.Numerics.Vector2 ReadVector2Numerics() => new(ReadFloat(), ReadFloat());
 
     /// <summary>
     /// Legacy reflection-based read; prefer PacketGen-generated Read methods for packet deserialization.
@@ -225,7 +129,7 @@ public class PacketReader : IDisposable
             return (T)(object)ReadVector3();
 
         // Handle System.Numerics Vector2 values with dedicated read helpers.
-        if (type == typeof(SysVector2))
+        if (type == typeof(System.Numerics.Vector2))
             return (T)(object)ReadVector2Numerics();
 
         // Delegate supported generic collections to specialized readers.

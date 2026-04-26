@@ -134,9 +134,7 @@ public class SceneManager : ISceneService
         // Optionally, to make it compatible with the SceneTree.change_scene_to_file() API.
         _tree.CurrentScene = _currentScene;
 
-        TransType transType = transTypeVariant.As<TransType>();
-
-        switch (transType)
+        switch (transTypeVariant.As<TransType>())
         {
             case TransType.None:
                 break;

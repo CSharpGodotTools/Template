@@ -106,8 +106,7 @@ internal sealed class ComplexTypeWriteEmitter(TypeHandlerRegistry registry)
     /// <param name="depth">Current recursion depth.</param>
     private void EmitWritableMembers(WriteContext ctx, INamedTypeSymbol type, string valueExpression, string indent, int depth)
     {
-        ImmutableArray<IPropertySymbol> properties = SerializablePropertySelector.Get(type);
-        foreach (IPropertySymbol property in properties)
+        foreach (IPropertySymbol property in SerializablePropertySelector.Get(type))
         {
             string memberValue = $"{valueExpression}.{property.Name}";
             GenerationContext nested = new(ctx.Shared.Compilation, ctx.Shared.Property, property.Type, ctx.Shared.OutputLines, ctx.Shared.Namespaces);

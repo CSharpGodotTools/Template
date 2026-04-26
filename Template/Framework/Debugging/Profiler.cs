@@ -104,8 +104,7 @@ public static class Profiler
     /// Logs a consistent error when stop operations reference an unknown key.
     /// </summary>
     /// <param name="key">Profiler key that could not be resolved.</param>
-    private static void LogMissingKey(string key) =>
-        GD.PrintErr($"Profiler key '{key}' was not started.");
+    private static void LogMissingKey(string key) => GD.PrintErr($"Profiler key '{key}' was not started.");
 
     /// <summary>
     /// Starts or replaces an overlay-backed monitor for a profiler key.

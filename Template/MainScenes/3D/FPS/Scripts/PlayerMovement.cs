@@ -50,10 +50,6 @@ public class PlayerMovement(Player player, PlayerMovementConfig config, PlayerRo
         playerRotation.YawChanged -= OnYawChanged;
     }
 
-    /// <summary>
-    /// Caches the latest player yaw used to rotate movement input vectors.
-    /// </summary>
-    /// <param name="yaw">Current yaw angle in radians.</param>
     private void OnYawChanged(float yaw)
     {
         _yaw = yaw;

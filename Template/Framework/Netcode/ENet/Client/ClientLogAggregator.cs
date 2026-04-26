@@ -151,7 +151,7 @@ internal sealed class ClientLogAggregator : EventLogAggregator
             return "Connected to server";
         }
 
-        return $"{FormatCount("connect event", count)}{FormatLastSuffix(count, seconds)}";
+        return FormatCount("connect event", count) + FormatLastSuffix(count, seconds);
     }
 
     /// <summary>
@@ -173,7 +173,7 @@ internal sealed class ClientLogAggregator : EventLogAggregator
             return "Disconnected from server";
         }
 
-        return $"{FormatCount("disconnect event", count)}{FormatLastSuffix(count, seconds)}";
+        return FormatCount("disconnect event", count) + FormatLastSuffix(count, seconds);
     }
 
     /// <summary>
@@ -189,6 +189,6 @@ internal sealed class ClientLogAggregator : EventLogAggregator
         if (count == 1)
             return $"Connection to server timed out (peer {peerId})";
 
-        return $"{FormatCount("timeout event", count)}{FormatLastSuffix(count, seconds)}";
+        return FormatCount("timeout event", count) + FormatLastSuffix(count, seconds);
     }
 }

@@ -166,77 +166,6 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     }
 
     /// <summary>
-    /// Handles start-server button press.
-    /// </summary>
-    private void OnStartServerPressed()
-    {
-        Net!.StartServer(_port, DefaultMaxClients, Options);
-    }
-
-    /// <summary>
-    /// Handles stop-server button press.
-    /// </summary>
-    private void OnStopServerPressed()
-    {
-        Net!.StopServer();
-    }
-
-    /// <summary>
-    /// Handles start-client button press.
-    /// </summary>
-    private void OnStartClientBtnPressed()
-    {
-        Net!.StartClient(_ip!, _port);
-    }
-
-    /// <summary>
-    /// Handles stop-client button press.
-    /// </summary>
-    private void OnStopClientBtnPressed()
-    {
-        Net!.StopClient();
-    }
-
-    /// <summary>
-    /// Parses IP input text and updates host/port state.
-    /// </summary>
-    /// <param name="text">Raw host input string.</param>
-    private void OnIpChanged(string text)
-    {
-        _ip = ParseIpAndPort(text, ref _port);
-    }
-
-    /// <summary>
-    /// Updates username when text is alphanumeric.
-    /// </summary>
-    /// <param name="text">Username text.</param>
-    private void OnUsernameChanged(string text)
-    {
-        // Accept usernames only when characters are alphanumeric.
-        if (text.IsAlphaNumeric())
-            _username = text;
-    }
-
-    /// <summary>
-    /// Handles net coordinator client-created event.
-    /// </summary>
-    /// <param name="client">Created client instance.</param>
-    private void OnClientCreated(GodotClient client)
-    {
-        SubscribeToClient(client);
-    }
-
-    /// <summary>
-    /// Handles net coordinator client-destroyed event.
-    /// </summary>
-    /// <param name="client">Destroyed client instance.</param>
-    private void OnClientDestroyed(GodotClient client)
-    {
-        UnsubscribeFromClient(client);
-        EnableServerButtons();
-    }
-
-    /// <summary>
     /// Subscribes to client connection lifecycle events.
     /// </summary>
     /// <param name="client">Client to subscribe.</param>
@@ -273,9 +202,6 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
             _subscribedClient = null;
     }
 
-    /// <summary>
-    /// Handles client connected event and updates UI focus/state.
-    /// </summary>
     private void OnClientConnected()
     {
         // Lock server controls when client connected to a remote host.
@@ -283,15 +209,6 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
             DisableServerButtons();
 
         GetTree().UnfocusCurrentControl();
-    }
-
-    /// <summary>
-    /// Handles client disconnected event and restores server controls.
-    /// </summary>
-    /// <param name="opcode">Disconnect reason opcode.</param>
-    private void OnClientDisconnected(DisconnectOpcode opcode)
-    {
-        EnableServerButtons();
     }
 
     /// <summary>
@@ -310,6 +227,55 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     {
         _startServerBtn.Disabled = false;
         _stopServerBtn.Disabled = false;
+    }
+
+    // Handlers
+    private void OnStartServerPressed()
+    {
+        Net!.StartServer(_port, DefaultMaxClients, Options);
+    }
+
+    private void OnStopServerPressed()
+    {
+        Net!.StopServer();
+    }
+
+    private void OnStartClientBtnPressed()
+    {
+        Net!.StartClient(_ip!, _port);
+    }
+
+    private void OnStopClientBtnPressed()
+    {
+        Net!.StopClient();
+    }
+
+    private void OnIpChanged(string text)
+    {
+        _ip = ParseIpAndPort(text, ref _port);
+    }
+
+    private void OnUsernameChanged(string text)
+    {
+        // Accept usernames only when characters are alphanumeric.
+        if (text.IsAlphaNumeric())
+            _username = text;
+    }
+
+    private void OnClientCreated(GodotClient client)
+    {
+        SubscribeToClient(client);
+    }
+
+    private void OnClientDestroyed(GodotClient client)
+    {
+        UnsubscribeFromClient(client);
+        EnableServerButtons();
+    }
+
+    private void OnClientDisconnected(DisconnectOpcode opcode)
+    {
+        EnableServerButtons();
     }
 
     /// <summary>

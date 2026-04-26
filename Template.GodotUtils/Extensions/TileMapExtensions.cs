@@ -23,7 +23,6 @@ public static class TileMapExtensions
         if (tileData == null)
             return default!;
 
-        T data = tileData.GetCustomData(customDataLayerName).As<T>();
-        return data;
+        return tileData.GetCustomData(customDataLayerName).As<T>();
     }
 }

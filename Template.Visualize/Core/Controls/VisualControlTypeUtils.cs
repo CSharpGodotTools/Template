@@ -76,7 +76,7 @@ internal static partial class VisualControlTypes
     /// <returns>Configured spin box.</returns>
     private static SpinBox CreateSpinBox(Type type)
     {
-        SpinBox spinBox = new()
+        return new()
         {
             UpdateOnTextChanged = true,
             AllowLesser = false,
@@ -93,8 +93,6 @@ internal static partial class VisualControlTypes
                 _ => IntStep
             }
         };
-
-        return spinBox;
     }
 
     /// <summary>

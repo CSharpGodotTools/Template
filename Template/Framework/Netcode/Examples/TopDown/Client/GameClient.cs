@@ -8,7 +8,7 @@ namespace __TEMPLATE__.Netcode.Examples.Topdown;
 /// <summary>
 /// TopDown sample client that tracks local/remote player state and relays position updates.
 /// </summary>
-public partial class GameClient : GodotClient
+public class GameClient : GodotClient
 {
     private readonly Dictionary<uint, Vector2> _remotePositions = [];
     private uint? _localPlayerId;

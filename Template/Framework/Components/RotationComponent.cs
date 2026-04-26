@@ -18,13 +18,11 @@ public partial class RotationComponent : Node
     private Node2D _parent = null!;
 
     // Godot Overrides
-    /// <inheritdoc />
     public override void _Ready()
     {
         _parent = GetParent<Node2D>();
     }
 
-    /// <inheritdoc />
     public override void _Process(double delta)
     {
         _parent.Rotation += _speed * (float)delta;

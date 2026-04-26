@@ -72,9 +72,7 @@ internal sealed class OptionsHotkeysService
     /// <param name="hotkeys">Action-to-input-event mapping to apply.</param>
     private static void ApplyInputMap(Godot.Collections.Dictionary<StringName, Godot.Collections.Array<InputEvent>> hotkeys)
     {
-        Godot.Collections.Array<StringName> actions = InputMap.GetActions();
-
-        foreach (StringName action in actions)
+        foreach (StringName action in (Godot.Collections.Array<StringName>)InputMap.GetActions())
             InputMap.EraseAction(action);
 
         foreach (StringName action in hotkeys.Keys)

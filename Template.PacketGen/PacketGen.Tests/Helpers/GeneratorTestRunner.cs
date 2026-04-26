@@ -47,7 +47,7 @@ internal sealed class GeneratorTestRunner<TGenerator> where TGenerator : IIncrem
         if (driverResult.Results.Length == 0)
             return null;
 
-        Microsoft.CodeAnalysis.GeneratorRunResult runResult = driverResult.Results[0];
+        GeneratorRunResult runResult = driverResult.Results[0];
 
         ImmutableArray<GeneratedSourceResult> generatedSources = runResult.GeneratedSources;
 

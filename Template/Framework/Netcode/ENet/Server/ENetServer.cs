@@ -1,5 +1,4 @@
 using ENet;
-using GodotUtils;
 using System;
 using System.Threading;
 
@@ -311,7 +310,7 @@ public abstract class ENetServer : ENetLow
     /// <returns>Validated max fragment count.</returns>
     private ushort GetMaxFragmentsPerPacket()
     {
-        ushort configured = Options?.MaxFragmentsPerPacket ?? (ushort)1024;
+        ushort configured = Options?.MaxFragmentsPerPacket ?? 1024;
         return configured > 0 ? configured : (ushort)1024;
     }
 }

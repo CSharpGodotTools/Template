@@ -1,6 +1,5 @@
 using __TEMPLATE__.Ui.Console;
 using Godot;
-using GodotUtils;
 using System;
 
 // This was intentionally set to GodotUtils instead of __TEMPLATE__ as GodotUtils relies on MainMenuBtnPressed
@@ -54,8 +53,6 @@ public partial class PopupMenu : Control, ISceneDependencyReceiver
     private SceneManager _sceneManager = null!;
     private IApplicationLifetime _applicationLifetime = null!;
     private IBackgroundTaskTracker _backgroundTasks = null!;
-    private AudioManager _audioManager = null!;
-    private OptionsManager _optionsManager = null!;
     private GameConsole _console = null!;
     private GameServices _runtimeServices = null!;
     private Options _options = null!;
@@ -74,8 +71,6 @@ public partial class PopupMenu : Control, ISceneDependencyReceiver
         _sceneManager = services.SceneManager;
         _applicationLifetime = services.ApplicationLifetime;
         _backgroundTasks = services.BackgroundTasks;
-        _audioManager = services.AudioManager;
-        _optionsManager = services.OptionsManager;
         _console = services.GameConsole;
         _isConfigured = true;
     }

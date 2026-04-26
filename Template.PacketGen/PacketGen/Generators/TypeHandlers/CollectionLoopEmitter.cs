@@ -1,6 +1,5 @@
 using PacketGen.Generators.PacketGeneration;
 using System;
-using System.Collections.Generic;
 
 namespace PacketGen.Generators.TypeHandlers;
 

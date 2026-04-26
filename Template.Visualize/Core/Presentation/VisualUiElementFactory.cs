@@ -56,12 +56,11 @@ internal static class VisualUiElementFactory
     /// <returns>Configured canvas layer.</returns>
     public static CanvasLayer CreateCanvasLayer(string name, ulong instanceId)
     {
-        CanvasLayer canvasLayer = new()
+        return new()
         {
             FollowViewportEnabled = true,
             Name = $"Visualizing {name} {instanceId}"
         };
-        return canvasLayer;
     }
 
     /// <summary>

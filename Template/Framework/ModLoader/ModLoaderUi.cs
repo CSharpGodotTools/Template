@@ -353,8 +353,7 @@ public class ModLoaderUi
                 _logger.LogErr(loaderException, $"Managed mod '{modId}' failed to resolve one or more types");
             }
 
-            Type[] loadableTypes = [.. (exception.Types ?? []).OfType<Type>()];
-            return loadableTypes;
+            return [.. (exception.Types ?? []).OfType<Type>()];
         }
     }
 

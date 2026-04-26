@@ -2,11 +2,9 @@ using __TEMPLATE__.Debugging;
 using __TEMPLATE__.Ui;
 using __TEMPLATE__.Ui.Console;
 using Godot;
-using GodotUtils;
 using System;
 using System.Threading.Tasks;
 using System.Linq;
-
 
 #if DEBUG
 using GodotUtils.Debugging;
@@ -92,38 +90,37 @@ public abstract partial class AutoloadsFramework : Node
 #endif
 
     /// <summary>
-    /// Called after framework service wiring during <see cref="_EnterTree"/>.
+    /// Called when the node enters the SceneTree.
     /// </summary>
     protected abstract void EnterTree();
 
     /// <summary>
-    /// Called after command registration and startup initialization in <see cref="_Ready"/>.
+    /// Called when the node and all of its children are ready.
     /// </summary>
     protected abstract void Ready();
 
     /// <summary>
-    /// Called each frame after framework updates have run.
+    /// Called on each idle frame, prior to rendering, and after physics ticks have been processed.
     /// </summary>
     protected abstract void Process(double delta);
 
     /// <summary>
-    /// Called on each physics frame.
+    /// Called once on each physics tick, and allows Nodes to synchronize their logic with physics ticks.
     /// </summary>
     protected abstract void PhysicsProcess(double delta);
 
     /// <summary>
-    /// Called for Godot notifications after framework handling has completed.
+    /// Called when the object receives a notification, which can be identified in what by comparing it with a constant.
     /// </summary>
-    /// <param name="what">Godot notification code being processed.</param>
+    /// <param name="what">The Godot notification code.</param>
     protected abstract void Notification(int what);
 
     /// <summary>
-    /// Called after framework teardown during <see cref="_ExitTree"/>.
+    /// Called when the node exits the SceneTree.
     /// </summary>
     protected abstract void ExitTree();
 
-    // Godot Overrides
-    /// <inheritdoc />
+    // Sealed Godot Overrides
     public sealed override void _EnterTree()
     {
         ComponentManager = GetNode<GameComponentManager>("ComponentManager");
@@ -164,7 +161,6 @@ public abstract partial class AutoloadsFramework : Node
         EnterTree();
     }
 
-    /// <inheritdoc />
     public sealed override void _Ready()
     {
         Commands.RegisterAll(GameConsole, Logger, ApplicationLifetime);
@@ -177,7 +173,6 @@ public abstract partial class AutoloadsFramework : Node
         Ready();
     }
 
-    /// <inheritdoc />
     public sealed override void _Process(double delta)
     {
         OptionsManager.Update();
@@ -191,13 +186,11 @@ public abstract partial class AutoloadsFramework : Node
         Process(delta);
     }
 
-    /// <inheritdoc />
     public sealed override void _PhysicsProcess(double delta)
     {
         PhysicsProcess(delta);
     }
 
-    /// <inheritdoc />
     public sealed override void _Notification(int what)
     {
         // Route window-close notifications to graceful shutdown flow.
@@ -207,7 +200,6 @@ public abstract partial class AutoloadsFramework : Node
         Notification(what);
     }
 
-    /// <inheritdoc />
     public sealed override void _ExitTree()
     {
         AudioManager.Dispose();

@@ -1,4 +1,3 @@
-using __TEMPLATE__;
 using Godot;
 using GodotUtils;
 using PopupMenu = __TEMPLATE__.Ui.PopupMenu;

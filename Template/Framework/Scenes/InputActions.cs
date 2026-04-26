@@ -1,16 +1,13 @@
 namespace Godot;
 
+// Source generator generates the inputs in different partial
+// Use like so: InputActions.MoveLeft, InputActions.MoveRight, etc
+// 
+// Built-In Actions
+// Source: https://gist.github.com/qwe321qwe321qwe321/bbf4b135c49372746e45246b364378c4
 [InputMap]
-/// <summary>
-/// Central input action name definitions used throughout the project.
-/// </summary>
 public static partial class InputActions
 {
-    // Source generator generates the inputs in different partial
-    // Use like so: InputActions.MoveLeft, InputActions.MoveRight, etc
-
-    // Built-In Actions
-    // Source: https://gist.github.com/qwe321qwe321qwe321/bbf4b135c49372746e45246b364378c4
     public static readonly StringName UIAccept = "ui_accept";
     public static readonly StringName UISelect = "ui_select";
     public static readonly StringName UICancel = "ui_cancel";

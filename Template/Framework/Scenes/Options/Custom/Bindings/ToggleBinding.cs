@@ -9,13 +9,13 @@ namespace __TEMPLATE__.Ui;
 /// <param name="row">Row container that owns the checkbox control.</param>
 /// <param name="checkbox">Checkbox control bound to option state.</param>
 /// <param name="onToggled">Signal handler used to persist toggle changes.</param>
-internal sealed class ToggleBinding(HBoxContainer row, CheckBox checkbox, CheckBox.ToggledEventHandler onToggled) : IDisposable
+internal sealed class ToggleBinding(HBoxContainer row, CheckBox checkbox, BaseButton.ToggledEventHandler onToggled) : IDisposable
 {
     private const float ControlMinWidth = 250f;
 
     private readonly HBoxContainer _row = row;
     private readonly CheckBox _checkbox = checkbox;
-    private readonly CheckBox.ToggledEventHandler _onToggled = onToggled;
+    private readonly BaseButton.ToggledEventHandler _onToggled = onToggled;
 
     /// <summary>
     /// Builds the checkbox control, syncs its initial state, and wires events.

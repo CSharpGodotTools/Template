@@ -34,12 +34,12 @@ public abstract partial class MainMenuNavFramework : Node, ISceneDependencyRecei
         _isConfigured = true;
     }
 
+    // Godot Overrides
     public override void _EnterTree()
     {
         SceneComposition.ConfigureNodeFromGame(this);
     }
-
-    // Godot Overrides
+    
     public override void _Ready()
     {
         // Composition must inject runtime dependencies before scene readiness.
@@ -49,20 +49,10 @@ public abstract partial class MainMenuNavFramework : Node, ISceneDependencyRecei
         _viewport = GetViewport();
         _playBtn = GetNode<Button>("Play");
 
-        FocusOnPlayBtn();
+        FocusOutlineOnPlayBtn();
 
         _scene.PostSceneChanged += OnPostSceneChanged;
-
         _viewport.GuiFocusChanged += OnGuiFocusChanged;
-    }
-
-    /// <summary>
-    /// Tracks whether focus has changed since scene entry.
-    /// </summary>
-    /// <param name="node">Control that received focus.</param>
-    private void OnGuiFocusChanged(Control node)
-    {
-        _focusWasNeverChanged = false;
     }
 
     public override void _Input(InputEvent @event)
@@ -70,10 +60,9 @@ public abstract partial class MainMenuNavFramework : Node, ISceneDependencyRecei
         // Process menu-navigation key logic only for keyboard input events.
         if (@event is InputEventKey keyEvent)
         {
-
             // Solve the issue of pressing up key not focusing on play button if focus was never changed before
             if (keyEvent.IsJustPressed(Key.Up) && _focusWasNeverChanged)
-                FocusOnPlayBtn();
+                FocusOutlineOnPlayBtn();
         }
     }
 
@@ -83,86 +72,13 @@ public abstract partial class MainMenuNavFramework : Node, ISceneDependencyRecei
         _scene.PostSceneChanged -= OnPostSceneChanged;
     }
 
-    // FocusOnPlayBtn
-    /// <summary>
-    /// Moves keyboard/controller focus to the Play button.
-    /// </summary>
-    private void FocusOnPlayBtn()
-    {
-        _focusOutline.Focus(_playBtn);
-    }
-
-    // Abstract
-    /// <summary>
-    /// Invoked after navigating to the game scene.
-    /// </summary>
     protected abstract void Play();
-
-    /// <summary>
-    /// Invoked after navigating to the mod loader scene.
-    /// </summary>
     protected abstract void Mods();
-
-    /// <summary>
-    /// Invoked after navigating to the options scene.
-    /// </summary>
     protected abstract void Options();
-
-    /// <summary>
-    /// Invoked after navigating to the credits scene.
-    /// </summary>
     protected abstract void Credits();
-
-    /// <summary>
-    /// Invoked when the user chooses to quit.
-    /// </summary>
     protected abstract void Quit();
 
-    // Subscribers
-    /// <summary>
-    /// Handles Play button activation.
-    /// </summary>
-    private void OnPlayPressed()
-    {
-        ArgumentNullException.ThrowIfNull(_gameScene, nameof(_gameScene));
-        _scene.SwitchTo(_gameScene);
-        Play();
-    }
-
-    /// <summary>
-    /// Handles Mods button activation.
-    /// </summary>
-    private void OnModsPressed()
-    {
-        _scene.SwitchToModLoader();
-        Mods();
-    }
-
-    /// <summary>
-    /// Handles Options button activation.
-    /// </summary>
-    private void OnOptionsPressed()
-    {
-        _scene.SwitchToOptions();
-        Options();
-    }
-
-    /// <summary>
-    /// Handles Credits button activation.
-    /// </summary>
-    private void OnCreditsPressed()
-    {
-        _scene.SwitchToCredits();
-        Credits();
-    }
-
-    /// <summary>
-    /// Handles Quit button activation.
-    /// </summary>
-    private void OnQuitPressed()
-    {
-        _ = ExitGameAsync();
-    }
+    private void FocusOutlineOnPlayBtn() => _focusOutline.Focus(_playBtn);
 
     /// <summary>
     /// Requests a graceful game shutdown.
@@ -183,11 +99,43 @@ public abstract partial class MainMenuNavFramework : Node, ISceneDependencyRecei
         }
     }
 
-    /// <summary>
-    /// Restores focus to Play when this scene becomes active.
-    /// </summary>
+    private void OnPlayPressed()
+    {
+        ArgumentNullException.ThrowIfNull(_gameScene, nameof(_gameScene));
+        _scene.SwitchTo(_gameScene);
+        Play();
+    }
+
+    private void OnGuiFocusChanged(Control _)
+    {
+        _focusWasNeverChanged = false;
+    }
+
+    private void OnModsPressed()
+    {
+        _scene.SwitchToModLoader();
+        Mods();
+    }
+
+    private void OnOptionsPressed()
+    {
+        _scene.SwitchToOptions();
+        Options();
+    }
+
+    private void OnCreditsPressed()
+    {
+        _scene.SwitchToCredits();
+        Credits();
+    }
+
+    private void OnQuitPressed()
+    {
+        _ = ExitGameAsync();
+    }
+
     private void OnPostSceneChanged()
     {
-        FocusOnPlayBtn();
+        FocusOutlineOnPlayBtn();
     }
 }

@@ -269,7 +269,7 @@ public abstract class ENetClient : ENetLow
     /// <returns>Validated max fragments per packet.</returns>
     private ushort GetMaxFragmentsPerPacket()
     {
-        ushort configured = Options?.MaxFragmentsPerPacket ?? (ushort)1024;
+        ushort configured = Options?.MaxFragmentsPerPacket ?? 1024;
         return configured > 0 ? configured : (ushort)1024;
     }
 

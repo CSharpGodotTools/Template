@@ -24,7 +24,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="position">Target local position.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl Position(Vector2 position, double duration) => (NodeTweenControl)Property(Control.PropertyName.Position, position, duration);
+    public NodeTweenControl Position(Vector2 position, double duration) => Property(Control.PropertyName.Position, position, duration);
 
     /// <summary>
     /// Tweens the local X position.
@@ -32,7 +32,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="x">Target local X value.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl PositionX(double x, double duration) => (NodeTweenControl)Property("position:x", x, duration);
+    public NodeTweenControl PositionX(double x, double duration) => Property("position:x", x, duration);
 
     /// <summary>
     /// Tweens the local Y position.
@@ -40,7 +40,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="y">Target local Y value.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl PositionY(double y, double duration) => (NodeTweenControl)Property("position:y", y, duration);
+    public NodeTweenControl PositionY(double y, double duration) => Property("position:y", y, duration);
 
     /// <summary>
     /// Tweens the local Z position.
@@ -48,7 +48,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="z">Target local Z value.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl PositionZ(double z, double duration) => (NodeTweenControl)Property("position:z", z, duration);
+    public NodeTweenControl PositionZ(double z, double duration) => Property("position:z", z, duration);
 
     /// <summary>
     /// Tweens the global position.
@@ -56,7 +56,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="globalPosition">Target global position.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl GlobalPosition(Vector2 globalPosition, double duration) => (NodeTweenControl)Property(Control.PropertyName.GlobalPosition, globalPosition, duration);
+    public NodeTweenControl GlobalPosition(Vector2 globalPosition, double duration) => Property(Control.PropertyName.GlobalPosition, globalPosition, duration);
 
     /// <summary>
     /// Tweens the global X position.
@@ -64,7 +64,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="x">Target global X value.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl GlobalPositionX(double x, double duration) => (NodeTweenControl)Property("global_position:x", x, duration);
+    public NodeTweenControl GlobalPositionX(double x, double duration) => Property("global_position:x", x, duration);
 
     /// <summary>
     /// Tweens the global Y position.
@@ -72,7 +72,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="y">Target global Y value.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl GlobalPositionY(double y, double duration) => (NodeTweenControl)Property("global_position:y", y, duration);
+    public NodeTweenControl GlobalPositionY(double y, double duration) => Property("global_position:y", y, duration);
 
     /// <summary>
     /// Tweens the global Z position.
@@ -80,7 +80,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="z">Target global Z value.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl GlobalPositionZ(double z, double duration) => (NodeTweenControl)Property("global_position:z", z, duration);
+    public NodeTweenControl GlobalPositionZ(double z, double duration) => Property("global_position:z", z, duration);
 
     // Rotation
     /// <summary>
@@ -89,7 +89,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="rotation">Target rotation value.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl Rotation(double rotation, double duration) => (NodeTweenControl)Property(Control.PropertyName.Rotation, rotation, duration);
+    public NodeTweenControl Rotation(double rotation, double duration) => Property(Control.PropertyName.Rotation, rotation, duration);
 
     /// <summary>
     /// Tweens the rotation on the X axis.
@@ -97,7 +97,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="x">Target rotation X component.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl RotationX(double x, double duration) => (NodeTweenControl)Property("rotation:x", x, duration);
+    public NodeTweenControl RotationX(double x, double duration) => Property("rotation:x", x, duration);
 
     /// <summary>
     /// Tweens the rotation on the Y axis.
@@ -105,7 +105,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="y">Target rotation Y component.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl RotationY(double y, double duration) => (NodeTweenControl)Property("rotation:y", y, duration);
+    public NodeTweenControl RotationY(double y, double duration) => Property("rotation:y", y, duration);
 
     /// <summary>
     /// Tweens the rotation on the Z axis.
@@ -113,7 +113,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="z">Target rotation Z component.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl RotationZ(double z, double duration) => (NodeTweenControl)Property("rotation:z", z, duration);
+    public NodeTweenControl RotationZ(double z, double duration) => Property("rotation:z", z, duration);
 
     // Scale
     /// <summary>
@@ -122,7 +122,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="scale">Target local scale.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl Scale(Vector2 scale, double duration) => (NodeTweenControl)Property(Control.PropertyName.Scale, scale, duration);
+    public NodeTweenControl Scale(Vector2 scale, double duration) => Property(Control.PropertyName.Scale, scale, duration);
 
     /// <summary>
     /// Tweens the scale on the X axis.
@@ -130,7 +130,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="x">Target scale X component.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl ScaleX(double x, double duration) => (NodeTweenControl)Property("scale:x", x, duration);
+    public NodeTweenControl ScaleX(double x, double duration) => Property("scale:x", x, duration);
 
     /// <summary>
     /// Tweens the scale on the Y axis.
@@ -138,7 +138,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="y">Target scale Y component.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl ScaleY(double y, double duration) => (NodeTweenControl)Property("scale:y", y, duration);
+    public NodeTweenControl ScaleY(double y, double duration) => Property("scale:y", y, duration);
 
     /// <summary>
     /// Tweens the scale on the Z axis.
@@ -146,7 +146,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="z">Target scale Z component.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl ScaleZ(double z, double duration) => (NodeTweenControl)Property("scale:z", z, duration);
+    public NodeTweenControl ScaleZ(double z, double duration) => Property("scale:z", z, duration);
 
     // Size
     /// <summary>
@@ -155,7 +155,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="size">Target control size.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl Size(Vector2 size, double duration) => (NodeTweenControl)Property(Control.PropertyName.Size, size, duration);
+    public NodeTweenControl Size(Vector2 size, double duration) => Property(Control.PropertyName.Size, size, duration);
 
     /// <summary>
     /// Tweens the custom minimum size.
@@ -163,7 +163,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="customMinimumSize">Target custom minimum size.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl CustomMinimumSize(Vector2 customMinimumSize, double duration) => (NodeTweenControl)Property(Control.PropertyName.CustomMinimumSize, customMinimumSize, duration);
+    public NodeTweenControl CustomMinimumSize(Vector2 customMinimumSize, double duration) => Property(Control.PropertyName.CustomMinimumSize, customMinimumSize, duration);
 
     /// <summary>
     /// Tweens the pivot offset.
@@ -171,7 +171,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="pivotOffset">Target pivot offset.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl PivotOffset(Vector2 pivotOffset, double duration) => (NodeTweenControl)Property(Control.PropertyName.PivotOffset, pivotOffset, duration);
+    public NodeTweenControl PivotOffset(Vector2 pivotOffset, double duration) => Property(Control.PropertyName.PivotOffset, pivotOffset, duration);
 
     /// <summary>
     /// Tweens the size flags stretch ratio.
@@ -179,7 +179,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="stretchRatio">Target size-flags stretch ratio.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl SizeFlagsStretchRatio(float stretchRatio, double duration) => (NodeTweenControl)Property(Control.PropertyName.SizeFlagsStretchRatio, stretchRatio, duration);
+    public NodeTweenControl SizeFlagsStretchRatio(float stretchRatio, double duration) => Property(Control.PropertyName.SizeFlagsStretchRatio, stretchRatio, duration);
 
     // Color
     /// <summary>
@@ -188,7 +188,7 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="color">Target self-modulate color.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl Color(Color color, double duration) => (NodeTweenControl)Property(CanvasItem.PropertyName.SelfModulate, color, duration);
+    public NodeTweenControl Color(Color color, double duration) => Property(CanvasItem.PropertyName.SelfModulate, color, duration);
 
     /// <summary>
     /// Tweens the modulate color (including children).
@@ -196,5 +196,5 @@ public class NodeTweenControl : BaseTween<NodeTweenControl>
     /// <param name="color">Target modulate color.</param>
     /// <param name="duration">Tween duration in seconds.</param>
     /// <returns>Current tween builder for chaining.</returns>
-    public NodeTweenControl ColorRecursive(Color color, double duration) => (NodeTweenControl)Property(CanvasItem.PropertyName.Modulate, color, duration);
+    public NodeTweenControl ColorRecursive(Color color, double duration) => Property(CanvasItem.PropertyName.Modulate, color, duration);
 }

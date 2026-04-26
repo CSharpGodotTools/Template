@@ -7,7 +7,7 @@ namespace GodotUtils.Ui;
 /// Editor-only utility toggles for project housekeeping tasks.
 /// </summary>
 [Tool]
-public partial class ToolScriptHelpers : Node
+public class ToolScriptHelpers : Node
 {
     /// <summary>
     /// Triggers removal of empty folders when toggled in the editor.

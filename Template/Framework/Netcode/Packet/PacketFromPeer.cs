@@ -5,8 +5,7 @@ namespace __TEMPLATE__.Netcode;
 /// Passed to server packet handlers so they receive all context in a single parameter.
 /// </summary>
 /// <typeparam name="TPacket">Client packet type carried by this wrapper.</typeparam>
-public readonly struct PacketFromPeer<TPacket>
-    where TPacket : ClientPacket
+public readonly struct PacketFromPeer<TPacket> where TPacket : ClientPacket
 {
     /// <summary>The deserialized packet sent by the peer.</summary>
     public TPacket Packet { get; init; }

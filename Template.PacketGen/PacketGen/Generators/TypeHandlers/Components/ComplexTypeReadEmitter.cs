@@ -138,11 +138,10 @@ internal sealed class ComplexTypeReadEmitter(TypeHandlerRegistry registry)
     /// <param name="nameSeed">Name seed for generated locals.</param>
     private void EmitReadableMembers(ReadContext ctx, INamedTypeSymbol type, string valueExpression, string indent, int depth, string nameSeed)
     {
-        ImmutableArray<IPropertySymbol> properties = SerializablePropertySelector.Get(type);
-        foreach (IPropertySymbol property in properties)
+        foreach (IPropertySymbol property in SerializablePropertySelector.Get(type))
         {
             string memberTarget = $"{valueExpression}.{property.Name}";
-            string memberSeed = $"{nameSeed}{property.Name}";
+            string memberSeed = nameSeed + property.Name;
             GenerationContext nested = new(ctx.Shared.Compilation, ctx.Shared.Property, property.Type, ctx.Shared.OutputLines, ctx.Shared.Namespaces);
             _registry.TryEmitRead(new ReadContext(nested, memberTarget), indent, depth, memberSeed);
         }

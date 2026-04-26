@@ -23,7 +23,7 @@ public abstract class ServerPacket : GamePacket
     /// <returns>Opcode value registered for this server packet type.</returns>
     public override ushort GetOpcode()
     {
-        return (ushort)PacketRegistry.ServerPacketInfo[_packetType].Opcode;
+        return PacketRegistry.ServerPacketInfo[_packetType].Opcode;
     }
 
     /// <summary>

@@ -6,7 +6,7 @@ namespace __TEMPLATE__.Netcode.Examples.Topdown;
 /// <summary>
 /// Server packet carrying a snapshot of player positions keyed by player id.
 /// </summary>
-public partial class SPacketPlayerPositions : ServerPacket
+public class SPacketPlayerPositions : ServerPacket
 {
     /// <summary>
     /// Gets or sets the latest position map keyed by player id.

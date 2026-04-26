@@ -39,7 +39,7 @@ public class Logger : IDisposable, ILoggerService
     public int MaxQueueDepth { get; set; } = 2000;
 
     /// <summary>
-    /// Creates a logger without a game-console sink.
+    /// Creates a logger with no game-console dependency.
     /// </summary>
     public Logger()
     {

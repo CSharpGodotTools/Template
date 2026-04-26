@@ -1,4 +1,3 @@
-using GodotUtils;
 using System;
 
 namespace __TEMPLATE__;

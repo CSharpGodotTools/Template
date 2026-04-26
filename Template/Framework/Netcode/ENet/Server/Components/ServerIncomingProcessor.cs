@@ -247,7 +247,7 @@ internal sealed class ServerIncomingProcessor
     /// Resolves max fragment count from options with fallback normalization.
     /// </summary>
     /// <returns>Validated max fragment count.</returns>
-    private ushort GetMaxFragmentsPerPacket() => NormalizePositive(_optionsProvider()?.MaxFragmentsPerPacket ?? (ushort)1024, (ushort)1024);
+    private ushort GetMaxFragmentsPerPacket() => NormalizePositive(_optionsProvider()?.MaxFragmentsPerPacket ?? 1024, (ushort)1024);
 
     /// <summary>
     /// Normalizes positive integer configuration values.

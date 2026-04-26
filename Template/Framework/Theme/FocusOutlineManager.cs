@@ -7,7 +7,7 @@ namespace __TEMPLATE__.Ui;
 /// Tracks keyboard/gamepad focus and renders a pulsing outline around the focused control.
 /// </summary>
 /// <param name="owner">Owning node used to resolve viewport and outline controls.</param>
-public partial class FocusOutlineManager(Node owner) : Component(owner)
+public class FocusOutlineManager(Node owner) : Component(owner)
 {
     // Config
     private readonly float _flashSpeed = 4f;

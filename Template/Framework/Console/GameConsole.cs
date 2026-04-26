@@ -44,13 +44,11 @@ public partial class GameConsole : Node, ISceneDependencyReceiver
     /// </summary>
     public bool Visible => _mainContainer.Visible;
 
-    /// <inheritdoc />
     public override void _EnterTree()
     {
         SceneComposition.ConfigureNodeFromGame(this);
     }
 
-    /// <inheritdoc />
     public override void _Ready()
     {
         // Ensure runtime services were provided before node initialization.
@@ -65,7 +63,6 @@ public partial class GameConsole : Node, ISceneDependencyReceiver
         FlushPendingMessages();
     }
 
-    /// <inheritdoc />
     public override void _Process(double delta)
     {
         // Toggle console visibility when the configured shortcut is pressed.
@@ -78,7 +75,6 @@ public partial class GameConsole : Node, ISceneDependencyReceiver
         HandleHistoryNavigation();
     }
 
-    /// <inheritdoc />
     public override void _ExitTree()
     {
         UnbindEvents();
@@ -406,7 +402,7 @@ public partial class GameConsole : Node, ISceneDependencyReceiver
 }
 
 /// <summary>
-/// Extension helpers for fluently configuring console command metadata.
+/// Extension helpers for configuring console command metadata.
 /// </summary>
 public static class ConsoleCommandInfoExtensions
 {

@@ -12,7 +12,7 @@ namespace GodotUtils.Debugging;
 /// </summary>
 internal static class VisualizeAttributeHandler
 {
-    private const BindingFlags _flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+    private const BindingFlags Flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
 
     /// <summary>
     /// Retrieves visualization metadata for an object when at least one annotated member exists.
@@ -24,9 +24,9 @@ internal static class VisualizeAttributeHandler
     {
         Type type = visualizedObject.GetType();
 
-        List<PropertyInfo> properties = GetVisualMembers<PropertyInfo>(type.GetProperties);
-        List<FieldInfo> fields = GetVisualMembers<FieldInfo>(type.GetFields);
-        List<MethodInfo> methods = GetVisualMembers<MethodInfo>(type.GetMethods);
+        List<PropertyInfo> properties = GetVisualMembers(type.GetProperties);
+        List<FieldInfo> fields = GetVisualMembers(type.GetFields);
+        List<MethodInfo> methods = GetVisualMembers(type.GetMethods);
 
         // Return a visual data payload only when at least one annotated member was found.
         if (properties.Count != 0 || fields.Count != 0 || methods.Count != 0)
@@ -44,7 +44,7 @@ internal static class VisualizeAttributeHandler
     /// <returns>Annotated member list.</returns>
     private static List<T> GetVisualMembers<T>(Func<BindingFlags, T[]> getMembers) where T : MemberInfo
     {
-        return [.. getMembers(_flags).Where(member => member.GetCustomAttributes(typeof(VisualizeAttribute), false).Length != 0)];
+        return [.. getMembers(Flags).Where(member => member.GetCustomAttributes(typeof(VisualizeAttribute), false).Length != 0)];
     }
 }
 #endif
