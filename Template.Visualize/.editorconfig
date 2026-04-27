@@ -1,6 +1,10 @@
 # IMPORTANT
 # - This file should only be edited from the true project root as git hooks sync its changes to all sub projects.
-# - Do not generate .editorconfig from Visual Studio or all manual edited rules including comments will be wiped.
+# - Do not generate .editorconfig from Visual Studio or all manual edited rules including comments will be wiped!
+
+# --------------------------------------------------------------------
+# --------------------------- Main Settings --------------------------
+# --------------------------------------------------------------------
 
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
@@ -13,10 +17,6 @@ dotnet_analyzer_diagnostic.severity = none
 # C# files
 [*.cs]
 
-# Suppressed suggestions
-dotnet_diagnostic.IDE0130.severity = none # Namespace "X.Y" does not match folder structure, expected "X.Y.Z"
-dotnet_diagnostic.CA1816.severity = none # Change X.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it
-
 # Indentation and spacing
 indent_size = 4
 indent_style = space
@@ -26,8 +26,18 @@ tab_width = 4
 end_of_line = lf # Godot requires LF line endings
 insert_final_newline = true
 
+# --------------------------------------------------------------------
+# ------------------------ Enabled Analyzers -------------------------
+# --------------------------------------------------------------------
+
 # Remove braces
-dotnet_diagnostic.rcs1002.severity = warning
+dotnet_diagnostic.RCS1002.severity = warning
+
+# Explicit accessibility modifiers (e.g. always use 'private' on 'void Hello()')
+dotnet_diagnostic.RCS1018.severity = explicit
+
+# Enforces whether you should write the type explicitly in array creation expressions (e.g. new int[] { 1, 2 } vs new[] { 1, 2 })
+dotnet_diagnostic.RCS1014.severity = implicit
 
 # Remove unused usings
 dotnet_diagnostic.CS8019.severity = suggestion
@@ -36,16 +46,31 @@ dotnet_diagnostic.CS8019.severity = suggestion
 dotnet_diagnostic.IDE2000.severity = suggestion
 dotnet_style_allow_multiple_blank_lines_experimental = false
 
-# ------ Suppressed analyzers ---
+# --------------------------------------------------------------------
+# ----------------------- Suppressed Analyzers -----------------------
+# --------------------------------------------------------------------
+
+# Sort enums (some enums should not be sorted due to organization concerns)
+dotnet_diagnostic.RCS1154.severity = none
+
+# Namespace "X.Y" does not match folder structure, expected "X.Y.Z"
+dotnet_diagnostic.IDE0130.severity = none
+
+# Change X.Dispose() to call GC.SuppressFinalize(object). This will prevent derived types that introduce a finalizer from needing to re-implement 'IDisposable' to call it
+dotnet_diagnostic.CA1816.severity = none
+
 # Remove unused usings (enabled as suggestion above in CS8019)
 dotnet_diagnostic.IDE0005.severity = none
 
 # Remove whitespace (this is handled by the formatter for us)
 dotnet_diagnostic.RCS1037.severity = silent
 
-# --- Disabled broken analyzers ---
-# https://github.com/dotnet/format/issues/1623
+# Broken analyzer (see https://github.com/dotnet/format/issues/1623)
 dotnet_diagnostic.IDE0130.severity = none
+
+# --------------------------------------------------------------------
+# ------ Generated Visual Studio EditorConfig with MANUAL EDITS ------
+# --------------------------------------------------------------------
 
 #### .NET Code Actions ####
 
