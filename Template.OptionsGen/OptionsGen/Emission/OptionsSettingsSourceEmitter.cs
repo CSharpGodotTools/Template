@@ -79,7 +79,7 @@ internal sealed class OptionsSettingsSourceEmitter(
 
         // Keep output ordering stable across runs to avoid noisy generated-source diffs.
         List<OptionSettingSpec> orderedSpecs = [.. dedupedSpecs];
-        orderedSpecs.Sort(static (left, right) => string.Compare(left.SaveKey, right.SaveKey, StringComparison.Ordinal));
+        orderedSpecs.Sort(static (left, right) => string.CompareOrdinal(left.SaveKey, right.SaveKey));
 
         // Emit one generated source file containing all normalized option accessors.
         string generatedSource = SourceBuilder.BuildSource(optionsSettings, orderedSpecs);

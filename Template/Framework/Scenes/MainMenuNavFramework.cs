@@ -39,7 +39,7 @@ public abstract partial class MainMenuNavFramework : Node, ISceneDependencyRecei
     {
         SceneComposition.ConfigureNodeFromGame(this);
     }
-    
+
     public override void _Ready()
     {
         // Composition must inject runtime dependencies before scene readiness.

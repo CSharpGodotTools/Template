@@ -95,9 +95,7 @@ internal sealed class OptionsSettingsSourceBuilder : IOptionsSettingsSourceBuild
 
             // Preserve the first normalized name and only suffix when another key maps to it.
             for (int suffix = 2; !usedNames.Add(name); suffix++)
-            {
                 name = baseName + suffix.ToString(CultureInfo.InvariantCulture);
-            }
 
             namesBySaveKey[spec.SaveKey] = name;
         }

@@ -36,7 +36,7 @@ public static class CodeHighlighterFactory
             },
         };
 
-        
+
 
         // Apply a consistent keyword color map for basic C# token highlighting.
         foreach (string keyword in _keywords)

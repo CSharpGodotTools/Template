@@ -72,11 +72,11 @@ internal static partial class VisualControlTypes
         FieldInfo[] fields = [.. type
             .GetFields(flags)
             // Exclude delegate types
-            .Where(f => !typeof(Delegate).IsAssignableFrom(f.FieldType) && (!f.Name.StartsWith('<') || !f.Name.EndsWith(">k__BackingField")))
+            .Where(f => !typeof(Delegate).IsAssignableFrom(f.FieldType) && (!f.Name.StartsWith('<') || !f.Name.EndsWith(">k__BackingField")) && !backingFieldNames.Contains(f.Name))
             // Exclude fields created by properties
             
             // Exclude backing fields for properties
-            .Where(f => !backingFieldNames.Contains(f.Name))];
+            ];
 
         FilterByVisualizeAttribute(ref fields);
 
@@ -139,11 +139,11 @@ internal static partial class VisualControlTypes
 
         MethodInfo[] methods = [.. type.GetMethods(flags)
             // Exclude delegates
-            .Where(m => !typeof(Delegate).IsAssignableFrom(m.ReturnType) && !m.Name.StartsWith(GetterPrefix) && !m.Name.StartsWith(SetterPrefix))
+            .Where(m => !typeof(Delegate).IsAssignableFrom(m.ReturnType) && !m.Name.StartsWith(GetterPrefix) && !m.Name.StartsWith(SetterPrefix) && !m.Name.StartsWith(EventAddPrefix) && !m.Name.StartsWith(EventRemovePrefix) && m.Name != ToStringMethodName)
             // Exclude auto property methods
             
             // Exclude event add and remove event methods
-            .Where(m => !m.Name.StartsWith(EventAddPrefix) && !m.Name.StartsWith(EventRemovePrefix) && m.Name != ToStringMethodName)
+            
             // Exclude the override string ToString() method
             ];
 

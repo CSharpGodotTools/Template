@@ -220,8 +220,7 @@ public partial class World : Node2D
     /// </summary>
     private void RefreshProcessingState()
     {
-        bool hasReadyNetworkPlayer = _client != null
-            && _client.IsConnected
+        bool hasReadyNetworkPlayer = _client?.IsConnected == true
             && _localPlayer?.HasLocalPlayer == true;
 
         bool serverRunning = _netControlPanel?.Net?.Server?.IsRunning == true;
