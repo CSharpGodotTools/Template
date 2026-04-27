@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using SysVector2 = System.Numerics.Vector2;
 
 namespace __TEMPLATE__.Netcode;
 
@@ -61,24 +60,40 @@ public class PacketWriter : IDisposable
             return;
         }
 
-        // Write Godot Vector2 values with dedicated helper.
+        // Handle vector values.
         if (valueType == typeof(Vector2))
         {
             WriteVector2((Vector2)(object)value);
             return;
         }
 
-        // Write Godot Vector3 values with dedicated helper.
         if (valueType == typeof(Vector3))
         {
             WriteVector3((Vector3)(object)value);
             return;
         }
 
-        // Write System.Numerics Vector2 values with dedicated helper.
-        if (valueType == typeof(SysVector2))
+        if (valueType == typeof(Vector4))
         {
-            WriteVector2Numerics((SysVector2)(object)value);
+            WriteVector4((Vector4)(object)value);
+            return;
+        }
+
+        if (valueType == typeof(System.Numerics.Vector2))
+        {
+            WriteSVector2((System.Numerics.Vector2)(object)value);
+            return;
+        }
+
+        if (valueType == typeof(System.Numerics.Vector3))
+        {
+            WriteSVector3((System.Numerics.Vector3)(object)value);
+            return;
+        }
+
+        if (valueType == typeof(System.Numerics.Vector4))
+        {
+            WriteSVector4((System.Numerics.Vector4)(object)value);
             return;
         }
 
@@ -163,35 +178,46 @@ public class PacketWriter : IDisposable
         }
     }
 
-    /// <summary>
-    /// Writes a <see cref="Vector2"/> as two consecutive <see cref="float"/> values.
-    /// </summary>
-    /// <param name="vector">Vector value to write.</param>
     private void WriteVector2(Vector2 vector)
     {
         Write(vector.X);
         Write(vector.Y);
     }
 
-    /// <summary>
-    /// Writes a <see cref="System.Numerics.Vector2"/> as two consecutive <see cref="float"/> values.
-    /// </summary>
-    /// <param name="vector">Vector value to write.</param>
-    private void WriteVector2Numerics(SysVector2 vector)
-    {
-        Write(vector.X);
-        Write(vector.Y);
-    }
-
-    /// <summary>
-    /// Writes a <see cref="Vector3"/> as three consecutive <see cref="float"/> values.
-    /// </summary>
-    /// <param name="vector">Vector value to write.</param>
     private void WriteVector3(Vector3 vector)
     {
         Write(vector.X);
         Write(vector.Y);
         Write(vector.Z);
+    }
+
+    private void WriteVector4(Vector4 vector)
+    {
+        Write(vector.X);
+        Write(vector.Y);
+        Write(vector.Z);
+        Write(vector.W);
+    }
+
+    private void WriteSVector2(System.Numerics.Vector2 vector)
+    {
+        Write(vector.X);
+        Write(vector.Y);
+    }
+
+    private void WriteSVector3(System.Numerics.Vector3 vector)
+    {
+        Write(vector.X);
+        Write(vector.Y);
+        Write(vector.Z);
+    }
+
+    private void WriteSVector4(System.Numerics.Vector4 vector)
+    {
+        Write(vector.X);
+        Write(vector.Y);
+        Write(vector.Z);
+        Write(vector.W);
     }
 
     /// <summary>

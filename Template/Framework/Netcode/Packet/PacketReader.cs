@@ -75,7 +75,10 @@ public class PacketReader : IDisposable
     public byte[] ReadBytes() => ReadBytes(ReadInt());
     public Vector2 ReadVector2() => new(ReadFloat(), ReadFloat());
     public Vector3 ReadVector3() => new(ReadFloat(), ReadFloat(), ReadFloat());
-    public System.Numerics.Vector2 ReadVector2Numerics() => new(ReadFloat(), ReadFloat());
+    public Vector4 ReadVector4() => new(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
+    public System.Numerics.Vector2 ReadSVector2() => new(ReadFloat(), ReadFloat());
+    public System.Numerics.Vector3 ReadSVector3() => new(ReadFloat(), ReadFloat(), ReadFloat());
+    public System.Numerics.Vector4 ReadSVector4() => new(ReadFloat(), ReadFloat(), ReadFloat(), ReadFloat());
 
     /// <summary>
     /// Legacy reflection-based read; prefer PacketGen-generated Read methods for packet deserialization.
@@ -120,17 +123,25 @@ public class PacketReader : IDisposable
         if (IsPrimitiveLike(type))
             return ReadPrimitive<T>(type);
 
-        // Handle Godot Vector2 values with dedicated read helpers.
+        // Handle Godot Vector values.
         if (type == typeof(Vector2))
             return (T)(object)ReadVector2();
 
-        // Handle Godot Vector3 values with dedicated read helpers.
         if (type == typeof(Vector3))
             return (T)(object)ReadVector3();
 
-        // Handle System.Numerics Vector2 values with dedicated read helpers.
+        if (type == typeof(Vector4))
+            return (T)(object)ReadVector4();
+
+        // Handle System.Numerics Vector values.
         if (type == typeof(System.Numerics.Vector2))
-            return (T)(object)ReadVector2Numerics();
+            return (T)(object)ReadSVector2();
+
+        if (type == typeof(System.Numerics.Vector3))
+            return (T)(object)ReadSVector3();
+
+        if (type == typeof(System.Numerics.Vector4))
+            return (T)(object)ReadSVector4();
 
         // Delegate supported generic collections to specialized readers.
         if (type.IsGenericType)
