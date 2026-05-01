@@ -1,11 +1,5 @@
 <div align="center">
     <img width="1000" height="200" alt="Banner" src="https://github.com/user-attachments/assets/ac90a4be-170c-4294-9266-7e2a698fde63" />
-    <a href="https://github.com/ValksGodotTools/Template/stargazers"><img src="https://img.shields.io/github/stars/ValksGodotTools/Template?style=flat&labelColor=1a1a1a&color=000000" alt="GitHub stars" /></a>
-    <a href="https://github.com/ValksGodotTools/Template/network"><img src="https://img.shields.io/github/forks/ValksGodotTools/Template?style=flat&labelColor=1a1a1a&color=000000" alt="GitHub forks" /></a>
-    <a href="https://github.com/ValksGodotTools/Template/commits/main"><img src="https://img.shields.io/github/last-commit/ValksGodotTools/Template?style=flat&labelColor=1a1a1a&color=000000" alt="Last commit" /></a>
-    <a href="https://github.com/ValksGodotTools/Template/graphs/contributors"><img src="https://img.shields.io/github/contributors/ValksGodotTools/Template?style=flat&labelColor=1a1a1a&color=000000" alt="Contributors" /></a>
-    <a href="https://github.com/ValksGodotTools/Template/watchers"><img src="https://img.shields.io/github/watchers/ValksGodotTools/Template?style=flat&labelColor=1a1a1a&color=000000" alt="Watchers" /></a>
-    <a href="https://discord.gg/j8HQZZ76r8"><img src="https://img.shields.io/discord/955956101554266132?label=discord&style=flat&color=000000&labelColor=1a1a1a" alt="Discord" /></a>
 </div>
 
 ## Overview
@@ -48,6 +42,8 @@
 Download the [latest release](https://github.com/CSharpGodotTools/Template/releases/latest) and open `project.godot`. Click `Run Setup` to restart Godot with your template ready to go.
 
 <img width="411" height="313" alt="image" src="https://github.com/user-attachments/assets/d5c663a9-29c1-40a0-b851-17f9e5cb7f00" />
+
+If you have any questions, you can join the [discord](https://discord.gg/j8HQZZ76r8).
 
 ### Update
 
