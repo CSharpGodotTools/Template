@@ -35,7 +35,7 @@ naming/script_name_casing=1
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/SetupPlugin/plugin.cfg")
+enabled=PackedStringArray("res://addons/DebuggerPlus/plugin.cfg", "res://addons/SetupPlugin/plugin.cfg")
 
 [file_customization]
 
