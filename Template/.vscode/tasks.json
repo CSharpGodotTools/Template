@@ -12,6 +12,18 @@
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "format",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "format",
+                "${workspaceFolder}/Template.sln",
+                "--severity",
+                "info"
+            ],
+            "problemMatcher": []
         }
     ]
 }
