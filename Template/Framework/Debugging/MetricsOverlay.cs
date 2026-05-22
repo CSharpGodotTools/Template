@@ -30,7 +30,9 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     private static readonly Color _graphFillColor = new(0.26f, 0.59f, 0.98f, 0.3f);
 
     // Variables
-    private readonly Dictionary<int, (string DisplayName, Func<object> Provider)> _monitors = [];
+    private readonly Dictionary<int, (string DisplayName, Func<object> Provider, GodotObject? Owner)> _monitors = [];
+    private readonly Dictionary<string, int> _monitorIdsByKey = [];
+    private readonly Dictionary<string, MonitorHandle> _monitorHandlesByKey = [];
     private readonly Dictionary<string, Func<string>> _currentMetrics = [];
     private readonly float[] _fpsBuffer = new float[MaxFpsBuffer];
 
@@ -114,13 +116,29 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         ArgumentNullException.ThrowIfNull(function);
 
         string displayName = string.IsNullOrWhiteSpace(key) ? "Monitor" : key;
-        int monitorId = ++_nextMonitorId;
-
+        GodotObject? owner = function.Target as GodotObject;
         Visible = true;
-        _monitors[monitorId] = (displayName, function);
+        if (_monitorIdsByKey.TryGetValue(displayName, out int existingId))
+        {
+            _monitors[existingId] = (displayName, function, owner);
+
+            if (_monitorHandlesByKey.TryGetValue(displayName, out MonitorHandle? existingHandle))
+                return existingHandle;
+
+            MonitorHandle recoveredHandle = new(this, existingId);
+            _monitorHandlesByKey[displayName] = recoveredHandle;
+            return recoveredHandle;
+        }
+
+        int monitorId = ++_nextMonitorId;
+        _monitors[monitorId] = (displayName, function, owner);
+        _monitorIdsByKey[displayName] = monitorId;
+
+        MonitorHandle handle = new(this, monitorId);
+        _monitorHandlesByKey[displayName] = handle;
         UpdateVariablesSection();
 
-        return new MonitorHandle(this, monitorId);
+        return handle;
     }
 
     /// <summary>
@@ -130,10 +148,29 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     private void StopMonitoring(int monitorId)
     {
         // Ignore unknown monitor ids.
-        if (!_monitors.Remove(monitorId))
+        if (!RemoveMonitor(monitorId))
             return;
 
         UpdateVariablesSection();
+    }
+
+    /// <summary>
+    /// Removes a monitor without triggering a UI refresh.
+    /// </summary>
+    /// <param name="monitorId">Registered monitor id.</param>
+    /// <returns>True when a monitor was removed.</returns>
+    private bool RemoveMonitor(int monitorId)
+    {
+        if (!_monitors.Remove(monitorId, out (string DisplayName, Func<object> Provider, GodotObject? Owner) monitor))
+            return false;
+
+        if (_monitorIdsByKey.TryGetValue(monitor.DisplayName, out int mappedId) && mappedId == monitorId)
+        {
+            _monitorIdsByKey.Remove(monitor.DisplayName);
+            _monitorHandlesByKey.Remove(monitor.DisplayName);
+        }
+
+        return true;
     }
 
     // Private Methods
@@ -288,6 +325,8 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     /// </summary>
     private void UpdateVariablesSection()
     {
+        RemoveInvalidMonitors();
+
         bool hasVariables = _monitors.Count > 0;
         _variablesHeader.Visible = hasVariables;
         _variablesContainer.Visible = hasVariables && _variablesExpanded;
@@ -298,11 +337,39 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         if (!hasVariables)
             return;
 
-        foreach ((string displayName, Func<object> provider) in _monitors.Values)
+        foreach ((string displayName, Func<object> provider, _) in _monitors.Values)
         {
             Label label = CreateLabel($"{displayName}: {FormatMonitorValue(provider())}");
             _variablesContainer.AddChild(label);
         }
+    }
+
+    /// <summary>
+    /// Clears monitors whose provider targets are no longer valid.
+    /// </summary>
+    private void RemoveInvalidMonitors()
+    {
+        if (_monitors.Count == 0)
+            return;
+
+        List<int>? invalidIds = null;
+        foreach ((int monitorId, (string DisplayName, Func<object> Provider, GodotObject? Owner) monitor) in _monitors)
+        {
+            if (monitor.Owner == null)
+                continue;
+
+            if (!GodotObject.IsInstanceValid(monitor.Owner))
+            {
+                invalidIds ??= [];
+                invalidIds.Add(monitorId);
+            }
+        }
+
+        if (invalidIds == null)
+            return;
+
+        foreach (int monitorId in invalidIds)
+            RemoveMonitor(monitorId);
     }
 
     /// <summary>
