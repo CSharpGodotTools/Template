@@ -42,8 +42,7 @@ internal sealed class OptionsSettingsSourceBuilder : IOptionsSettingsSourceBuild
         }
 
         builder.Append("public sealed partial class ")
-            .Append(OptionsGenConstants.OptionsSettingsTypeName)
-            .AppendLine();
+            .AppendLine(OptionsGenConstants.OptionsSettingsTypeName);
         builder.AppendLine("{");
 
         foreach (OptionSettingSpec spec in specs)
@@ -54,8 +53,7 @@ internal sealed class OptionsSettingsSourceBuilder : IOptionsSettingsSourceBuild
             builder.Append("    public ")
                 .Append(OptionValueKindNaming.GetTypeKeyword(spec.ValueKind))
                 .Append(" ")
-                .Append(propertyName)
-                .AppendLine();
+                .AppendLine(propertyName);
             builder.AppendLine("    {");
             builder.Append("        get => ")
                 .Append(OptionValueKindNaming.GetGetterName(spec.ValueKind))
