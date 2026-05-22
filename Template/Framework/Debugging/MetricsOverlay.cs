@@ -2,7 +2,6 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using Monitor = Godot.Performance.Monitor;
 
 namespace __TEMPLATE__.Debugging;
@@ -13,13 +12,15 @@ namespace __TEMPLATE__.Debugging;
 public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 {
     // Config
-    private const int BytesInMegabyte = 1048576;
+    private const int BytesInMegabyte = 1024 * 1024;
     private const int BytesInKilobyte = 1024;
     private const int MaxFpsBuffer = 100;
     private const int PanelWidth = 280;
     private const int GraphHeight = 50;
     private const int Margin = 10;
     private const int MonitorValueDecimals = 2;
+    private const string MetricsHeaderText = "METRICS";
+    private const string VariablesHeaderText = "VARIABLES";
 
     // Theme Colors
     private static readonly Color _backgroundColor = new(0.11f, 0.11f, 0.13f, 0.92f);
@@ -30,10 +31,13 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     private static readonly Color _graphFillColor = new(0.26f, 0.59f, 0.98f, 0.3f);
 
     // Variables
-    private readonly Dictionary<int, (string DisplayName, Func<object> Provider, GodotObject? Owner)> _monitors = [];
-    private readonly Dictionary<string, int> _monitorIdsByKey = [];
-    private readonly Dictionary<string, MonitorHandle> _monitorHandlesByKey = [];
-    private readonly Dictionary<string, Func<string>> _currentMetrics = [];
+    [Export]
+    private string _toggleAction = "debug_overlay";
+
+    private readonly MonitorRegistry _registry = new();
+    private readonly Dictionary<string, Label> _metricLabels = new();
+    private readonly List<(Label label, string displayName, Func<object> provider)> _variableLabels = new();
+    private readonly Dictionary<string, Func<float, string>> _currentMetrics = [];
     private readonly float[] _fpsBuffer = new float[MaxFpsBuffer];
 
     private PanelContainer _panel = null!;
@@ -46,49 +50,55 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
 
     private float _cachedFps;
     private int _fpsIndex;
-    private int _nextMonitorId;
     private bool _metricsExpanded = true;
     private bool _variablesExpanded = true;
 
     /// <summary>
-    /// Initializes default metric providers and builds the overlay UI.
+    /// Initializes default metric providers.
     /// </summary>
     public MetricsOverlay()
     {
-        Dictionary<string, (bool Enabled, Func<string> ValueProvider)> metrics = new()
+        Dictionary<string, (bool Enabled, Func<float, string> ValueProvider)> metrics = new()
         {
-            { "FPS", (true, () => $"{_cachedFps:F0}") },
-            { "Process", (false, () => $"{Retrieve(Monitor.TimeProcess) * 1000:0.00} ms") },
-            { "Physics Process", (false, () => $"{Retrieve(Monitor.TimePhysicsProcess) * 1000:0.00} ms") },
-            { "Navigation Process", (false, () => $"{Retrieve(Monitor.TimeNavigationProcess) * 1000:0.00} ms") },
-            { "Static Memory", (true, () => $"{Retrieve(Monitor.MemoryStatic) / BytesInMegabyte:0.0} MiB") },
-            { "Static Memory Max", (false, () => $"{Retrieve(Monitor.MemoryStaticMax) / BytesInMegabyte:0.0} MiB") },
-            { "Video Memory", (true, () => $"{Retrieve(Monitor.RenderVideoMemUsed) / BytesInMegabyte:0.0} MiB") },
-            { "Texture Memory", (false, () => $"{Retrieve(Monitor.RenderTextureMemUsed) / BytesInMegabyte:0.0} MiB") },
-            { "Buffer Memory", (false, () => $"{Retrieve(Monitor.RenderBufferMemUsed) / BytesInMegabyte:0.0} MiB") },
-            { "Message Buffer Max", (false, () => $"{Retrieve(Monitor.MemoryMessageBufferMax) / BytesInKilobyte:0.0} KiB") },
-            { "Resource Count", (false, () => $"{Retrieve(Monitor.ObjectResourceCount)}") },
-            { "Node Count", (true, () => $"{Retrieve(Monitor.ObjectNodeCount)}") },
-            { "Orphan Node Count", (true, () => $"{Retrieve(Monitor.ObjectOrphanNodeCount)}") },
-            { "Object Count", (true, () => $"{Retrieve(Monitor.ObjectCount)}") },
-            { "Total Objects Drawn", (false, () => $"{Retrieve(Monitor.RenderTotalObjectsInFrame)}") },
-            { "Total Primitives Drawn", (false, () => $"{Retrieve(Monitor.RenderTotalPrimitivesInFrame)}") },
-            { "Total Draw Calls", (false, () => $"{Retrieve(Monitor.RenderTotalDrawCallsInFrame)}") },
+            { "FPS", (true, fps => $"{fps:F0}") },
+            { "Process", (false, _ => $"{Retrieve(Monitor.TimeProcess) * 1000:0.00} ms") },
+            { "Physics Process", (false, _ => $"{Retrieve(Monitor.TimePhysicsProcess) * 1000:0.00} ms") },
+            { "Navigation Process", (false, _ => $"{Retrieve(Monitor.TimeNavigationProcess) * 1000:0.00} ms") },
+            { "Static Memory", (true, _ => $"{Retrieve(Monitor.MemoryStatic) / BytesInMegabyte:0.0} MiB") },
+            { "Static Memory Max", (false, _ => $"{Retrieve(Monitor.MemoryStaticMax) / BytesInMegabyte:0.0} MiB") },
+            { "Video Memory", (true, _ => $"{Retrieve(Monitor.RenderVideoMemUsed) / BytesInMegabyte:0.0} MiB") },
+            { "Texture Memory", (false, _ => $"{Retrieve(Monitor.RenderTextureMemUsed) / BytesInMegabyte:0.0} MiB") },
+            { "Buffer Memory", (false, _ => $"{Retrieve(Monitor.RenderBufferMemUsed) / BytesInMegabyte:0.0} MiB") },
+            { "Message Buffer Max", (false, _ => $"{Retrieve(Monitor.MemoryMessageBufferMax) / BytesInKilobyte:0.0} KiB") },
+            { "Resource Count", (false, _ => $"{Retrieve(Monitor.ObjectResourceCount)}") },
+            { "Node Count", (true, _ => $"{Retrieve(Monitor.ObjectNodeCount)}") },
+            { "Orphan Node Count", (true, _ => $"{Retrieve(Monitor.ObjectOrphanNodeCount)}") },
+            { "Object Count", (true, _ => $"{Retrieve(Monitor.ObjectCount)}") },
+            { "Total Objects Drawn", (false, _ => $"{Retrieve(Monitor.RenderTotalObjectsInFrame)}") },
+            { "Total Primitives Drawn", (false, _ => $"{Retrieve(Monitor.RenderTotalPrimitivesInFrame)}") },
+            { "Total Draw Calls", (false, _ => $"{Retrieve(Monitor.RenderTotalDrawCallsInFrame)}") },
         };
 
-        foreach (KeyValuePair<string, (bool Enabled, Func<string> ValueProvider)> metric in metrics)
+        foreach (KeyValuePair<string, (bool Enabled, Func<float, string> ValueProvider)> metric in metrics)
         {
             // Seed overlay with metrics marked as enabled by default.
             if (metric.Value.Enabled)
                 _currentMetrics.Add(metric.Key, metric.Value.ValueProvider);
         }
 
-        BuildUi();
     }
 
     // Godot Overrides
     public override void _Ready()
     {
+        BuildUi();
+
+        GetViewport().SizeChanged += () =>
+        {
+            if (_panel != null && IsInstanceValid(_panel))
+                PositionPanel();
+        };
+
         Layer = 100;
         Visible = false;
     }
@@ -96,7 +106,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     public override void _Process(double delta)
     {
         // Toggle overlay visibility on debug shortcut press.
-        if (Input.IsActionJustPressed(InputActions.DebugOverlay))
+        if (Input.IsActionJustPressed(_toggleAction))
             Visible = !Visible;
 
         // Refresh values only when the overlay is visible.
@@ -115,62 +125,17 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     {
         ArgumentNullException.ThrowIfNull(function);
 
-        string displayName = string.IsNullOrWhiteSpace(key) ? "Monitor" : key;
-        GodotObject? owner = function.Target as GodotObject;
-        Visible = true;
-        if (_monitorIdsByKey.TryGetValue(displayName, out int existingId))
-        {
-            _monitors[existingId] = (displayName, function, owner);
-
-            if (_monitorHandlesByKey.TryGetValue(displayName, out MonitorHandle? existingHandle))
-                return existingHandle;
-
-            MonitorHandle recoveredHandle = new(this, existingId);
-            _monitorHandlesByKey[displayName] = recoveredHandle;
-            return recoveredHandle;
-        }
-
-        int monitorId = ++_nextMonitorId;
-        _monitors[monitorId] = (displayName, function, owner);
-        _monitorIdsByKey[displayName] = monitorId;
-
-        MonitorHandle handle = new(this, monitorId);
-        _monitorHandlesByKey[displayName] = handle;
+        IDisposable handle = _registry.StartMonitoring(key, function);
         UpdateVariablesSection();
-
         return handle;
     }
 
     /// <summary>
-    /// Removes a custom monitor by id.
+    /// Forces a refresh of the custom variables UI.
     /// </summary>
-    /// <param name="monitorId">Registered monitor id.</param>
-    private void StopMonitoring(int monitorId)
+    public void RefreshVariablesUI()
     {
-        // Ignore unknown monitor ids.
-        if (!RemoveMonitor(monitorId))
-            return;
-
         UpdateVariablesSection();
-    }
-
-    /// <summary>
-    /// Removes a monitor without triggering a UI refresh.
-    /// </summary>
-    /// <param name="monitorId">Registered monitor id.</param>
-    /// <returns>True when a monitor was removed.</returns>
-    private bool RemoveMonitor(int monitorId)
-    {
-        if (!_monitors.Remove(monitorId, out (string DisplayName, Func<object> Provider, GodotObject? Owner) monitor))
-            return false;
-
-        if (_monitorIdsByKey.TryGetValue(monitor.DisplayName, out int mappedId) && mappedId == monitorId)
-        {
-            _monitorIdsByKey.Remove(monitor.DisplayName);
-            _monitorHandlesByKey.Remove(monitor.DisplayName);
-        }
-
-        return true;
     }
 
     // Private Methods
@@ -222,7 +187,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     /// </summary>
     private void BuildMetricsSection()
     {
-        _metricsHeader = CreateSectionHeader("METRICS");
+        _metricsHeader = CreateSectionHeader(MetricsHeaderText);
         _metricsHeader.Pressed += () => ToggleSection(ref _metricsExpanded, _metricsContainer);
         _mainContainer.AddChild(_metricsHeader);
 
@@ -240,7 +205,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     /// </summary>
     private void BuildVariablesSection()
     {
-        _variablesHeader = CreateSectionHeader("VARIABLES");
+        _variablesHeader = CreateSectionHeader(VariablesHeaderText);
         _variablesHeader.Pressed += () => ToggleSection(ref _variablesExpanded, _variablesContainer);
         _variablesHeader.Visible = false;
         _mainContainer.AddChild(_variablesHeader);
@@ -272,7 +237,6 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
             ContentMarginBottom = 3
         };
         button.AddThemeStyleboxOverride("normal", normalStyle);
-        button.AddThemeStyleboxOverride("hover", normalStyle);
         button.AddThemeColorOverride("font_color", _accentColor);
 
         return button;
@@ -302,7 +266,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
         UpdateMetricsSection();
 
         // Refresh custom variables section only when monitors are registered.
-        if (_monitors.Count > 0)
+        if (_registry.Count > 0)
             UpdateVariablesSection();
     }
 
@@ -311,12 +275,18 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     /// </summary>
     private void UpdateMetricsSection()
     {
-        ClearLabels(_metricsContainer, skipGraph: true);
-
-        foreach ((string key, Func<string> valueProvider) in _currentMetrics)
+        foreach ((string key, Func<float, string> valueProvider) in _currentMetrics)
         {
-            Label label = CreateLabel($"{key}: {valueProvider()}");
-            _metricsContainer.AddChild(label);
+            string text = $"{key}: {valueProvider(_cachedFps)}";
+            if (_metricLabels.TryGetValue(key, out Label? label))
+            {
+                label.Text = text;
+                continue;
+            }
+
+            Label newLabel = CreateLabel(text);
+            _metricLabels[key] = newLabel;
+            _metricsContainer.AddChild(newLabel);
         }
     }
 
@@ -325,51 +295,29 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     /// </summary>
     private void UpdateVariablesSection()
     {
-        RemoveInvalidMonitors();
-
-        bool hasVariables = _monitors.Count > 0;
+        _registry.RemoveInvalidMonitors();
+        bool rebuild = _registry.ConsumeChanges();
+        bool hasVariables = _registry.Count > 0;
         _variablesHeader.Visible = hasVariables;
         _variablesContainer.Visible = hasVariables && _variablesExpanded;
 
-        ClearLabels(_variablesContainer, skipGraph: false);
-
         // Skip rebuild work when there are no custom variables to show.
         if (!hasVariables)
-            return;
-
-        foreach ((string displayName, Func<object> provider, _) in _monitors.Values)
         {
-            Label label = CreateLabel($"{displayName}: {FormatMonitorValue(provider())}");
-            _variablesContainer.AddChild(label);
-        }
-    }
+            if (rebuild && _variableLabels.Count > 0)
+                ClearVariableLabels();
 
-    /// <summary>
-    /// Clears monitors whose provider targets are no longer valid.
-    /// </summary>
-    private void RemoveInvalidMonitors()
-    {
-        if (_monitors.Count == 0)
             return;
-
-        List<int>? invalidIds = null;
-        foreach ((int monitorId, (string DisplayName, Func<object> Provider, GodotObject? Owner) monitor) in _monitors)
-        {
-            if (monitor.Owner == null)
-                continue;
-
-            if (!GodotObject.IsInstanceValid(monitor.Owner))
-            {
-                invalidIds ??= [];
-                invalidIds.Add(monitorId);
-            }
         }
 
-        if (invalidIds == null)
+        if (rebuild)
+        {
+            RebuildVariableLabels();
             return;
+        }
 
-        foreach (int monitorId in invalidIds)
-            RemoveMonitor(monitorId);
+        foreach ((Label label, string displayName, Func<object> provider) in _variableLabels)
+            label.Text = $"{displayName}: {FormatMonitorValue(provider())}";
     }
 
     /// <summary>
@@ -395,7 +343,7 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
             Vector4 vector => $"({FormatDecimal(vector.X)}, {FormatDecimal(vector.Y)}, {FormatDecimal(vector.Z)}, {FormatDecimal(vector.W)})",
             Quaternion quaternion => $"({FormatDecimal(quaternion.X)}, {FormatDecimal(quaternion.Y)}, {FormatDecimal(quaternion.Z)}, {FormatDecimal(quaternion.W)})",
             Color color => $"({FormatDecimal(color.R)}, {FormatDecimal(color.G)}, {FormatDecimal(color.B)}, {FormatDecimal(color.A)})",
-            _ => RoundDecimalsInText(value.ToString() ?? string.Empty)
+            _ => value.ToString() ?? ""
         };
     }
 
@@ -410,44 +358,31 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     }
 
     /// <summary>
-    /// Rounds decimal numbers found inside mixed text.
+    /// Removes all custom variable labels and clears the cache.
     /// </summary>
-    /// <param name="text">Input text that may contain decimal numbers.</param>
-    /// <returns>Text with normalized decimal precision.</returns>
-    private static string RoundDecimalsInText(string text)
+    private void ClearVariableLabels()
     {
-        return DecimalNumberRegex().Replace(text, match =>
+        foreach (Node child in _variablesContainer.GetChildren())
         {
-            // Normalize detected decimals while preserving non-numeric fragments.
-            if (double.TryParse(match.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out double number))
-                return FormatDecimal(number);
+            _variablesContainer.RemoveChild(child);
+            child.QueueFree();
+        }
 
-            return match.Value;
-        });
+        _variableLabels.Clear();
     }
 
     /// <summary>
-    /// Matches decimal numbers for text normalization.
+    /// Rebuilds custom variable labels from current monitors.
     /// </summary>
-    /// <returns>Compiled regex that matches signed decimal numbers.</returns>
-    [GeneratedRegex(@"-?\d+\.\d+")]
-    private static partial Regex DecimalNumberRegex();
-
-    /// <summary>
-    /// Removes label children from container, optionally preserving FPS graph.
-    /// </summary>
-    /// <param name="container">Container to clear.</param>
-    /// <param name="skipGraph">Whether to preserve <see cref="FpsGraph"/> children.</param>
-    private static void ClearLabels(Node container, bool skipGraph)
+    private void RebuildVariableLabels()
     {
-        foreach (Node child in container.GetChildren())
-        {
-            // Keep the FPS graph control when clearing only label nodes.
-            if (skipGraph && child is FpsGraph)
-                continue;
+        ClearVariableLabels();
 
-            container.RemoveChild(child);
-            child.QueueFree();
+        foreach ((string displayName, Func<object> provider, _) in _registry.Monitors.Values)
+        {
+            Label label = CreateLabel($"{displayName}: {FormatMonitorValue(provider())}");
+            _variablesContainer.AddChild(label);
+            _variableLabels.Add((label, displayName, provider));
         }
     }
 
@@ -475,33 +410,6 @@ public partial class MetricsOverlay : CanvasLayer, IMetricsOverlay
     /// <param name="monitor">Monitor enum to query.</param>
     /// <returns>Monitor value as double.</returns>
     private static double Retrieve(Monitor monitor) => Performance.GetMonitor(monitor);
-
-    /// <summary>
-    /// Disposable monitor registration handle.
-    /// </summary>
-    /// <param name="owner">Metrics overlay that owns the monitor registration.</param>
-    /// <param name="monitorId">Identifier of the registered monitor to release on dispose.</param>
-    private sealed class MonitorHandle(MetricsOverlay owner, int monitorId) : IDisposable
-    {
-        private MetricsOverlay? _owner = owner;
-        private readonly int _monitorId = monitorId;
-
-        /// <summary>
-        /// Unregisters the associated monitor from its owner.
-        /// </summary>
-        public void Dispose()
-        {
-            // Ignore repeated dispose calls after monitor was already released.
-            if (_owner == null)
-                return;
-
-            // Unregister monitor only while owner node still exists.
-            if (GodotObject.IsInstanceValid(_owner))
-                _owner.StopMonitoring(_monitorId);
-
-            _owner = null;
-        }
-    }
 
     // Nested Class: FPS Graph
     /// <summary>
