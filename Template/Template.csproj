@@ -24,8 +24,10 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <!-- https://github.com/Cat-Lips/GodotSharp.SourceGenerators -->
         <PackageReference Include="GodotSharp.SourceGenerators" Version="2.7.0-260408-2121.Release " />
-        <PackageReference Include="PacketGen" Version="1.3.29" />
-        <PackageReference Include="Template.OptionsGen" Version="1.0.12" />
+        <PackageReference Include="PacketGen" Version="1.0.0" />
+        <PackageReference Include="Template.OptionsGen" Version="1.0.0" />
+        <PackageReference Include="GodotUtils" Version="1.0.0" />
+        <PackageReference Include="Visualize" Version="1.0.0" />
 
         <PackageReference Include="Roslynator.Analyzers" Version="4.15.0">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -44,8 +46,6 @@
         <!-- References -->
         <!-- This is required for other platforms where the ENet NuGet package is not enough -->
         <Reference Include="ENet-CSharp.dll" Condition="Exists('ENet-CSharp.dll')" />
-        <Reference Include="Framework/Libraries/GodotUtils.dll" />
-        <Reference Include="Framework/Libraries/Visualize.dll" />
 
         <!-- Exclude obj and bin directories from subfolders -->
         <Compile Remove="**\obj\**" />

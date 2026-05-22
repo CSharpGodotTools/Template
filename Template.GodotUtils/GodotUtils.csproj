@@ -7,10 +7,17 @@
         <RootNamespace>GodotUtils</RootNamespace>
         <OutputPath>$(SolutionDir)bin\</OutputPath>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageId>GodotUtils</PackageId>
+        <Version>1.0.0</Version>
+        <Description>Godot utility extensions and helpers for CSharpGodotTools/Template</Description>
+        <Authors>Valkyrienyanko</Authors>
+        <PackageTags>Godot C# Utilities</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <!-- CS1591: Ignore missing XML comment warnings -->
         <!-- IDE0130: Ignore invalid namespace name warnings -->
         <!-- IDE0290: Ignore primary constructor suggestions -->
-        <NoWarn>CS1591;IDE0130;IDE0290;</NoWarn>
+        <NoWarn>CS1591;IDE0130;IDE0290;NU5100</NoWarn>
         <!-- <DefineConstants>$(DefineConstants);NETCODE_ENABLED</DefineConstants> -->
     </PropertyGroup>
 
@@ -34,4 +41,24 @@
         </Reference>
     </ItemGroup>
 
+    <Target Name="CopyPackageToTemplate" AfterTargets="Pack">
+        <PropertyGroup>
+            <TemplateLibrariesDir>$(MSBuildProjectDirectory)\..\Template\Framework\Libraries\</TemplateLibrariesDir>
+            <_PackageOutputPathForCopy Condition="'$(PackageOutputPath)' == ''">$(OutputPath)</_PackageOutputPathForCopy>
+            <_PackageOutputPathForCopy Condition="'$(PackageOutputPath)' != ''">$(PackageOutputPath)</_PackageOutputPathForCopy>
+            <_PackageOutputPathForCopy>$([MSBuild]::EnsureTrailingSlash('$(_PackageOutputPathForCopy)'))</_PackageOutputPathForCopy>
+            <_PackageIdForCopy Condition="'$(PackageId)' == ''">$(AssemblyName)</_PackageIdForCopy>
+            <_PackageIdForCopy Condition="'$(PackageId)' != ''">$(PackageId)</_PackageIdForCopy>
+            <_PackageIdLowerForCopy>$(_PackageIdForCopy.ToLowerInvariant())</_PackageIdLowerForCopy>
+            <_PackageVersionForCopy Condition="'$(PackageVersion)' == ''">$(Version)</_PackageVersionForCopy>
+            <_PackageVersionForCopy Condition="'$(PackageVersion)' != ''">$(PackageVersion)</_PackageVersionForCopy>
+        </PropertyGroup>
+        <ItemGroup>
+            <_GeneratedPackage Include="$(_PackageOutputPathForCopy)$(_PackageIdForCopy).$(_PackageVersionForCopy).nupkg" />
+        </ItemGroup>
+        <MakeDir Directories="$(TemplateLibrariesDir)" />
+        <Copy SourceFiles="@(_GeneratedPackage)" DestinationFolder="$(TemplateLibrariesDir)" SkipUnchangedFiles="true" Condition="Exists('@(_GeneratedPackage)')" />
+        <RemoveDir Directories="$(TemplateLibrariesDir).packages\$(_PackageIdLowerForCopy)\$(_PackageVersionForCopy)" Condition="'$(SolutionPath)' == '' and Exists('$(TemplateLibrariesDir).packages\$(_PackageIdLowerForCopy)\$(_PackageVersionForCopy)')" />
+        <Warning Text="Expected package '@(_GeneratedPackage)' was not found; nothing was copied." Condition="!Exists('@(_GeneratedPackage)')" />
+    </Target>
 </Project>

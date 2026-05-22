@@ -31,6 +31,10 @@
 **/libenet.dylib
 **/enet.dylib
 
+# Local NuGet feed
+Template/Framework/Libraries/*.nupkg
+Template/Framework/Libraries/.packages/
+
 # Copilot
 .serena/
 .github/copilot-instructions.md

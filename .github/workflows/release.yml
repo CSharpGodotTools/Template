@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: recursive
@@ -25,16 +25,83 @@ jobs:
           version=${latest_tag#v}
           IFS='.' read -r major minor patch <<< "$version"
           next_tag="v$major.$minor.$((patch+1))"
+          raw_version="$major.$minor.$((patch+1))"
           zip_name="Template_$next_tag.zip"
 
           echo "next_tag=$next_tag" >> $GITHUB_OUTPUT
+          echo "raw_version=$raw_version" >> $GITHUB_OUTPUT
           echo "zip_name=$zip_name" >> $GITHUB_OUTPUT
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Pack local NuGet dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          LIB_OUTPUT="$GITHUB_WORKSPACE/Template/Framework/Libraries"
+          BUILD_OUTPUT="$GITHUB_WORKSPACE/.artifacts/build"
+          GODOTUTILS_TFM="net10.0"
+
+          mkdir -p "$LIB_OUTPUT" "$BUILD_OUTPUT"
+          rm -f "$LIB_OUTPUT"/*.nupkg
+
+          VERSION_FLAG="/p:Version=${{ steps.version.outputs.raw_version }}"
+          SOLUTION_FLAG="/p:SolutionDir=${GITHUB_WORKSPACE}/"
+          OUTPUT_FLAG="/p:OutputPath=${BUILD_OUTPUT}/Release/${GODOTUTILS_TFM}/"
+          APPEND_TFM_FLAG="/p:AppendTargetFrameworkToOutputPath=false"
+
+          echo "Compiling and packaging standard .NET tools..."
+
+          dotnet build Template.GodotUtils/GodotUtils.csproj -c Release \
+            $VERSION_FLAG $SOLUTION_FLAG $OUTPUT_FLAG $APPEND_TFM_FLAG
+
+          dotnet pack Template.GodotUtils/GodotUtils.csproj -c Release --no-build \
+            $VERSION_FLAG $SOLUTION_FLAG $OUTPUT_FLAG $APPEND_TFM_FLAG \
+            --output "$LIB_OUTPUT"
+
+          dotnet build Template.PacketGen/PacketGen/PacketGen.csproj -c Release \
+            $VERSION_FLAG
+
+          dotnet pack Template.PacketGen/PacketGen/PacketGen.csproj -c Release --no-build \
+            $VERSION_FLAG \
+            --output "$LIB_OUTPUT"
+
+          dotnet build Template.OptionsGen/OptionsGen/OptionsGen.csproj -c Release \
+            $VERSION_FLAG
+
+          dotnet pack Template.OptionsGen/OptionsGen/OptionsGen.csproj -c Release --no-build \
+            $VERSION_FLAG \
+            --output "$LIB_OUTPUT"
+
+          echo "Compiling and packaging Godot SDK dependencies..."
+          # Visualize targets the Godot.NET.Sdk; we build and package it using its proper ExportRelease configuration
+          dotnet build Template.Visualize/Visualize.csproj -c ExportRelease $VERSION_FLAG
+          dotnet pack Template.Visualize/Visualize.csproj -c ExportRelease --no-build \
+            $VERSION_FLAG \
+            --output "$LIB_OUTPUT"
+
+      - name: Update Template Package References to Match Release Version
+        shell: bash
+        run: |
+          set -euo pipefail
+          
+          TARGET_PROJ="Template/Template.csproj"
+          NEXT_VER="${{ steps.version.outputs.raw_version }}"
+          
+          echo "Dynamically syncing Template package reference versions to $NEXT_VER..."
+          sed -i "s|<PackageReference Include=\"GodotUtils\" Version=\"[^\"]*\"|<PackageReference Include=\"GodotUtils\" Version=\"$NEXT_VER\"|" "$TARGET_PROJ"
+          sed -i "s|<PackageReference Include=\"Template.OptionsGen\" Version=\"[^\"]*\"|<PackageReference Include=\"Template.OptionsGen\" Version=\"$NEXT_VER\"|" "$TARGET_PROJ"
+          sed -i "s|<PackageReference Include=\"Visualize\" Version=\"[^\"]*\"|<PackageReference Include=\"Visualize\" Version=\"$NEXT_VER\"|" "$TARGET_PROJ"
+          sed -i "s|<PackageReference Include=\"PacketGen\" Version=\"[^\"]*\"|<PackageReference Include=\"PacketGen\" Version=\"$NEXT_VER\"|" "$TARGET_PROJ"
 
       - name: Create zip
         run: |
           cd Template
           zip -r "../${{ steps.version.outputs.zip_name }}" . \
-            -x ".godot/*" ".vs/*" "Framework/.git"
+            -x ".godot/*" ".vs/*" "Framework/.git" "Framework/Libraries/.packages/*"
 
       - name: Create draft release
         env:

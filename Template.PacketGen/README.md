@@ -72,7 +72,7 @@ Generates deterministic opcode maps for client and server packets:
 If no opcode type is provided, `byte` is used.
 
 ## Installing as Local NuGet Package
-Copy the `.nupkg` from `bin\Debug` to your main project.
+Build the project to generate `PacketGen.1.3.29.nupkg`. In this repository, the package is copied automatically into `Template/Framework/Libraries`.
 
 Add a file named `NuGet.config` to the main project's root folder with the following contents:
 
@@ -91,10 +91,8 @@ The name for key `LocalNugets` can be changed to anything you like. Update `Fram
 Add this to your main project `.csproj`:
 
 ```xml
-<PackageReference Include="PacketGen" Version="*" />
+<PackageReference Include="PacketGen" Version="1.3.29" />
 ```
-
-Replace `*` with an explicit version if preferred.
 
 ## Contributing
 Generated test outputs: `PacketGen.Tests\bin\Debug\net10.0\_Generated`

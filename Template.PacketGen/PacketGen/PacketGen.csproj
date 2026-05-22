@@ -12,14 +12,14 @@
         <NoWarn>NU5128</NoWarn> <!-- Pure analzyer project does not require lib assemblies -->
 
         <!-- Package Settings -->
-        <Version>1.3.29</Version>
+        <PackageId>PacketGen</PackageId>
+        <Version>1.0.0</Version>
         <!--<Version>1.0.$([System.Math]::Floor($([MSBuild]::Divide($([System.DateTimeOffset]::UtcNow.ToUnixTimeSeconds()), 86400)))).$([MSBuild]::Divide($([MSBuild]::Modulo($([System.DateTimeOffset]::UtcNow.ToUnixTimeSeconds()), 86400)), 2))</Version>-->
         <Description>Source generators for CSharpGodotTools/Template</Description>
         <Authors>Valkyrienyanko</Authors>
         <PackageTags>Godot C# SourceGenerator</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageType>Analyzer</PackageType>
-        <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
@@ -36,4 +36,25 @@
         <None Include="..\README.md" Pack="true" PackagePath="\" />
         <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
     </ItemGroup>
+
+    <Target Name="CopyPackageToTemplate" AfterTargets="Pack">
+        <PropertyGroup>
+            <TemplateLibrariesDir>$(MSBuildProjectDirectory)\..\..\Template\Framework\Libraries\</TemplateLibrariesDir>
+            <_PackageOutputPathForCopy Condition="'$(PackageOutputPath)' == ''">$(OutputPath)</_PackageOutputPathForCopy>
+            <_PackageOutputPathForCopy Condition="'$(PackageOutputPath)' != ''">$(PackageOutputPath)</_PackageOutputPathForCopy>
+            <_PackageOutputPathForCopy>$([MSBuild]::EnsureTrailingSlash('$(_PackageOutputPathForCopy)'))</_PackageOutputPathForCopy>
+            <_PackageIdForCopy Condition="'$(PackageId)' == ''">$(AssemblyName)</_PackageIdForCopy>
+            <_PackageIdForCopy Condition="'$(PackageId)' != ''">$(PackageId)</_PackageIdForCopy>
+            <_PackageIdLowerForCopy>$(_PackageIdForCopy.ToLowerInvariant())</_PackageIdLowerForCopy>
+            <_PackageVersionForCopy Condition="'$(PackageVersion)' == ''">$(Version)</_PackageVersionForCopy>
+            <_PackageVersionForCopy Condition="'$(PackageVersion)' != ''">$(PackageVersion)</_PackageVersionForCopy>
+        </PropertyGroup>
+        <ItemGroup>
+            <_GeneratedPackage Include="$(_PackageOutputPathForCopy)$(_PackageIdForCopy).$(_PackageVersionForCopy).nupkg" />
+        </ItemGroup>
+        <MakeDir Directories="$(TemplateLibrariesDir)" />
+        <Copy SourceFiles="@(_GeneratedPackage)" DestinationFolder="$(TemplateLibrariesDir)" SkipUnchangedFiles="true" Condition="Exists('@(_GeneratedPackage)')" />
+        <RemoveDir Directories="$(TemplateLibrariesDir).packages\$(_PackageIdLowerForCopy)\$(_PackageVersionForCopy)" Condition="'$(SolutionPath)' == '' and Exists('$(TemplateLibrariesDir).packages\$(_PackageIdLowerForCopy)\$(_PackageVersionForCopy)')" />
+        <Warning Text="Expected package '@(_GeneratedPackage)' was not found; nothing was copied." Condition="!Exists('@(_GeneratedPackage)')" />
+    </Target>
 </Project>

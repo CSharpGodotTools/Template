@@ -34,10 +34,10 @@ insert_final_newline = true
 dotnet_diagnostic.RCS1002.severity = warning
 
 # Explicit accessibility modifiers (e.g. always use 'private' on 'void Hello()')
-dotnet_diagnostic.RCS1018.severity = explicit
+dotnet_diagnostic.RCS1018.severity = warning
 
 # Enforces whether you should write the type explicitly in array creation expressions (e.g. new int[] { 1, 2 } vs new[] { 1, 2 })
-dotnet_diagnostic.RCS1014.severity = implicit
+dotnet_diagnostic.RCS1014.severity = warning
 
 # Remove unused usings
 dotnet_diagnostic.CS8019.severity = suggestion

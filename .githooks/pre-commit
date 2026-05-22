@@ -2,100 +2,24 @@
 set -euo pipefail
 
 # ------------------------------------------------------------
-# Pre-commit configuration toggles
-# Set any variable to false to disable that action.
+# Pre-commit configuration toggles.
+# Local package build/copy work is handled by MSBuild now, not this hook.
 # ------------------------------------------------------------
-# true: skip all checks when there are no staged .cs files.
-# false: allow non-C# staged changes to continue through this hook.
-: "${PRECOMMIT_SKIP_IF_NO_CS:=true}"
-
 # true: sync root .editorconfig to known subprojects when .editorconfig is staged.
 : "${PRECOMMIT_ENABLE_EDITORCONFIG_SYNC:=true}"
 
 # true: sync root .vscode config files to Template/.vscode when staged.
 : "${PRECOMMIT_ENABLE_VSCODE_SYNC:=true}"
 
-# true: run targeted builds for changed project areas.
-: "${PRECOMMIT_ENABLE_BUILD_GODOTUTILS:=true}"
-: "${PRECOMMIT_ENABLE_BUILD_VISUALIZE:=true}"
-: "${PRECOMMIT_ENABLE_BUILD_PACKETGEN:=true}"
-: "${PRECOMMIT_ENABLE_BUILD_OPTIONSGEN:=true}"
-: "${PRECOMMIT_ENABLE_BUILD_TEMPLATE:=true}"
-
-# true: run final full solution build when build-affecting files changed.
-: "${PRECOMMIT_ENABLE_FULL_BUILD:=true}"
-
 is_enabled() {
     [ "${1,,}" = "true" ]
 }
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-LIBS="$REPO_ROOT/Template/Framework/Libraries"
 SCRIPTS_DIR="$REPO_ROOT/.githooks/scripts"
 
-# shellcheck source=.githooks/scripts/lib/common.sh
-source "$SCRIPTS_DIR/lib/common.sh"
-
 mapfile -t STAGED_PATHS < <(git diff --cached --name-only --diff-filter=ACMR)
-
 STAGED="$(printf '%s\n' "${STAGED_PATHS[@]}")"
-
-declare -a STAGED_CS=()
-
-for staged_path in "${STAGED_PATHS[@]}"; do
-    case "$staged_path" in
-        *.cs)
-            STAGED_CS+=("$staged_path")
-            ;;
-    esac
-done
-
-echo "[pre-commit] dotnet version: $(dotnet_cmd --version 2>&1)"
-
-# ------------------------------------------------------------
-# Determine which projects changed
-# ------------------------------------------------------------
-build_godotutils=false
-build_visualize=false
-build_packetgen=false
-build_optionsgen=false
-build_template=false
-
-# Only run full solution validation when staged files can affect compilation.
-requires_full_build=false
-
-for staged_path in "${STAGED_PATHS[@]}"; do
-    [ -z "$staged_path" ] && continue
-
-    case "$staged_path" in
-        Template.GodotUtils/*)
-            build_godotutils=true
-            ;;
-        Template.Visualize/*)
-            build_visualize=true
-            ;;
-        Template.PacketGen/*)
-            build_packetgen=true
-            ;;
-        Template.OptionsGen/*)
-            build_optionsgen=true
-            ;;
-        Template/*)
-            build_template=true
-            ;;
-    esac
-
-    case "$staged_path" in
-        *.csproj|*.sln|*.props|*.targets|global.json|NuGet.config|nuget.config|*/NuGet.config|*/nuget.config)
-            requires_full_build=true
-            ;;
-    esac
-done
-
-# Visualize depends on GodotUtils
-if $build_visualize; then
-    build_godotutils=true
-fi
 
 # ------------------------------------------------------------
 # Sync .editorconfig
@@ -118,75 +42,6 @@ if echo "$STAGED" | grep -Eq "^\.vscode/(extensions|settings|tasks)\.json$"; the
     else
         echo "[pre-commit] .vscode sync disabled by PRECOMMIT_ENABLE_VSCODE_SYNC=false"
     fi
-fi
-
-# ------------------------------------------------------------
-# Build GodotUtils
-# ------------------------------------------------------------
-if $build_godotutils; then
-    if is_enabled "$PRECOMMIT_ENABLE_BUILD_GODOTUTILS"; then
-        "$SCRIPTS_DIR/build-godotutils" "$REPO_ROOT" "$LIBS"
-    else
-        echo "[pre-commit] GodotUtils build disabled by PRECOMMIT_ENABLE_BUILD_GODOTUTILS=false"
-    fi
-fi
-
-# ------------------------------------------------------------
-# Build Visualize
-# ------------------------------------------------------------
-if $build_visualize; then
-    if is_enabled "$PRECOMMIT_ENABLE_BUILD_VISUALIZE"; then
-        "$SCRIPTS_DIR/build-visualize" "$REPO_ROOT" "$LIBS"
-    else
-        echo "[pre-commit] Visualize build disabled by PRECOMMIT_ENABLE_BUILD_VISUALIZE=false"
-    fi
-fi
-
-# ------------------------------------------------------------
-# Build PacketGen
-# ------------------------------------------------------------
-if $build_packetgen; then
-    if is_enabled "$PRECOMMIT_ENABLE_BUILD_PACKETGEN"; then
-        "$SCRIPTS_DIR/build-packetgen" "$REPO_ROOT" "$LIBS"
-    else
-        echo "[pre-commit] PacketGen build disabled by PRECOMMIT_ENABLE_BUILD_PACKETGEN=false"
-    fi
-fi
-
-# ------------------------------------------------------------
-# Build Template.OptionsGen
-# ------------------------------------------------------------
-if $build_optionsgen; then
-    if is_enabled "$PRECOMMIT_ENABLE_BUILD_OPTIONSGEN"; then
-        "$SCRIPTS_DIR/build-optionsgen" "$REPO_ROOT" "$LIBS"
-    else
-        echo "[pre-commit] Template.OptionsGen build disabled by PRECOMMIT_ENABLE_BUILD_OPTIONSGEN=false"
-    fi
-fi
-
-# ------------------------------------------------------------
-# Build Template
-# ------------------------------------------------------------
-if $build_template; then
-    if is_enabled "$PRECOMMIT_ENABLE_BUILD_TEMPLATE"; then
-        "$SCRIPTS_DIR/build-template" "$REPO_ROOT"
-    else
-        echo "[pre-commit] Template build disabled by PRECOMMIT_ENABLE_BUILD_TEMPLATE=false"
-    fi
-fi
-
-# ------------------------------------------------------------
-# Verify everything still works by building all projects
-# ------------------------------------------------------------
-
-if $requires_full_build; then
-    if is_enabled "$PRECOMMIT_ENABLE_FULL_BUILD"; then
-        "$SCRIPTS_DIR/build-full" "$REPO_ROOT"
-    else
-        echo "[pre-commit] Full solution build disabled by PRECOMMIT_ENABLE_FULL_BUILD=false"
-    fi
-else
-    echo "[pre-commit] Skipping full solution build (no build-affecting staged files)."
 fi
 
 exit 0
