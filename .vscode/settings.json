@@ -25,5 +25,6 @@
         "Properties/": true,
         "TestResults/": true,
     },
-    "files.trimFinalNewlines": true
+    "files.trimFinalNewlines": true,
+    "rewrap.wrappingColumn": 100
 }

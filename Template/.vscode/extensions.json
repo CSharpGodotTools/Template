@@ -1,24 +1,36 @@
 {
     "recommendations": [
-        // Nice red highlight for breakpoint lines
-        "ericgomez.breakpoint-highlight",
-        // Microsoft C# extension
+        // ----------------------------------------------
+        // ------------------ REQUIRED ------------------
+        // ----------------------------------------------
+        // Microsoft C# extensions
         "ms-dotnettools.csharp",
+        "ms-dotnettools.csdevkit",
         // Adds 'New C# Class' context option
         "kreativ-software.csharpextensions",
-        // Allows you to import your own background image
-        "unthrottled.doki-theme",
-        // Auto sync with projects root .editorconfig
-        "EditorConfig.EditorConfig",
-        // Show realtime errors when editing scripts
-        "usernamehw.errorlens",
-        // Trigger GitHub actions from within VSCode
-        "github.vscode-github-actions",
+        // ----------------------------------------------
+        // ------------------- USEFUL -------------------
+        // ----------------------------------------------
         // Delete all whitespace characters on backspace
         "jasonlhy.hungry-delete",
-        // Auto generate XML documentation
-        "k--kato.docomment",
-        // Background image with many preset color themes to choose from.
-        "unthrottled.doki-theme"
+        // Auto sync with projects root .editorconfig
+        "EditorConfig.EditorConfig",
+        // Trigger GitHub actions from within VSCode
+        "github.vscode-github-actions",
+        // Enforces XML comments to be a certain length (use Ctrl + A then Ctrl + Q to wrap an entire document)
+        "dnut.rewrap-revived",
+        // Enforces many configurable rules in .editorconfig when running dotnet format *.sln --severity info
+        "josefpihrt-vscode.roslynator",
+        // --------------------------------------------
+        // ----------------- COSMETIC -----------------
+        // --------------------------------------------
+        // Nice red highlight for breakpoint lines
+        "ericgomez.breakpoint-highlight",
+        // Allows you to import your own background image
+        "unthrottled.doki-theme",
+        // Show realtime errors when editing scripts (makes the editor slow and can be visual clutter at times)
+        //"usernamehw.errorlens",
+        // Color codes csv files
+        //"mechatroner.rainbow-csv",
     ]
 }
