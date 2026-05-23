@@ -126,7 +126,7 @@ public class SceneManager : ISceneService
         PackedScene nextScene = GD.Load<PackedScene>(rawName)!;
 
         // Internal the new scene.
-        _currentScene = SceneComposition.InstantiateAndConfigure(nextScene, _autoloads.RuntimeServices);
+        _currentScene = SceneComposition.InstantiateAndConfigure(nextScene, _autoloads);
 
         // Add it to the active scene, as child of root.
         _tree.Root.AddChild(_currentScene);

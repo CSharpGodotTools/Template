@@ -43,10 +43,10 @@ public partial class Credits : Node, ISceneDependencyReceiver
     /// <summary>
     /// Injects runtime dependencies required by the credits scene.
     /// </summary>
-    /// <param name="services">Resolved game service bundle.</param>
-    public void Configure(GameServices services)
+    /// <param name="framework">Resolved game service bundle.</param>
+    public void Configure(AutoloadsFramework framework)
     {
-        _scene = services.SceneManager;
+        _scene = framework.SceneManager;
         _isConfigured = true;
     }
 

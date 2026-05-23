@@ -81,11 +81,6 @@ public abstract partial class AutoloadsFramework : Node
     public IBackgroundTaskTracker BackgroundTasks { get; private set; } = null!;
 
     /// <summary>
-    /// Gets the immutable runtime service bundle exposed through <see cref="Game"/>.
-    /// </summary>
-    public GameServices RuntimeServices { get; private set; } = null!;
-
-    /// <summary>
     /// Profiler for logging runtime of code.
     /// </summary>
     public Profiler Profiler { get; private set; } = null!;
@@ -146,23 +141,10 @@ public abstract partial class AutoloadsFramework : Node
 
         SceneManager.BindRuntimeServices(AudioManager, FocusOutline);
 
-        RuntimeServices = new GameServices(
-            ComponentManager,
-            GameConsole,
-            AudioManager,
-            OptionsManager,
-            Metrics,
-            SceneManager,
-            Services,
-            FocusOutline,
-            Logger,
-            ApplicationLifetime,
-            BackgroundTasks,
-            Profiler);
-        Game.Initialize(RuntimeServices);
+        Game.Lifecycle.Initialize(this);
 
-        SceneComposition.ConfigureNodeTree(this, RuntimeServices);
-        SceneComposition.ConfigureNodeTree(SceneManager.CurrentScene, RuntimeServices);
+        SceneComposition.ConfigureNodeTree(this, this);
+        SceneComposition.ConfigureNodeTree(SceneManager.CurrentScene, this);
 
         EnterTree();
     }
@@ -219,7 +201,7 @@ public abstract partial class AutoloadsFramework : Node
         Logger.Dispose();
         BackgroundTasks.Dispose();
 
-        Game.Reset();
+        Game.Lifecycle.Reset();
 
         ExitTree();
     }

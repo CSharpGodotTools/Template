@@ -31,11 +31,11 @@ public partial class GameConsole : Node, ISceneDependencyReceiver
     /// <summary>
     /// Injects framework services required by the console.
     /// </summary>
-    /// <param name="services">Runtime service bundle from the framework.</param>
-    public void Configure(GameServices services)
+    /// <param name="framework">Runtime service bundle from the framework.</param>
+    public void Configure(AutoloadsFramework framework)
     {
-        _focusOutline = services.FocusOutline;
-        _logger = services.Logger;
+        _focusOutline = framework.FocusOutline;
+        _logger = framework.Logger;
         _isConfigured = true;
     }
 

@@ -12,11 +12,11 @@ public static class SceneComposition
     /// Instantiates a scene as <see cref="Node"/> and configures dependencies.
     /// </summary>
     /// <param name="scene">Packed scene to instantiate.</param>
-    /// <param name="services">Runtime services used for configuration.</param>
+    /// <param name="framework">Runtime services used for configuration.</param>
     /// <returns>The configured node instance.</returns>
-    public static Node InstantiateAndConfigure(PackedScene scene, GameServices services)
+    public static Node InstantiateAndConfigure(PackedScene scene, AutoloadsFramework framework)
     {
-        return InstantiateAndConfigure<Node>(scene, services);
+        return InstantiateAndConfigure<Node>(scene, framework);
     }
 
     /// <summary>
@@ -24,15 +24,15 @@ public static class SceneComposition
     /// </summary>
     /// <typeparam name="T">Concrete node type expected from the packed scene.</typeparam>
     /// <param name="scene">Packed scene to instantiate.</param>
-    /// <param name="services">Runtime services used for configuration.</param>
+    /// <param name="framework">Runtime services used for configuration.</param>
     /// <returns>The configured node instance.</returns>
-    public static T InstantiateAndConfigure<T>(PackedScene scene, GameServices services) where T : Node
+    public static T InstantiateAndConfigure<T>(PackedScene scene, AutoloadsFramework framework) where T : Node
     {
         ArgumentNullException.ThrowIfNull(scene);
-        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(framework);
 
         T node = scene.Instantiate<T>();
-        ConfigureNode(node, services);
+        ConfigureNode(node, framework);
         return node;
     }
 
@@ -40,25 +40,25 @@ public static class SceneComposition
     /// Configures the provided root node.
     /// </summary>
     /// <param name="root">Root node to configure.</param>
-    /// <param name="services">Runtime services used for configuration.</param>
-    public static void ConfigureNodeTree(Node root, GameServices services)
+    /// <param name="framework">Runtime services used for configuration.</param>
+    public static void ConfigureNodeTree(Node root, AutoloadsFramework framework)
     {
-        ConfigureNode(root, services);
+        ConfigureNode(root, framework);
     }
 
     /// <summary>
     /// Configures a single node when it implements <see cref="ISceneDependencyReceiver"/>.
     /// </summary>
     /// <param name="node">Node candidate to configure.</param>
-    /// <param name="services">Runtime services used for configuration.</param>
-    public static void ConfigureNode(Node node, GameServices services)
+    /// <param name="framework">Runtime services used for configuration.</param>
+    public static void ConfigureNode(Node node, AutoloadsFramework framework)
     {
         ArgumentNullException.ThrowIfNull(node);
-        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(framework);
 
         // Configure only nodes that explicitly accept scene dependencies.
         if (node is ISceneDependencyReceiver receiver)
-            receiver.Configure(services);
+            receiver.Configure(framework);
     }
 
     /// <summary>
@@ -74,9 +74,9 @@ public static class SceneComposition
             return;
 
         // Exit early when game-level services are not yet available.
-        if (!Game.TryGetServices(out GameServices services))
+        if (!Game.TryGetFramework(out AutoloadsFramework framework))
             return;
 
-        receiver.Configure(services);
+        receiver.Configure(framework);
     }
 }

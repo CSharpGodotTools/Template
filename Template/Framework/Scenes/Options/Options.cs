@@ -25,12 +25,12 @@ public partial class Options : PanelContainer, ISceneDependencyReceiver
     /// <summary>
     /// Injects services required by the options scene.
     /// </summary>
-    /// <param name="services">Resolved game service bundle.</param>
-    public void Configure(GameServices services)
+    /// <param name="framework">Resolved game service bundle.</param>
+    public void Configure(AutoloadsFramework framework)
     {
-        _optionsManager = services.OptionsManager;
-        _sceneManager = services.SceneManager;
-        _focusOutlineManager = services.FocusOutline;
+        _optionsManager = framework.OptionsManager;
+        _sceneManager = framework.SceneManager;
+        _focusOutlineManager = framework.FocusOutline;
         _isConfigured = true;
     }
 

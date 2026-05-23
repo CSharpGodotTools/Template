@@ -54,7 +54,7 @@ public partial class PopupMenu : Control, ISceneDependencyReceiver
     private IApplicationLifetime _applicationLifetime = null!;
     private IBackgroundTaskTracker _backgroundTasks = null!;
     private GameConsole _console = null!;
-    private GameServices _runtimeServices = null!;
+    private AutoloadsFramework _framework = null!;
     private Options _options = null!;
     private Control _menu = null!;
     private bool _isConfigured;
@@ -62,16 +62,16 @@ public partial class PopupMenu : Control, ISceneDependencyReceiver
     /// <summary>
     /// Supplies runtime services required by the popup and marks it ready for initialization.
     /// </summary>
-    /// <param name="services">Resolved runtime services for the active game session.</param>
-    public void Configure(GameServices services)
+    /// <param name="framework">Resolved runtime services for the active game session.</param>
+    public void Configure(AutoloadsFramework framework)
     {
-        _runtimeServices = services;
-        _services = services.ScopedServices;
-        _focusOutline = services.FocusOutline;
-        _sceneManager = services.SceneManager;
-        _applicationLifetime = services.ApplicationLifetime;
-        _backgroundTasks = services.BackgroundTasks;
-        _console = services.GameConsole;
+        _framework = framework;
+        _services = framework.Services;
+        _focusOutline = framework.FocusOutline;
+        _sceneManager = framework.SceneManager;
+        _applicationLifetime = framework.ApplicationLifetime;
+        _backgroundTasks = framework.BackgroundTasks;
+        _console = framework.GameConsole;
         _isConfigured = true;
     }
 
@@ -172,7 +172,7 @@ public partial class PopupMenu : Control, ISceneDependencyReceiver
     /// </summary>
     private void CreateOptions()
     {
-        _options = SceneComposition.InstantiateAndConfigure<Options>(_optionsPrefab, _runtimeServices);
+        _options = SceneComposition.InstantiateAndConfigure<Options>(_optionsPrefab, _framework);
         AddChild(_options);
     }
 

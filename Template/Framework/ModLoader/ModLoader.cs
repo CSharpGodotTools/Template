@@ -24,20 +24,20 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
     private IApplicationLifetime _applicationLifetime = null!;
     private ILoggerService _logger = null!;
     private Services _services = null!;
-    private GameServices _runtimeServices = null!;
+    private AutoloadsFramework _framework = null!;
     private bool _isConfigured;
 
     /// <summary>
     /// Injects runtime services needed by this scene.
     /// </summary>
-    /// <param name="services">Resolved scene services.</param>
-    public void Configure(GameServices services)
+    /// <param name="framework">Resolved scene services.</param>
+    public void Configure(AutoloadsFramework framework)
     {
-        _runtimeServices = services;
-        _sceneManager = services.SceneManager;
-        _applicationLifetime = services.ApplicationLifetime;
-        _logger = services.Logger;
-        _services = services.ScopedServices;
+        _framework = framework;
+        _sceneManager = framework.SceneManager;
+        _applicationLifetime = framework.ApplicationLifetime;
+        _logger = framework.Logger;
+        _services = framework.Services;
         _isConfigured = true;
     }
 
@@ -63,7 +63,7 @@ public partial class ModLoader : Node, ISceneDependencyReceiver
         _uiAuthors = GetNode<Label>("%Authors");
         _uiIncompatibilities = GetNode<Label>("%Incompatibilities");
 
-        ModLoaderUi modLoaderUi = new(_logger, _services, _runtimeServices);
+        ModLoaderUi modLoaderUi = new(_logger, _services, _framework);
         modLoaderUi.LoadMods(this);
         Dictionary<string, ModInfo> mods = modLoaderUi.GetMods();
 

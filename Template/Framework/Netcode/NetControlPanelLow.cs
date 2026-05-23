@@ -69,12 +69,12 @@ public abstract partial class NetControlPanelLow<TGameClient, TGameServer> : Con
     /// <summary>
     /// Injects runtime services required by this panel.
     /// </summary>
-    /// <param name="services">Resolved scene services.</param>
-    public void Configure(GameServices services)
+    /// <param name="framework">Resolved scene services.</param>
+    public void Configure(AutoloadsFramework framework)
     {
-        _loggerService = services.Logger;
-        _applicationLifetime = services.ApplicationLifetime;
-        _backgroundTasks = services.BackgroundTasks;
+        _loggerService = framework.Logger;
+        _applicationLifetime = framework.ApplicationLifetime;
+        _backgroundTasks = framework.BackgroundTasks;
         _isConfigured = true;
     }
 

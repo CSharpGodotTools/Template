@@ -25,12 +25,12 @@ public abstract partial class MainMenuNavFramework : Node, ISceneDependencyRecei
     /// <summary>
     /// Injects runtime services required by the menu navigation framework.
     /// </summary>
-    /// <param name="services">Resolved game service bundle.</param>
-    public void Configure(GameServices services)
+    /// <param name="framework">Resolved game service bundle.</param>
+    public void Configure(AutoloadsFramework framework)
     {
-        _scene = services.SceneManager;
-        _focusOutline = services.FocusOutline;
-        _applicationLifetime = services.ApplicationLifetime;
+        _scene = framework.SceneManager;
+        _focusOutline = framework.FocusOutline;
+        _applicationLifetime = framework.ApplicationLifetime;
         _isConfigured = true;
     }
 

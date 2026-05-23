@@ -19,19 +19,19 @@ public class ModLoaderUi
     private readonly Dictionary<string, ManagedModRuntime> _managedMods = [];
     private readonly ILoggerService _logger;
     private readonly Services _services;
-    private readonly GameServices _runtimeServices;
+    private readonly AutoloadsFramework _framework;
 
     /// <summary>
     /// Creates a mod loader helper bound to logger, service locator, and runtime composition services.
     /// </summary>
     /// <param name="logger">Logger used for diagnostics and load failures.</param>
     /// <param name="services">Scoped service locator exposed to managed mods.</param>
-    /// <param name="runtimeServices">Runtime services used for scene composition.</param>
-    public ModLoaderUi(ILoggerService logger, Services services, GameServices runtimeServices)
+    /// <param name="framework">Runtime services used for scene composition.</param>
+    public ModLoaderUi(ILoggerService logger, Services services, AutoloadsFramework framework)
     {
         _logger = logger;
         _services = services;
-        _runtimeServices = runtimeServices;
+        _framework = framework;
     }
 
     /// <summary>
@@ -225,7 +225,7 @@ public class ModLoaderUi
         // Instantiate and attach mod scene only when resource loading succeeds.
         if (importedScene != null)
         {
-            Node modNode = SceneComposition.InstantiateAndConfigure<Node>(importedScene, _runtimeServices);
+            Node modNode = SceneComposition.InstantiateAndConfigure<Node>(importedScene, _framework);
             hostNode.GetTree().Root.CallDeferred(Node.MethodName.AddChild, modNode);
         }
         else

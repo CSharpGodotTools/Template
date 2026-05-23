@@ -8,6 +8,6 @@ public interface ISceneDependencyReceiver
     /// <summary>
     /// Injects runtime services required by the receiver.
     /// </summary>
-    /// <param name="services">Service bundle exposed by the game framework.</param>
-    void Configure(GameServices services);
+    /// <param name="framework">Service bundle exposed by the game framework.</param>
+    void Configure(AutoloadsFramework framework);
 }
