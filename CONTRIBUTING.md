@@ -1,25 +1,14 @@
-## What to work on?
-See if there are any [good first issues](https://github.com/CSharpGodotTools/Template/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22), these issues will always be beginner friendly. You can also have a look at the [discussions](https://github.com/CSharpGodotTools/Template/discussions).
-
-If you want to create a new template or expand an existing one, please talk to me first, my Discord username is `valky5`.
-
-## Low file size
-This project should be as lightweight as possible so it will not include any game assets. For example an FPS scene with 4K textures is too large and as such should be developed in a separate repository. Such repositories if any exist will be mentioned in the projects [README.md](https://github.com/CSharpGodotTools/Template/blob/main/README.md).
-
-## Setting up git hooks
-While not required, setting up git hooks will make development much easier.
-
-Currently git hooks do the following:
-```
-1. Sync root .editorconfig to all sub project .editorconfig's
-2. Auto sync sub project changes with Template
-3. Verify everything still works with dotnet build
-```
-
-Setup git hooks with `git config core.hooksPath .githooks` (or `chmod +x .githooks/*` if you are on Linux or Mac)
-
-Use `--no-verify` to bypass hooks. For example `git commit --no-verify -a -m "Message"`.
-
-## GDUnit Tests
 > [!IMPORTANT]
-> The `.runsettings` must not be committed to the repo otherwise CI will use the path from that file and fail.
+> If setting up this repo for the first time you will need to run `dotnet build` from root so `Template/Framework/Libraries` populates with all the required nuget packages. **You only need to do this once.**
+
+> [!NOTE]
+> This project should be as lightweight as possible so it will not include any game assets. For example an FPS scene with 4K textures is too large and as such should be developed in a separate repository. Such repositories if any exist will be mentioned in the projects [README.md](https://github.com/CSharpGodotTools/Template/blob/main/README.md).
+
+> [!TIP]
+> `.editorconfig` and `.vscode/settings.json` are duplicated in root and `Template/Template`. We can use git hooks to make maintaining these a bit easier. Setup git hooks with `git config core.hooksPath .githooks` _(or `chmod +x .githooks/*` if you are on Linux or Mac)_. Only edit files from root and creating a commit will auto copy over the changes to the subfolder for you.
+
+### Support
+
+- If you want to talk to me directly, my discord username is `valky5`
+- If you want to chat publicly, join https://discord.gg/j8HQZZ76r8
+- If your message is more technical, consider opening up an issue in this repo
