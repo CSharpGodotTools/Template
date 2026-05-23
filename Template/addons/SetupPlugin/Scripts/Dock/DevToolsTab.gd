@@ -13,7 +13,6 @@ const SIGNAL_ITEM_SELECTED: StringName = &"item_selected"
 const SIGNAL_TIMEOUT: StringName = &"timeout"
 const DEFERRED_CHECK_METHOD: StringName = &"_check_updates_on_startup"
 const DevToolsStatusFeedbackScript = preload("DevTools/Components/DevToolsStatusFeedback.gd")
-const DevToolsExternalEditorControllerScript = preload("DevTools/Components/DevToolsExternalEditorController.gd")
 const DevToolsProjectToolsControllerScript = preload("DevTools/Components/DevToolsProjectToolsController.gd")
 const DevToolsSceneControllerScript = preload("DevTools/Components/DevToolsSceneController.gd")
 const DevToolsRenderingControllerScript = preload("DevTools/Components/DevToolsRenderingController.gd")
@@ -37,7 +36,6 @@ var _events_registered: bool = false
 var _editor_scene_actions: EditorSceneActions
 var _scene_hierarchy_actions: SceneHierarchyActions
 var _status_feedback: DevToolsStatusFeedback
-var _external_editor_controller: DevToolsExternalEditorController
 var _project_tools_controller: DevToolsProjectToolsController
 var _scene_controller: DevToolsSceneController
 var _rendering_controller: DevToolsRenderingController
@@ -64,7 +62,6 @@ func _project_root() -> String:
 func _initialize_components() -> void:
 	var project_root: String = _project_root()
 	_status_feedback = DevToolsStatusFeedbackScript.new(_status_label, _feedback_timer)
-	_external_editor_controller = DevToolsExternalEditorControllerScript.new(project_root, SOLUTION_FILE_NAME, _external_editor_options, _status_feedback)
 	_project_tools_controller = DevToolsProjectToolsControllerScript.new(project_root, _status_feedback, _cleanup_uids_button, _remove_empty_folders_button, _nullable_button, DevToolsUidCleanupScript, SetupDirectoryMaintenanceScript, NullableProjectSettingsScript)
 	_scene_controller = DevToolsSceneControllerScript.new(_editor_scene_actions, _scene_hierarchy_actions, _status_feedback)
 	_rendering_controller = DevToolsRenderingControllerScript.new(_status_feedback)
@@ -82,7 +79,6 @@ func _check_updates_on_startup() -> void:
 func _register_events() -> void:
 	if _events_registered:
 		return
-	_connect_signal(_open_external_editor_button, SIGNAL_PRESSED, Callable(_external_editor_controller, "open_selected"))
 	_connect_signal(_cleanup_uids_button, SIGNAL_PRESSED, Callable(_project_tools_controller, "cleanup_uids"))
 	_connect_signal(_remove_empty_folders_button, SIGNAL_PRESSED, Callable(_project_tools_controller, "remove_empty_folders"))
 	_connect_signal(_nullable_button, SIGNAL_PRESSED, Callable(_project_tools_controller, "toggle_nullable"))
@@ -110,7 +106,6 @@ func _unregister_events() -> void:
 	if not _events_registered:
 		return
 	_events_registered = false
-	_disconnect_signal(_open_external_editor_button, SIGNAL_PRESSED, Callable(_external_editor_controller, "open_selected"))
 	_disconnect_signal(_cleanup_uids_button, SIGNAL_PRESSED, Callable(_project_tools_controller, "cleanup_uids"))
 	_disconnect_signal(_remove_empty_folders_button, SIGNAL_PRESSED, Callable(_project_tools_controller, "remove_empty_folders"))
 	_disconnect_signal(_nullable_button, SIGNAL_PRESSED, Callable(_project_tools_controller, "toggle_nullable"))

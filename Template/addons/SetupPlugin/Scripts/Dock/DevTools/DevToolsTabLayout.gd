@@ -14,14 +14,8 @@ const TAB_MARGIN_TOP_PX: int = 10
 const TAB_MARGIN_BOTTOM_PX: int = 0
 const ANTI_ALIASING_PATH_2D: String = "rendering/anti_aliasing/quality/msaa_2d"
 const DEFAULT_CLEAR_COLOR_PATH: String = "rendering/environment/defaults/default_clear_color"
-const EXTERNAL_EDITOR_VSCODE: String = "vscode"
-const EXTERNAL_EDITOR_VISUAL_STUDIO: String = "visual_studio"
-const EXTERNAL_EDITOR_RIDER: String = "rider"
-const DEFAULT_EXTERNAL_EDITOR_INDEX: int = 0
 
 var _status_label: Label
-var _external_editor_options: OptionButton
-var _open_external_editor_button: Button
 var _cleanup_uids_button: Button
 var _nullable_button: Button
 var _remove_empty_folders_button: Button
@@ -59,16 +53,6 @@ func _create_controls() -> void:
 	_status_label.custom_minimum_size = Vector2(0, 22)
 	_status_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_status_label.text = " "
-
-	_external_editor_options = OptionButton.new()
-	_external_editor_options.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_external_editor_options.custom_minimum_size = Vector2(220, 0)
-	_add_external_editor_option("Visual Studio Code", EXTERNAL_EDITOR_VSCODE)
-	_add_external_editor_option("Visual Studio", EXTERNAL_EDITOR_VISUAL_STUDIO)
-	_add_external_editor_option("JetBrains Rider", EXTERNAL_EDITOR_RIDER)
-	_external_editor_options.select(DEFAULT_EXTERNAL_EDITOR_INDEX)
-
-	_open_external_editor_button = _create_button("Open External Editor", 210)
 
 	_cleanup_uids_button = _create_button("Cleanup uids", 150)
 	_remove_empty_folders_button = _create_button("Remove Empty Folders", 180)
@@ -166,7 +150,7 @@ func _build_layout() -> void:
 	add_child(content)
 
 # Builds and returns the Dev tab content:
-# external editor launch, project utilities, hierarchy tools, and rendering settings.
+# project utilities, hierarchy tools, and rendering settings.
 func _build_dev_tab() -> VBoxContainer:
 	var dev_tab: VBoxContainer = VBoxContainer.new()
 	dev_tab.name = "Dev"
@@ -181,13 +165,6 @@ func _build_dev_tab() -> VBoxContainer:
 	var left_column: VBoxContainer = VBoxContainer.new()
 	left_column.add_theme_constant_override("separation", 8)
 	left_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-	left_column.add_child(_create_section_label("External Editor"))
-	var editor_row: HBoxContainer = HBoxContainer.new()
-	editor_row.add_theme_constant_override("separation", 8)
-	editor_row.add_child(_external_editor_options)
-	editor_row.add_child(_open_external_editor_button)
-	left_column.add_child(editor_row)
 
 	left_column.add_child(_create_section_label("Project Tools"))
 	var tools_grid: GridContainer = GridContainer.new()
@@ -374,11 +351,6 @@ func _create_checkbox(text: String, pressed: bool) -> CheckButton:
 	checkbox.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	checkbox.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 	return checkbox
-
-func _add_external_editor_option(label: String, key: String) -> void:
-	var index: int = _external_editor_options.item_count
-	_external_editor_options.add_item(label)
-	_external_editor_options.set_item_metadata(index, key)
 
 func _create_section_label(text: String) -> Label:
 	var label: Label = Label.new()
