@@ -11,6 +11,8 @@
         // ----------------------------------------------
         // ------------------- USEFUL -------------------
         // ----------------------------------------------
+        // Adds syntax highlighting and debugging features for GDScript and other GD files
+        "geequlim.godot-tools",
         // Delete all whitespace characters on backspace
         "jasonlhy.hungry-delete",
         // Auto sync with projects root .editorconfig
