@@ -85,6 +85,11 @@ public abstract partial class AutoloadsFramework : Node
     /// </summary>
     public GameServices RuntimeServices { get; private set; } = null!;
 
+    /// <summary>
+    /// Profiler for logging runtime of code.
+    /// </summary>
+    public Profiler Profiler { get; private set; } = null!;
+
 #if DEBUG
     private VisualizeAutoload _visualizeAutoload = null!;
 #endif
@@ -133,13 +138,13 @@ public abstract partial class AutoloadsFramework : Node
         FocusOutline = new FocusOutlineManager(this);
         Logger = new Logger(GameConsole);
         BackgroundTasks = new BackgroundTaskTracker(Logger);
+        Profiler = new Profiler();
 
         OptionsManager = OptionsManagerFactory.Create(this);
         AudioManager = new AudioManager(this, OptionsManager);
         ApplicationLifetime = new ApplicationLifetimeService(this);
 
         SceneManager.BindRuntimeServices(AudioManager, FocusOutline);
-        Profiler.Configure(Metrics);
 
         RuntimeServices = new GameServices(
             ComponentManager,
@@ -152,7 +157,8 @@ public abstract partial class AutoloadsFramework : Node
             FocusOutline,
             Logger,
             ApplicationLifetime,
-            BackgroundTasks);
+            BackgroundTasks,
+            Profiler);
         Game.Initialize(RuntimeServices);
 
         SceneComposition.ConfigureNodeTree(this, RuntimeServices);
@@ -212,7 +218,6 @@ public abstract partial class AutoloadsFramework : Node
 
         Logger.Dispose();
         BackgroundTasks.Dispose();
-        Profiler.Dispose();
 
         Game.Reset();
 
@@ -236,6 +241,9 @@ public abstract partial class AutoloadsFramework : Node
     public async Task ExitGame()
     {
         GetTree().AutoAcceptQuit = false;
+#if DEBUG
+        Profiler.Summary();
+#endif
 
         // Wait for cleanup
         if (PreQuit != null)

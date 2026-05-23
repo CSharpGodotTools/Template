@@ -7,17 +7,6 @@ namespace __TEMPLATE__;
 /// <summary>
 /// Aggregates core runtime services used by gameplay systems.
 /// </summary>
-/// <param name="componentManager">Component manager service.</param>
-/// <param name="gameConsole">Game console service.</param>
-/// <param name="audio">Audio service abstraction.</param>
-/// <param name="options">Options service abstraction.</param>
-/// <param name="metrics">Metrics overlay service.</param>
-/// <param name="scene">Scene service abstraction.</param>
-/// <param name="scopedServices">Container for scoped services.</param>
-/// <param name="focusOutline">Focus-outline manager.</param>
-/// <param name="logger">Logger service abstraction.</param>
-/// <param name="applicationLifetime">Application lifetime service.</param>
-/// <param name="backgroundTasks">Background task tracker service.</param>
 public sealed class GameServices(
     GameComponentManager componentManager,
     GameConsole gameConsole,
@@ -29,7 +18,8 @@ public sealed class GameServices(
     FocusOutlineManager focusOutline,
     ILoggerService logger,
     IApplicationLifetime applicationLifetime,
-    IBackgroundTaskTracker backgroundTasks)
+    IBackgroundTaskTracker backgroundTasks,
+    Profiler profiler)
 {
     /// <summary>
     /// Component manager service.
@@ -85,6 +75,11 @@ public sealed class GameServices(
     /// Background task tracker service.
     /// </summary>
     public IBackgroundTaskTracker BackgroundTasks { get; } = backgroundTasks;
+
+    /// <summary>
+    /// Profiler service.
+    /// </summary>
+    public IProfiler Profiler { get; } = profiler;
 
     // Concrete convenience accessors for transition compatibility.
     public AudioManager AudioManager => (AudioManager)Audio;

@@ -63,6 +63,11 @@ public partial class Game
     public static IApplicationLifetime Application => RuntimeServices.ApplicationLifetime;
 
     /// <summary>
+    /// Profiler for logging runtime of code.
+    /// </summary>
+    public static IProfiler Profiler => RuntimeServices.Profiler;
+
+    /// <summary>
     /// Initializes the global runtime service bundle.
     /// </summary>
     /// <param name="services">Service bundle to expose globally.</param>
