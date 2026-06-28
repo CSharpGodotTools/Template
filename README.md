@@ -525,18 +525,23 @@ Tested and reliably works with up to 475 clients sending positions to each other
 ### Your First Netcode
 
 ```cs
-// Packets
+// Packet sent by client
 public partial class CPlayerJoined : ClientPacket
 {
     public string Username { get; set; }
 }
+```
 
+```cs
+// Packet sent by server
 public partial class SPlayerPositions : ServerPacket
 {
     public Dictionary<uint, Vector2> Positions { get; set; }
 }
+```
 
-// Client
+```cs
+// The client
 public partial class GameClient : GodotClient
 {
     public GameClient()
@@ -552,8 +557,10 @@ public partial class GameClient : GodotClient
         Send(new CPlayerJoined("Valk"));
     }
 }
+```
 
-// Server
+```cs
+// The server
 public partial class GameServer : GodotServer
 {
     public Dictionary<uint, Vector2> Players { get; } = new();
@@ -573,8 +580,10 @@ public partial class GameServer : GodotServer
         Players.Remove(peerId);
     }
 }
+```
 
-// World
+```cs
+// The game world
 public partial class World : Node
 {
     private const int Port = 25565;
